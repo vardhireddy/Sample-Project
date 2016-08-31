@@ -1,0 +1,36 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "alg": "RS512",
+      "use": "sig",
+      "kid": "ap-northeast-11",
+      "n": "AI7mc1assO5n6yB4b7jPCFgVLYPSnwt4qp2BhJVAmlXRntRZ5w4910oKNZDOr4fe/BWOI2Z7upUTE/ICXdqirEkjiPbBN/duVy5YcHsQ5+GrxQ/UbytNVN/NsFhdG8W31lsE4dnrGds5cSshLaohyU/aChgaIMbmtU0NSWQ+jwrW8q1PTvnThVQbpte59a0dAwLeOCfrx6kVvs0Y7fX7NXBbFxe8yL+JR3SMJvxBFuYC+/om5EIRIlRexjWpNu7gJnaFFwbxCBNwFHahcg5gdtSkCHJy8Gj78rsgrkEbgoHk29pk8jUzo/O/GuSDGw8qXb6w0R1+UsXPYACOXM8C8+E=",
+      "e": "AQAB"
+    },
+    {
+      "kty": "RSA",
+      "alg": "RS512",
+      "use": "sig",
+      "kid": "eu-west-11",
+      "n": "AKriovi9cnm+07tkfZMFFCvjfobq0TP1qjrQQ4uS91P3mt/Wy3bdVjMt6DfZeuowwfdQdcsc0XgDV1KHlIG5PKj3v6q6uH2M0mcqFpQZnIQ0xUbRoZkR6bHFgdRHR2GTbm79nh3z1gsaVYeDFGLrE7gXNQRAoKtClif4cW+ZmLAfS2nPFAg61pryh/HUdaN2zvfbTGZaB1zVL41tX5DncoQx3COLpIcdKIB//CpWO0iVubU7ZnNPRVt079t5MUpwgtyAnhqMzYWElsTAPopEWVMTxHJr1LUKXiU6nX1UoX8OxUtBCZ30xLddGXw6e8G7dZKxq/es+ov8r7IlmTI7OXM=",
+      "e": "AQAB"
+    },
+    {
+      "kty": "RSA",
+      "alg": "RS512",
+      "use": "sig",
+      "kid": "us-east-11",
+      "n": "AIvLE/h4h9XdAVyy0C7fn1ZXZ3Gt6YT2LPsHsoCUGgPAVJnLJjPRj3dSI2UmlWaLacSoHYeFABfxj8YROnE9fpiGto5LcdyfuRKET9Nv5UaZp0kMSSoF7wXinp07ACUbn+ZE3ImQR16r1/Q/j3AD4CmN7gVjk5+EZzVCTQtAzJZJ8/EgCPFE4YA0Q2UgFtBjZnt4SI8TljikBqUmNDVKyjh2yI+m4fQO/LZOEaI/aGOWYen4RrO+/3hTYk73b+oFCPnIp1sLNUmdAHzjIgWYCC2qBwC+tRWi7065ea2KYj+kNNFevXFYMrph3U1mxqDZSzIOvEXIlZqlhOoOc5NmWMc=",
+      "e": "AQAB"
+    },
+    {
+      "kty": "RSA",
+      "alg": "RS512",
+      "use": "sig",
+      "kid": "us-west-21",
+      "n": "AJM4O/eTg8U00rbo/xXwECyAmpF8EUvbBj+nMvebhExjWyNhaEB27QvESbdM3FS+k8opxC5TKVqNCY8GGVAvHkTh5+BsaIeFrJLj22rXXs6E3bse5MBlmUHCIy8PQaZ/BpJWvlSz7IoprdfhgfOGvT96GgXouSytanvkU4A8a3jcmy2ZmdHSdeGLuAYQtdz+xP8zt2s2v2evFY/bEGQpd0EBlWsQKZvtZ0DJ1CtA/SJixbdhCj7bGh322QqgA8im+s3AAnD4I/UgfvZEAbkH6zqYgWTq5QnMsoizESf+6EmSDaJA4Bbkv1ffmcHuTEUwKnKZ+d7G5YXWwWndXu4tleM=",
+      "e": "AQAB"
+    }
+  ]
+}
