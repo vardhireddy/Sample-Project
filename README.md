@@ -1,1 +1,1 @@
-test-repo
+This is a data catalog repo
