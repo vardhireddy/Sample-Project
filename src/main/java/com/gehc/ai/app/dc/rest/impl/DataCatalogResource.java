@@ -44,10 +44,9 @@ public class DataCatalogResource {
     @GET
     @Produces ( MediaType.APPLICATION_JSON )
     public Response getDataCatalog() {
-        System.out.println(" In DataCatalogResource");
         try {
             Response response = null;
-            List<ImageSet> imageSet = dataCatalogService.getDataCatalog();
+            List<ImageSet> imageSet = dataCatalogService.getImageSet();
             if ( (imageSet == null) || imageSet.isEmpty() ) {
                 response = Response.status( Status.NO_CONTENT ).entity( "No image set  data found for the query" ).build();
             } 

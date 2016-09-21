@@ -13,6 +13,7 @@ package com.gehc.ai.app.dc.dao;
 
 import java.util.List;
 
+import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 
 /**
@@ -24,5 +25,9 @@ public interface IDataCatalogDao {
      * Gets the data catalog.
      * @throws exception
      */
-    List<ImageSet> getDataCatalog() throws Exception;
+    List<ImageSet> getImageSet() throws Exception;
+    
+    String[] getImgSetIdForDC(String id) throws Exception;
+    
+    List<DataCollection> getDataCollection() throws Exception;
 }
