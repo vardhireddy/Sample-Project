@@ -1,1 +1,1 @@
-This is a data catalog repo
+This is a data catalog repo for deep learning 
