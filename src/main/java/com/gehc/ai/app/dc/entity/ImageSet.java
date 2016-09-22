@@ -17,12 +17,36 @@ package com.gehc.ai.app.dc.entity;
  */
 public class ImageSet {
 
-    private long id;
+    private String id;
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+    /**
+     * @param id the id to set
+     */
+    public void setId( String id ) {
+        this.id = id;
+    }
+    /**
+     * @return the orgId
+     */
+    public String getOrgId() {
+        return orgId;
+    }
+    /**
+     * @param orgId the orgId to set
+     */
+    public void setOrgId( String orgId ) {
+        this.orgId = orgId;
+    }
     private String schemaVersion;
     private String seriesId;
     private String studyId;
     private String patientId;
-    private long orgId;
+    private String orgId;
     private String orgName;
     private String permissionId;
     private String modality;
@@ -32,18 +56,7 @@ public class ImageSet {
     private long age;
     private String gender;
     private String uri;
-    /**
-     * @return the id
-     */
-    public long getId() {
-        return id;
-    }
-    /**
-     * @param id the id to set
-     */
-    public void setId( long id ) {
-        this.id = id;
-    }
+
     /**
      * @return the schemaVersion
      */
@@ -91,18 +104,6 @@ public class ImageSet {
      */
     public void setPatientId( String patientId ) {
         this.patientId = patientId;
-    }
-    /**
-     * @return the orgId
-     */
-    public long getOrgId() {
-        return orgId;
-    }
-    /**
-     * @param orgId the orgId to set
-     */
-    public void setOrgId( long orgId ) {
-        this.orgId = orgId;
     }
     /**
      * @return the orgName
@@ -212,6 +213,21 @@ public class ImageSet {
     public void setUri( String uri ) {
         this.uri = uri;
     }
+
+    /**
+     * 
+     */
+    public ImageSet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ImageSet [id=" + id + ", schemaVersion=" + schemaVersion + ", seriesId=" + seriesId + ", studyId=" + studyId + ", patientId=" + patientId + ", orgId=" + orgId + ", orgName=" + orgName + ", permissionId=" + permissionId + ", modality=" + modality + ", anatomy=" + anatomy + ", diseaseType=" + diseaseType + ", dataFormat=" + dataFormat + ", age=" + age + ", gender=" + gender + ", uri=" + uri + "]";
+    }
     /**
      * @param id
      * @param schemaVersion
@@ -229,7 +245,7 @@ public class ImageSet {
      * @param gender
      * @param uri
      */
-    public ImageSet( long id, String schemaVersion, String seriesId, String studyId, String patientId, long orgId, String orgName, String permissionId, String modality, String anatomy,
+    public ImageSet( String id, String schemaVersion, String seriesId, String studyId, String patientId, String orgId, String orgName, String permissionId, String modality, String anatomy,
                      String diseaseType, String dataFormat, long age, String gender, String uri ) {
         super();
         this.id = id;
@@ -247,20 +263,6 @@ public class ImageSet {
         this.age = age;
         this.gender = gender;
         this.uri = uri;
-    }
-    /**
-     * 
-     */
-    public ImageSet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "ImageSet [id=" + id + ", schemaVersion=" + schemaVersion + ", seriesId=" + seriesId + ", studyId=" + studyId + ", patientId=" + patientId + ", orgId=" + orgId + ", orgName=" + orgName + ", permissionId=" + permissionId + ", modality=" + modality + ", anatomy=" + anatomy + ", diseaseType=" + diseaseType + ", dataFormat=" + dataFormat + ", age=" + age + ", gender=" + gender + ", uri=" + uri + "]";
     }
     
 }

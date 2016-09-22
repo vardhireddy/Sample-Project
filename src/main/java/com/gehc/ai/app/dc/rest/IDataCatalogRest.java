@@ -13,6 +13,9 @@ package com.gehc.ai.app.dc.rest;
 
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+
+import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 
 /**
@@ -24,4 +27,12 @@ public interface IDataCatalogRest {
     List<ImageSet> getDataCatalogResource();
     
     String testDataCatalogResource();
+    
+    List<ImageSet> getImageSet();
+    
+    Response getDataCatalog();
+    
+    List<ImageSet> getImageSetByDataCollectionId(String id);
+    
+    List<DataCollection> getDataCollection();
 }

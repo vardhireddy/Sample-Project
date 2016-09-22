@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
+import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.service.IDataCatalogService;
 
@@ -34,13 +35,37 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
      * @see com.gehc.ai.app.dc.service.IDataCatalogService#getDataCatalog()
      */
     @Override
-    public List<ImageSet> getDataCatalog() throws Exception {
+    public List<ImageSet> getImageSet() throws Exception {
         List<ImageSet> imageSet = null;
         try {
-            imageSet = dataCatalogDao.getDataCatalog();
+            imageSet = dataCatalogDao.getImageSet();
          } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving data catalog ", e );
         }
         return imageSet;
+    }
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.service.IDataCatalogService#getImageSetIdForDC(java.lang.String)
+     */
+    @Override
+    public String[] getImgSetIdForDC( String id ) throws Exception {
+        try {
+            return dataCatalogDao.getImgSetIdForDC( id );
+         } catch ( Exception e ) {
+            throw new Exception( "Exception occurred while retreiving data catalog ", e );
+        }
+    }
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.service.IDataCatalogService#getDataCollection()
+     */
+    @Override
+    public List<DataCollection> getDataCollection() throws Exception {
+        List<DataCollection> dataCollection = null;
+        try {
+            dataCollection = dataCatalogDao.getDataCollection();
+         } catch ( Exception e ) {
+            throw new Exception( "Exception occurred while retreiving data collection ", e );
+        }
+        return dataCollection;
     }
 }
