@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
+import com.gehc.ai.app.dc.entity.Creator;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 
@@ -39,7 +40,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
     
     private static final String GET_DATA_COLLECTION = "SELECT json_extract(a.data, '$.id') as id ,json_extract(a.data, '$.name') as name, "
-            + " json_extract(a.data, '$.description') as description FROM data_collection a ";
+            + " json_extract(a.data, '$.description') as description, "
+            + " json_extract(a.data, '$.createdDate') as createdDate, "
+            + " json_extract(a.data, '$.creator.creatorName') as creatorName,"
+            + " json_extract(a.data, '$.creator.creatorId') as creatorId FROM data_collection a ";
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -96,10 +100,15 @@ class DataCollectionRowMapper implements RowMapper<DataCollection> {
     @Override
     public DataCollection mapRow( ResultSet rs, int rowNum ) throws SQLException {
         DataCollection dataCollection = new DataCollection();
+        Creator creator = new Creator();
         try { 
                 dataCollection.setId(rs.getString("id"));  
                 dataCollection.setName( rs.getString("name") );
                 dataCollection.setDescription( rs.getString("description") );
+                dataCollection.setCreatedData(rs.getString("createdDate") );
+                creator.setName(rs.getString("creatorName"));
+                creator.setId(rs.getString("creatorId"));
+                dataCollection.setCreator(creator);
         } catch ( Exception e ) {
           throw new SQLException( e );}
         return dataCollection;

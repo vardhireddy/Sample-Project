@@ -39,6 +39,7 @@ import com.gehc.ai.app.dc.service.IDataCatalogService;
 
 @RestController
 @Produces ( MediaType.APPLICATION_JSON )
+@RequestMapping(value = "/dataCat")
 public class DataCatalogRestImpl implements IDataCatalogRest {
    
     @Autowired
@@ -66,26 +67,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public String testDataCatalogResource() {
         return "Welcome to Deep Learning";
     }
-    
-/*    @Override
-    @RequestMapping(value = "/dataCollection", method = RequestMethod.GET)
-    public List<ImageSet> getDataCollection() {
-        ResponseBuilder responseBuilder;
-       // T entity = (T) daoApi.findById((Class<T>) getClassFromTableClassMap(tableName), id);
-        List<ImageSet> imageSet = new ArrayList<ImageSet>();
-        try {
-            imageSet = dataCatalogService.getDataCatalog();           
-        } catch ( Exception e ) {
-             e.printStackTrace();
-        }
-        if (imageSet != null) {
-            responseBuilder = Response.ok(imageSet);
-            return (List<ImageSet>) responseBuilder.build().getEntity();
-        } else {
-            responseBuilder = Response.status(Status.NOT_FOUND);
-            return (List<ImageSet>) responseBuilder.build();
-        }
-     }*/
     
     @RequestMapping(value = "/getDataCollection", method = RequestMethod.GET)
     public Response getDataCatalog() {
@@ -163,7 +144,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping(value = "/dataCollection", method = RequestMethod.GET)
+    @RequestMapping(value = "/dataColl", method = RequestMethod.GET)
     public List<DataCollection> getDataCollection() {
         ResponseBuilder responseBuilder;
          List<DataCollection> dataCollection = new ArrayList<DataCollection>();
