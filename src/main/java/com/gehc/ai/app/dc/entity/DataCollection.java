@@ -26,7 +26,14 @@ public class DataCollection {
     private String description;
     private String[] imageSets;
     private String createdData;
-    /**
+    private Creator creator;
+    public Creator getCreator() {
+		return creator;
+	}
+	public void setCreator(Creator creator) {
+		this.creator = creator;
+	}
+	/**
      * @return the id
      */
     public String getId() {
@@ -98,23 +105,7 @@ public class DataCollection {
     public void setCreatedData( String createdData ) {
         this.createdData = createdData;
     }
-    /**
-     * @param id
-     * @param schemaVersion
-     * @param name
-     * @param description
-     * @param imageSets
-     * @param createdData
-     */
-    public DataCollection( String id, String schemaVersion, String name, String description, String[] imageSets, String createdData ) {
-        super();
-        this.id = id;
-        this.schemaVersion = schemaVersion;
-        this.name = name;
-        this.description = description;
-        this.imageSets = imageSets;
-        this.createdData = createdData;
-    }
+
     /**
      * 
      */
@@ -122,12 +113,24 @@ public class DataCollection {
         super();
         // TODO Auto-generated constructor stub
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion + ", name=" + name + ", description=" + description + ", imageSets=" + Arrays.toString( imageSets ) + ", createdData=" + createdData + "]";
-    }
-    
+	public DataCollection(String id, String schemaVersion, String name,
+			String description, String[] imageSets, String createdData,
+			Creator creator) {
+		super();
+		this.id = id;
+		this.schemaVersion = schemaVersion;
+		this.name = name;
+		this.description = description;
+		this.imageSets = imageSets;
+		this.createdData = createdData;
+		this.creator = creator;
+	}
+	@Override
+	public String toString() {
+		return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion
+				+ ", name=" + name + ", description=" + description
+				+ ", imageSets=" + Arrays.toString(imageSets)
+				+ ", createdData=" + createdData + ", creator=" + creator + "]";
+	}
+
 }
