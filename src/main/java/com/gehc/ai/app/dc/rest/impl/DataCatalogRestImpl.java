@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -52,7 +53,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List<ImageSet> getDataCatalogResource() {
         List<ImageSet> imageSet;
         try {
-            imageSet = dataCatalogService.getImageSet();
+            imageSet = dataCatalogService.getImageSet(null);
             return imageSet;
         } catch ( Exception e ) {
              e.printStackTrace();
@@ -72,7 +73,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public Response getDataCatalog() {
          try {
             Response response = null;
-            List<ImageSet> imageSet = dataCatalogService.getImageSet();
+            List<ImageSet> imageSet = dataCatalogService.getImageSet(null);
             if ( (imageSet == null) || imageSet.isEmpty() ) {
                 response = Response.status( Status.NO_CONTENT ).entity( "No image set  data found for the query" ).build();
             } 
@@ -94,12 +95,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping(value = "/imageSet", method = RequestMethod.GET)
-    public List<ImageSet> getImageSet() {
+    @RequestMapping(value = "/imgSet", method = RequestMethod.GET)
+    public List<ImageSet> getImageSet(@QueryParam ( "orgId" ) String orgId) {
          ResponseBuilder responseBuilder;
          List<ImageSet> imageSet = new ArrayList<ImageSet>();
          try {
-             imageSet = dataCatalogService.getImageSet();           
+             imageSet = dataCatalogService.getImageSet(orgId);           
          } catch ( Exception e ) {
               e.printStackTrace();
          }
@@ -127,7 +128,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
              }else{
                  System.out.println(" In getImageSetByDataCollectionId imgSetId is null");
              }
-             imageSet = dataCatalogService.getImageSet();           
+             imageSet = dataCatalogService.getImageSet(null);           
          } catch ( Exception e ) {
               e.printStackTrace();
          }
