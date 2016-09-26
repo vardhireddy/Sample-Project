@@ -28,7 +28,7 @@ public interface IDataCatalogRest {
     
     String testDataCatalogResource();
     
-    List<ImageSet> getImageSet();
+    List<ImageSet> getImageSet(String orgId);
     
     Response getDataCatalog();
     

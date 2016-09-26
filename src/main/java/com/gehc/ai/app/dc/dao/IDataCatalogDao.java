@@ -23,9 +23,10 @@ import com.gehc.ai.app.dc.entity.ImageSet;
 public interface IDataCatalogDao {
     /**
      * Gets the data catalog.
+     * @param orgId TODO
      * @throws exception
      */
-    List<ImageSet> getImageSet() throws Exception;
+    List<ImageSet> getImageSet(String orgId) throws Exception;
     
     String[] getImgSetIdForDC(String id) throws Exception;
     
