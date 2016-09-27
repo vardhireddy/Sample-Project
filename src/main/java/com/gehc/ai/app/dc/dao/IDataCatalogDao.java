@@ -26,9 +26,11 @@ public interface IDataCatalogDao {
      * @param orgId TODO
      * @throws exception
      */
-    List<ImageSet> getImageSet(String orgId) throws Exception;
+    List<ImageSet> getImgSetByOrgId(String orgId) throws Exception;
     
     String[] getImgSetIdForDC(String id) throws Exception;
     
     List<DataCollection> getDataCollection() throws Exception;
+    
+    List<ImageSet> getImgSetById(String imgSetId) throws Exception;
 }

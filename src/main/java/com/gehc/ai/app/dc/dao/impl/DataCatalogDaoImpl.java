@@ -36,7 +36,7 @@ import com.gehc.ai.app.dc.entity.ImageSet;
  */
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
-    private static final String GET_IMAGESET_DATA = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM imageset where orgId = ?";
+    private static final String GET_IMGSET_DATA_By_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM imageset where orgId = ?";
     
     private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
     
@@ -45,6 +45,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
             + " json_extract(a.data, '$.createdDate') as createdDate, "
             + " json_extract(a.data, '$.creator.creatorName') as creatorName,"
             + " json_extract(a.data, '$.creator.creatorId') as creatorId FROM data_collection a ";
+    
+    private static final String GET_IMAGESET_DATA = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM imageset limit 2";
+    
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -52,10 +55,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
      * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getDataCatalog()
      */
     @Override
-    public List<ImageSet> getImageSet(String orgId) throws Exception {
+    public List<ImageSet> getImgSetByOrgId(String orgId) throws Exception {
         List<ImageSet> imageSetList = new ArrayList<ImageSet>();
         if(null != orgId && orgId.length()>0){
-	        imageSetList = jdbcTemplate.query( GET_IMAGESET_DATA, new PreparedStatementSetter() {
+	        imageSetList = jdbcTemplate.query( GET_IMGSET_DATA_By_ORG_ID, new PreparedStatementSetter() {
 	          	@Override
 				public void setValues(java.sql.PreparedStatement ps)
 						throws SQLException {
@@ -91,6 +94,13 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         dataCollectionList = jdbcTemplate.query( GET_DATA_COLLECTION, new DataCollectionRowMapper());
         return dataCollectionList;
     }
+
+	@Override
+	public List<ImageSet> getImgSetById(String imgSetId) throws Exception {
+		 List<ImageSet> imageSetList = new ArrayList<ImageSet>();
+	     imageSetList = jdbcTemplate.query( GET_IMAGESET_DATA, new ImageSetRowMapper() );       
+	     return imageSetList;
+	}
 }
 
 class DataCollectionRowMapper implements RowMapper<DataCollection> {
@@ -102,7 +112,7 @@ class DataCollectionRowMapper implements RowMapper<DataCollection> {
                 dataCollection.setId(rs.getString("id"));  
                 dataCollection.setName( rs.getString("name") );
                 dataCollection.setDescription( rs.getString("description") );
-                dataCollection.setCreatedData(rs.getString("createdDate") );
+                dataCollection.setCreatedDate(rs.getString("createdDate") );
                 creator.setName(rs.getString("creatorName"));
                 creator.setId(rs.getString("creatorId"));
                 dataCollection.setCreator(creator);

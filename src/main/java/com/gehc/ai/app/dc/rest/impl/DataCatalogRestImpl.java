@@ -53,7 +53,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List<ImageSet> getDataCatalogResource() {
         List<ImageSet> imageSet;
         try {
-            imageSet = dataCatalogService.getImageSet(null);
+            imageSet = dataCatalogService.getImgSetByOrgId(null);
             return imageSet;
         } catch ( Exception e ) {
              e.printStackTrace();
@@ -73,7 +73,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public Response getDataCatalog() {
          try {
             Response response = null;
-            List<ImageSet> imageSet = dataCatalogService.getImageSet(null);
+            List<ImageSet> imageSet = dataCatalogService.getImgSetByOrgId(null);
             if ( (imageSet == null) || imageSet.isEmpty() ) {
                 response = Response.status( Status.NO_CONTENT ).entity( "No image set  data found for the query" ).build();
             } 
@@ -95,12 +95,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping(value = "/imgSet", method = RequestMethod.GET)
-    public List<ImageSet> getImageSet(@QueryParam ( "orgId" ) String orgId) {
+    @RequestMapping(value = "/imgSetByOrgId", method = RequestMethod.GET)
+    public List<ImageSet> getImgSetByOrgId(@QueryParam ( "orgId" ) String orgId) {
          ResponseBuilder responseBuilder;
          List<ImageSet> imageSet = new ArrayList<ImageSet>();
          try {
-             imageSet = dataCatalogService.getImageSet(orgId);           
+             imageSet = dataCatalogService.getImgSetByOrgId(orgId);           
          } catch ( Exception e ) {
               e.printStackTrace();
          }
@@ -117,18 +117,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping(value = "/imageSetByDataCollectionId", method = RequestMethod.GET)
-    public List<ImageSet> getImageSetByDataCollectionId(String id) {
+    @RequestMapping(value = "/imgSetByDataCollId", method = RequestMethod.GET)
+    public List<ImageSet> getImgSetByDataCollId(@QueryParam ( "dataCollId" ) String dataCollId) {
          ResponseBuilder responseBuilder;
          List<ImageSet> imageSet = new ArrayList<ImageSet>();
          try {
-             String[] imgSetId = dataCatalogService.getImgSetIdForDC( id );
-             if(null!=imgSetId && imgSetId.length>0){
-                 System.out.println(" In getImageSetByDataCollectionId, imgSetId.length = " + imgSetId.length);
-             }else{
-                 System.out.println(" In getImageSetByDataCollectionId imgSetId is null");
-             }
-             imageSet = dataCatalogService.getImageSet(null);           
+	          //Need to fix the JDBC operation not supported error later   
+        	  /* String[] imgSetId = dataCatalogService.getImgSetIdForDC( dataCollId );
+	             if(null!=imgSetId && imgSetId.length>0){
+	                 System.out.println(" In getImageSetByDataCollectionId, imgSetId.length = " + imgSetId.length);
+	             }else{
+	                 System.out.println(" In getImageSetByDataCollectionId imgSetId is null");
+	             }*/
+	             imageSet = dataCatalogService.getImgSetById(null);           
          } catch ( Exception e ) {
               e.printStackTrace();
          }
