@@ -4,7 +4,6 @@
 #spring.datasource.password = root
 
 #AWS
-#spring.datasource.url = jdbc:mysql://localhost:7200/deeplearning
-spring.datasource.url = jdbc:mysql://skynetdb.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/deeplearning
+spring.datasource.url = jdbc:mysql://skynetdb.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/gehc_data_catalog
 spring.datasource.username = admin
 spring.datasource.password = ashis123
