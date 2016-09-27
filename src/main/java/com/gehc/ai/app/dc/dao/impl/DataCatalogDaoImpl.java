@@ -36,7 +36,7 @@ import com.gehc.ai.app.dc.entity.ImageSet;
  */
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
-    private static final String GET_IMGSET_DATA_By_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM imageset where orgId = ?";
+    private static final String GET_IMGSET_DATA_By_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set where orgId = ?";
     
     private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
     
@@ -46,7 +46,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
             + " json_extract(a.data, '$.creator.creatorName') as creatorName,"
             + " json_extract(a.data, '$.creator.creatorId') as creatorId FROM data_collection a ";
     
-    private static final String GET_IMAGESET_DATA = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM imageset limit 2";
+    private static final String GET_IMAGESET_DATA = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set limit 2";
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
