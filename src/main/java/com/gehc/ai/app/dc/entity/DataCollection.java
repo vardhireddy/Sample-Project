@@ -25,8 +25,16 @@ public class DataCollection {
     private String name;
     private String description;
     private String[] imageSets;
-    private String createdData;
-    private Creator creator;
+    private String createdDate;
+    public String getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
+
+
+	private Creator creator;
     public Creator getCreator() {
 		return creator;
 	}
@@ -93,28 +101,10 @@ public class DataCollection {
     public void setImageSets( String[] imageSets ) {
         this.imageSets = imageSets;
     }
-    /**
-     * @return the createdData
-     */
-    public String getCreatedData() {
-        return (createdData==null)?createdData:createdData.replaceAll("^\"|\"$", "");
-    }
-    /**
-     * @param createdData the createdData to set
-     */
-    public void setCreatedData( String createdData ) {
-        this.createdData = createdData;
-    }
+ 
 
-    /**
-     * 
-     */
-    public DataCollection() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-	public DataCollection(String id, String schemaVersion, String name,
-			String description, String[] imageSets, String createdData,
+    public DataCollection(String id, String schemaVersion, String name,
+			String description, String[] imageSets, String createdDate,
 			Creator creator) {
 		super();
 		this.id = id;
@@ -122,15 +112,21 @@ public class DataCollection {
 		this.name = name;
 		this.description = description;
 		this.imageSets = imageSets;
-		this.createdData = createdData;
+		this.createdDate = createdDate;
 		this.creator = creator;
 	}
+	/**
+     * 
+     */
+    public DataCollection() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 	@Override
 	public String toString() {
 		return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion
 				+ ", name=" + name + ", description=" + description
 				+ ", imageSets=" + Arrays.toString(imageSets)
-				+ ", createdData=" + createdData + ", creator=" + creator + "]";
+				+ ", createdDate=" + createdDate + ", creator=" + creator + "]";
 	}
-
 }

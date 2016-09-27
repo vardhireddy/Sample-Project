@@ -28,11 +28,11 @@ public interface IDataCatalogRest {
     
     String testDataCatalogResource();
     
-    List<ImageSet> getImageSet(String orgId);
+    List<ImageSet> getImgSetByOrgId(String orgId);
     
     Response getDataCatalog();
     
-    List<ImageSet> getImageSetByDataCollectionId(String id);
+    List<ImageSet> getImgSetByDataCollId(String dataCollId);
     
     List<DataCollection> getDataCollection();
 }
