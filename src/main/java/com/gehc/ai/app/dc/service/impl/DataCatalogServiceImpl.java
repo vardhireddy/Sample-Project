@@ -40,7 +40,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         try {
             imageSet = dataCatalogDao.getImgSetByOrgId(orgId);
          } catch ( Exception e ) {
-            throw new Exception( "Exception occurred while retreiving data catalog ", e );
+            throw new Exception( "Exception occurred while retreiving data collection ", e );
         }
         return imageSet;
     }
@@ -52,7 +52,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         try {
             return dataCatalogDao.getImgSetIdForDC( id );
          } catch ( Exception e ) {
-            throw new Exception( "Exception occurred while retreiving data catalog ", e );
+            throw new Exception( "Exception occurred while retreiving data collection ", e );
         }
     }
     /* (non-Javadoc)
@@ -74,8 +74,19 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         try {
             imageSet = dataCatalogDao.getImgSetById(imgSetId);
          } catch ( Exception e ) {
-            throw new Exception( "Exception occurred while retreiving data catalog ", e );
+            throw new Exception( "Exception occurred while retreiving data collection ", e );
         }
         return imageSet;
+	}
+	@Override
+	public int createDataCollection(DataCollection dataCollection)
+			throws Exception {
+		int numOfRowsInserted = 0;
+        try {
+       		numOfRowsInserted = dataCatalogDao.createDataCollection(dataCollection);
+         } catch ( Exception e ) {
+            throw new Exception( "Exception occurred while retreiving data collection ", e );
+        }
+		return numOfRowsInserted;
 	}
 }

@@ -11,6 +11,7 @@
  */
 package com.gehc.ai.app.dc.entity;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 
@@ -18,16 +19,20 @@ import java.util.Arrays;
  * @author 212071558
  *
  */
-public class DataCollection {
+public class DataCollection implements Serializable {
 
-    private String id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String id;
     private String schemaVersion;
     private String name;
     private String description;
     private String[] imageSets;
     private String createdDate;
     public String getCreatedDate() {
-		return createdDate;
+		return (createdDate==null)?createdDate:createdDate.replaceAll("^\"|\"$", "");
 	}
 	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;

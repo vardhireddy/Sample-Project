@@ -23,16 +23,34 @@ import com.gehc.ai.app.dc.entity.ImageSet;
  *
  */
 public interface IDataCatalogRest {
-
-    List<ImageSet> getDataCatalogResource();
-    
-    String testDataCatalogResource();
-    
+    /**
+     * Get Image Set by Org Id
+     * 
+     * @param orgId
+     * @return List<ImageSet>
+     */
     List<ImageSet> getImgSetByOrgId(String orgId);
     
-    Response getDataCatalog();
+    /**
+     * Get Image Set by Data Collection Id
+     * 
+     * @param dataCollectionId
+     * @return  List<ImageSet>
+     */
+    List<ImageSet> getImgSetByDataCollId(String dataCollectionId);
     
-    List<ImageSet> getImgSetByDataCollId(String dataCollId);
-    
+    /**
+     * Get Data Collection
+     * 
+     * @return List<DataCollection>
+     */
     List<DataCollection> getDataCollection();
+    
+    /**
+     * Create Data Collection
+     * 
+     * @param dataCollection
+     * @return response
+     */
+    Response createDataCollection(DataCollection dataCollection);
 }
