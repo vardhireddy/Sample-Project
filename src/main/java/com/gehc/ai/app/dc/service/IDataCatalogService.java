@@ -50,11 +50,11 @@ public interface IDataCatalogService {
    /**
     *  Get Image set by Id
     *  
-    * @param imgSetId
+    * @param dataCollectionId
     * @return List<ImageSet>
     * @throws Exception
     */
-    List<ImageSet> getImgSetById(String imgSetId) throws Exception;
+    List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception;
     /**
      * Create Data Collection
      * 
