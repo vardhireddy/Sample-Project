@@ -94,16 +94,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		ResponseBuilder responseBuilder;
 		List<ImageSet> imageSet = new ArrayList<ImageSet>();
 		try {
-			// Need to fix the JDBC feature not supported error later
-			/*
-			 * String[] imgSetId = dataCatalogService.getImgSetIdForDC(
-			 * dataCollectionId ); if(null!=imgSetId && imgSetId.length>0){
-			 * System
-			 * .out.println(" In getImageSetByDataCollectionId, imgSetId.length = "
-			 * + imgSetId.length); }else{ System.out.println(
-			 * " In getImageSetByDataCollectionId imgSetId is null"); }
-			 */
-			imageSet = dataCatalogService.getImgSetById(null);
+				imageSet = dataCatalogService.getImgSetByDataCollId(dataCollectionId);
 		} catch (ServiceException e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)

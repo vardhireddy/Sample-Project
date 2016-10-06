@@ -41,7 +41,7 @@ import com.gehc.ai.app.dc.entity.ImageSet;
  */
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
-	private static final String GET_IMGSET_DATA_By_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set where orgId = ?";
+	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set where orgId = ?";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
 
@@ -51,7 +51,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " json_extract(a.data, '$.creator.creatorName') as creatorName,"
 			+ " json_extract(a.data, '$.creator.creatorId') as creatorId FROM data_collection a ";
 
-	private static final String GET_IMAGESET_DATA = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set limit 2";
+//	private static final String GET_IMAGESET_DATA = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set limit 2";
+	
+	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri "
+			+ "FROM data_collection dataColl, image_set imgSet "
+			+ "where dataColl.id = ? "
+			+ "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
 
 	private static final String INSERT_DATA_COLLECTION = " insert into data_collection () values (?, ?) ";
 
@@ -67,7 +72,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	public List<ImageSet> getImgSetByOrgId(String orgId) throws Exception {
 		List<ImageSet> imageSetList = new ArrayList<ImageSet>();
 		if (null != orgId && orgId.length() > 0) {
-			imageSetList = jdbcTemplate.query(GET_IMGSET_DATA_By_ORG_ID,
+			imageSetList = jdbcTemplate.query(GET_IMGSET_DATA_BY_ORG_ID,
 					new PreparedStatementSetter() {
 						@Override
 						public void setValues(java.sql.PreparedStatement ps)
@@ -107,10 +112,19 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	}
 
 	@Override
-	public List<ImageSet> getImgSetById(String imgSetId) throws Exception {
+	public List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception {
 		List<ImageSet> imageSetList = new ArrayList<ImageSet>();
-		imageSetList = jdbcTemplate.query(GET_IMAGESET_DATA,
-				new ImageSetRowMapper());
+		if (null != dataCollectionId && dataCollectionId.length() > 0) {
+			imageSetList = jdbcTemplate.query(GET_IMAGESET_BY_DATA_COLL_ID,
+					new PreparedStatementSetter() {
+						@Override
+						public void setValues(java.sql.PreparedStatement ps)
+								throws SQLException {
+							int index = 0;
+							ps.setString(++index, dataCollectionId);
+						}
+					}, new ImageSetRowMapper());
+		}
 		return imageSetList;
 	}
 
