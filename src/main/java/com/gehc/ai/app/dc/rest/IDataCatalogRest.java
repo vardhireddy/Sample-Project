@@ -53,4 +53,10 @@ public interface IDataCatalogRest {
      * @return response
      */
     Response createDataCollection(DataCollection dataCollection);
+    
+    /**
+     * @param imageSet
+     * @return
+     */
+    Response insertImageSet(ImageSet imageSet);
 }

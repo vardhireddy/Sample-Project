@@ -41,6 +41,7 @@ import com.gehc.ai.app.dc.entity.ImageSet;
  */
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
+	private static final String DB_SCHEMA_VERSION = "v1.0";
 	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set where orgId = ?";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
@@ -51,14 +52,14 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " json_extract(a.data, '$.creator.creatorName') as creatorName,"
 			+ " json_extract(a.data, '$.creator.creatorId') as creatorId FROM data_collection a ";
 
-//	private static final String GET_IMAGESET_DATA = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set limit 2";
-	
 	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri "
 			+ "FROM data_collection dataColl, image_set imgSet "
 			+ "where dataColl.id = ? "
 			+ "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
 
 	private static final String INSERT_DATA_COLLECTION = " insert into data_collection () values (?, ?) ";
+	
+	private static final String INSERT_IMAGE_SET = " insert into image_set () values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -144,6 +145,24 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 					new Object[] { dataCollection.getId(),
 							mapper.writeValueAsString(dataCollection) },
 					new int[] { Types.VARCHAR, Types.VARCHAR });
+		}
+		return numOfRowsInserted;
+	}
+
+	@Override
+	public int insertImageSet(ImageSet imageSet) throws Exception {
+		int numOfRowsInserted = 0;
+		if (null != imageSet) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(new java.util.Date());
+			numOfRowsInserted = jdbcTemplate.update(
+					INSERT_IMAGE_SET,
+					new Object[] { String.valueOf(calendar.getTimeInMillis()), DB_SCHEMA_VERSION, imageSet.getSeriesId(), imageSet.getStudyId(), imageSet.getPatientId(),
+							imageSet.getOrgId(), imageSet.getOrgName(), imageSet.getPermissionId(), imageSet.getModality(), imageSet.getAnatomy(), imageSet.getDiseaseType(),
+							imageSet.getDataFormat(), imageSet.getAge(), imageSet.getGender(), imageSet.getUri()},
+					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+							    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, 
+							    Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR});
 		}
 		return numOfRowsInserted;
 	}
