@@ -41,7 +41,7 @@ import com.gehc.ai.app.dc.service.IDataCatalogService;
  */
 @RestController
 @Produces(MediaType.APPLICATION_JSON)
-@RequestMapping(value = "/dataCatalog")
+@RequestMapping(value = "/api/v1/dataCatalog")
 public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Autowired
@@ -54,7 +54,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	@RequestMapping(value = "/v1.0/imgSetByOrgId", method = RequestMethod.GET)
+	@RequestMapping(value = "/imgSetByOrgId", method = RequestMethod.GET)
 	public List<ImageSet> getImgSetByOrgId(@QueryParam("orgId") String orgId) {
 		ResponseBuilder responseBuilder;
 		List<ImageSet> imageSet = new ArrayList<ImageSet>();
@@ -88,7 +88,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	@RequestMapping(value = "/v1.0/imgSetByDataCollectionId", method = RequestMethod.GET)
+	@RequestMapping(value = "/imgSetByDataCollectionId", method = RequestMethod.GET)
 	public List<ImageSet> getImgSetByDataCollId(
 			@QueryParam("dataCollectionId") String dataCollectionId) {
 		ResponseBuilder responseBuilder;
@@ -122,7 +122,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	@RequestMapping(value = "/v1.0/dataCollection", method = RequestMethod.GET)
+	@RequestMapping(value = "/dataCollection", method = RequestMethod.GET)
 	public List<DataCollection> getDataCollection() {
 		ResponseBuilder responseBuilder;
 		List<DataCollection> dataCollection = new ArrayList<DataCollection>();
@@ -151,7 +151,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RequestMapping(value = "/v1.0/createDataCollection", method = RequestMethod.POST)
+	@RequestMapping(value = "/createDataCollection", method = RequestMethod.POST)
 	public Response createDataCollection(
 			@RequestBody DataCollection dataCollection) {
 		Response response = null;
@@ -176,6 +176,38 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)
 							.entity("Operation failed while creating the data collection")
+							.build());
+		}
+		//return response;
+		return null;
+	}
+
+	@Override
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RequestMapping(value = "/image-set", method = RequestMethod.POST)
+	public Response insertImageSet(@RequestBody ImageSet imageSet) {
+		Response response = null;
+		int numOfRowsInserted = 0;
+		try {
+			numOfRowsInserted = dataCatalogService.insertImageSet(imageSet);
+			if (0 == numOfRowsInserted) {
+				response = Response.status(Status.NO_CONTENT)
+						.entity("No image set got inserted")
+						.build();
+			} else {
+				response = Response.status(Status.OK).entity(numOfRowsInserted)
+						.build();
+			}
+		} catch (ServiceException e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while inserting the image set")
+							.build());
+		} catch (Exception e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while inserting the image set")
 							.build());
 		}
 		//return response;

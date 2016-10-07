@@ -63,4 +63,11 @@ public interface IDataCatalogDao {
      * @throws Exception
      */
     int createDataCollection(DataCollection dataCollection) throws Exception;
+    
+    /**
+     * @param imageSet
+     * @return
+     * @throws Exception
+     */
+    int insertImageSet(ImageSet imageSet) throws Exception;
 }

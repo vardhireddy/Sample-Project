@@ -81,12 +81,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	@Override
 	public int createDataCollection(DataCollection dataCollection)
 			throws Exception {
-		int numOfRowsInserted = 0;
-        try {
-       		numOfRowsInserted = dataCatalogDao.createDataCollection(dataCollection);
-         } catch ( Exception e ) {
-            throw new Exception( "Exception occurred while retreiving data collection ", e );
-        }
-		return numOfRowsInserted;
+		return dataCatalogDao.createDataCollection(dataCollection);
+     }
+	@Override
+	public int insertImageSet(ImageSet imageSet) throws Exception {
+		return dataCatalogDao.insertImageSet(imageSet);
 	}
 }
