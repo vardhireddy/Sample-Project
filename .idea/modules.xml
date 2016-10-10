@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/datacatalog.iml" filepath="$PROJECT_DIR$/.idea/datacatalog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gehc-ai-datacatalog.iml" filepath="$PROJECT_DIR$/gehc-ai-datacatalog.iml" />
     </modules>
   </component>
 </project>

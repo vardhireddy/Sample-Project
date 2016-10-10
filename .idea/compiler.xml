@@ -22,11 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="datacatalog" />
+        <module name="gehc-ai-datacatalog" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="datacatalog" target="1.8" />
+      <module name="gehc-ai-datacatalog" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
