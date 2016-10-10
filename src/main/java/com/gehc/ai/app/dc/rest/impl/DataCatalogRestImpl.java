@@ -44,6 +44,8 @@ import com.gehc.ai.app.dc.service.IDataCatalogService;
 @RequestMapping(value = "/api/v1/dataCatalog")
 public class DataCatalogRestImpl implements IDataCatalogRest {
 
+	private static final String SUCCESS = "Success";
+	
 	@Autowired
 	private IDataCatalogService dataCatalogService;
 
@@ -212,5 +214,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		//return response;
 		return null;
+	}
+
+	@Override
+	@RequestMapping(value = "/healthCheck", method = RequestMethod.GET)
+	public String healthCheck() {
+		return SUCCESS;
 	}
 }
