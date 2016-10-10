@@ -59,4 +59,10 @@ public interface IDataCatalogRest {
      * @return
      */
     Response insertImageSet(ImageSet imageSet);
+    
+    /**
+     * @return
+     */
+    String healthCheck();
+    
 }

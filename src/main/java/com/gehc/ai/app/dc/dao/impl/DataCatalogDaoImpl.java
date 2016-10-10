@@ -59,7 +59,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	private static final String INSERT_DATA_COLLECTION = " insert into data_collection () values (?, ?) ";
 	
-	private static final String INSERT_IMAGE_SET = " insert into image_set () values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+	private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, seriesId, studyId, patientId, orgId, orgName, permissionId, "
+			+ "modality, anatomy, diseaseType, dataFormat, age, gender, uri) "
+			+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
