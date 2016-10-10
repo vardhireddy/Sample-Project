@@ -59,11 +59,10 @@ public interface IDataCatalogService {
      * Create Data Collection
      * 
      * @param dataCollection
-     * @return number of rows inserted
-     * @throws Exceptions
+     * @return String, DataCollection id created
+     * @throws Exception
      */
-    int createDataCollection(DataCollection dataCollection) throws Exception;
-    
+    String createDataCollection(DataCollection dataCollection) throws Exception;
     /**
      * @param imageSet
      * @return

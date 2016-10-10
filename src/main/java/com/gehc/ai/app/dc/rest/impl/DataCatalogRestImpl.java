@@ -23,8 +23,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,6 +50,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	
 	@Autowired
 	private IDataCatalogService dataCatalogService;
+
+    @Autowired
+    private ResponseGenerator responseGenerator;
 
 	/*
 	 * (non-Javadoc)
@@ -157,17 +162,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public Response createDataCollection(
 			@RequestBody DataCollection dataCollection) {
 		Response response = null;
-		int numOfRowsInserted = 0;
+		String dcId;
 		try {
-			numOfRowsInserted = dataCatalogService
+			dcId = dataCatalogService
 					.createDataCollection(dataCollection);
-			if (0 == numOfRowsInserted) {
+			if (StringUtils.isEmpty(dcId)) {
 				response = Response.status(Status.NO_CONTENT)
 						.entity("No data collection got created")
 						.build();
 			} else {
-				response = Response.status(Status.OK).entity(numOfRowsInserted)
-						.build();
+				response = ResponseGenerator.responseOnCreate(dcId);
 			}
 		} catch (ServiceException e) {
 			throw new WebApplicationException(
@@ -180,8 +184,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							.entity("Operation failed while creating the data collection")
 							.build());
 		}
-		//return response;
-		return null;
+		return response;
 	}
 
 	@Override

@@ -62,8 +62,8 @@ public interface IDataCatalogDao {
      * @return number of n=rows inserted
      * @throws Exception
      */
-    int createDataCollection(DataCollection dataCollection) throws Exception;
-    
+    String createDataCollection(DataCollection dataCollection) throws Exception;
+
     /**
      * @param imageSet
      * @return

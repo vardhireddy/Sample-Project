@@ -132,7 +132,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	}
 
 	@Override
-	public int createDataCollection(DataCollection dataCollection)
+	public String createDataCollection(DataCollection dataCollection)
 			throws Exception {
 		int numOfRowsInserted = 0;
 		if (null != dataCollection) {
@@ -148,7 +148,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 							mapper.writeValueAsString(dataCollection) },
 					new int[] { Types.VARCHAR, Types.VARCHAR });
 		}
-		return numOfRowsInserted;
+		return dataCollection.getId();
 	}
 
 	@Override
