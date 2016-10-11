@@ -59,7 +59,7 @@ public interface IDataCatalogRest {
      * @param imageSet
      * @return
      */
-    Response insertImageSet(ImageSet imageSet);
+    String insertImageSet(ImageSet imageSet);
     
     /**
      *  

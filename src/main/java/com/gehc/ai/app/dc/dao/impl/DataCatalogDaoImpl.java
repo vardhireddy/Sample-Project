@@ -196,7 +196,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			calendar.setTime(new java.util.Date());
 			dataCollection.setId(String.valueOf(calendar.getTimeInMillis()));
 			dataCollection.setSchemaVersion("v1.0");
-			dataCollection.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+			//dataCollection.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+			dataCollection.setCreatedDate(String.valueOf(calendar.getTimeInMillis()));
 			ObjectMapper mapper = new ObjectMapper();
 			numOfRowsInserted = jdbcTemplate.update(
 					INSERT_DATA_COLLECTION,
@@ -208,21 +209,22 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	}
 
 	@Override
-	public int insertImageSet(ImageSet imageSet) throws Exception {
-		int numOfRowsInserted = 0;
+	public String insertImageSet(ImageSet imageSet) throws Exception {
+		String imageSetId = null;
 		if (null != imageSet) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new java.util.Date());
-			numOfRowsInserted = jdbcTemplate.update(
+			imageSetId = String.valueOf(calendar.getTimeInMillis());
+			jdbcTemplate.update(
 					INSERT_IMAGE_SET,
-					new Object[] { String.valueOf(calendar.getTimeInMillis()), DB_SCHEMA_VERSION, imageSet.getSeriesId(), imageSet.getStudyId(), imageSet.getPatientId(),
+					new Object[] { imageSetId, DB_SCHEMA_VERSION, imageSet.getSeriesId(), imageSet.getStudyId(), imageSet.getPatientId(),
 							imageSet.getOrgId(), imageSet.getOrgName(), imageSet.getPermissionId(), imageSet.getModality(), imageSet.getAnatomy(), imageSet.getDiseaseType(),
 							imageSet.getDataFormat(), imageSet.getAge(), imageSet.getGender(), imageSet.getUri()},
 					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
 							    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, 
 							    Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR});
 		}
-		return numOfRowsInserted;
+		return imageSetId;
 	}
 }
 

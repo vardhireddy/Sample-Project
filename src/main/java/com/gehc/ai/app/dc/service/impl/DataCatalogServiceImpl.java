@@ -92,7 +92,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		return dataCollectionId;
 	}
     @Override
-    public int insertImageSet(ImageSet imageSet) throws Exception {
+    public String insertImageSet(ImageSet imageSet) throws Exception {
         return dataCatalogDao.insertImageSet(imageSet);
     }
 }
