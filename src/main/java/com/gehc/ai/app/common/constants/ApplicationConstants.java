@@ -12,9 +12,6 @@
 
 package com.gehc.ai.app.common.constants;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The Class ApplicationConstants.
