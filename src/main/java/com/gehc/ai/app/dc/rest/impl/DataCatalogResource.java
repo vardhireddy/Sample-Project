@@ -46,7 +46,7 @@ public class DataCatalogResource {
     public Response getDataCatalog() {
         try {
             Response response = null;
-            List<ImageSet> imageSet = dataCatalogService.getImgSetByOrgId(null);
+            List<ImageSet> imageSet = dataCatalogService.getImgSet(null);
             if ( (imageSet == null) || imageSet.isEmpty() ) {
                 response = Response.status( Status.NO_CONTENT ).entity( "No image set  data found for the query" ).build();
             } 

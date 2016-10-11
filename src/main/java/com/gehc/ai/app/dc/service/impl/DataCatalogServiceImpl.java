@@ -12,6 +12,7 @@
 package com.gehc.ai.app.dc.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -35,18 +36,19 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
      * @see com.gehc.ai.app.dc.service.IDataCatalogService#getDataCatalog()
      */
     @Override
-    public List<ImageSet> getImgSetByOrgId(String orgId) throws Exception {
+    public List<ImageSet> getImgSet(Map<String, String> params) throws Exception {
         List<ImageSet> imageSet = null;
         try {
-            imageSet = dataCatalogDao.getImgSetByOrgId(orgId);
-         } catch ( Exception e ) {
+            imageSet = dataCatalogDao.getImgSet(params);
+        } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving data collection ", e );
         }
         return imageSet;
     }
+
     /* (non-Javadoc)
-     * @see com.gehc.ai.app.dc.service.IDataCatalogService#getImageSetIdForDC(java.lang.String)
-     */
+         * @see com.gehc.ai.app.dc.service.IDataCatalogService#getImageSetIdForDC(java.lang.String)
+         */
     @Override
     public String[] getImgSetIdForDC( String id ) throws Exception {
         try {

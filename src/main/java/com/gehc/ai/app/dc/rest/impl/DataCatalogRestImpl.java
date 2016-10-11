@@ -11,8 +11,8 @@
  */
 package com.gehc.ai.app.dc.rest.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -27,10 +27,7 @@ import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
@@ -46,27 +43,34 @@ import com.gehc.ai.app.dc.service.IDataCatalogService;
 @RequestMapping(value = "/api/v1/dataCatalog")
 public class DataCatalogRestImpl implements IDataCatalogRest {
 
-	private static final String SUCCESS = "Success";
-	
-	@Autowired
+    private static final String SUCCESS = "Success";
+    public static final String ORG_ID = "orgId";
+    public static final String MODALITY = "modality";
+    public static final String ANATOMY = "anatomy";
+
+    @Autowired
 	private IDataCatalogService dataCatalogService;
 
     @Autowired
     private ResponseGenerator responseGenerator;
 
+
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()
-	 */
+     * (non-Javadoc)
+     *
+     * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()
+     */
 	@SuppressWarnings("unchecked")
-	@Override
-	@RequestMapping(value = "/imgSetByOrgId", method = RequestMethod.GET)
-	public List<ImageSet> getImgSetByOrgId(@QueryParam("orgId") String orgId) {
+	@RequestMapping(value = "/image-set", method = RequestMethod.GET)
+	public List<ImageSet> getImgSet(@RequestParam Map<String, String> params) {
+
+        Map<String,String> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY));
+        String orgId = params.get(ORG_ID);
 		ResponseBuilder responseBuilder;
 		List<ImageSet> imageSet = new ArrayList<ImageSet>();
 		try {
-			imageSet = dataCatalogService.getImgSetByOrgId(orgId);
+
+			imageSet = dataCatalogService.getImgSet(validParams);
 		} catch (ServiceException e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -87,12 +91,26 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.gehc.ai.app.dc.rest.IDataCatalogRest#getImageSetByDataCollectionId()
-	 */
+    Map<String,String> constructValidParams(Map<String, String> params, List<String> allowedParams) {
+        Map<String,String> validParams = new HashMap<>();
+        for (String key : allowedParams) {
+            if (params.containsKey(key)) {
+                String value = params.get(key);
+                if (!value.isEmpty()) {
+                    validParams.put(key, value);
+                }
+            }
+        }
+
+        return validParams;
+     }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.gehc.ai.app.dc.rest.IDataCatalogRest#getImageSetByDataCollectionId()
+     */
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/imgSetByDataCollectionId", method = RequestMethod.GET)
