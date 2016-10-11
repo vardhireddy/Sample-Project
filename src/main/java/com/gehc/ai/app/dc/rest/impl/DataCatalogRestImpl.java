@@ -12,7 +12,6 @@
 package com.gehc.ai.app.dc.rest.impl;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
