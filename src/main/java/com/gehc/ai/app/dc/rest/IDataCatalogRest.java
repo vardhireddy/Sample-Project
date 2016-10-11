@@ -12,6 +12,7 @@
 package com.gehc.ai.app.dc.rest;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -25,12 +26,12 @@ import com.gehc.ai.app.dc.entity.ImageSet;
 public interface IDataCatalogRest {
     /**
      * Get Image Set by Org Id
-     * 
-     * @param orgId
+     *
+     * @param params
      * @return List<ImageSet>
      */
-    List<ImageSet> getImgSetByOrgId(String orgId);
-    
+    List<ImageSet> getImgSet(Map<String, String> params);
+
     /**
      * Get Image Set by Data Collection Id
      * 
