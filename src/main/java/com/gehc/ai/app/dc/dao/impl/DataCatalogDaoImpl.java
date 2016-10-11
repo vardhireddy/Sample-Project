@@ -16,13 +16,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -42,7 +40,7 @@ import com.gehc.ai.app.dc.entity.ImageSet;
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final String DB_SCHEMA_VERSION = "v1.0";
-	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set where orgId = ?";
+	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set ";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
 
@@ -63,6 +61,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ "modality, anatomy, diseaseType, dataFormat, age, gender, uri) "
 			+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
+	private static final java.lang.String PARAM_DELIM = ",";
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -72,7 +72,63 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	 * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getDataCatalog()
 	 */
 	@Override
-	public List<ImageSet> getImgSetByOrgId(String orgId) throws Exception {
+	public List<ImageSet> getImgSet(Map<String, String> params) throws Exception {
+		List<ImageSet> imageSetList;
+		StringBuilder builder = new StringBuilder();
+		builder.append(GET_IMGSET_DATA_BY_ORG_ID);
+
+		builder.append(constructQuery(params));
+
+		imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
+		return imageSetList;
+	}
+
+	String constructQuery(Map<String, String> params) {
+		StringBuilder builder = new StringBuilder();
+		if (null != params && params.size() > 0) {
+			builder.append("WHERE ");
+
+			Iterator<String> paramIterator = params.keySet().iterator();
+			while (paramIterator.hasNext()) {
+				String key = paramIterator.next();
+				String values = params.get(key);
+				builder.append(constructWhereClause(key,values));
+				if (paramIterator.hasNext()) {
+					builder.append(" AND ");
+				}
+			}
+		}
+		return builder.toString();
+	}
+
+	private String constructWhereClause(String param, String values) {
+		StringBuilder whereClause = new StringBuilder().append(param + " IN (") ;
+        whereClause.append(quoteValues(values));
+		whereClause.append(")");
+
+		return whereClause.toString();
+	}
+
+	private String quoteValues(String values) {
+		StringBuilder builder = new StringBuilder();
+		Iterator<String> valuesIterator = Arrays.asList(values.split(",")).iterator();
+
+		while (valuesIterator.hasNext()) {
+			builder.append("\"").append(valuesIterator.next()).append("\"");
+			if (valuesIterator.hasNext()) {
+				builder.append(", ");
+			}
+		}
+
+		return builder.toString();
+	}
+
+	/*
+ * (non-Javadoc)
+ *
+ * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getDataCatalog()
+ */
+	public List<ImageSet> getImgSet(String orgId) throws Exception {
 		List<ImageSet> imageSetList = new ArrayList<ImageSet>();
 		if (null != orgId && orgId.length() > 0) {
 			imageSetList = jdbcTemplate.query(GET_IMGSET_DATA_BY_ORG_ID,
@@ -87,7 +143,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		}
 		return imageSetList;
 	}
-
 	@Override
 	public String[] getImgSetIdForDC(String id) throws Exception {
 		jdbcTemplate.query(GET_IMAGESET_ID, new ResultSetExtractor<String[]>() {

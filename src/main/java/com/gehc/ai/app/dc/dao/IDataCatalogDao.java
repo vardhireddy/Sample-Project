@@ -12,6 +12,7 @@
 package com.gehc.ai.app.dc.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
@@ -24,11 +25,11 @@ public interface IDataCatalogDao {
     /**
      * Gets the data catalog.
      * 
-     * @param orgId
+     * @param params
      * @return List<ImageSet>
      * @throws Exception
      */
-    List<ImageSet> getImgSetByOrgId(String orgId) throws Exception;
+    List<ImageSet> getImgSet(Map<String, String> params) throws Exception;
     
     /**
      * Get Image Set Ids for a Data collection Id
