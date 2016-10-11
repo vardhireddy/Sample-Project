@@ -199,7 +199,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			calendar.setTime(new java.util.Date());
 			dataCollection.setId(String.valueOf(calendar.getTimeInMillis()));
 			dataCollection.setSchemaVersion("v1.0");
-			dataCollection.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+			//dataCollection.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+			dataCollection.setCreatedDate(String.valueOf(calendar.getTimeInMillis()));
 			ObjectMapper mapper = new ObjectMapper();
 			numOfRowsInserted = jdbcTemplate.update(
 					INSERT_DATA_COLLECTION,
@@ -209,6 +210,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		}
 		return dataCollection.getId();
 	}
+
 
 	@Override
 	public int insertImageSet(ImageSet imageSet) throws Exception {
