@@ -76,12 +76,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		} catch (ServiceException e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity("Operation failed while retrieving image set by org id")
+							.entity("Operation failed while filtering image set data")
 							.build());
 		} catch (Exception e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity("Operation failed while retrieving image set by org id")
+							.entity("Operation failed while filtering image set data")
 							.build());
 		}
 		if (imageSet != null) {
