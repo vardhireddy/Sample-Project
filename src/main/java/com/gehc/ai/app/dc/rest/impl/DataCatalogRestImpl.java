@@ -45,7 +45,7 @@ import com.gehc.ai.app.dc.service.IDataCatalogService;
 @RequestMapping(value = "/api/v1/dataCatalog")
 public class DataCatalogRestImpl implements IDataCatalogRest {
 
-    private static final String SUCCESS = "Success";
+    private static final String SUCCESS = "SUCCESS";
     public static final String ORG_ID = "orgId";
     public static final String MODALITY = "modality";
     public static final String ANATOMY = "anatomy";
