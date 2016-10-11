@@ -62,7 +62,8 @@ public interface IDataCatalogRest {
     Response insertImageSet(ImageSet imageSet);
     
     /**
-     * @return
+     *  
+     * @return String Success 
      */
     String healthCheck();
     

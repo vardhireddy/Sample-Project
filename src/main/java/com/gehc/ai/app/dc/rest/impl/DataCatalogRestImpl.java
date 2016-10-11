@@ -23,7 +23,10 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
+
 import org.hibernate.service.spi.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +45,7 @@ import com.gehc.ai.app.dc.service.IDataCatalogService;
 @RequestMapping(value = "/api/v1/dataCatalog")
 public class DataCatalogRestImpl implements IDataCatalogRest {
 
-    private static final String SUCCESS = "Success";
+    private static final String SUCCESS = "SUCCESS";
     public static final String ORG_ID = "orgId";
     public static final String MODALITY = "modality";
     public static final String ANATOMY = "anatomy";
@@ -73,12 +76,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		} catch (ServiceException e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity("Operation failed while retrieving image set by org id")
+							.entity("Operation failed while filtering image set data")
 							.build());
 		} catch (Exception e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity("Operation failed while retrieving image set by org id")
+							.entity("Operation failed while filtering image set data")
 							.build());
 		}
 		if (imageSet != null) {

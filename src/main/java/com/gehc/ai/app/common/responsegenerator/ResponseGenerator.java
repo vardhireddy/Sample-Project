@@ -12,16 +12,12 @@
 
 package com.gehc.ai.app.common.responsegenerator;
 
-import java.util.List;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import com.gehc.ai.app.common.constants.ApplicationConstants;
 
 /**
  * The Class ResponseGenerator.
