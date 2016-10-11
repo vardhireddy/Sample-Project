@@ -48,7 +48,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " json_extract(a.data, '$.description') as description, "
 			+ " json_extract(a.data, '$.createdDate') as createdDate, "
 			+ " json_extract(a.data, '$.creator.creatorName') as creatorName,"
-			+ " json_extract(a.data, '$.creator.creatorId') as creatorId FROM data_collection a ";
+			+ " json_extract(a.data, '$.creator.creatorId') as creatorId FROM data_collection a "
+			+ " order by json_extract(a.data, '$.createdDate') desc ";
 
 	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri "
 			+ "FROM data_collection dataColl, image_set imgSet "
@@ -195,7 +196,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			calendar.setTime(new java.util.Date());
 			dataCollection.setId(String.valueOf(calendar.getTimeInMillis()));
 			dataCollection.setSchemaVersion("v1.0");
-			dataCollection.setCreatedDate(new SimpleDateFormat("MM-dd-yyyy").format(new Date()));
+			dataCollection.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 			ObjectMapper mapper = new ObjectMapper();
 			numOfRowsInserted = jdbcTemplate.update(
 					INSERT_DATA_COLLECTION,
