@@ -1,0 +1,46 @@
+{
+   "schemaVersion": "v1",
+   "id": "123456789",
+   "orgId": "1",
+   "orgName": "University of Chicago",
+   "imageSets": [
+      "id1",
+      "id2"
+   ],
+   "creatorType": "Expert",
+   "creatorId": "Radiologist1",
+   "items": [
+      {
+         "objectId": "1",
+         "objectName": "nodule",
+         "objectType" : "5",
+         "diameter": 15.25,
+         "poiData": [-253.25,  -27.07, 73.82]
+    },
+      {
+         "mask": {
+            "uri": "s3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/annot1",
+            "format": "nrrd"
+         }
+    },    
+    {
+         "objectId": "2",
+         "objectName": "nodule",
+         "objectType" : "3",
+         "diameter": 13.25,
+         "nDPatchData":
+            [
+                {
+                    "slice": 20,
+                     "x": [17.34, 18,12, 21.87, 23.39],
+                     "y": [53.34, 61,42, 71.78, 83.93]
+               },
+                {
+                    "slice": 21,
+                     "x": [16.34, 18,12, 21.87, 24.39, 25.52],
+                     "y": [52.34, 61,42, 71.78, 85.93, 87.71]
+               }
+            ]
+      }
+   ]
+}

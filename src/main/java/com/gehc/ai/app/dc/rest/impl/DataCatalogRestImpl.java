@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.rest.IDataCatalogRest;
@@ -244,4 +245,128 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public String healthCheck() {
 		return SUCCESS;
 	}
+	
+	
+	@Override
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RequestMapping(value = "/random-annotation-set", method = RequestMethod.POST)
+	public Response insertRandomAnnotationSet(@RequestBody String blob) {
+		//System.out.println("blob = " + blob);
+		Response response = null;
+		int numOfRowsInserted = 0;
+		try {
+			numOfRowsInserted = dataCatalogService.insertAnnotationSet(AnnotationSet.getJson(AnnotationSet.createRandom()));
+			if (0 == numOfRowsInserted) {
+				response = Response.status(Status.NO_CONTENT)
+						.entity("No image set got inserted")
+						.build();
+			} else {
+				response = Response.status(Status.OK).entity(numOfRowsInserted)
+						.build();
+			}
+		} catch (ServiceException e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while inserting the image set")
+							.build());
+		} catch (Exception e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while inserting the image set")
+							.build());
+		}
+		//return response;
+		return null;
+	}
+	
+	@Override
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RequestMapping(value = "/annotation-set", method = RequestMethod.POST)
+	public Response insertAnnotationSet(@RequestBody String annotationSetJson) {
+		Response response = null;
+		int numOfRowsInserted = 0;
+		try {
+			numOfRowsInserted = dataCatalogService.insertAnnotationSet(annotationSetJson);
+			if (0 == numOfRowsInserted) {
+				response = Response.status(Status.NO_CONTENT)
+						.entity("No image set got inserted")
+						.build();
+			} else {
+				response = Response.status(Status.OK).entity(numOfRowsInserted)
+						.build();
+			}
+		} catch (ServiceException e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while inserting the image set")
+							.build());
+		} catch (Exception e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while inserting the image set")
+							.build());
+		}
+		//return response;
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/annotation-set", method = RequestMethod.GET)
+	public List getAnnotationSet(@RequestParam Map<String, String> queryMap) {
+		ResponseBuilder responseBuilder;
+		List l = new ArrayList();
+		try {
+			String fields = queryMap.remove("fields");
+			l = dataCatalogService.getAnnotationSet(null, fields, queryMap);
+		} catch (ServiceException e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while retrieving the data collection")
+							.build());
+		} catch (Exception e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while retrieving the data collection")
+							.build());
+		}
+		if (l != null) {
+			responseBuilder = Response.ok(l);
+			return (List) responseBuilder.build().getEntity();
+		} else {
+			responseBuilder = Response.status(Status.NOT_FOUND);
+			return (List) responseBuilder.build();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/annotation-set/{imageSetIds}", method = RequestMethod.GET)
+	public List getAnnotationSet(@PathVariable String imageSetIds, @QueryParam("fields") String fields) {
+		ResponseBuilder responseBuilder;
+		List l = new ArrayList();
+		try {
+			l = dataCatalogService.getAnnotationSet(imageSetIds, fields, null);
+		} catch (ServiceException e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while retrieving the data collection")
+							.build());
+		} catch (Exception e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while retrieving the data collection")
+							.build());
+		}
+		if (l != null) {
+			responseBuilder = Response.ok(l);
+			return (List) responseBuilder.build().getEntity();
+		} else {
+			responseBuilder = Response.status(Status.NOT_FOUND);
+			return (List) responseBuilder.build();
+		}
+	}
+
 }
