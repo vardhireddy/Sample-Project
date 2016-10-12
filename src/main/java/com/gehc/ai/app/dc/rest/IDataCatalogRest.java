@@ -67,4 +67,9 @@ public interface IDataCatalogRest {
      */
     String healthCheck();
     
+	Response insertRandomAnnotationSet(String jsonString);
+	Response insertAnnotationSet(String annotationSetJson);
+	List getAnnotationSet(String imageSetIds, String fields);
+	List getAnnotationSet(Map<String, String> queryMap);
+
 }

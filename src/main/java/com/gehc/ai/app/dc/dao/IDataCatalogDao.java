@@ -71,4 +71,9 @@ public interface IDataCatalogDao {
      * @throws Exception
      */
     String insertImageSet(ImageSet imageSet) throws Exception;
+    
+	int insertAnnotationSet(String annotationSetJson) throws Exception;
+
+	List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception;
+
 }

@@ -95,4 +95,20 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
     public String insertImageSet(ImageSet imageSet) throws Exception {
         return dataCatalogDao.insertImageSet(imageSet);
     }
+    
+	@Override
+	public int insertAnnotationSet(String annotationSetJson) throws Exception {
+		return dataCatalogDao.insertAnnotationSet(annotationSetJson);
+
+	}
+	@Override
+	public List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception {
+		List l = null;
+        try {
+               l = dataCatalogDao.getAnnotationSet(imageSets, fields, queryMap);
+         } catch ( Exception e ) {
+            throw new Exception( "Exception occurred while retreiving data collection ", e );
+        }
+        return l;	
+    }
 }

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
+import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.Creator;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
@@ -63,6 +64,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
 	private static final java.lang.String PARAM_DELIM = ",";
+
+	private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -226,6 +229,106 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		}
 		return imageSetId;
 	}
+	
+	@Override
+	public int insertAnnotationSet(String annotationSetJson) throws Exception {
+		int numOfRowsInserted = 0;
+		AnnotationSet annotationSet = AnnotationSet.readFromJson(annotationSetJson);
+		if (annotationSet != null) {
+			annotationSet.setId("" + System.currentTimeMillis());
+			ObjectMapper mapper = new ObjectMapper();
+			numOfRowsInserted = jdbcTemplate.update(
+				INSERT_ANNOTATION_SET,
+				new Object[] { annotationSet.getId(), mapper.writeValueAsString(annotationSet)},
+				new int[] { Types.VARCHAR, Types.VARCHAR});
+		}
+		return numOfRowsInserted;
+	}
+
+	private static final String [] ANNOT_SET_COLUMNS = {
+		"schemaVersion",
+		"id",
+		"orgId",
+		"orgName",
+		"imageSets",
+		"creatorType",
+		"creatorId",
+		"items"};
+	
+	@Override
+	public List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception {
+		StringBuffer sql = new StringBuffer("SELECT DISTINCT ");
+		String [] fs = null;
+		
+		if (fields == null || fields.equals("")) {
+			fs =  ANNOT_SET_COLUMNS;
+		} else 
+			fs = fields.split(",");
+		
+		for (int i = 0; i < fs.length; i++) {
+			sql.append("json_extract(data, '$." + fs[i] + "') as " + fs[i]);
+			if (i < fs.length - 1)
+				sql.append(", ");
+		}
+		
+		sql.append(" from annotation_set");
+		
+		boolean search = false;
+		if (imageSets != null && !imageSets.equals("")) {
+			System.out.println("imagesets = " + imageSets);
+			String[] isets = imageSets.split(",");
+			sql.append(" where ");
+			search = true;
+			//where JSON_SEARCH(data, 'one', '0.09418948718780629', null, '$.imageSets') is not null
+			for (int k = 0; k < isets.length; k++) {
+				sql.append("JSON_SEARCH(data, 'one', " + isets[k] + ", null, '$.imageSets') is not null");
+				if (k < isets.length - 1)
+					sql.append(" and ");
+			}
+		}
+		
+		if (queryMap.size() > 0) {
+			if (!search) {
+				sql.append(" where ");
+				Set<String> keys = queryMap.keySet();
+				
+				for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+					String key = it.next();
+					String value = queryMap.get(key);
+					sql.append("JSON_SEARCH(data, 'one', " + value + ", null, '$." + key + "') is not null");
+					if (it.hasNext())
+						sql.append(" and ");
+				}
+			}
+		}
+		sql.append(";");
+		System.out.println(sql);
+		
+		
+		List alist = new ArrayList();
+//		alist.add(imageSets);
+//		alist.add(fields);
+//		alist.addAll(queryMap.entrySet());
+		final String[] fs1 = fs;
+		alist = jdbcTemplate.query(sql.toString(), new ResultSetExtractor<List>() {
+			@Override
+			public List extractData(ResultSet rs) throws SQLException, DataAccessException {
+				List asList = new ArrayList();
+	            while(rs.next()) {
+	                HashMap m = new HashMap();
+	                for (int k = 0; k < fs1.length; k++) {
+	                	m.put(fs1[k],rs.getString(fs1[k]));
+	                }
+	                asList.add(m);
+	            }
+	            return asList;
+			}
+		});
+		
+		return alist;
+	}
+
+
 }
 
 class DataCollectionRowMapper implements RowMapper<DataCollection> {
@@ -246,6 +349,7 @@ class DataCollectionRowMapper implements RowMapper<DataCollection> {
 		}
 		return dataCollection;
 	}
+	
 }
 
 class ImageSetRowMapper implements RowMapper<ImageSet> {
