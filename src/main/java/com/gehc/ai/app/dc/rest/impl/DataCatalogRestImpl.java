@@ -212,19 +212,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/image-set", method = RequestMethod.POST)
-	public Response insertImageSet(@RequestBody ImageSet imageSet) {
-		Response response = null;
-		int numOfRowsInserted = 0;
+	public String insertImageSet(@RequestBody ImageSet imageSet) {
+		ResponseBuilder responseBuilder;
+		String imageSetId = null;
 		try {
-			numOfRowsInserted = dataCatalogService.insertImageSet(imageSet);
-			if (0 == numOfRowsInserted) {
-				response = Response.status(Status.NO_CONTENT)
-						.entity("No image set got inserted")
-						.build();
-			} else {
-				response = Response.status(Status.OK).entity(numOfRowsInserted)
-						.build();
-			}
+			imageSetId = dataCatalogService.insertImageSet(imageSet);
 		} catch (ServiceException e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -236,8 +228,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							.entity("Operation failed while inserting the image set")
 							.build());
 		}
-		//return response;
-		return null;
+		if (imageSetId != null) {
+			responseBuilder = Response.ok(imageSetId);
+			return (String) responseBuilder.build().getEntity();
+		} else {
+			responseBuilder = Response.status(Status.NOT_FOUND);
+			return  responseBuilder.build().toString();
+		}
 	}
 
 	@Override

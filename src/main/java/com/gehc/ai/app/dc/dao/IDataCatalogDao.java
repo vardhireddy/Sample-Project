@@ -70,7 +70,7 @@ public interface IDataCatalogDao {
      * @return
      * @throws Exception
      */
-    int insertImageSet(ImageSet imageSet) throws Exception;
+    String insertImageSet(ImageSet imageSet) throws Exception;
     
 	int insertAnnotationSet(String annotationSetJson) throws Exception;
 

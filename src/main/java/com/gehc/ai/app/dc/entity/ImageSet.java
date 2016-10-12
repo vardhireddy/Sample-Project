@@ -22,7 +22,7 @@ public class ImageSet {
      * @return the id
      */
     public String getId() {
-        return id;
+    	return (id==null)?id:id.replaceAll("^\"|\"$", "");
     }
     /**
      * @param id the id to set
