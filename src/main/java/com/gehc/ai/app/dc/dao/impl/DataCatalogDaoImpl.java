@@ -41,7 +41,7 @@ import com.gehc.ai.app.dc.entity.ImageSet;
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final String DB_SCHEMA_VERSION = "v1.0";
-	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri FROM image_set ";
+	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im ";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
 
@@ -79,10 +79,19 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	public List<ImageSet> getImgSet(Map<String, String> params) throws Exception {
 		List<ImageSet> imageSetList;
 		StringBuilder builder = new StringBuilder();
+		String annotValue = null;
+		if (params != null && params.get("annotations") != null) {
+			//System.err.println("hey Annotations=" + params.get("annotations"));
+			annotValue = params.remove("annotations");
+		}
 		builder.append(GET_IMGSET_DATA_BY_ORG_ID);
-
+		
+		if (annotValue != null) {
+			builder.append("INNER JOIN annotation_set an ON JSON_EXTRACT(an.data, '$.imageSets') LIKE CONCAT('%', im.id, '%') ");
+		}
 		builder.append(constructQuery(params));
 
+		//System.err.println("sql = " + builder);
 		imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
 		return imageSetList;
 	}
@@ -318,7 +327,18 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	            while(rs.next()) {
 	                HashMap m = new HashMap();
 	                for (int k = 0; k < fs1.length; k++) {
-	                	m.put(fs1[k],rs.getObject(fs1[k]));
+	                	Object o = rs.getObject(fs1[k]);
+	                	System.out.println("o = " + o.getClass());
+	                	if (o instanceof String) {
+	                		String s = (String) o;
+	                		System.out.println("before: " + s);
+	                		s = s.replaceAll("\\\\\"", "\"");
+	                		System.out.println("after: " + s);
+
+	                		m.put(fs1[k],s);
+	                	} else {
+	                		m.put(fs1[k],o);
+	                	}
 	                }
 	                asList.add(m);
 	            }

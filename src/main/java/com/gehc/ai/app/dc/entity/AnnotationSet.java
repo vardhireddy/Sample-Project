@@ -128,10 +128,10 @@ public class AnnotationSet {
 		as.orgId = "1";
 		as.orgName = "University of Chicago";
 		as.imageSets = new ArrayList<String>();
-		as.imageSets.add("" + (long)(Math.random()*100000000));
-		as.imageSets.add("" + (long)(Math.random()*100000000));
+		as.imageSets.add("20160927163807");
+		as.imageSets.add("20160927180917");
 		as.items = new ArrayList<Object>();
-		as.items.add(new ObjectType1());
+		as.items.add(ObjectType1.createRandom());
 		as.items.add(new Mask());
 		return as;
 	}
