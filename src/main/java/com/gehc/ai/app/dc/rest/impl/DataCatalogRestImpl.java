@@ -25,8 +25,6 @@ import javax.ws.rs.core.Response.Status;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 
 import org.hibernate.service.spi.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +48,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String ORG_ID = "orgId";
     public static final String MODALITY = "modality";
     public static final String ANATOMY = "anatomy";
+    public static final String ANNOTATIONS = "annotations";
 
     @Autowired
 	private IDataCatalogService dataCatalogService;
@@ -66,10 +65,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/image-set", method = RequestMethod.GET)
 	public List<ImageSet> getImgSet(@RequestParam Map<String, String> params) {
-
-        Map<String,String> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY));
-        String orgId = params.get(ORG_ID);
-		ResponseBuilder responseBuilder;
+        Map<String,String> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS));
+        ResponseBuilder responseBuilder;
 		List<ImageSet> imageSet = new ArrayList<ImageSet>();
 		try {
 
