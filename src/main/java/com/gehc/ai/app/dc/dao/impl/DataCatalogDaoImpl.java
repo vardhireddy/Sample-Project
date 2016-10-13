@@ -318,7 +318,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	            while(rs.next()) {
 	                HashMap m = new HashMap();
 	                for (int k = 0; k < fs1.length; k++) {
-	                	m.put(fs1[k],rs.getString(fs1[k]));
+	                	m.put(fs1[k],rs.getObject(fs1[k]));
 	                }
 	                asList.add(m);
 	            }
