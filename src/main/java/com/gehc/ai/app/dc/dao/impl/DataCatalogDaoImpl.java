@@ -87,7 +87,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		builder.append(GET_IMGSET_DATA_BY_ORG_ID);
 		
 		if (annotValue != null) {
-			builder.append("INNER JOIN annotation_set an ON JSON_EXTRACT(an.data, '$.imageSets') LIKE CONCAT('%', im.id, '%') ");
+			builder.append("INNER JOIN annotation_set an ON JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL ");
 		}
 		builder.append(constructQuery(params));
 
