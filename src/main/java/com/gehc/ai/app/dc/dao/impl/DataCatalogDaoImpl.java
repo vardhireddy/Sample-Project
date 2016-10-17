@@ -136,26 +136,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		return builder.toString();
 	}
 
-	/*
- * (non-Javadoc)
- *
- * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getDataCatalog()
- */
-	public List<ImageSet> getImgSet(String orgId) throws Exception {
-		List<ImageSet> imageSetList = new ArrayList<ImageSet>();
-		if (null != orgId && orgId.length() > 0) {
-			imageSetList = jdbcTemplate.query(GET_IMGSET_DATA_BY_ORG_ID,
-					new PreparedStatementSetter() {
-						@Override
-						public void setValues(java.sql.PreparedStatement ps)
-								throws SQLException {
-							int index = 0;
-							ps.setString(++index, orgId);
-						}
-					}, new ImageSetRowMapper());
-		}
-		return imageSetList;
-	}
 	@Override
 	public String[] getImgSetIdForDC(String id) throws Exception {
 		jdbcTemplate.query(GET_IMAGESET_ID, new ResultSetExtractor<String[]>() {
