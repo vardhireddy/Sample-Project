@@ -372,7 +372,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	            while(rs.next()) {
 	            	TargetData td = new TargetData();
 	            	td.img =  rs.getString("img");
-	                td.gtMask = rs.getString("gtMask");
+	                td.gtMask = rs.getString("gtMask").replaceAll("\\[\"", "").replaceAll("\"\\]", "");;
+	                
+	                
+	                //System.err.println("gtmask -> " + td.gtMask);
 	                asList.add(td);
 	            }
 	            return asList;
