@@ -33,6 +33,7 @@ import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.Creator;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.TargetData;
 
 /**
  * @author 212071558
@@ -275,11 +276,17 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		} else 
 			fs = fields.split(",");
 		
+		boolean containsIdCol = false;
 		for (int i = 0; i < fs.length; i++) {
 			sql.append("json_extract(data, '$." + fs[i] + "') as " + fs[i]);
+			if (fs[i].equals("id"))
+				containsIdCol = true;
 			if (i < fs.length - 1)
 				sql.append(", ");
 		}
+		
+		if (!containsIdCol)
+			sql.append(", id ");
 		
 		sql.append(" from annotation_set");
 		
@@ -341,6 +348,32 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	                	}
 	                }
 	                asList.add(m);
+	            }
+	            return asList;
+			}
+		});
+		
+		return alist;
+	}
+
+	@Override
+	public List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception {
+		final String query = "select im.uri as img, JSON_EXTRACT(an.data, '$**.mask.uri') "
+				+ "as gtMask from image_set im inner join annotation_set an ON "
+				+ "JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') "
+				+ "IS NOT NULL inner join data_collection dc ON "
+				+ "JSON_SEARCH(dc.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL;";
+		
+		List<TargetData> alist = new ArrayList<TargetData>();
+		alist = jdbcTemplate.query(query, new ResultSetExtractor<List<TargetData>>() {
+			@Override
+			public List<TargetData> extractData(ResultSet rs) throws SQLException, DataAccessException {
+				List<TargetData> asList = new ArrayList<TargetData>();
+	            while(rs.next()) {
+	            	TargetData td = new TargetData();
+	            	td.img =  rs.getString("img");
+	                td.gtMask = rs.getString("gtMask");
+	                asList.add(td);
 	            }
 	            return asList;
 			}
