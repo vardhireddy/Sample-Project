@@ -16,6 +16,7 @@ import java.util.Map;
 
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.TargetData;
 
 /**
  * @author 212071558
@@ -75,4 +76,5 @@ public interface IDataCatalogService {
 	int insertAnnotationSet(String annotationSetJson) throws Exception;
 
 	List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception;
+	List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception;
 }

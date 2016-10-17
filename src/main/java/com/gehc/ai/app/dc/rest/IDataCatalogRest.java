@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.TargetData;
 
 /**
  * @author 212071558
@@ -71,5 +72,7 @@ public interface IDataCatalogRest {
 	Response insertAnnotationSet(String annotationSetJson);
 	List getAnnotationSet(String imageSetIds, String fields);
 	List getAnnotationSet(Map<String, String> queryMap);
+
+	List<TargetData> getExperimentTargetData(String dataCollectionIds);
 
 }

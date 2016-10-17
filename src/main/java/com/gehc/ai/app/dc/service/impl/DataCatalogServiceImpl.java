@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.TargetData;
 import com.gehc.ai.app.dc.service.IDataCatalogService;
 
 /**
@@ -107,8 +108,19 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         try {
                l = dataCatalogDao.getAnnotationSet(imageSets, fields, queryMap);
          } catch ( Exception e ) {
-            throw new Exception( "Exception occurred while retreiving data collection ", e );
+            throw new Exception( "Exception occurred while retreiving annotation set ", e );
         }
         return l;	
     }
+
+	@Override
+	public List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception {
+		List l = null;
+        try {
+               l = dataCatalogDao.getExperimentTargetData(dataCollectionIds);
+         } catch ( Exception e ) {
+            throw new Exception( "Exception occurred while retreiving target data ", e );
+        }
+        return l;
+	}
 }
