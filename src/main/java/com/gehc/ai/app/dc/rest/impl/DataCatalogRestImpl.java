@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.TargetData;
 import com.gehc.ai.app.dc.rest.IDataCatalogRest;
 import com.gehc.ai.app.dc.service.IDataCatalogService;
 
@@ -363,4 +364,31 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/DataCollectionTarget/{dataCollectionIds}", method = RequestMethod.GET)
+	public List<TargetData> getExperimentTargetData(@PathVariable String dataCollectionIds) {
+		ResponseBuilder responseBuilder;
+		List<TargetData> l = new ArrayList<TargetData>();
+		try {
+			l = dataCatalogService.getExperimentTargetData(dataCollectionIds);
+		} catch (ServiceException e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while retrieving the data collection")
+							.build());
+		} catch (Exception e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while retrieving the data collection")
+							.build());
+		}
+		if (l != null) {
+			responseBuilder = Response.ok(l);
+			return (List) responseBuilder.build().getEntity();
+		} else {
+			responseBuilder = Response.status(Status.NOT_FOUND);
+			return (List) responseBuilder.build();
+		}
+	}
 }
