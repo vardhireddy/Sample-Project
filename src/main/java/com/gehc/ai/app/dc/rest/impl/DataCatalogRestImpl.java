@@ -366,12 +366,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@RequestMapping(value = "/DataCollectionTarget/{dataCollectionIds}", method = RequestMethod.GET)
-	public List<TargetData> getExperimentTargetData(@PathVariable String dataCollectionIds) {
+	@RequestMapping(value = "/DataCollectionTarget", method = RequestMethod.GET)
+	public List<TargetData> getExperimentTargetData() {
 		ResponseBuilder responseBuilder;
 		List<TargetData> l = new ArrayList<TargetData>();
 		try {
-			l = dataCatalogService.getExperimentTargetData(dataCollectionIds);
+			l = dataCatalogService.getExperimentTargetData(null);
 		} catch (ServiceException e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)
