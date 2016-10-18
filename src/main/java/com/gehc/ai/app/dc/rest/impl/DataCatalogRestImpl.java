@@ -371,13 +371,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		
 		
 		Map m = new LinkedHashMap();
+		Map tdmap = new HashMap();
 		String header = "https://s3.amazonaws.com/gehc-sandbox-cos-dev/upload/vto11exhd2/";
 
 		try {
 			List<TargetData> l = dataCatalogService.getExperimentTargetData(id);
 			if (l.size() > 0) {
 				LinkedHashMap fileMap = new LinkedHashMap();
-				m.put("targetData", fileMap);
 				for (int i = 0; i < l.size(); i++) {
 					TargetData td = l.get(i);
 					HashMap hm = new HashMap();
@@ -388,11 +388,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					fileMap.put(td.patientId, hm);
 				}
 
-				m.put("files", fileMap);
-				m.put("locationType", "s3");
-				m.put("location", header);
-				
-				}
+				tdmap.put("files", fileMap);
+				tdmap.put("locationType", "s3");
+				tdmap.put("location", header);
+				m.put("targetData", tdmap);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
