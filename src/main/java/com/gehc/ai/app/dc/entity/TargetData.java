@@ -8,4 +8,7 @@ public class TargetData {
 	
 	@JsonProperty("img")
 	public String img;
+	
+	@JsonProperty("patientId")
+	public String patientId;
 }

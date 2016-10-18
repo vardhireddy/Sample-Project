@@ -338,7 +338,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	@Override
 	public List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception {
-		final String query = "select im.uri as img, JSON_EXTRACT(an.data, '$**.mask.uri') "
+		final String query = "select im.patientId as pid, im.uri as img, JSON_EXTRACT(an.data, '$**.mask.uri') "
 				+ "as gtMask from image_set im inner join annotation_set an ON "
 				+ "JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') "
 				+ "IS NOT NULL inner join data_collection dc ON "
@@ -352,6 +352,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 				List<TargetData> asList = new ArrayList<TargetData>();
 	            while(rs.next()) {
 	            	TargetData td = new TargetData();
+	            	td.patientId = rs.getString("pid");
 	            	td.img =  rs.getString("img");
 	                td.gtMask = rs.getString("gtMask").replaceAll("\\[\"", "").replaceAll("\"\\]", "");;
 	                

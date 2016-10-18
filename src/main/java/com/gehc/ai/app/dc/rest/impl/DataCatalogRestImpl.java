@@ -366,29 +366,39 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@RequestMapping(value = "/DataCollectionTarget", method = RequestMethod.GET)
-	public List<TargetData> getExperimentTargetData(@QueryParam("id") String id) {
-		ResponseBuilder responseBuilder;
-		List<TargetData> l = new ArrayList<TargetData>();
+	@RequestMapping(value = "/data-collection-target", method = RequestMethod.GET)
+	public Map getExperimentTargetData(@QueryParam("id") String id) {
+		
+		
+		Map m = new LinkedHashMap();
+		String header = "https://s3.amazonaws.com/gehc-sandbox-cos-dev/upload/vto11exhd2/";
+
 		try {
-			l = dataCatalogService.getExperimentTargetData(id);
-		} catch (ServiceException e) {
-			throw new WebApplicationException(
-					Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity("Operation failed while retrieving the data collection")
-							.build());
+			List<TargetData> l = dataCatalogService.getExperimentTargetData(id);
+			if (l.size() > 0) {
+				LinkedHashMap fileMap = new LinkedHashMap();
+				m.put("targetData", fileMap);
+				for (int i = 0; i < l.size(); i++) {
+					TargetData td = l.get(i);
+					HashMap hm = new HashMap();
+					String imgFullPath = td.img;
+					
+					hm.put("gtMask", td.gtMask.startsWith(header) ? td.gtMask.substring(header.length()) : td.gtMask);
+					hm.put("img", td.img.startsWith(header)?td.img.substring(header.length()) : td.img);
+					fileMap.put(td.patientId, hm);
+				}
+
+				m.put("files", fileMap);
+				m.put("locationType", "s3");
+				m.put("location", header);
+				
+				}
 		} catch (Exception e) {
-			throw new WebApplicationException(
-					Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity("Operation failed while retrieving the data collection")
-							.build());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if (l != null) {
-			responseBuilder = Response.ok(l);
-			return (List) responseBuilder.build().getEntity();
-		} else {
-			responseBuilder = Response.status(Status.NOT_FOUND);
-			return (List) responseBuilder.build();
-		}
+
+		
+		return m;
 	}
 }
