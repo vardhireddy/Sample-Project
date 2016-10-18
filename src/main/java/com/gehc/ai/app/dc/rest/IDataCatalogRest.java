@@ -73,6 +73,6 @@ public interface IDataCatalogRest {
 	List getAnnotationSet(String imageSetIds, String fields);
 	List getAnnotationSet(Map<String, String> queryMap);
 
-	List<TargetData> getExperimentTargetData();
+	List<TargetData> getExperimentTargetData(String id);
 
 }
