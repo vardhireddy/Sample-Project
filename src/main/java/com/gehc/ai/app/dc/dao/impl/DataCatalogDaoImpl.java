@@ -342,7 +342,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 				+ "as gtMask from image_set im inner join annotation_set an ON "
 				+ "JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') "
 				+ "IS NOT NULL inner join data_collection dc ON "
-				+ "JSON_SEARCH(dc.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL;";
+				+ "JSON_SEARCH(dc.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL "
+				+ "WHERE dc.id=" + dataCollectionIds+ ";";
 		
 		List<TargetData> alist = new ArrayList<TargetData>();
 		alist = jdbcTemplate.query(query, new ResultSetExtractor<List<TargetData>>() {
