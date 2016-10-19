@@ -26,6 +26,8 @@ import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +45,7 @@ import com.gehc.ai.app.dc.service.IDataCatalogService;
 @RestController
 @Produces(MediaType.APPLICATION_JSON)
 @RequestMapping(value = "/api/v1/dataCatalog")
+@PropertySource({"classpath:application.yml"})
 public class DataCatalogRestImpl implements IDataCatalogRest {
 
     private static final String SUCCESS = "SUCCESS";
@@ -364,6 +367,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 	}
 
+	
+	@Value("${experiment.targetData.gtMaskLocation}")
+	private String gtMaskLocation;
+	
+	@Value("${experiment.targetData.imgLocation}")
+	private String imgLocation;
+
+	@Value("${experiment.targetData.locationType}")
+	private String locationType;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/data-collection-target", method = RequestMethod.GET)
@@ -372,7 +385,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		
 		Map m = new LinkedHashMap();
 		Map tdmap = new HashMap();
-		String header = "https://s3.amazonaws.com/gehc-sandbox-cos-dev/upload/vto11exhd2/";
+		//System.out.println("gtmask location ==== " + gtMaskLocation);
+		//System.out.println("img location ==== " + imgLocation);
 
 		try {
 			List<TargetData> l = dataCatalogService.getExperimentTargetData(id);
@@ -383,14 +397,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					HashMap hm = new HashMap();
 					String imgFullPath = td.img;
 					
-					hm.put("gtMask", td.gtMask.startsWith(header) ? td.gtMask.substring(header.length()) : td.gtMask);
-					hm.put("img", td.img.startsWith(header)?td.img.substring(header.length()) : td.img);
+					hm.put("gtMask", td.gtMask.startsWith(gtMaskLocation) ? td.gtMask.substring(gtMaskLocation.length()) : td.gtMask);
+					hm.put("img", td.img.startsWith(imgLocation)?td.img.substring(imgLocation.length()) : td.img);
 					fileMap.put(td.patientId, hm);
 				}
 
 				tdmap.put("files", fileMap);
-				tdmap.put("locationType", "s3");
-				tdmap.put("location", header);
+				tdmap.put("locationType", locationType);
+				tdmap.put("gtMaskLocation", gtMaskLocation);
+				tdmap.put("imgLocation", imgLocation);
 				m.put("targetData", tdmap);
 			}
 		} catch (Exception e) {

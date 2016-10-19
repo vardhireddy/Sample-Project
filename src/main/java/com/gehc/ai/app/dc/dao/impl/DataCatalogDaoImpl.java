@@ -19,6 +19,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -336,6 +340,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		return alist;
 	}
 
+
 	@Override
 	public List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception {
 		final String query = "select im.patientId as pid, im.uri as img, JSON_EXTRACT(an.data, '$**.mask.uri') "
@@ -358,6 +363,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	                
 	                
 	                //System.err.println("gtmask -> " + td.gtMask);
+	                
 	                asList.add(td);
 	            }
 	            return asList;
