@@ -383,7 +383,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public Map getExperimentTargetData(@QueryParam("id") String id) {
 		
 		
-		Map m = new LinkedHashMap();
+		//Map m = new LinkedHashMap();
 		Map tdmap = new HashMap();
 		//System.out.println("gtmask location ==== " + gtMaskLocation);
 		//System.out.println("img location ==== " + imgLocation);
@@ -406,7 +406,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				tdmap.put("locationType", locationType);
 				tdmap.put("gtMaskLocation", gtMaskLocation);
 				tdmap.put("imgLocation", imgLocation);
-				m.put("targetData", tdmap);
+				//m.put("targetData", tdmap);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -414,6 +414,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 
 		
-		return m;
+		return tdmap;
 	}
 }
