@@ -1,1 +1,1 @@
-This is a data catalog repo for deep learning 
+This is a data catalog repo for deep learning and other purposes. It manages databses at the data collection, patient, study, and series/image-set levels. It provides APIs to access those databases. It also provides an annotation database where segmentation masks, ROIs, and other curation artifacts can be stored.  
