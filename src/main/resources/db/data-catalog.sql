@@ -28,30 +28,30 @@ data JSON not null
 
 create table if not exists patient (
  id INT auto_increment primary key,
- schema_version varchar(5),
- patient_id varchar(100) NOT NULL,
- patient_name varchar(100),
- birth_date varchar(100),
- org varchar(50),
- gender varchar(10),
- age varchar(10),
+ schema_version varchar(50),
+ patient_id varchar(255) NOT NULL,
+ patient_name varchar(500),
+ birth_date varchar(255),
+ org_id varchar(255),
+ gender varchar(50),
+ age varchar(50),
  upload_date datetime default current_timestamp,
- upload_by varchar(100),
+ upload_by varchar(255),
  properties JSON
 );
 
 create table if not exists study (
  id INT auto_increment primary key,
- schema_version varchar(5),
- patient_id varchar(100) NOT NULL,
- study_id varchar(100),
- study_instance_uid varchar(100),
- study_url varchar(200),
- org varchar(50),
- study_date varchar(50),
- study_time varchar(50),
- referring_physician varchar(50),
+ schema_version varchar(50),
+ patient_dbid INT NOT NULL,
+ study_id varchar(255),
+ study_instance_uid varchar(255),
+ study_url varchar(500),
+ org_id varchar(255),
+ study_date varchar(255),
+ study_time varchar(255),
+ referring_physician varchar(255),
  upload_date datetime default current_timestamp,
- upload_by varchar(50),
+ upload_by varchar(255),
  properties JSON
 );

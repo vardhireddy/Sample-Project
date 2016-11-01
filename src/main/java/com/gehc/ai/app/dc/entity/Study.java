@@ -13,12 +13,8 @@ public class Study {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) {this.id = id; }
 
     @Column(name="schema_version")
     private String schemaVersion;
@@ -30,15 +26,15 @@ public class Study {
     }
 
     /**
-     * DICOM Patient ID (0010,0020)
+     * Patient table ID. Establishes a correlation with the patient table
      */
-    @Column(name="patient_id")
-    private String patientId;
-    public String getPatientId() {
-        return patientId;
+    @Column(name="patient_dbid")
+    private Long patientDbId;
+    public Long getPatientDbId() {
+        return patientDbId;
     }
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    public void setPatientDbId(Long patientDbId) {
+        this.patientDbId = patientDbId;
     }
 
     /**
@@ -128,12 +124,12 @@ public class Study {
     /**
      * The organization who owns or uploads the data. This could be an entry in an org database
      */
-    private String org;
-    public String getOrg() {
-        return org;
+    private String orgId;
+    public String getOrgId() {
+        return orgId;
     }
-    public void setOrg(String org) {
-        this.org = org;
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
     /**
@@ -160,6 +156,9 @@ public class Study {
         this.uploadBy = uploadBy;
     }
 
+    /**
+     * Flexible JSON object to store any other parameter of interest
+     */
     @Convert(converter = JsonConverter.class)
     private Object properties;
     public Object getProperties() {
