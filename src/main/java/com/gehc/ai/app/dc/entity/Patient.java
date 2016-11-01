@@ -1,7 +1,6 @@
 package com.gehc.ai.app.dc.entity;
 
 import com.gehc.ai.app.dc.filters.JsonConverter;
-import org.springframework.data.convert.Jsr310Converters;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -31,6 +30,9 @@ public class Patient implements Serializable {
         this.schemaVersion = schemaVersion;
     }
 
+    /**
+     * Alphabetic component of Patient Name in DICOM tag (0010,0010). Phonetic and ideographic components are not included.
+     */
     @Column(name="patient_name")
     private String patientName;
     public String getPatientName() {
@@ -40,6 +42,9 @@ public class Patient implements Serializable {
         this.patientName = patientName;
     }
 
+    /**
+     * DICOM tag (0010,0020)
+     */
     @Column(name="patient_id")
     private String patientId;
     public String getPatientId() {
@@ -50,7 +55,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * Birth date is intentionally left as a string so it can be whatever is in the DICOM tag
+     * Birth date is intentionally left as a string so it can be whatever is in the DICOM tag (0010,0030)
      */
     @Column(name="birth_date")
     private String birthDate;
@@ -61,6 +66,9 @@ public class Patient implements Serializable {
         this.birthDate = birthDate;
     }
 
+    /**
+     * DICOM tag (0010,0040)
+     */
     private String gender;
     public String getGender() {
         return gender;
@@ -70,7 +78,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * Age is intentionally left as a string so it can be whatever is in the DICOM tag
+     * Age is intentionally left as a string so it can be whatever is in the DICOM tag (0010,1010)
      */
     private String age;
     public String getAge() {
@@ -83,12 +91,11 @@ public class Patient implements Serializable {
     /**
      * The organization who owns or uploads the data. This could be an entry in an org database
      */
-    private String org;
-    public String getOrg() {
-        return org;
-    }
-    public void setOrg(String org) {
-        this.org = org;
+    @Column(name="org_id")
+    private String orgId;
+    public String getOrgId() { return orgId; }
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
     /**
@@ -115,6 +122,9 @@ public class Patient implements Serializable {
         this.uploadBy = uploadBy;
     }
 
+    /**
+     * Flexible JSON object to store any other parameter of interest
+     */
     @Convert(converter = JsonConverter.class)
     private Object properties;
     public Object getProperties() {
