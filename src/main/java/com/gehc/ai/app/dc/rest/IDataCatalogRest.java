@@ -68,11 +68,41 @@ public interface IDataCatalogRest {
      */
     String healthCheck();
     
-	Response insertRandomAnnotationSet(String jsonString);
-	Response insertAnnotationSet(String annotationSetJson);
-	List getAnnotationSet(String imageSetIds, String fields);
-	List getAnnotationSet(Map<String, String> queryMap);
+    
+    /**
+     * inserts a random annotation set into the database
+     * @param jsonString ignored
+     * @return Response object wrapping the result of the insertion.
+     */
+    Response insertRandomAnnotationSet(String jsonString);
 
-	Map getExperimentTargetData(String id);
+    /**
+     * inserts a random annotation set into the database
+     * @param jsonString annotation set to be inserted to the database
+     * @return Response object wrapping the result of the insertion.
+     */
+    Response insertAnnotationSet(String annotationSetJson);
 
+    /**
+     * 
+     * @param imageSetIds image sets id
+     * @param fields fields defined in the JSON structure of the annotation
+     * @return List of annotation sets given image set ids
+     */
+    List getAnnotationSet(String imageSetIds, String fields);
+
+    /**
+     * 
+     * @param queryMap a map of annotation set key-values
+     * @return annotation sets given the query map
+     */
+    List getAnnotationSet(Map<String, String> queryMap);
+
+    /**
+     * 
+     * @param id id of target data
+     * @param type type of target data
+     * @return target data that matches id and type
+     */
+    Map getExperimentTargetData(String id, String type);
 }

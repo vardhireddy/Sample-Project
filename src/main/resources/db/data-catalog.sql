@@ -46,6 +46,7 @@ create table if not exists study (
  patient_dbid INT NOT NULL,
  study_id varchar(255),
  study_instance_uid varchar(255),
+ study_description varchar(100),
  study_url varchar(500),
  org_id varchar(255),
  study_date varchar(255),

@@ -380,9 +380,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/data-collection-target", method = RequestMethod.GET)
-	public Map getExperimentTargetData(@QueryParam("id") String id) {
-		
-		
+	public Map getExperimentTargetData(@QueryParam("id") String id, @QueryParam("type") String type) {
 		//Map m = new LinkedHashMap();
 		Map tdmap = new HashMap();
 		//System.out.println("gtmask location ==== " + gtMaskLocation);

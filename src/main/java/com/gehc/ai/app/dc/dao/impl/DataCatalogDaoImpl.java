@@ -46,7 +46,7 @@ import com.gehc.ai.app.dc.entity.TargetData;
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final String DB_SCHEMA_VERSION = "v1.0";
-	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im ";
+	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.uri FROM image_set im ";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
 
@@ -57,7 +57,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " json_extract(a.data, '$.creator.id') as creatorId FROM data_collection a "
 			+ " order by json_extract(a.data, '$.createdDate') desc ";
 
-	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri "
+	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, uri "
 			+ "FROM data_collection dataColl, image_set imgSet "
 			+ "where dataColl.id = ? "
 			+ "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
@@ -65,7 +65,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final String INSERT_DATA_COLLECTION = " insert into data_collection () values (?, ?) ";
 	
 	private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, seriesId, studyId, patientId, orgId, orgName, permissionId, "
-			+ "modality, anatomy, diseaseType, dataFormat, age, gender, uri) "
+			+ "modality, anatomy, diseaseType, dataFormat, uri) "
 			+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
 	private static final java.lang.String PARAM_DELIM = ",";
@@ -217,7 +217,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 					INSERT_IMAGE_SET,
 					new Object[] { imageSetId, DB_SCHEMA_VERSION, imageSet.getSeriesId(), imageSet.getStudyId(), imageSet.getPatientId(),
 							imageSet.getOrgId(), imageSet.getOrgName(), imageSet.getPermissionId(), imageSet.getModality(), imageSet.getAnatomy(), imageSet.getDiseaseType(),
-							imageSet.getDataFormat(), imageSet.getAge(), imageSet.getGender(), imageSet.getUri()},
+							imageSet.getDataFormat(), imageSet.getUri()},
 					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
 							    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, 
 							    Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR});
@@ -412,8 +412,6 @@ class ImageSetRowMapper implements RowMapper<ImageSet> {
 			imageSet.setAnatomy(rs.getString("anatomy"));
 			imageSet.setDiseaseType(rs.getString("diseaseType"));
 			imageSet.setDataFormat(rs.getString("dataFormat"));
-			imageSet.setAge(rs.getInt("age"));
-			imageSet.setGender(rs.getString("gender"));
 			imageSet.setUri(rs.getString("uri"));
 		} catch (Exception e) {
 			throw new SQLException(e);

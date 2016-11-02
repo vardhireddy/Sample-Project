@@ -53,8 +53,6 @@ public class ImageSet {
     private String anatomy;
     private String diseaseType;
     private String dataFormat;
-    private long age;
-    private String gender;
     private String uri;
 
     /**
@@ -177,30 +175,7 @@ public class ImageSet {
     public void setDataFormat( String dataFormat ) {
         this.dataFormat = dataFormat;
     }
-    /**
-     * @return the age
-     */
-    public long getAge() {
-        return age;
-    }
-    /**
-     * @param age the age to set
-     */
-    public void setAge( long age ) {
-        this.age = age;
-    }
-    /**
-     * @return the gender
-     */
-    public String getGender() {
-        return gender;
-    }
-    /**
-     * @param gender the gender to set
-     */
-    public void setGender( String gender ) {
-        this.gender = gender;
-    }
+
     /**
      * @return the uri
      */
@@ -226,7 +201,7 @@ public class ImageSet {
      */
     @Override
     public String toString() {
-        return "ImageSet [id=" + id + ", schemaVersion=" + schemaVersion + ", seriesId=" + seriesId + ", studyId=" + studyId + ", patientId=" + patientId + ", orgId=" + orgId + ", orgName=" + orgName + ", permissionId=" + permissionId + ", modality=" + modality + ", anatomy=" + anatomy + ", diseaseType=" + diseaseType + ", dataFormat=" + dataFormat + ", age=" + age + ", gender=" + gender + ", uri=" + uri + "]";
+        return "ImageSet [id=" + id + ", schemaVersion=" + schemaVersion + ", seriesId=" + seriesId + ", studyId=" + studyId + ", patientId=" + patientId + ", orgId=" + orgId + ", orgName=" + orgName + ", permissionId=" + permissionId + ", modality=" + modality + ", anatomy=" + anatomy + ", diseaseType=" + diseaseType + ", dataFormat=" + dataFormat  + ", uri=" + uri + "]";
     }
     /**
      * @param id
@@ -246,7 +221,7 @@ public class ImageSet {
      * @param uri
      */
     public ImageSet( String id, String schemaVersion, String seriesId, String studyId, String patientId, String orgId, String orgName, String permissionId, String modality, String anatomy,
-                     String diseaseType, String dataFormat, long age, String gender, String uri ) {
+                     String diseaseType, String dataFormat, String uri ) {
         super();
         this.id = id;
         this.schemaVersion = schemaVersion;
@@ -260,8 +235,6 @@ public class ImageSet {
         this.anatomy = anatomy;
         this.diseaseType = diseaseType;
         this.dataFormat = dataFormat;
-        this.age = age;
-        this.gender = gender;
         this.uri = uri;
     }
     
