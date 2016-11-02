@@ -112,7 +112,7 @@ public class Study {
     /**
      * Obtained from the Cloud Object Store (COS)
      */
-    @Column (name="stduy_url")
+    @Column (name="study_url")
     private String studyUrl;
     public String getStudyUrl() {
         return studyUrl;
