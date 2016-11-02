@@ -72,6 +72,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
 
+	
+	private static final String ANNOTATION_JOIN = "INNER JOIN annotation_set an ON JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL ";
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -92,7 +94,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		builder.append(GET_IMGSET_DATA_BY_ORG_ID);
 		
 		if (annotValue != null) {
-			builder.append("INNER JOIN annotation_set an ON JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL ");
+			builder.append(ANNOTATION_JOIN);
 		}
 		builder.append(constructQuery(params));
 
