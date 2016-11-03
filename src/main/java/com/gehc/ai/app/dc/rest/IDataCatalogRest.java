@@ -142,4 +142,11 @@ public interface IDataCatalogRest {
 	 */
 	List<Study> getStudies(String patientId);
 
+	/**
+	 * 
+	 * @param studyId
+	 * @return image sets associated with the studyId
+	 */
+	List<ImageSet> getImageSetByStudyId(String studyId);
+
 }

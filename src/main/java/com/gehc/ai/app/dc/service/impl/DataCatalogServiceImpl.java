@@ -123,4 +123,9 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         }
         return l;
 	}
+
+	@Override
+	public List<ImageSet> getImageSetByStudyId(String studyId) {
+        return dataCatalogDao.getImageSetByStudyId(studyId);
+	}
 }

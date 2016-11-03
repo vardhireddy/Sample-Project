@@ -47,6 +47,7 @@ import com.gehc.ai.app.dc.entity.TargetData;
 public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final String DB_SCHEMA_VERSION = "v1.0";
 	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im ";
+	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im WHERE im.studyId = ";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
 
@@ -373,6 +374,18 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		});
 		
 		return alist;
+	}
+
+	@Override
+	public List<ImageSet> getImageSetByStudyId(String studyId) {
+		List<ImageSet> imageSetList;
+		StringBuilder builder = new StringBuilder(GET_IMGSET_DATA_BY_STUDY_ID);
+		
+		builder.append("'" + studyId + "'");
+
+		//System.err.println(">>>>>>>>sql = " + builder);
+		imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
+		return imageSetList;
 	}
 
 

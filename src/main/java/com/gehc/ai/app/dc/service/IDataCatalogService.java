@@ -73,8 +73,35 @@ public interface IDataCatalogService {
      */
     String insertImageSet(ImageSet imageSet) throws Exception;
 
+    /**
+     * 
+     * @param annotationSetJson
+     * @return number of rows inserted
+     * @throws Exception
+     */
 	int insertAnnotationSet(String annotationSetJson) throws Exception;
 
+	/**
+	 * 
+	 * @param imageSets
+	 * @param fields
+	 * @param queryMap
+	 * @return list of annotation sets satisfying the query
+	 * @throws Exception
+	 */
 	List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception;
+	/**
+	 * 
+	 * @param dataCollectionIds
+	 * @return targe data associated with the data collection
+	 * @throws Exception
+	 */
 	List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception;
+	
+	/**
+	 * 
+	 * @param studyId
+	 * @return image sets associated with the studyId
+	 */
+	List<ImageSet> getImageSetByStudyId(String studyId);
 }
