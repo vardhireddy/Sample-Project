@@ -18,7 +18,8 @@ import javax.ws.rs.core.Response;
 
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
-import com.gehc.ai.app.dc.entity.TargetData;
+import com.gehc.ai.app.dc.entity.Patient;
+import com.gehc.ai.app.dc.entity.Study;
 
 /**
  * @author 212071558
@@ -105,4 +106,33 @@ public interface IDataCatalogRest {
      * @return target data that matches id and type
      */
     Map getExperimentTargetData(String id, String type);
+
+    /**
+     * 
+     * @param queryMap fields from patient table columns
+     * @return list of patient satisfying search criteria
+     */
+	List<Patient> getPatient(Map<String, String> queryMap);
+
+	/**
+	 * 
+	 * @param queryMap list of studies satisfying search criteria
+	 * @return
+	 */
+	List<Study> getStudy(Map<String, String> queryMap);
+
+	/**
+	 * add patient to database
+	 * @param p patient
+	 * @return patient added
+	 */
+	Patient postPatient(Patient p);
+
+	/**
+	 * save study to database
+	 * @param s study
+	 * @return study added
+	 */
+	Study postStudy(Study s);
+
 }

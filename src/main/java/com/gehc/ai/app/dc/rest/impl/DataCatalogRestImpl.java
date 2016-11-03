@@ -13,6 +13,10 @@ package com.gehc.ai.app.dc.rest.impl;
 
 import java.util.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -28,13 +32,23 @@ import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.Patient;
+import com.gehc.ai.app.dc.entity.Study;
 import com.gehc.ai.app.dc.entity.TargetData;
+import com.gehc.ai.app.dc.repository.PatientRepository;
+import com.gehc.ai.app.dc.repository.StudyRepository;
 import com.gehc.ai.app.dc.rest.IDataCatalogRest;
 import com.gehc.ai.app.dc.service.IDataCatalogService;
 
@@ -414,4 +428,104 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		
 		return tdmap;
 	}
+	
+	
+    @Autowired
+	private PatientRepository patientRepository;
+	@Autowired
+	private StudyRepository studyRepository;
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/patient", method = RequestMethod.GET)
+	public List<Patient> getPatient(@RequestParam Map<String, String> queryMap) {
+		Set<String> keys = queryMap.keySet();
+		Patient p = new Patient();
+		for (Iterator<String> it = keys.iterator(); it.hasNext() ;) {
+			String key = it.next();
+			if ("name".equalsIgnoreCase(key))
+				p.setPatientName(queryMap.get(key));
+			else if ("id".equalsIgnoreCase(key))
+				p.setPatientId(queryMap.get(key));
+			else if ("birthdate".equalsIgnoreCase(key))
+				p.setBirthDate(queryMap.get(key));
+			else if ("gender".equalsIgnoreCase(key))
+				p.setGender(queryMap.get(key));
+			else if ("age".equalsIgnoreCase(key))
+				p.setAge(queryMap.get(key));
+			else if ("orgId".equalsIgnoreCase(key))
+				p.setOrgId(queryMap.get(key));
+		}
+		return patientRepository.findAll(Example.of(p));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/study", method = RequestMethod.GET)
+	public List<Study> getStudy(@RequestParam Map<String, String> queryMap) {
+//	     {
+//	      "schemaVersion" : "v1",
+//	      "patientDbId" : 456,
+//	      "studyInstanceUid" : "DICOM tag (0020,000D)",
+//	      "studyDate" : "DICOM tag (0008,0020)",
+//	      "studyTime" : "DICOM tag (0008,0030)",
+//	      "studyId" : "DICOM tag (0020,0010)",
+//	      "studyDescription" : "DICOM tag (0008,1030)",
+//	      "referringPhysician" : "DICOM tag (0008, 0090)",
+//	      "studyUrl" : null,
+//	      "orgId" : "Should come from UOM",
+//	      "uploadDate" : null,
+//	      "uploadBy" : "Should come from UOM",
+//	      "properties" : {
+//	        "anything" : "can go here"
+//	      },
+		Set<String> keys = queryMap.keySet();
+		Study s = new Study();
+		String sortCol = null;
+		String sortdir = null;
+		for (Iterator<String> it = keys.iterator(); it.hasNext() ;) {
+			String key = it.next();
+			if ("studyInstanceUid".equalsIgnoreCase(key))
+				s.setStudyInstanceUid(queryMap.get(key));
+			else if ("studyDate".equalsIgnoreCase(key))
+				s.setStudyDate(queryMap.get(key));
+			else if ("studyTime".equalsIgnoreCase(key))
+				s.setStudyTime(queryMap.get(key));
+			else if ("studyId".equalsIgnoreCase(key))
+				s.setStudyId(queryMap.get(key));
+			else if ("studyDescription".equalsIgnoreCase(key))
+				s.setStudyDescription(queryMap.get(key));
+			else if ("referringPhysician".equalsIgnoreCase(key))
+				s.setReferringPhysician(queryMap.get(key));
+			else if ("orgId".equalsIgnoreCase(key))
+				s.setOrgId(queryMap.get(key));
+			else if ("studyUrl".equalsIgnoreCase(key))
+				s.setStudyUrl(queryMap.get(key));
+			else if (key.startsWith("_sort")) {
+				sortCol = queryMap.get(key);
+				sortdir = key.split(":")[1];
+			}
+			
+		}
+		return sortCol == null ? studyRepository.findAll(Example.of(s)) :
+			studyRepository.findAll(Example.of(s), new Sort(Direction.fromString(sortdir), sortCol));
+	}
+
+	@Override
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RequestMapping(value = "/patient", method = RequestMethod.POST)
+	public Patient postPatient(@RequestBody Patient p) {
+		patientRepository.save(p);
+		return p;
+	}
+
+	@Override
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RequestMapping(value = "/study", method = RequestMethod.POST)
+	public Study postStudy(@RequestBody Study s) {
+		studyRepository.save(s);
+		return s;
+	}	
 }

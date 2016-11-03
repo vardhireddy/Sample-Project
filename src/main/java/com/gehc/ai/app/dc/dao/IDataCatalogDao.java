@@ -73,10 +73,30 @@ public interface IDataCatalogDao {
      */
     String insertImageSet(ImageSet imageSet) throws Exception;
     
+    /**
+     * inserts annotation set into the datacatalog database
+     * @param annotationSetJson annotation set in json format
+     * @return number of rows inserted
+     * @throws Exception
+     */
 	int insertAnnotationSet(String annotationSetJson) throws Exception;
 
+	/**
+	 * 
+	 * @param imageSets image set ID's
+	 * @param fields columns to be returned 
+	 * @param queryMap key-value pair for the query
+	 * @return list of image sets satisfying the criteria
+	 * @throws Exception
+	 */
 	List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception;
 
+	/**
+	 * 
+	 * @param dataCollectionIds data collection id
+	 * @return experiment target data for the collection, specifically from those image sets with annotation
+	 * @throws Exception
+	 */
 	List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception;
 
 }

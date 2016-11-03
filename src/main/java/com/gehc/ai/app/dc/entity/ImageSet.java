@@ -54,6 +54,8 @@ public class ImageSet {
     private String diseaseType;
     private String dataFormat;
     private String uri;
+	private String age;
+	private String gender;
 
     /**
      * @return the schemaVersion
@@ -221,7 +223,7 @@ public class ImageSet {
      * @param uri
      */
     public ImageSet( String id, String schemaVersion, String seriesId, String studyId, String patientId, String orgId, String orgName, String permissionId, String modality, String anatomy,
-                     String diseaseType, String dataFormat, String uri ) {
+                     String diseaseType, String dataFormat, String age, String gender, String uri ) {
         super();
         this.id = id;
         this.schemaVersion = schemaVersion;
@@ -235,7 +237,23 @@ public class ImageSet {
         this.anatomy = anatomy;
         this.diseaseType = diseaseType;
         this.dataFormat = dataFormat;
+        this.age = age;
+        this.gender = gender;
         this.uri = uri;
     }
+	public String getAge() {
+		return age;
+	}
+	public void setAge(String age) {
+		this.age = age;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+    
+    
     
 }
