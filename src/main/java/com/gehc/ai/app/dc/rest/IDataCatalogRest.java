@@ -135,4 +135,11 @@ public interface IDataCatalogRest {
 	 */
 	Study postStudy(Study s);
 
+	/**
+	 * 
+	 * @param patientId
+	 * @return studies given a patient
+	 */
+	List<Study> getStudies(String patientId);
+
 }

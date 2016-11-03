@@ -527,5 +527,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public Study postStudy(@RequestBody Study s) {
 		studyRepository.save(s);
 		return s;
-	}	
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/patient/{patientId}/study", method = RequestMethod.GET)
+	public List<Study> getStudies(@PathVariable String patientId) {
+//		return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
+		return studyRepository.findByPatientDbId(Long.valueOf(patientId));
+	}
 }
