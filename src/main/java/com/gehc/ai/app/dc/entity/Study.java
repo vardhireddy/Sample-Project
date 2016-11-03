@@ -36,8 +36,19 @@ public class Study {
     public void setPatientDbId(Long patientDbId) {
         this.patientDbId = patientDbId;
     }
+    
+    @ManyToOne
+    @JoinColumn(name = "patient_dbid", insertable =  false, updatable = false)
+    private Patient patient;
+    
+    public Patient getPatient() {
+		return patient;
+	}
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
 
-    /**
+	/**
      * DICOM tag (0020,000D) - study instance UID, expected to be globally unique
      */
     @Column (name="study_instance_uid")

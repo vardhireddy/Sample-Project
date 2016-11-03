@@ -5,6 +5,7 @@ import com.gehc.ai.app.dc.filters.JsonConverter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by 200014175 on 10/27/2016.
@@ -21,7 +22,17 @@ public class Patient implements Serializable {
         this.id = id;
     }
 
-    @Column(name="schema_version")
+    @OneToMany(mappedBy="patient")
+    private List<Study> studies;
+    
+    public List<Study> getStudies() {
+		return studies;
+	}
+	public void setStudies(List<Study> studies) {
+		this.studies = studies;
+	}
+
+	@Column(name="schema_version")
     private String schemaVersion;
     public String getSchemaVersion() {
         return schemaVersion;
