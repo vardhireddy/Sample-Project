@@ -536,4 +536,35 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 //		return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
 		return studyRepository.findByPatientDbId(Long.valueOf(patientId));
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/study/{studyId}/image-set", method = RequestMethod.GET)
+	public List<ImageSet> getImageSetByStudyId(@PathVariable String studyId) {
+//		return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
+		//System.err.println("==========finding image sets for study " + studyId );
+        ResponseBuilder responseBuilder;
+		List<ImageSet> imageSet = new ArrayList<ImageSet>();
+		try {
+
+			imageSet = dataCatalogService.getImageSetByStudyId(studyId);
+		} catch (ServiceException e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while filtering image set data")
+							.build());
+		} catch (Exception e) {
+			throw new WebApplicationException(
+					Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity("Operation failed while filtering image set data")
+							.build());
+		}
+		if (imageSet != null) {
+			responseBuilder = Response.ok(imageSet);
+			return (List<ImageSet>) responseBuilder.build().getEntity();
+		} else {
+			responseBuilder = Response.status(Status.NOT_FOUND);
+			return (List<ImageSet>) responseBuilder.build();
+		}
+	}
 }

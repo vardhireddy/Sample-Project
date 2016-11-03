@@ -99,4 +99,11 @@ public interface IDataCatalogDao {
 	 */
 	List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception;
 
+	/**
+	 * 
+	 * @param studyId
+	 * @return imagesets matching studyId
+	 */
+	List<ImageSet> getImageSetByStudyId(String studyId);
+
 }
