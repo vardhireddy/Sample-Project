@@ -37,16 +37,16 @@ public class Study {
         this.patientDbId = patientDbId;
     }
     
-    @ManyToOne
-    @JoinColumn(name = "patient_dbid", insertable =  false, updatable = false)
-    private Patient patient;
-    
-    public Patient getPatient() {
-		return patient;
-	}
-	public void setPatient(Patient patient) {
-		this.patient = patient;
-	}
+//    @ManyToOne
+//    @JoinColumn(name = "patient_dbid", insertable =  false, updatable = false)
+//    private Patient patient;
+//    
+//    public Patient getPatient() {
+//		return patient;
+//	}
+//	public void setPatient(Patient patient) {
+//		this.patient = patient;
+//	}
 
 	/**
      * DICOM tag (0020,000D) - study instance UID, expected to be globally unique

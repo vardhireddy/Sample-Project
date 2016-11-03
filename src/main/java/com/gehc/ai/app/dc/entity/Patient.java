@@ -22,15 +22,15 @@ public class Patient implements Serializable {
         this.id = id;
     }
 
-    @OneToMany(mappedBy="patient")
-    private List<Study> studies;
-    
-    public List<Study> getStudies() {
-		return studies;
-	}
-	public void setStudies(List<Study> studies) {
-		this.studies = studies;
-	}
+//    @OneToMany(mappedBy="patient")
+//    private List<Study> studies;
+//    
+//    public List<Study> getStudies() {
+//		return studies;
+//	}
+//	public void setStudies(List<Study> studies) {
+//		this.studies = studies;
+//	}
 
 	@Column(name="schema_version")
     private String schemaVersion;

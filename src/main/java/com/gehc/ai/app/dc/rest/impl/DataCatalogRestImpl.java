@@ -531,8 +531,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	@RequestMapping(value = "/patient{patientId}/study", method = RequestMethod.GET)
+	@RequestMapping(value = "/patient/{patientId}/study", method = RequestMethod.GET)
 	public List<Study> getStudies(@PathVariable String patientId) {
-		return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
+//		return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
+		return studyRepository.findByPatientDbId(Long.valueOf(patientId));
 	}
 }
