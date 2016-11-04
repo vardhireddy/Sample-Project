@@ -56,3 +56,14 @@ create table if not exists study (
  upload_by varchar(255),
  properties JSON
 );
+
+create table if not exists cos_notification (
+ id INT auto_increment primary key,
+ time_stamp datetime,
+ message text,
+ patient_status varchar(500),
+ study_status varchar(500),
+ imageset_status varchar(500),
+ annotation_status varchar(500)
+);
+
