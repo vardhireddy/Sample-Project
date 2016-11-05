@@ -18,6 +18,8 @@ import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +34,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
 import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.Creator;
@@ -45,6 +48,10 @@ import com.gehc.ai.app.dc.entity.TargetData;
  */
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
+
+    /** The logger. */
+    private static Logger logger = LoggerFactory.getLogger( DataCatalogDaoImpl.class );
+
 	private static final String DB_SCHEMA_VERSION = "v1.0";
 	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im ";
 	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im WHERE im.studyId = ";
@@ -65,9 +72,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	private static final String INSERT_DATA_COLLECTION = " insert into data_collection () values (?, ?) ";
 	
-	private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, seriesId, studyId, patientId, orgId, orgName, permissionId, "
-			+ "modality, anatomy, diseaseType, dataFormat, age, gender, uri) "
-			+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+	private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, orgId, modality, anatomy, "
+			+ " dataFormat, uri, series_instance_uid, acq_date, acq_time, "
+			+ " description, institution, equipment, instance_count, upload_by, "
+			+ " properties, patient_dbid, study_dbid) "
+			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private static final java.lang.String PARAM_DELIM = ",";
 
@@ -211,20 +220,24 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	@Override
 	public String insertImageSet(ImageSet imageSet) throws Exception {
+		logger.info("==================== Image set " + imageSet.toString());
 		String imageSetId = null;
 		if (null != imageSet) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new java.util.Date());
 			imageSetId = String.valueOf(calendar.getTimeInMillis());
+			ObjectMapper mapper = new ObjectMapper();
 			jdbcTemplate.update(
 					INSERT_IMAGE_SET,
-					new Object[] { imageSetId, DB_SCHEMA_VERSION, imageSet.getSeriesId(), imageSet.getStudyId(), imageSet.getPatientId(),
-							imageSet.getOrgId(), imageSet.getOrgName(), imageSet.getPermissionId(), imageSet.getModality(), imageSet.getAnatomy(), imageSet.getDiseaseType(),
-							imageSet.getDataFormat(), imageSet.getAge(), imageSet.getGender(), imageSet.getUri()},
+					new Object[] { imageSetId, DB_SCHEMA_VERSION, imageSet.getOrgId(), imageSet.getModality(), imageSet.getAnatomy(),
+							imageSet.getDataFormat(), imageSet.getUri(), imageSet.getSeriesInstanceUid(), imageSet.getAcqDate(), imageSet.getAcqTime(),
+							imageSet.getDescription(), imageSet.getInstitution(), imageSet.getEquipment(), imageSet.getInstanceCount(), imageSet.getUploadBy(),
+							mapper.writeValueAsString(imageSet.getProperties()), imageSet.getPatientDbId(), imageSet.getStudyDbId()},
 					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-							    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, 
-							    Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR});
-		}
+						    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+						    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR,
+						    Types.VARCHAR, Types.BIGINT, Types.BIGINT});
+			}
 		return imageSetId;
 	}
 	
@@ -419,16 +432,12 @@ class ImageSetRowMapper implements RowMapper<ImageSet> {
 		try {
 			imageSet.setId(rs.getString("id"));
 			imageSet.setSeriesId(rs.getString("seriesId"));
-			imageSet.setPatientId(rs.getString("patientId"));
-			imageSet.setStudyId(rs.getString("studyId"));
+			imageSet.setPatientDbId(rs.getLong("patientDbId"));
+		//	imageSet.setStudyDbId(rs.getString("studyId"));
 			imageSet.setOrgId(rs.getString("orgId"));
-			imageSet.setOrgName(rs.getString("orgName"));
 			imageSet.setModality(rs.getString("modality"));
 			imageSet.setAnatomy(rs.getString("anatomy"));
-			imageSet.setDiseaseType(rs.getString("diseaseType"));
 			imageSet.setDataFormat(rs.getString("dataFormat"));
-			imageSet.setAge(rs.getString("age"));
-			imageSet.setGender(rs.getString("gender"));
 			imageSet.setUri(rs.getString("uri"));
 		} catch (Exception e) {
 			throw new SQLException(e);
