@@ -1,7 +1,5 @@
 package com.gehc.ai.app.dc.repository;
 
-import com.gehc.ai.app.dc.entity.Patient;
-
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import com.gehc.ai.app.dc.entity.Patient;
 
 /**
  * Created by 200014175 on 10/27/2016.

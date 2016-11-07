@@ -15,16 +15,19 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -45,9 +48,17 @@ import com.gehc.ai.app.dc.entity.TargetData;
  */
 @Component
 public class DataCatalogDaoImpl implements IDataCatalogDao {
+
+    /** The logger. */
+    private static Logger logger = LoggerFactory.getLogger( DataCatalogDaoImpl.class );
+
 	private static final String DB_SCHEMA_VERSION = "v1.0";
-	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im ";
-	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im WHERE im.studyId = ";
+//	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im ";
+	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
+			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, properties  FROM image_set im ";
+//	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, im.seriesId, im.studyId, im.patientId, im.orgId, im.orgName, im.modality, im.anatomy, im.diseaseType, im.dataFormat, im.age, im.gender, im.uri FROM image_set im WHERE im.studyId = ";
+	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
+			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, properties FROM image_set im WHERE im.studyId = ";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
 
@@ -58,16 +69,20 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " json_extract(a.data, '$.creator.id') as creatorId FROM data_collection a "
 			+ " order by json_extract(a.data, '$.createdDate') desc ";
 
-	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, seriesId, studyId, patientId, orgId, orgName, modality, anatomy, diseaseType, dataFormat, age, gender, uri "
+	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, series_instance_uid, study_dbid, patient_dbid, orgId, "
+			+ " modality, anatomy, dataFormat, uri, acq_date, "
+			+ " acq_time, description, institution, equipment, instance_count, upload_by, properties  "
 			+ "FROM data_collection dataColl, image_set imgSet "
 			+ "where dataColl.id = ? "
 			+ "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
 
 	private static final String INSERT_DATA_COLLECTION = " insert into data_collection () values (?, ?) ";
 	
-	private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, seriesId, studyId, patientId, orgId, orgName, permissionId, "
-			+ "modality, anatomy, diseaseType, dataFormat, age, gender, uri) "
-			+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+	private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, orgId, modality, anatomy, "
+			+ " dataFormat, uri, series_instance_uid, acq_date, acq_time, "
+			+ " description, institution, equipment, instance_count, upload_by, "
+			+ " properties, patient_dbid, study_dbid) "
+			+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private static final java.lang.String PARAM_DELIM = ",";
 
@@ -99,7 +114,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		}
 		builder.append(constructQuery(params));
 
-		//System.err.println("sql = " + builder);
+		logger.info("******* getImgSet sql = " + builder);
 		imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
 		return imageSetList;
 	}
@@ -173,6 +188,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	@Override
 	public List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception {
 		List<ImageSet> imageSetList = new ArrayList<ImageSet>();
+		logger.info("=============================== getImgSetByDataCollId GET_IMAGESET_BY_DATA_COLL_ID = " + GET_IMAGESET_BY_DATA_COLL_ID);
 		if (null != dataCollectionId && dataCollectionId.length() > 0) {
 			imageSetList = jdbcTemplate.query(GET_IMAGESET_BY_DATA_COLL_ID,
 					new PreparedStatementSetter() {
@@ -211,20 +227,24 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	@Override
 	public String insertImageSet(ImageSet imageSet) throws Exception {
+		logger.info("==================== Image set " + imageSet.toString());
 		String imageSetId = null;
 		if (null != imageSet) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new java.util.Date());
 			imageSetId = String.valueOf(calendar.getTimeInMillis());
+			ObjectMapper mapper = new ObjectMapper();
 			jdbcTemplate.update(
 					INSERT_IMAGE_SET,
-					new Object[] { imageSetId, DB_SCHEMA_VERSION, imageSet.getSeriesId(), imageSet.getStudyId(), imageSet.getPatientId(),
-							imageSet.getOrgId(), imageSet.getOrgName(), imageSet.getPermissionId(), imageSet.getModality(), imageSet.getAnatomy(), imageSet.getDiseaseType(),
-							imageSet.getDataFormat(), imageSet.getAge(), imageSet.getGender(), imageSet.getUri()},
+					new Object[] { imageSetId, DB_SCHEMA_VERSION, imageSet.getOrgId(), imageSet.getModality(), imageSet.getAnatomy(),
+							imageSet.getDataFormat(), imageSet.getUri(), imageSet.getSeriesInstanceUid(), imageSet.getAcqDate(), imageSet.getAcqTime(),
+							imageSet.getDescription(), imageSet.getInstitution(), imageSet.getEquipment(), imageSet.getInstanceCount(), imageSet.getUploadBy(),
+							mapper.writeValueAsString(imageSet.getProperties()), imageSet.getPatientDbId(), imageSet.getStudyDbId()},
 					new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-							    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, 
-							    Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR});
-		}
+						    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+						    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR,
+						    Types.VARCHAR, Types.BIGINT, Types.BIGINT});
+			}
 		return imageSetId;
 	}
 	
@@ -383,7 +403,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		
 		builder.append("'" + studyId + "'");
 
-		//System.err.println(">>>>>>>>sql = " + builder);
+		logger.info(">>> getImageSetByStudyId sql = " + builder);
 		imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
 		return imageSetList;
 	}
@@ -418,18 +438,22 @@ class ImageSetRowMapper implements RowMapper<ImageSet> {
 		ImageSet imageSet = new ImageSet();
 		try {
 			imageSet.setId(rs.getString("id"));
-			imageSet.setSeriesId(rs.getString("seriesId"));
-			imageSet.setPatientId(rs.getString("patientId"));
-			imageSet.setStudyId(rs.getString("studyId"));
+			imageSet.setSeriesInstanceUid(rs.getString("series_instance_uid"));
+			imageSet.setStudyDbId(rs.getLong("study_dbid"));
+			imageSet.setPatientDbId(rs.getLong("patient_dbid"));
 			imageSet.setOrgId(rs.getString("orgId"));
-			imageSet.setOrgName(rs.getString("orgName"));
 			imageSet.setModality(rs.getString("modality"));
 			imageSet.setAnatomy(rs.getString("anatomy"));
-			imageSet.setDiseaseType(rs.getString("diseaseType"));
 			imageSet.setDataFormat(rs.getString("dataFormat"));
-			imageSet.setAge(rs.getString("age"));
-			imageSet.setGender(rs.getString("gender"));
 			imageSet.setUri(rs.getString("uri"));
+			imageSet.setAcqDate(rs.getString("acq_date"));			
+			imageSet.setAcqTime(rs.getString("acq_time"));
+			imageSet.setDescription(rs.getString("description"));
+			imageSet.setInstitution(rs.getString("institution"));
+			imageSet.setEquipment(rs.getString("equipment"));
+			imageSet.setInstanceCount(rs.getInt("instance_count"));
+			imageSet.setUploadBy(rs.getString("upload_by"));
+			imageSet.setProperties(rs.getString("properties"));			
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}

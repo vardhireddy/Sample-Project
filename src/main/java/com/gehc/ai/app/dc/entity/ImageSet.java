@@ -11,12 +11,13 @@
  */
 package com.gehc.ai.app.dc.entity;
 
+
 /**
  * @author 212071558
  *
  */
 public class ImageSet {
-
+    private String schemaVersion;
     private String id;
     /**
      * @return the id
@@ -42,20 +43,29 @@ public class ImageSet {
     public void setOrgId( String orgId ) {
         this.orgId = orgId;
     }
-    private String schemaVersion;
-    private String seriesId;
-    private String studyId;
-    private String patientId;
-    private String orgId;
-    private String orgName;
-    private String permissionId;
+    private Long studyDbId;
+    private Long patientDbId;
+    public Long getPatientDbId() {
+		return patientDbId;
+	}
+	public void setPatientDbId(Long patientDbId) {
+		this.patientDbId = patientDbId;
+	}
+	private String seriesInstanceUid;
+	private String acqDate;
+    private String acqTime;
     private String modality;
     private String anatomy;
-    private String diseaseType;
+    private String description;
+    private String institution;
+    private String equipment;
     private String dataFormat;
     private String uri;
-	private String age;
-	private String gender;
+    private int instanceCount;    
+    private String orgId;    
+    private String uploadBy;
+    private String uploadDate;
+    private Object properties;
 
     /**
      * @return the schemaVersion
@@ -68,66 +78,6 @@ public class ImageSet {
      */
     public void setSchemaVersion( String schemaVersion ) {
         this.schemaVersion = schemaVersion;
-    }
-    /**
-     * @return the seriesId
-     */
-    public String getSeriesId() {
-        return seriesId;
-    }
-    /**
-     * @param seriesId the seriesId to set
-     */
-    public void setSeriesId( String seriesId ) {
-        this.seriesId = seriesId;
-    }
-    /**
-     * @return the studyId
-     */
-    public String getStudyId() {
-        return studyId;
-    }
-    /**
-     * @param studyId the studyId to set
-     */
-    public void setStudyId( String studyId ) {
-        this.studyId = studyId;
-    }
-    /**
-     * @return the patientId
-     */
-    public String getPatientId() {
-        return patientId;
-    }
-    /**
-     * @param patientId the patientId to set
-     */
-    public void setPatientId( String patientId ) {
-        this.patientId = patientId;
-    }
-    /**
-     * @return the orgName
-     */
-    public String getOrgName() {
-        return orgName;
-    }
-    /**
-     * @param orgName the orgName to set
-     */
-    public void setOrgName( String orgName ) {
-        this.orgName = orgName;
-    }
-    /**
-     * @return the permissionId
-     */
-    public String getPermissionId() {
-        return permissionId;
-    }
-    /**
-     * @param permissionId the permissionId to set
-     */
-    public void setPermissionId( String permissionId ) {
-        this.permissionId = permissionId;
     }
     /**
      * @return the modality
@@ -152,18 +102,6 @@ public class ImageSet {
      */
     public void setAnatomy( String anatomy ) {
         this.anatomy = anatomy;
-    }
-    /**
-     * @return the diseaseType
-     */
-    public String getDiseaseType() {
-        return diseaseType;
-    }
-    /**
-     * @param diseaseType the diseaseType to set
-     */
-    public void setDiseaseType( String diseaseType ) {
-        this.diseaseType = diseaseType;
     }
     /**
      * @return the dataFormat
@@ -198,62 +136,111 @@ public class ImageSet {
         super();
         // TODO Auto-generated constructor stub
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "ImageSet [id=" + id + ", schemaVersion=" + schemaVersion + ", seriesId=" + seriesId + ", studyId=" + studyId + ", patientId=" + patientId + ", orgId=" + orgId + ", orgName=" + orgName + ", permissionId=" + permissionId + ", modality=" + modality + ", anatomy=" + anatomy + ", diseaseType=" + diseaseType + ", dataFormat=" + dataFormat  + ", uri=" + uri + "]";
-    }
-    /**
-     * @param id
-     * @param schemaVersion
-     * @param seriesId
-     * @param studyId
-     * @param patientId
-     * @param orgId
-     * @param orgName
-     * @param permissionId
-     * @param modality
-     * @param anatomy
-     * @param diseaseType
-     * @param dataFormat
-     * @param age
-     * @param gender
-     * @param uri
-     */
-    public ImageSet( String id, String schemaVersion, String seriesId, String studyId, String patientId, String orgId, String orgName, String permissionId, String modality, String anatomy,
-                     String diseaseType, String dataFormat, String age, String gender, String uri ) {
-        super();
-        this.id = id;
-        this.schemaVersion = schemaVersion;
-        this.seriesId = seriesId;
-        this.studyId = studyId;
-        this.patientId = patientId;
-        this.orgId = orgId;
-        this.orgName = orgName;
-        this.permissionId = permissionId;
-        this.modality = modality;
-        this.anatomy = anatomy;
-        this.diseaseType = diseaseType;
-        this.dataFormat = dataFormat;
-        this.age = age;
-        this.gender = gender;
-        this.uri = uri;
-    }
-	public String getAge() {
-		return age;
+	public Long getStudyDbId() {
+		return studyDbId;
 	}
-	public void setAge(String age) {
-		this.age = age;
+	public void setStudyDbId(Long studyDbId) {
+		this.studyDbId = studyDbId;
 	}
-	public String getGender() {
-		return gender;
+	public String getSeriesInstanceUid() {
+		return seriesInstanceUid;
 	}
-	public void setGender(String gender) {
-		this.gender = gender;
+	public void setSeriesInstanceUid(String seriesInstanceUid) {
+		this.seriesInstanceUid = seriesInstanceUid;
 	}
-    
-    
-    
+	public String getAcqDate() {
+		return acqDate;
+	}
+	public void setAcqDate(String acqDate) {
+		this.acqDate = acqDate;
+	}
+	public String getAcqTime() {
+		return acqTime;
+	}
+	public void setAcqTime(String acqTime) {
+		this.acqTime = acqTime;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getInstitution() {
+		return institution;
+	}
+	public void setInstitution(String institution) {
+		this.institution = institution;
+	}
+	public String getEquipment() {
+		return equipment;
+	}
+	public void setEquipment(String equipment) {
+		this.equipment = equipment;
+	}
+	public int getInstanceCount() {
+		return instanceCount;
+	}
+	public void setInstanceCount(int instanceCount) {
+		this.instanceCount = instanceCount;
+	}
+	public String getUploadBy() {
+		return uploadBy;
+	}
+	public void setUploadBy(String uploadBy) {
+		this.uploadBy = uploadBy;
+	}
+	public String getUploadDate() {
+		return uploadDate;
+	}
+	public void setUploadDate(String uploadDate) {
+		this.uploadDate = uploadDate;
+	}
+	public Object getProperties() {
+		return properties;
+	}
+	public void setProperties(Object properties) {
+		this.properties = properties;
+	}
+	public ImageSet(String schemaVersion, String id, Long studyDbId,
+			Long patientDbId, String seriesInstanceUid, String acqDate,
+			String acqTime, String modality, String anatomy,
+			String description, String institution, String equipment,
+			String dataFormat, String uri, int instanceCount, String orgId,
+			String uploadBy, String uploadDate, Object properties) {
+		super();
+		this.schemaVersion = schemaVersion;
+		this.id = id;
+		this.studyDbId = studyDbId;
+		this.patientDbId = patientDbId;
+		this.seriesInstanceUid = seriesInstanceUid;
+		this.acqDate = acqDate;
+		this.acqTime = acqTime;
+		this.modality = modality;
+		this.anatomy = anatomy;
+		this.description = description;
+		this.institution = institution;
+		this.equipment = equipment;
+		this.dataFormat = dataFormat;
+		this.uri = uri;
+		this.instanceCount = instanceCount;
+		this.orgId = orgId;
+		this.uploadBy = uploadBy;
+		this.uploadDate = uploadDate;
+		this.properties = properties;
+	}
+	@Override
+	public String toString() {
+		return "ImageSet [schemaVersion=" + schemaVersion + ", id=" + id
+				+ ", studyDbId=" + studyDbId + ", patientDbId=" + patientDbId
+				+ ", seriesInstanceUid=" + seriesInstanceUid + ", acqDate="
+				+ acqDate + ", acqTime=" + acqTime + ", modality=" + modality
+				+ ", anatomy=" + anatomy + ", description=" + description
+				+ ", institution=" + institution + ", equipment=" + equipment
+				+ ", dataFormat=" + dataFormat + ", uri=" + uri
+				+ ", instanceCount=" + instanceCount + ", orgId=" + orgId
+				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate
+				+ ", properties=" + properties + "]";
+	}     
+	
 }
