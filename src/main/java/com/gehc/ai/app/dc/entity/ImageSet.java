@@ -80,18 +80,6 @@ public class ImageSet {
         this.schemaVersion = schemaVersion;
     }
     /**
-     * @return the seriesId
-     */
-    public String getSeriesId() {
-        return seriesInstanceUid;
-    }
-    /**
-     * @param seriesId the seriesId to set
-     */
-    public void setSeriesId( String seriesId ) {
-        this.seriesInstanceUid = seriesId;
-    }
-    /**
      * @return the modality
      */
     public String getModality() {
