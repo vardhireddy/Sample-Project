@@ -52,7 +52,7 @@ create table if not exists study (
  study_date varchar(255),
  study_time varchar(255),
  referring_physician varchar(255),
- upload_date datetime default current_timestamp,
+ upload_date date NOT NULL,
  upload_by varchar(255),
  properties JSON
 );

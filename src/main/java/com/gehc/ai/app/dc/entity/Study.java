@@ -1,9 +1,11 @@
 package com.gehc.ai.app.dc.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gehc.ai.app.dc.filters.JsonConverter;
 
+import java.sql.Date;
+
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Created by 200014175 on 10/28/2016.
@@ -147,6 +149,7 @@ public class Study {
      * Date data was uploaded into database. Should be left to database to provide.
      */
     @Column(name="upload_date")
+    @JsonFormat(pattern="yyyyMMdd")
     private Date uploadDate;
     public Date getUploadDate() {
         return uploadDate;
