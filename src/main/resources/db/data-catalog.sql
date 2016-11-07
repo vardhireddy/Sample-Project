@@ -67,3 +67,25 @@ create table if not exists cos_notification (
  annotation_status varchar(500)
 );
 
+alter table image_set
+drop column age, 
+drop column gender, 
+drop column diseaseType, 
+drop column permissionId, 
+drop column patientId, 
+drop column studyId, 
+drop column orgName, 
+drop column seriesId,
+add series_instance_uid varchar(255),
+add acq_date varchar(25),
+add acq_time varchar(25),
+add description varchar(100),
+add institution varchar(100),
+add equipment varchar(100),
+add instance_count INT,
+add upload_by varchar(255),
+add upload_date datetime default current_timestamp,
+add properties JSON, 
+add patient_dbid INT,
+add study_dbid INT
+
