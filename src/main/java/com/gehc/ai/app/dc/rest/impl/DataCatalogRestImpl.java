@@ -11,7 +11,16 @@
  */
 package com.gehc.ai.app.dc.rest.impl;
 
-import java.util.*;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -493,6 +502,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				s.setStudyTime(queryMap.get(key));
 			else if ("studyId".equalsIgnoreCase(key))
 				s.setStudyId(queryMap.get(key));
+			else if ("patientDbId".equalsIgnoreCase(key))
+				s.setPatientDbId(Long.valueOf(queryMap.get(key)));
 			else if ("studyDescription".equalsIgnoreCase(key))
 				s.setStudyDescription(queryMap.get(key));
 			else if ("referringPhysician".equalsIgnoreCase(key))
@@ -501,7 +512,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				s.setOrgId(queryMap.get(key));
 			else if ("studyUrl".equalsIgnoreCase(key))
 				s.setStudyUrl(queryMap.get(key));
-			else if (key.startsWith("_sort")) {
+			else if ("uploadBy".equalsIgnoreCase(key))
+				s.setUploadBy(queryMap.get(key));
+			else if ("uploadDate".equalsIgnoreCase(key)) {
+				String dd = queryMap.get(key);
+				int y = Integer.valueOf(dd.substring(0,4)) - 1900;
+				int m = Integer.valueOf(dd.substring(4,6)) - 1;
+				int day = Integer.valueOf(dd.substring(6));
+				s.setUploadDate(new Date(y,m,day));
+			} else if (key.startsWith("_sort")) {
 				sortCol = queryMap.get(key);
 				sortdir = key.split(":")[1];
 			}
@@ -525,6 +544,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/study", method = RequestMethod.POST)
 	public Study postStudy(@RequestBody Study s) {
+		s.setUploadDate(new Date(System.currentTimeMillis()));
 		studyRepository.save(s);
 		return s;
 	}
