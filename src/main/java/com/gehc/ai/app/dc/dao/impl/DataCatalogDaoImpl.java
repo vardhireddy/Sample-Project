@@ -53,12 +53,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     private static Logger logger = LoggerFactory.getLogger( DataCatalogDaoImpl.class );
 
 	private static final String DB_SCHEMA_VERSION = "v1.0";
-	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT i.id, series_instance_uid, s.study_id, p.patient_id, orgId, modality, anatomy, dataFormat, uri, "
-			+ " acq_date, acq_time, description, institution, equipment, instance_count, i.upload_by, i.properties  FROM image_set i join study s on i.study_dbid = s.id "
-			+ " join patient p on i.patient_dbid = p.id ";
-	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, series_instance_uid, s.study_id, p.patient_id, orgId, modality, anatomy, dataFormat, uri, "
-			+ " acq_date, acq_time, description, institution, equipment, instance_count, im.upload_by, im.properties FROM image_set im join study s on i.study_dbid = s.id "
-			+ " join patient p on i.patient_dbid = p.id WHERE im.studyId = ";
+	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
+			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, properties  FROM image_set im ";
+	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
+			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, properties FROM image_set im WHERE im.studyId = ";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
 
@@ -69,13 +67,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " json_extract(a.data, '$.creator.id') as creatorId FROM data_collection a "
 			+ " order by json_extract(a.data, '$.createdDate') desc ";
 
-	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, series_instance_uid, s.study_id, p.patient_id, orgId, "
+	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, series_instance_uid, study_dbid, patient_dbid, orgId, "
 			+ " modality, anatomy, dataFormat, uri, acq_date, "
-			+ " acq_time, description, institution, equipment, instance_count, imgSet.upload_by, imgSet.properties "
-			+ " FROM data_collection dataColl, image_set imgSet join study s on imgSet.study_dbid = s.id "
-			+ " join patient p on imgSet.patient_dbid = p.id "
-			+ " where dataColl.id = ? "
-			+ " and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
+			+ " acq_time, description, institution, equipment, instance_count, upload_by, properties  "
+			+ "FROM data_collection dataColl, image_set imgSet "
+			+ "where dataColl.id = ? "
+			+ "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
 
 	private static final String INSERT_DATA_COLLECTION = " insert into data_collection () values (?, ?) ";
 	
@@ -105,7 +102,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		StringBuilder builder = new StringBuilder();
 		String annotValue = null;
 		if (params != null && params.get("annotations") != null) {
-			//System.err.println("hey Annotations=" + params.get("annotations"));
 			annotValue = params.remove("annotations");
 		}
 		builder.append(GET_IMGSET_DATA_BY_ORG_ID);
@@ -115,7 +111,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		}
 		builder.append(constructQuery(params));
 
-		logger.info("!!!!!!!!!! getImgSet sql = " + builder);
+		logger.info("*** getImgSet sql = " + builder);
 		imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
 		return imageSetList;
 	}
@@ -189,7 +185,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	@Override
 	public List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception {
 		List<ImageSet> imageSetList = new ArrayList<ImageSet>();
-		logger.info("=============================== getImgSetByDataCollId GET_IMAGESET_BY_DATA_COLL_ID = " + GET_IMAGESET_BY_DATA_COLL_ID);
+		logger.info("*** getImgSetByDataCollId GET_IMAGESET_BY_DATA_COLL_ID = " + GET_IMAGESET_BY_DATA_COLL_ID);
 		if (null != dataCollectionId && dataCollectionId.length() > 0) {
 			imageSetList = jdbcTemplate.query(GET_IMAGESET_BY_DATA_COLL_ID,
 					new PreparedStatementSetter() {
@@ -228,7 +224,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	@Override
 	public String insertImageSet(ImageSet imageSet) throws Exception {
-		logger.info("==================== Image set " + imageSet.toString());
+		logger.info("*** Image set " + imageSet.toString());
 		String imageSetId = null;
 		if (null != imageSet) {
 			Calendar calendar = Calendar.getInstance();
@@ -404,7 +400,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		
 		builder.append("'" + studyId + "'");
 
-		logger.info(">>> getImageSetByStudyId sql = " + builder);
+		logger.info("*** getImageSetByStudyId sql = " + builder);
 		imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
 		return imageSetList;
 	}
@@ -440,8 +436,8 @@ class ImageSetRowMapper implements RowMapper<ImageSet> {
 		try {
 			imageSet.setId(rs.getString("id"));
 			imageSet.setSeriesInstanceUid(rs.getString("series_instance_uid"));
-			imageSet.setStudyDbId(rs.getLong("study_id"));
-			imageSet.setPatientDbId(rs.getLong("patient_id"));
+			imageSet.setStudyDbId(rs.getLong("study_dbid"));
+			imageSet.setPatientDbId(rs.getLong("patient_dbid"));
 			imageSet.setOrgId(rs.getString("orgId"));
 			imageSet.setModality(rs.getString("modality"));
 			imageSet.setAnatomy(rs.getString("anatomy"));
