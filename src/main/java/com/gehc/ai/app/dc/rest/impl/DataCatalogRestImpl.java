@@ -479,6 +479,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@RequestMapping(value = "/patient/{ids}", method = RequestMethod.GET)
+	public List<Patient> getPatients(@PathVariable String ids) {
+		List<Long> pids = new ArrayList<Long>();
+		String[] idStrings = ids.split(",");
+		for (int i = 0; i < idStrings.length;i++)
+			pids.add(Long.valueOf(idStrings[i]));
+		return patientRepository.findByIdIn(pids);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
 	@RequestMapping(value = "/study", method = RequestMethod.GET)
 	public List<Study> getStudy(@RequestParam Map<String, String> queryMap) {
 //	     {
@@ -537,6 +548,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		return sortCol == null ? studyRepository.findAll(Example.of(s)) :
 			studyRepository.findAll(Example.of(s), new Sort(Direction.fromString(sortdir), sortCol));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/study/{ids}", method = RequestMethod.GET)
+	public List<Study> getStudiesById(@PathVariable String ids) {
+		List<Long> pids = new ArrayList<Long>();
+		String[] idStrings = ids.split(",");
+		for (int i = 0; i < idStrings.length;i++)
+			pids.add(Long.valueOf(idStrings[i]));
+		return studyRepository.findByIdIn(pids);
 	}
 
 	@Override

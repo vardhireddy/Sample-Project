@@ -149,4 +149,18 @@ public interface IDataCatalogRest {
 	 */
 	List<ImageSet> getImageSetByStudyId(String studyId);
 
+	/**
+	 * 
+	 * @param ids
+	 * @return patients based on a list of comma separated id's
+	 */
+	List<Patient> getPatients(String ids);
+
+	/**
+	 * 
+	 * @param ids
+	 * @return studies based on a list of comma separated id's
+	 */
+	List<Study> getStudiesById(String ids);
+
 }
