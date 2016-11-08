@@ -464,6 +464,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				p.setAge(queryMap.get(key));
 			else if ("orgId".equalsIgnoreCase(key))
 				p.setOrgId(queryMap.get(key));
+			else if ("uploadBy".equalsIgnoreCase(key))
+				p.setUploadBy(queryMap.get(key));
+			else if ("uploadDate".equalsIgnoreCase(key)) {
+				String dd = queryMap.get(key);
+				int y = Integer.valueOf(dd.substring(0,4)) - 1900;
+				int m = Integer.valueOf(dd.substring(4,6)) - 1;
+				int day = Integer.valueOf(dd.substring(6));
+				p.setUploadDate(new Date(y,m,day));
+			}
 		}
 		return patientRepository.findAll(Example.of(p));
 	}
@@ -535,6 +544,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/patient", method = RequestMethod.POST)
 	public Patient postPatient(@RequestBody Patient p) {
+		p.setUploadDate(new Date(System.currentTimeMillis()));
 		patientRepository.save(p);
 		return p;
 	}

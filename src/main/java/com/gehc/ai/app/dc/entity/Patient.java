@@ -1,11 +1,11 @@
 package com.gehc.ai.app.dc.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gehc.ai.app.dc.filters.JsonConverter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.sql.Date;
 
 /**
  * Created by 200014175 on 10/27/2016.
@@ -113,6 +113,7 @@ public class Patient implements Serializable {
      * Date data was uploaded into database. Should be left to database to provide.
      */
     @Column(name="upload_date")
+    @JsonFormat(pattern="yyyyMMdd")
     private Date uploadDate;
     public Date getUploadDate() {
         return uploadDate;
