@@ -76,8 +76,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	
 	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, series_instance_uid, study_dbid, patient_dbid, orgId, "
 			+ " modality, anatomy, dataFormat, uri, acq_date, "
-			+ " acq_time, description, institution, equipment, instance_count, upload_by, properties  "
-			+ "FROM data_collection dataColl, image_set imgSet "
+			+ " acq_time, description, institution, equipment, instance_count, imgSet.upload_by, imgSet.properties, p.patient_id  "
+			+ "FROM data_collection dataColl, image_set imgSet join patient p on imgSet.patient_dbid = p.id "
 			+ "where dataColl.id = ? "
 			+ "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
 
@@ -206,7 +206,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	@Override
 	public List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception {
 		List<ImageSet> imageSetList = new ArrayList<ImageSet>();
-		logger.info("*** getImgSetByDataCollId GET_IMAGESET_BY_DATA_COLL_ID = " + GET_IMAGESET_BY_DATA_COLL_ID);
+		logger.info("*** Get ImgSet and patient id by DataCollId = " + dataCollectionId);
 		if (null != dataCollectionId && dataCollectionId.length() > 0) {
 			imageSetList = jdbcTemplate.query(GET_IMAGESET_BY_DATA_COLL_ID,
 					new PreparedStatementSetter() {
@@ -216,7 +216,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 							int index = 0;
 							ps.setString(++index, dataCollectionId);
 						}
-					}, new ImageSetRowMapper());
+					}, new ImageSetWithMoreInfoRowMapper());
 		}
 		return imageSetList;
 	}
@@ -230,7 +230,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			calendar.setTime(new java.util.Date());
 			dataCollection.setId(String.valueOf(calendar.getTimeInMillis()));
 			dataCollection.setSchemaVersion("v1.0");
-			//dataCollection.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 			dataCollection.setCreatedDate(String.valueOf(calendar.getTimeInMillis()));
 			ObjectMapper mapper = new ObjectMapper();
 			numOfRowsInserted = jdbcTemplate.update(
@@ -427,6 +426,36 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	}
 
 
+}
+
+class ImageSetWithMoreInfoRowMapper implements RowMapper<ImageSet> {
+	@Override
+	public ImageSet mapRow(ResultSet rs, int rowNum) throws SQLException {
+		ImageSet imageSet = new ImageSet();
+		try {
+			imageSet.setId(rs.getString("id"));
+			imageSet.setSeriesInstanceUid(rs.getString("series_instance_uid"));
+			imageSet.setStudyDbId(rs.getLong("study_dbid"));
+			imageSet.setPatientDbId(rs.getLong("patient_dbid"));
+			imageSet.setOrgId(rs.getString("orgId"));
+			imageSet.setModality(rs.getString("modality"));
+			imageSet.setAnatomy(rs.getString("anatomy"));
+			imageSet.setDataFormat(rs.getString("dataFormat"));
+			imageSet.setUri(rs.getString("uri"));
+			imageSet.setAcqDate(rs.getString("acq_date"));			
+			imageSet.setAcqTime(rs.getString("acq_time"));
+			imageSet.setDescription(rs.getString("description"));
+			imageSet.setInstitution(rs.getString("institution"));
+			imageSet.setEquipment(rs.getString("equipment"));
+			imageSet.setInstanceCount(rs.getInt("instance_count"));
+			imageSet.setUploadBy(rs.getString("upload_by"));
+			imageSet.setProperties(rs.getString("properties"));	
+			imageSet.setPatientId(rs.getString("patient_id"));
+		} catch (Exception e) {
+			throw new SQLException(e);
+		}
+		return imageSet;
+	}
 }
 
 class DataCollectionRowMapper implements RowMapper<DataCollection> {

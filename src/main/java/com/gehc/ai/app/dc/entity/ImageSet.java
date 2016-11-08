@@ -66,8 +66,14 @@ public class ImageSet {
     private String uploadBy;
     private String uploadDate;
     private Object properties;
-
-    /**
+    private String patientId;
+    public String getPatientId() {
+		return patientId;
+	}
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+	/**
      * @return the schemaVersion
      */
     public String getSchemaVersion() {
