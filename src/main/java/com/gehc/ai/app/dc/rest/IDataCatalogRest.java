@@ -47,7 +47,7 @@ public interface IDataCatalogRest {
      * 
      * @return List<DataCollection>
      */
-    List<DataCollection> getDataCollection();
+    List<DataCollection> getDataCollection(String id);
     
     /**
      * Create Data Collection
