@@ -56,7 +56,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
 			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, properties  FROM image_set im ";
 	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
-			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, properties FROM image_set im WHERE im.studyId = ";
+			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, properties FROM image_set im WHERE im.study_dbid = ";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
 
