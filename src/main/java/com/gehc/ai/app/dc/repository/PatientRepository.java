@@ -20,6 +20,8 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 	List<Patient> findByAge(@Param("age") String id);
 	List<Patient> findByOrgId(@Param("orgid") String id);
 	
+	List<Patient> findByIdIn(List<Long> ids);
+	
 	Page<Patient> findAllByOrderByIdDesc( Pageable pageable);
 
 }

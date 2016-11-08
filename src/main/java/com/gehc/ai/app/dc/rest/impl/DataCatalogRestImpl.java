@@ -452,9 +452,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		Patient p = new Patient();
 		for (Iterator<String> it = keys.iterator(); it.hasNext() ;) {
 			String key = it.next();
-			if ("name".equalsIgnoreCase(key))
+			if ("patientName".equalsIgnoreCase(key))
 				p.setPatientName(queryMap.get(key));
-			else if ("id".equalsIgnoreCase(key))
+			else if ("patientId".equalsIgnoreCase(key))
 				p.setPatientId(queryMap.get(key));
 			else if ("birthdate".equalsIgnoreCase(key))
 				p.setBirthDate(queryMap.get(key));
@@ -464,8 +464,28 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				p.setAge(queryMap.get(key));
 			else if ("orgId".equalsIgnoreCase(key))
 				p.setOrgId(queryMap.get(key));
+			else if ("uploadBy".equalsIgnoreCase(key))
+				p.setUploadBy(queryMap.get(key));
+			else if ("uploadDate".equalsIgnoreCase(key)) {
+				String dd = queryMap.get(key);
+				int y = Integer.valueOf(dd.substring(0,4)) - 1900;
+				int m = Integer.valueOf(dd.substring(4,6)) - 1;
+				int day = Integer.valueOf(dd.substring(6));
+				p.setUploadDate(new Date(y,m,day));
+			}
 		}
 		return patientRepository.findAll(Example.of(p));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/patient/{ids}", method = RequestMethod.GET)
+	public List<Patient> getPatients(@PathVariable String ids) {
+		List<Long> pids = new ArrayList<Long>();
+		String[] idStrings = ids.split(",");
+		for (int i = 0; i < idStrings.length;i++)
+			pids.add(Long.valueOf(idStrings[i]));
+		return patientRepository.findByIdIn(pids);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -530,11 +550,23 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			studyRepository.findAll(Example.of(s), new Sort(Direction.fromString(sortdir), sortCol));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/study/{ids}", method = RequestMethod.GET)
+	public List<Study> getStudiesById(@PathVariable String ids) {
+		List<Long> pids = new ArrayList<Long>();
+		String[] idStrings = ids.split(",");
+		for (int i = 0; i < idStrings.length;i++)
+			pids.add(Long.valueOf(idStrings[i]));
+		return studyRepository.findByIdIn(pids);
+	}
+
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/patient", method = RequestMethod.POST)
 	public Patient postPatient(@RequestBody Patient p) {
+		p.setUploadDate(new Date(System.currentTimeMillis()));
 		patientRepository.save(p);
 		return p;
 	}
@@ -562,7 +594,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/study/{studyId}/image-set", method = RequestMethod.GET)
 	public List<ImageSet> getImageSetByStudyId(@PathVariable String studyId) {
 //		return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
-		//System.err.println("==========finding image sets for study " + studyId );
+//		System.err.println("==========finding image sets for study " + studyId );
         ResponseBuilder responseBuilder;
 		List<ImageSet> imageSet = new ArrayList<ImageSet>();
 		try {

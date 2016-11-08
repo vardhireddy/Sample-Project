@@ -35,7 +35,7 @@ create table if not exists patient (
  org_id varchar(255),
  gender varchar(50),
  age varchar(50),
- upload_date datetime default current_timestamp,
+ upload_date date NOT NULL,
  upload_by varchar(255),
  properties JSON
 );
