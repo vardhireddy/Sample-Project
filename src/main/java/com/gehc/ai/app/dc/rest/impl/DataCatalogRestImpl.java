@@ -452,9 +452,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		Patient p = new Patient();
 		for (Iterator<String> it = keys.iterator(); it.hasNext() ;) {
 			String key = it.next();
-			if ("name".equalsIgnoreCase(key))
+			if ("patientName".equalsIgnoreCase(key))
 				p.setPatientName(queryMap.get(key));
-			else if ("id".equalsIgnoreCase(key))
+			else if ("patientId".equalsIgnoreCase(key))
 				p.setPatientId(queryMap.get(key));
 			else if ("birthdate".equalsIgnoreCase(key))
 				p.setBirthDate(queryMap.get(key));
@@ -572,7 +572,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/study/{studyId}/image-set", method = RequestMethod.GET)
 	public List<ImageSet> getImageSetByStudyId(@PathVariable String studyId) {
 //		return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
-		//System.err.println("==========finding image sets for study " + studyId );
+//		System.err.println("==========finding image sets for study " + studyId );
         ResponseBuilder responseBuilder;
 		List<ImageSet> imageSet = new ArrayList<ImageSet>();
 		try {
