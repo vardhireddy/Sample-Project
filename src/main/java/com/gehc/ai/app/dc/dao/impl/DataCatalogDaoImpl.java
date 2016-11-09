@@ -267,9 +267,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	}
 	
 	@Override
-	public int insertAnnotationSet(String annotationSetJson) throws Exception {
+	public int insertAnnotationSet(AnnotationSet annotationSetJson) throws Exception {
 		int numOfRowsInserted = 0;
-		AnnotationSet annotationSet = AnnotationSet.readFromJson(annotationSetJson);
+		AnnotationSet annotationSet = annotationSetJson;
 		if (annotationSet != null) {
 			annotationSet.setId("" + System.currentTimeMillis());
 			ObjectMapper mapper = new ObjectMapper();

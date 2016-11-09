@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
+import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.TargetData;
@@ -98,7 +99,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
     }
     
 	@Override
-	public int insertAnnotationSet(String annotationSetJson) throws Exception {
+	public int insertAnnotationSet(AnnotationSet annotationSetJson) throws Exception {
 		return dataCatalogDao.insertAnnotationSet(annotationSetJson);
 
 	}
