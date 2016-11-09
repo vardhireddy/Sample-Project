@@ -16,6 +16,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
@@ -82,7 +83,7 @@ public interface IDataCatalogRest {
      * @param jsonString annotation set to be inserted to the database
      * @return Response object wrapping the result of the insertion.
      */
-    Response insertAnnotationSet(String annotationSetJson);
+    Response insertAnnotationSet(AnnotationSet as);
 
     /**
      * 

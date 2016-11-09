@@ -14,6 +14,7 @@ package com.gehc.ai.app.dc.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.TargetData;
@@ -80,7 +81,7 @@ public interface IDataCatalogDao {
      * @return number of rows inserted
      * @throws Exception
      */
-	int insertAnnotationSet(String annotationSetJson) throws Exception;
+	int insertAnnotationSet(AnnotationSet annotationSetJson) throws Exception;
 
 	/**
 	 * 

@@ -273,7 +273,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		Response response = null;
 		int numOfRowsInserted = 0;
 		try {
-			numOfRowsInserted = dataCatalogService.insertAnnotationSet(AnnotationSet.getJson(AnnotationSet.createRandom()));
+			numOfRowsInserted = dataCatalogService.insertAnnotationSet(AnnotationSet.createRandom());
 			if (0 == numOfRowsInserted) {
 				response = Response.status(Status.NO_CONTENT)
 						.entity("No image set got inserted")
@@ -301,11 +301,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/annotation-set", method = RequestMethod.POST)
-	public Response insertAnnotationSet(@RequestBody String annotationSetJson) {
+	public Response insertAnnotationSet(@RequestBody AnnotationSet as) {
 		Response response = null;
 		int numOfRowsInserted = 0;
 		try {
-			numOfRowsInserted = dataCatalogService.insertAnnotationSet(annotationSetJson);
+			numOfRowsInserted = dataCatalogService.insertAnnotationSet(as);
 			if (0 == numOfRowsInserted) {
 				response = Response.status(Status.NO_CONTENT)
 						.entity("No image set got inserted")
