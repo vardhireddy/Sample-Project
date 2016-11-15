@@ -31,7 +31,14 @@ public class DataCollection implements Serializable {
     private String description;
     private String[] imageSets;
     private String createdDate;
-    public String getCreatedDate() {
+    private int imageSetsSize;
+    public int getImageSetsSize() {
+		return imageSetsSize;
+	}
+	public void setImageSetsSize(int imageSetsSize) {
+		this.imageSetsSize = imageSetsSize;
+	}
+	public String getCreatedDate() {
 		return (createdDate==null)?createdDate:createdDate.replaceAll("^\"|\"$", "");
 	}
 	public void setCreatedDate(String createdDate) {
@@ -107,19 +114,6 @@ public class DataCollection implements Serializable {
         this.imageSets = imageSets;
     }
  
-
-    public DataCollection(String id, String schemaVersion, String name,
-			String description, String[] imageSets, String createdDate,
-			Creator creator) {
-		super();
-		this.id = id;
-		this.schemaVersion = schemaVersion;
-		this.name = name;
-		this.description = description;
-		this.imageSets = imageSets;
-		this.createdDate = createdDate;
-		this.creator = creator;
-	}
 	/**
      * 
      */
@@ -127,11 +121,25 @@ public class DataCollection implements Serializable {
         super();
         // TODO Auto-generated constructor stub
     }
+	public DataCollection(String id, String schemaVersion, String name,
+			String description, String[] imageSets, String createdDate,
+			int imageSetsSize, Creator creator) {
+		super();
+		this.id = id;
+		this.schemaVersion = schemaVersion;
+		this.name = name;
+		this.description = description;
+		this.imageSets = imageSets;
+		this.createdDate = createdDate;
+		this.imageSetsSize = imageSetsSize;
+		this.creator = creator;
+	}
 	@Override
 	public String toString() {
 		return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion
 				+ ", name=" + name + ", description=" + description
 				+ ", imageSets=" + Arrays.toString(imageSets)
-				+ ", createdDate=" + createdDate + ", creator=" + creator + "]";
-	}
+				+ ", createdDate=" + createdDate + ", imageSetsSize="
+				+ imageSetsSize + ", creator=" + creator + "]";
+	}	
 }
