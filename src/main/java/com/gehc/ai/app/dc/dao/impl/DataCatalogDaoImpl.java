@@ -65,14 +65,16 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " json_extract(a.data, '$.description') as description, "
 			+ " json_extract(a.data, '$.createdDate') as createdDate, "
 			+ " json_extract(a.data, '$.creator.name') as creatorName,"
-			+ " json_extract(a.data, '$.creator.id') as creatorId FROM data_collection a "
+			+ " json_extract(a.data, '$.creator.id') as creatorId, "
+			+ " JSON_LENGTH(json_extract(a.data, '$.imageSets')) as imageSetsSize FROM data_collection a "
 			+ " order by json_extract(a.data, '$.createdDate') desc ";
 
 	private static final String GET_DATA_COLLECTION_BY_ID = "SELECT json_extract(a.data, '$.id') as id ,json_extract(a.data, '$.name') as name, "
 			+ " json_extract(a.data, '$.description') as description, "
 			+ " json_extract(a.data, '$.createdDate') as createdDate, "
 			+ " json_extract(a.data, '$.creator.name') as creatorName,"
-			+ " json_extract(a.data, '$.creator.id') as creatorId FROM data_collection a "
+			+ " json_extract(a.data, '$.creator.id') as creatorId, "
+			+ " JSON_LENGTH(json_extract(a.data, '$.imageSets')) as imageSetsSize FROM data_collection a "
 			+ " where a.id = ? ";
 	
 	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, series_instance_uid, study_dbid, patient_dbid, orgId, "
@@ -472,6 +474,7 @@ class DataCollectionRowMapper implements RowMapper<DataCollection> {
 			creator.setName(rs.getString("creatorName"));
 			creator.setId(rs.getString("creatorId"));
 			dataCollection.setCreator(creator);
+			dataCollection.setImageSetsSize(rs.getInt("imageSetsSize"));
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}
