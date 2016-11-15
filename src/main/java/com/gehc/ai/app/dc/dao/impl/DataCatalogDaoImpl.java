@@ -54,7 +54,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	private static final String DB_SCHEMA_VERSION = "v1.0";
 	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
-			+ " acq_date, acq_time, description, institution, equipment, instance_count, im.upload_by, im.properties, p.patient_id  FROM image_set im  "
+			+ " acq_date, acq_time, description, institution, equipment, instance_count, im.upload_by, im.properties, p.patient_id, im.instance_count FROM image_set im  "
 			+ " join patient p on im.patient_dbid = p.id ";
 	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
 			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, properties FROM image_set im WHERE im.study_dbid = ";
@@ -79,7 +79,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	
 	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, series_instance_uid, study_dbid, patient_dbid, orgId, "
 			+ " modality, anatomy, dataFormat, uri, acq_date, "
-			+ " acq_time, description, institution, equipment, instance_count, imgSet.upload_by, imgSet.properties, p.patient_id  "
+			+ " acq_time, description, institution, equipment, instance_count, imgSet.upload_by, imgSet.properties, p.patient_id, imgSet.instance_count "
 			+ "FROM data_collection dataColl, image_set imgSet join patient p on imgSet.patient_dbid = p.id "
 			+ "where dataColl.id = ? "
 			+ "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
@@ -454,6 +454,7 @@ class ImageSetWithMoreInfoRowMapper implements RowMapper<ImageSet> {
 			imageSet.setUploadBy(rs.getString("upload_by"));
 			imageSet.setProperties(rs.getString("properties"));	
 			imageSet.setPatientId(rs.getString("patient_id"));
+			imageSet.setInstanceCount(rs.getInt("instance_count"));
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}
