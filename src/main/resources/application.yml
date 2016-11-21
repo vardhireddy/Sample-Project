@@ -20,8 +20,8 @@ spring.data.rest.base-path=/api/v1/dataCatalog
 spring.jpa.properties.hibernate.show_sql=true
 spring.jpa.properties.hibernate.use_sql_comments=true
 spring.jpa.properties.hibernate.format_sql=true
-experiment.targetData.gtMaskLocation = s3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/annot1
-experiment.targetData.imgLocation = https://s3.amazonaws.com/gehc-sandbox-cos-dev/upload/vto11exhd2/
+experiment.targetData.gtMaskLocation = https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
+experiment.targetData.imgLocation = https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
 experiment.targetData.locationType = s3
 
 
