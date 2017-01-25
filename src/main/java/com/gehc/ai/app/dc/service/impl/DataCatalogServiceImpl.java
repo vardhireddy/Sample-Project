@@ -63,10 +63,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
      * @see com.gehc.ai.app.dc.service.IDataCatalogService#getDataCollection()
      */
     @Override
-    public List<DataCollection> getDataCollection(String id) throws Exception {
+    public List<DataCollection> getDataCollection(String id , String type ) throws Exception {
         List<DataCollection> dataCollection = null;
         try {
-            dataCollection = dataCatalogDao.getDataCollection(id);
+            dataCollection = dataCatalogDao.getDataCollection(id, type);
          } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving data collection ", e );
         }
