@@ -44,11 +44,12 @@ public interface IDataCatalogDao {
     /**
      * Get Data Collection
      * @param id TODO
+     * @param type TODO
      * 
      * @return List<DataCollection>
      * @throws Exception
      */
-    List<DataCollection> getDataCollection(String id) throws Exception;
+    List<DataCollection> getDataCollection(String id , String type ) throws Exception;
     
     /**
      * Get Image Set by Id

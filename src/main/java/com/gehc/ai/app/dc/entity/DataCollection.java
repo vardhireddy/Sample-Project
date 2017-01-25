@@ -21,17 +21,27 @@ import java.util.Arrays;
  */
 public class DataCollection implements Serializable {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private String id;
+    private static final long serialVersionUID = 1L;
+    private String id;
     private String schemaVersion;
     private String name;
     private String description;
     private String[] imageSets;
     private String createdDate;
     private int imageSetsSize;
+    private String type;
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return (type==null)?type:type.replaceAll("^\"|\"$", "");
+    }
+    /**
+     * @param type the type to set
+     */
+    public void setType( String type ) {
+        this.type = type;
+    }
     public int getImageSetsSize() {
 		return imageSetsSize;
 	}
@@ -121,25 +131,34 @@ public class DataCollection implements Serializable {
         super();
         // TODO Auto-generated constructor stub
     }
-	public DataCollection(String id, String schemaVersion, String name,
-			String description, String[] imageSets, String createdDate,
-			int imageSetsSize, Creator creator) {
-		super();
-		this.id = id;
-		this.schemaVersion = schemaVersion;
-		this.name = name;
-		this.description = description;
-		this.imageSets = imageSets;
-		this.createdDate = createdDate;
-		this.imageSetsSize = imageSetsSize;
-		this.creator = creator;
-	}
-	@Override
-	public String toString() {
-		return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion
-				+ ", name=" + name + ", description=" + description
-				+ ", imageSets=" + Arrays.toString(imageSets)
-				+ ", createdDate=" + createdDate + ", imageSetsSize="
-				+ imageSetsSize + ", creator=" + creator + "]";
-	}	
+    /**
+     * @param id
+     * @param schemaVersion
+     * @param name
+     * @param description
+     * @param imageSets
+     * @param createdDate
+     * @param imageSetsSize
+     * @param type
+     * @param creator
+     */
+    public DataCollection( String id, String schemaVersion, String name, String description, String[] imageSets, String createdDate, int imageSetsSize, String type, Creator creator ) {
+        super();
+        this.id = id;
+        this.schemaVersion = schemaVersion;
+        this.name = name;
+        this.description = description;
+        this.imageSets = imageSets;
+        this.createdDate = createdDate;
+        this.imageSetsSize = imageSetsSize;
+        this.type = type;
+        this.creator = creator;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion + ", name=" + name + ", description=" + description + ", imageSets=" + Arrays.toString( imageSets ) + ", createdDate=" + createdDate + ", imageSetsSize=" + imageSetsSize + ", type=" + type + ", creator=" + creator + "]";
+    }
 }

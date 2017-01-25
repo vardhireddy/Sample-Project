@@ -171,11 +171,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/dataCollection", method = RequestMethod.GET)
-	public List<DataCollection> getDataCollection(@QueryParam("id") String id) {
+	public List<DataCollection> getDataCollection(@QueryParam("id") String id ,@QueryParam("type") String type ) {
 		ResponseBuilder responseBuilder;
 		List<DataCollection> dataCollection = new ArrayList<DataCollection>();
 		try {
-			dataCollection = dataCatalogService.getDataCollection(id);
+			dataCollection = dataCatalogService.getDataCollection(id, type);
 		} catch (ServiceException e) {
 			throw new WebApplicationException(
 					Response.status(Status.INTERNAL_SERVER_ERROR)

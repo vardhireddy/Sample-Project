@@ -45,10 +45,11 @@ public interface IDataCatalogRest {
     
     /**
      * Get Data Collection
+     * @param type TODO
      * 
      * @return List<DataCollection>
      */
-    List<DataCollection> getDataCollection(String id);
+    List<DataCollection> getDataCollection(String id , String type );
     
     /**
      * Create Data Collection

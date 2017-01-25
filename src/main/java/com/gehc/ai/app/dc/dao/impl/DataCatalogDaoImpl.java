@@ -60,23 +60,17 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " acq_date, acq_time, description, institution, equipment, instance_count, upload_by, upload_date, properties FROM image_set im WHERE im.study_dbid = ";
 
 	private static final String GET_IMAGESET_ID = "SELECT json_extract(a.data, '$.imageSets') as imageSetId FROM data_collection a where id = '1474403308'";
-
-	private static final String GET_DATA_COLLECTION = "SELECT json_extract(a.data, '$.id') as id ,json_extract(a.data, '$.name') as name, "
-			+ " json_extract(a.data, '$.description') as description, "
-			+ " json_extract(a.data, '$.createdDate') as createdDate, "
-			+ " json_extract(a.data, '$.creator.name') as creatorName,"
-			+ " json_extract(a.data, '$.creator.id') as creatorId, "
-			+ " JSON_LENGTH(json_extract(a.data, '$.imageSets')) as imageSetsSize FROM data_collection a "
-			+ " order by json_extract(a.data, '$.createdDate') desc ";
-
-	private static final String GET_DATA_COLLECTION_BY_ID = "SELECT json_extract(a.data, '$.id') as id ,json_extract(a.data, '$.name') as name, "
-			+ " json_extract(a.data, '$.description') as description, "
-			+ " json_extract(a.data, '$.createdDate') as createdDate, "
-			+ " json_extract(a.data, '$.creator.name') as creatorName,"
-			+ " json_extract(a.data, '$.creator.id') as creatorId, "
-			+ " JSON_LENGTH(json_extract(a.data, '$.imageSets')) as imageSetsSize FROM data_collection a "
-			+ " where a.id = ? ";
 	
+	private static final String GET_DC_PREFIX = "SELECT json_extract(a.data, '$.id') as id ,json_extract(a.data, '$.name') as name, "
+                + " json_extract(a.data, '$.type') as type, "
+                + " json_extract(a.data, '$.description') as description, "
+                + " json_extract(a.data, '$.createdDate') as createdDate, "
+                + " json_extract(a.data, '$.creator.name') as creatorName,"
+                + " json_extract(a.data, '$.creator.id') as creatorId, "
+                + " JSON_LENGTH(json_extract(a.data, '$.imageSets')) as imageSetsSize FROM data_collection a ";
+	
+	private static final String GET_DC_SUFFIX = " order by json_extract(a.data, '$.createdDate') desc ";
+
 	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, series_instance_uid, study_dbid, patient_dbid, orgId, "
 			+ " modality, anatomy, dataFormat, uri, acq_date, "
 			+ " acq_time, description, institution, equipment, instance_count, imgSet.upload_by, imgSet.upload_date, imgSet.properties, p.patient_id, imgSet.instance_count "
@@ -185,11 +179,28 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	}
 
 	@Override
-	public List<DataCollection> getDataCollection(String id) throws Exception {
+	public List<DataCollection> getDataCollection(String id , String type ) throws Exception {
 		List<DataCollection> dataCollectionList = new ArrayList<DataCollection>();
-			if (null != id && id.length() > 0) {
-			logger.info("*** Get Data Collection By Id "+ id);
-			dataCollectionList = jdbcTemplate.query(GET_DATA_COLLECTION_BY_ID,
+		StringBuilder queryBuilder = new StringBuilder();
+		queryBuilder.append(GET_DC_PREFIX);
+		if (null != id && id.length() > 0) {
+		    if(null != type && type.length() > 0){
+		        queryBuilder = queryBuilder.append(" where a.id = ? and json_extract(a.data, '$.type') = ? ");
+                        logger.info("*** Get Data Collection By Id "+ id + " and type " + type + " query " + queryBuilder);
+                        dataCollectionList = jdbcTemplate.query(queryBuilder.toString(),
+                                        new PreparedStatementSetter() {
+                                @Override
+                                public void setValues(java.sql.PreparedStatement ps)
+                                                throws SQLException {
+                                        int index = 0;
+                                        ps.setString(++index, id);
+                                        ps.setString(++index, type);
+                                }
+                        },      new DataCollectionRowMapper());
+		    }else{
+		        queryBuilder = queryBuilder.append(" where a.id = ? ");
+			logger.info("*** Get Data Collection By Id "+ id + " query " + queryBuilder);
+			dataCollectionList = jdbcTemplate.query(queryBuilder.toString(),
 					new PreparedStatementSetter() {
 				@Override
 				public void setValues(java.sql.PreparedStatement ps)
@@ -198,9 +209,23 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 					ps.setString(++index, id);
 				}
 			},	new DataCollectionRowMapper());
-		}else{
-			logger.info("*** Get All Data Collection ");
-			dataCollectionList = jdbcTemplate.query(GET_DATA_COLLECTION,
+		    }
+		}else if(null != type && type.length() > 0){
+                        queryBuilder = queryBuilder.append(" where  json_extract(a.data, '$.type') = ? ");
+                        logger.info("*** Get Data Collection By type " + type + " query " + queryBuilder);
+                        dataCollectionList = jdbcTemplate.query(queryBuilder.toString(),
+                                        new PreparedStatementSetter() {
+                                @Override
+                                public void setValues(java.sql.PreparedStatement ps)
+                                                throws SQLException {
+                                        int index = 0;
+                                        ps.setString(++index, type);
+                                }
+                        },      new DataCollectionRowMapper());
+                    }else{
+		    queryBuilder = queryBuilder.append(GET_DC_SUFFIX);
+		        logger.info("*** Get All Data Collection query " + queryBuilder);
+			dataCollectionList = jdbcTemplate.query(queryBuilder.toString(),
 					new DataCollectionRowMapper());
 		}
 		return dataCollectionList;
@@ -471,6 +496,7 @@ class DataCollectionRowMapper implements RowMapper<DataCollection> {
 		try {
 			dataCollection.setId(rs.getString("id"));
 			dataCollection.setName(rs.getString("name"));
+			dataCollection.setType(rs.getString("type"));
 			dataCollection.setDescription(rs.getString("description"));
 			dataCollection.setCreatedDate(rs.getString("createdDate"));
 			creator.setName(rs.getString("creatorName"));
