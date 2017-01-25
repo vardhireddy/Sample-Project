@@ -1,19 +1,161 @@
 package com.gehc.ai.app.dc.dao.impl;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.test.context.ContextConfiguration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.dc.entity.DataCollection;
+
+@RunWith ( MockitoJUnitRunner.class )
+@ContextConfiguration
 public class DataCatalogDaoImplTest {
 
-    DataCatalogDaoImpl classUnderTest = new DataCatalogDaoImpl();
+    @InjectMocks
+    private DataCatalogDaoImpl dataCatalogDaoImpl;
 
+    @Mock
+    private JdbcTemplate jdbcTemplate;
+
+    @Spy
+    private ObjectMapper mapper;
+    
+    private List<DataCollection> dataCollLst;
+    private List<DataCollection> dataCollection;
+    
+    /**
+     * Set up.
+     *
+     * @throws Exception the exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        if ( !Optional.ofNullable( dataCollLst ).isPresent() ) {
+            try {
+                dataCollLst = new ObjectMapper().readValue( getClass().getResourceAsStream( "/AllDataCollectionResponseJSON.json" ), new TypeReference<List<DataCollection>>() {} );
+                dataCollection = new ObjectMapper().readValue( getClass().getResourceAsStream( "/DataCollectionResponseJSON.json" ), new TypeReference<List<DataCollection>>() {} );
+            } catch ( IOException e ) {
+                throw e;
+            }
+        }     
+    }
+
+    @SuppressWarnings ( "unchecked" )
+    @Test
+    public void testGetDataCollectionById() {
+        try {
+            Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( dataCollection );
+            List<DataCollection> dataCollection = dataCatalogDaoImpl.getDataCollection( "1", null );
+            Assert.assertEquals( 1, dataCollection.size() );
+         } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
+    @SuppressWarnings ( "unchecked" )
+    @Test
+    public void testGetAllDataCollection() {
+        try {
+            Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( dataCollLst );
+            List<DataCollection> dataCollection = dataCatalogDaoImpl.getDataCollection( null, null);
+            Assert.assertFalse( null==dataCollection );
+         } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
+    @SuppressWarnings ( "unchecked" )
+    @Test
+    public void testDataCollectionByIdNExperimentType() {
+        try {
+            Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( dataCollLst );
+            List<DataCollection> dataCollection = dataCatalogDaoImpl.getDataCollection( "1", "Experiment" );
+            Assert.assertEquals( "Experiment", dataCollection.get(0).getType());                
+           } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
+    @SuppressWarnings ( "unchecked" )
+    @Test
+    public void testDataCollectionExperimentType() {
+        try {
+            Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( dataCollLst );
+            List<DataCollection> dataCollection = dataCatalogDaoImpl.getDataCollection( null, "Experiment" );
+            Assert.assertEquals( "Experiment", dataCollection.get(0).getType());                
+           } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
+    @SuppressWarnings ( "unchecked" )
+    @Test
+    public void testDataCollectionByIdNAnnotationType() {
+        try {
+            Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( dataCollLst );
+            List<DataCollection> dataCollection = dataCatalogDaoImpl.getDataCollection( "1", "Annotation" );
+            Assert.assertEquals( "Annotation", dataCollection.get(1).getType()); 
+           } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
+    @SuppressWarnings ( "unchecked" )
+    @Test
+    public void testDataCollectionAnnotationType() {
+        try {
+            Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( dataCollLst );
+            List<DataCollection> dataCollection = dataCatalogDaoImpl.getDataCollection( null, "Annotation" );
+            Assert.assertEquals( "Annotation", dataCollection.get(1).getType()); 
+           } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
+    @SuppressWarnings ( "unchecked" )
+    @Test
+    public void testDataCollectionNullType() {
+        try {
+            Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( dataCollLst );
+            List<DataCollection> dataCollection = dataCatalogDaoImpl.getDataCollection( "1", null );
+            Assert.assertEquals( null, dataCollection.get(2).getType());   
+           } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
     @Test
     public void testConstructQueryWithEmptyParams() {
-        String params = classUnderTest.constructQuery(null);
+        String params = dataCatalogDaoImpl.constructQuery(null);
         assertTrue("Params should be empty when the passed params maps is null",params.equals(""));
     }
 
@@ -26,7 +168,7 @@ public class DataCatalogDaoImplTest {
     @Test
     public void testConstructQueryWithSingleParam() {
         Map<String, String> input = constructQueryParam("modality", "CT");
-        String result = classUnderTest.constructQuery(input);
+        String result = dataCatalogDaoImpl.constructQuery(input);
         String expectedResult = "WHERE modality IN (\"CT\")";
 
         assertEquals("Param constructed in incorrect ", expectedResult, result);
@@ -36,7 +178,7 @@ public class DataCatalogDaoImplTest {
     @Test
     public void testConstructQueryWithSingleParamMultipleValue() {
         Map<String, String> input = constructQueryParam("modality", "CT,MR");
-        String result = classUnderTest.constructQuery(input);
+        String result = dataCatalogDaoImpl.constructQuery(input);
         String expectedResult = "WHERE modality IN (\"CT\", \"MR\")";
 
         assertEquals("Param constructed in incorrect ", expectedResult, result);
@@ -46,7 +188,7 @@ public class DataCatalogDaoImplTest {
     public void testConstructQueryWithMultipleParamSingleValue() {
         Map<String, String> input = constructQueryParam("modality", "CT");
         input.putAll(constructQueryParam("anatomy", "LUNG"));
-        String result = classUnderTest.constructQuery(input);
+        String result = dataCatalogDaoImpl.constructQuery(input);
         String expectedResult = "WHERE modality IN (\"CT\") AND anatomy IN (\"LUNG\")";
 
         assertEquals("Param constructed in incorrect ", expectedResult, result);
@@ -56,11 +198,17 @@ public class DataCatalogDaoImplTest {
     public void testConstructQueryWithMultipleParamMultipleValue() {
         Map<String, String> input = constructQueryParam("modality", "CT,MR");
         input.putAll(constructQueryParam("anatomy", "LUNG,HEART"));
-        String result = classUnderTest.constructQuery(input);
+        String result = dataCatalogDaoImpl.constructQuery(input);
         String expectedResult = "WHERE modality IN (\"CT\", \"MR\") AND anatomy IN (\"LUNG\", \"HEART\")";
 
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
     }
 
+    @SuppressWarnings ( "unchecked" )
+    @Test ( expected = Exception.class )
+    public void testGetDataCollectionException() throws Exception {        
+        Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenThrow( Exception.class );
+        dataCatalogDaoImpl.getDataCollection( "1", null );      
+    }
 }
