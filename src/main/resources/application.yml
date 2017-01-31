@@ -10,13 +10,13 @@
 #experiment.targetData.locationType = s3
 
 ##AWS
-#spring.datasource.url: jdbc:mysql://learningfactory.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/learningfactory
-#spring.datasource.username: lfuser
-#spring.datasource.password: FeelGood?
+spring.datasource.url: jdbc:mysql://learningfactory.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/learningfactory
+spring.datasource.username: lfuser
+spring.datasource.password: FeelGood?
 #New Dev DB below
-spring.datasource.url: jdbc:mysql://dd13e7t1i438cg0.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/lfdb
-spring.datasource.username: dbadmin123
-spring.datasource.password: d165376b867
+#spring.datasource.url: jdbc:mysql://dd13e7t1i438cg0.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/lfdb
+#spring.datasource.username: dbadmin123
+#spring.datasource.password: d165376b867
 spring.data.rest.base-path: /api/v1/dataCatalog
 spring.jpa.properties.hibernate.show_sql: true
 spring.jpa.properties.hibernate.use_sql_comments: true
