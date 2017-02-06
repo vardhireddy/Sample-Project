@@ -1,0 +1,22 @@
+[
+    {
+        "id": 10,
+        "schemaVersion": "v1",
+        "orgId": "lidc-1",
+        "annotatorId": "J-12345",
+        "annotationTool": "Radiologist using LF-Annot tool version 1",
+        "annotationDate": "2017-01-31",
+        "type": "mask",
+        "imageSet": "1478545481004",
+        "item": {
+            "uri": "https://gehc-data-repo-main.s3.amazonaws.com/imaging/ct/lungData/LungCT_LIDC_LS/annot1",
+            "format": "nrrd",
+            "origin": [
+                0,
+                0,
+                0
+            ],
+            "coordSys": "IMAGE"
+        }
+    }
+]

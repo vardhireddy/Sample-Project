@@ -16,6 +16,8 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import com.gehc.ai.app.common.responsegenerator.ApiResponse;
+import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
@@ -24,7 +26,6 @@ import com.gehc.ai.app.dc.entity.Study;
 
 /**
  * @author 212071558
- *
  */
 public interface IDataCatalogRest {
     /**
@@ -33,136 +34,139 @@ public interface IDataCatalogRest {
      * @param params
      * @return List<ImageSet>
      */
-    List<ImageSet> getImgSet(Map<String, String> params);
+    List<ImageSet> getImgSet( Map<String, String> params );
 
     /**
      * Get Image Set by Data Collection Id
      * 
      * @param dataCollectionId
-     * @return  List<ImageSet>
+     * @return List<ImageSet>
      */
-    List<ImageSet> getImgSetByDataCollId(String dataCollectionId);
-    
+    List<ImageSet> getImgSetByDataCollId( String dataCollectionId );
+
     /**
      * Get Data Collection
-     * @param type TODO
      * 
+     * @param type TODO
      * @return List<DataCollection>
      */
-    List<DataCollection> getDataCollection(String id , String type );
-    
+    List<DataCollection> getDataCollection( String id, String type );
+
     /**
      * Create Data Collection
      * 
      * @param dataCollection
      * @return response
      */
-    Response createDataCollection(DataCollection dataCollection);
-    
+    Response createDataCollection( DataCollection dataCollection );
+
     /**
      * @param imageSet
      * @return
      */
-    String insertImageSet(ImageSet imageSet);
-    
+    String insertImageSet( ImageSet imageSet );
+
     /**
-     *  
-     * @return String Success 
+     * @return String Success
      */
     String healthCheck();
-    
-    
+
     /**
      * inserts a random annotation set into the database
+     * 
      * @param jsonString ignored
      * @return Response object wrapping the result of the insertion.
      */
-    Response insertRandomAnnotationSet(String jsonString);
+    Response insertRandomAnnotationSet( String jsonString );
 
     /**
      * inserts a random annotation set into the database
+     * 
      * @param jsonString annotation set to be inserted to the database
      * @return Response object wrapping the result of the insertion.
      */
-    Response insertAnnotationSet(AnnotationSet as);
+    Response insertAnnotationSet( AnnotationSet as );
 
     /**
-     * 
      * @param imageSetIds image sets id
      * @param fields fields defined in the JSON structure of the annotation
      * @return List of annotation sets given image set ids
      */
-    List getAnnotationSet(String imageSetIds, String fields);
+    List getAnnotationSet( String imageSetIds, String fields );
 
     /**
-     * 
      * @param queryMap a map of annotation set key-values
      * @return annotation sets given the query map
      */
-    List getAnnotationSet(Map<String, String> queryMap);
+    List getAnnotationSet( Map<String, String> queryMap );
 
     /**
-     * 
      * @param id id of target data
      * @param type type of target data
      * @return target data that matches id and type
      */
-    Map getExperimentTargetData(String id, String type);
+    Map getExperimentTargetData( String id, String type );
 
     /**
-     * 
      * @param queryMap fields from patient table columns
      * @return list of patient satisfying search criteria
      */
-	List<Patient> getPatient(Map<String, String> queryMap);
+    List<Patient> getPatient( Map<String, String> queryMap );
 
-	/**
-	 * 
-	 * @param queryMap list of studies satisfying search criteria
-	 * @return
-	 */
-	List<Study> getStudy(Map<String, String> queryMap);
+    /**
+     * @param queryMap list of studies satisfying search criteria
+     * @return
+     */
+    List<Study> getStudy( Map<String, String> queryMap );
 
-	/**
-	 * add patient to database
-	 * @param p patient
-	 * @return patient added
-	 */
-	Patient postPatient(Patient p);
+    /**
+     * add patient to database
+     * 
+     * @param p patient
+     * @return patient added
+     */
+    Patient postPatient( Patient p );
 
-	/**
-	 * save study to database
-	 * @param s study
-	 * @return study added
-	 */
-	Study postStudy(Study s);
+    /**
+     * save study to database
+     * 
+     * @param s study
+     * @return study added
+     */
+    Study postStudy( Study s );
 
-	/**
-	 * 
-	 * @param patientId
-	 * @return studies given a patient
-	 */
-	List<Study> getStudies(String patientId);
+    /**
+     * @param patientId
+     * @return studies given a patient
+     */
+    List<Study> getStudies( String patientId );
 
-	/**
-	 * 
-	 * @param studyId
-	 * @return image sets associated with the studyId
-	 */
-	List<ImageSet> getImageSetByStudyId(String studyId);
+    /**
+     * @param studyId
+     * @return image sets associated with the studyId
+     */
+    List<ImageSet> getImageSetByStudyId( String studyId );
 
-	/**
-	 * 
-	 * @param ids
-	 * @return patients based on a list of comma separated id's
-	 */
-	List<Patient> getPatients(String ids);
+    /**
+     * @param ids
+     * @return patients based on a list of comma separated id's
+     */
+    List<Patient> getPatients( String ids );
 
-	/**
-	 * 
-	 * @param ids
-	 * @return studies based on a list of comma separated id's
-	 */
-	List<Study> getStudiesById(String ids);
+    /**
+     * @param ids
+     * @return studies based on a list of comma separated id's
+     */
+    List<Study> getStudiesById( String ids );
 
+    List<Annotation> getAnnotations( String ids );
+
+    List<Annotation> getAnnotationsByImgSet( String imageSet );
+
+    /**
+     * Save an Annotation
+     * @param Annotation
+     * @return Annotation object created based on the Annotation object given
+     */
+    ApiResponse saveAnnotation(Annotation annotation);
 }

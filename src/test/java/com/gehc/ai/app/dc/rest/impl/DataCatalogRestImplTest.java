@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +27,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
+import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.DataCollection;
+import com.gehc.ai.app.dc.repository.AnnotationRepository;
 import com.gehc.ai.app.dc.repository.PatientRepository;
 import com.gehc.ai.app.dc.repository.StudyRepository;
 import com.gehc.ai.app.dc.rest.IDataCatalogRest;
@@ -62,6 +66,11 @@ public class DataCatalogRestImplTest {
         public StudyRepository studyRepository() {
             return mock( StudyRepository.class );
         }
+        
+        @Bean
+        public AnnotationRepository annotationRepository() {
+            return mock( AnnotationRepository.class );
+        }
     }
 
     @Autowired
@@ -74,6 +83,8 @@ public class DataCatalogRestImplTest {
     private PatientRepository patientRepository;
     @Autowired
     private StudyRepository studyRepository;
+    @Autowired
+    private AnnotationRepository annotationRepository;
 
     @Value ( "${experiment.targetData.gtMaskLocation}" )
     private String gtMaskLocation;
@@ -86,6 +97,7 @@ public class DataCatalogRestImplTest {
 
     private List<DataCollection> dataCollLst;
     private String dataCollId;
+    private List<Annotation> annotationList;
 
     /**
      * Set up.
@@ -100,6 +112,14 @@ public class DataCatalogRestImplTest {
                 } );
                 dataCollId = dataCollLst.get( 0 ).getId();
             } catch ( IOException e ) {
+                throw e;
+            }
+        }
+        if ( !Optional.ofNullable( annotationList ).isPresent() ) {
+            try {
+                annotationList = new ObjectMapper().readValue( getClass().getResourceAsStream( "/AnnotationResponseJSON.json" ), new TypeReference<List<Annotation>>() {
+                } );
+              } catch ( IOException e ) {
                 throw e;
             }
         }
@@ -125,5 +145,23 @@ public class DataCatalogRestImplTest {
             e.printStackTrace();
             fail( "Method should not throw exception" );
         }
+    }
+        
+    @Test
+    public void testSaveAnnotationNoException() {
+        Annotation annotation = new Annotation();
+        try {
+            dataCatalogRest.saveAnnotation( annotation );
+            assert (true);
+        } catch ( Exception ex ) {
+            fail();
+        }
+    }
+    
+    @Test
+    public void testSaveAnnotationStatusSuccess() {
+        Annotation annotation = new Annotation();
+        when( annotationRepository.save(annotation)).thenReturn( annotationList.get( 0 ) );
+        assertEquals( "SUCCESS", dataCatalogRest.saveAnnotation( annotation ).getStatus() );       
     }
 }

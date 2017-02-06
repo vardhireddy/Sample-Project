@@ -89,3 +89,15 @@ add properties JSON,
 add patient_dbid INT,
 add study_dbid INT
 
+
+create table if not exists annotation (
+ id INT auto_increment primary key,
+ schema_version varchar(50),
+ org_id varchar(255) NOT NULL,
+ annotator_id varchar(255),
+ annotation_tool varchar(255),
+ annotation_date datetime default current_timestamp,
+ type varchar(100),
+ image_set varchar(50) NOT NULL,
+ item JSON
+);
