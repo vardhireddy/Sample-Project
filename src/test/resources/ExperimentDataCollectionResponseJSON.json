@@ -1,0 +1,16 @@
+[
+    {
+        "id": "1478196290737",
+        "schemaVersion": null,
+        "name": "LIDC_Lung_CT",
+        "description": "LIDC Lung CT",
+        "imageSets": null,
+        "createdDate": "1478196290737",
+        "imageSetsSize": 2,
+        "type": "Experiment",
+        "creator": {
+            "id": "121",
+            "name": "Dr. Jain"
+        }
+    }
+]

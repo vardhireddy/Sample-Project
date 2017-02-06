@@ -53,7 +53,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     private static Logger logger = LoggerFactory.getLogger( DataCatalogDaoImpl.class );
 
 	private static final String DB_SCHEMA_VERSION = "v1.0";
-	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
+	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT distinct im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
 			+ " acq_date, acq_time, description, institution, equipment, instance_count, im.upload_by, im.upload_date, im.properties, p.patient_id, im.instance_count FROM image_set im  "
 			+ " join patient p on im.patient_dbid = p.id ";
 	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
@@ -91,7 +91,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
 
 	
-	private static final String ANNOTATION_JOIN = "INNER JOIN annotation_set an ON JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL ";
+	//private static final String ANNOTATION_JOIN = "INNER JOIN annotation_set an ON JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL ";
+	
+	private static final String ANNOTATION_JOIN = " INNER JOIN annotation an ON an.image_set = im.id ";
+		
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -411,12 +414,19 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	@Override
 	public List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception {
-		final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.data, '$**.mask.uri') "
+		/*final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.data, '$**.mask.uri') "
 				+ "as gtMask from image_set im inner join annotation_set an ON "
 				+ "JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') "
 				+ "IS NOT NULL inner join data_collection dc ON "
 				+ "JSON_SEARCH(dc.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL "
-				+ "WHERE dc.id=" + dataCollectionIds+ ";";
+				+ "WHERE dc.id=" + dataCollectionIds+ ";";*/
+	    
+	    final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.item, '$.uri') "
+                    + "as gtMask from image_set im inner join annotation an ON "
+                    + "an.image_set = im.id "
+                    + "inner join data_collection dc ON "
+                    + "JSON_SEARCH(dc.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL "
+                    + "WHERE dc.id=" + dataCollectionIds+ " and an.type = 'mask' ;";
 		
 		List<TargetData> alist = new ArrayList<TargetData>();
 		alist = jdbcTemplate.query(query, new ResultSetExtractor<List<TargetData>>() {
@@ -427,11 +437,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	            	TargetData td = new TargetData();
 	            	td.patientId = rs.getString("pid");
 	            	td.img =  rs.getString("img");
-	                td.gtMask = rs.getString("gtMask").replaceAll("\\[\"", "").replaceAll("\"\\]", "");;
-	                
-	                
-	                //System.err.println("gtmask -> " + td.gtMask);
-	                
+	            	if(null != rs.getString("gtMask") && !rs.getString("gtMask").isEmpty()){
+	            	   // td.gtMask = rs.getString("gtMask").replaceAll("\\[\"", "").replaceAll("\"\\]", "");
+	            	     td.gtMask = rs.getString("gtMask").replace("\"", "");
+	            	     td.gtMask.trim();
+	            	}	                
 	                asList.add(td);
 	            }
 	            return asList;

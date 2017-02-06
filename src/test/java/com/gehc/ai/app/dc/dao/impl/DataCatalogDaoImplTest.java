@@ -33,6 +33,16 @@ import com.gehc.ai.app.dc.entity.DataCollection;
 @ContextConfiguration
 public class DataCatalogDaoImplTest {
 
+    private static final String GET_DC_PREFIX = "SELECT json_extract(a.data, '$.id') as id ,json_extract(a.data, '$.name') as name, "
+            + " json_extract(a.data, '$.type') as type, "
+            + " json_extract(a.data, '$.description') as description, "
+            + " json_extract(a.data, '$.createdDate') as createdDate, "
+            + " json_extract(a.data, '$.creator.name') as creatorName,"
+            + " json_extract(a.data, '$.creator.id') as creatorId, "
+            + " JSON_LENGTH(json_extract(a.data, '$.imageSets')) as imageSetsSize FROM data_collection a "
+            + " where a.id = ? and json_extract(a.data, '$.type') = ? ";
+            
+    
     @InjectMocks
     private DataCatalogDaoImpl dataCatalogDaoImpl;
 
@@ -44,6 +54,7 @@ public class DataCatalogDaoImplTest {
     
     private List<DataCollection> dataCollLst;
     private List<DataCollection> dataCollection;
+    private List<DataCollection> expDataColl;
     
     /**
      * Set up.
@@ -56,6 +67,7 @@ public class DataCatalogDaoImplTest {
             try {
                 dataCollLst = new ObjectMapper().readValue( getClass().getResourceAsStream( "/AllDataCollectionResponseJSON.json" ), new TypeReference<List<DataCollection>>() {} );
                 dataCollection = new ObjectMapper().readValue( getClass().getResourceAsStream( "/DataCollectionResponseJSON.json" ), new TypeReference<List<DataCollection>>() {} );
+                expDataColl = new ObjectMapper().readValue( getClass().getResourceAsStream( "/ExperimentDataCollectionResponseJSON.json" ), new TypeReference<List<DataCollection>>() {} );
             } catch ( IOException e ) {
                 throw e;
             }
@@ -92,7 +104,7 @@ public class DataCatalogDaoImplTest {
     @Test
     public void testDataCollectionByIdNExperimentType() {
         try {
-            Mockito.when( this.jdbcTemplate.query( Matchers.anyString(), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( dataCollLst );
+            Mockito.when( this.jdbcTemplate.query( Matchers.contains( GET_DC_PREFIX), (PreparedStatementSetter)Matchers.anyObject(), (RowMapper<DataCollection>)Matchers.anyObject() ) ).thenReturn( expDataColl );
             List<DataCollection> dataCollection = dataCatalogDaoImpl.getDataCollection( "1", "Experiment" );
             Assert.assertEquals( "Experiment", dataCollection.get(0).getType());                
            } catch ( Exception e ) {

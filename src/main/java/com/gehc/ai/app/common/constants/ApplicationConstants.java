@@ -199,5 +199,7 @@ public final class ApplicationConstants {
     
     public static final String UNAUTHORIZED_ERROR_DESCRIPTION = "Unauthorized";
 
-
+    /** Other Constants  */
+    public static final String SUCCESS = "SUCCESS";
+    public static final String FAILURE = "FAILURE";
 }
