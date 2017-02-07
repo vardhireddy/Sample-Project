@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import com.gehc.ai.app.dc.entity.Annotation;
@@ -61,7 +63,6 @@ import com.gehc.ai.app.dc.repository.PatientRepository;
 import com.gehc.ai.app.dc.repository.StudyRepository;
 import com.gehc.ai.app.dc.rest.IDataCatalogRest;
 import com.gehc.ai.app.dc.service.IDataCatalogService;
-import com.gehc.ai.app.common.constants.ApplicationConstants;
 
 /**
  * @author 212071558
@@ -96,20 +97,72 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS ) );
         ResponseBuilder responseBuilder;
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
+        List<ImageSet> imgSetWithAnnotation = new ArrayList<ImageSet>();
         try {
-
             imageSet = dataCatalogService.getImgSet( validParams );
+            //Get Annotation
+            if(params.containsKey( ANNOTATIONS )){
+                logger.info( "*** Params has annotations " );
+                if(null != imageSet){
+                    logger.info( "*** Img set is not null " + imageSet.size());
+                    List<String> imgSetIds = new ArrayList<String>();
+                    for(Iterator<ImageSet> imgSetItr = imageSet.iterator(); imgSetItr.hasNext();){
+                        ImageSet imgSet = (ImageSet)imgSetItr.next();
+                        imgSetIds.add( imgSet.getId() );
+                    }
+                    logger.info( "*** Img set ids from other filters " + imgSetIds.toString() );
+                    String values = params.get(ANNOTATIONS);
+                    logger.info( "*** Values for annotations " + values );
+                    List<String> typeLst = new ArrayList<String>();
+                    if ( null != values && !values.isEmpty() ) {
+                        String[] typeStrings = values.split( "," );
+                        for ( int i = 0; i < typeStrings.length; i++ )
+                            typeLst.add( typeStrings[i] );
+                        logger.info( "***************** Types = " + typeLst.toString() );
+                    }
+                    List<Annotation> annotationLst = annotationRepository.findByImageSetInAndTypeIn( imgSetIds, typeLst );
+                    Set<String> imageSetIds = new HashSet<String>();
+                    if(null != annotationLst && annotationLst.size()>0){
+                        logger.info( "*** Annotations from DB " + annotationLst.toString() );
+                        for(Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();){
+                            Annotation annotation = (Annotation)annotationItr.next();
+                            imageSetIds.add( annotation.getImageSet() );
+                        }                        
+                    }
+                    if(null != imageSetIds && imageSetIds.size()>0){
+                        logger.info( "*** imageSetIds which has annotations " + imageSetIds.toString() );
+                        for(Iterator<ImageSet> imgSetItr = imageSet.iterator(); imgSetItr.hasNext();){
+                            ImageSet imgSet = (ImageSet)imgSetItr.next();
+                            logger.info( "*** Check if this img set has annotation " + imgSet.getId() );
+                            if(imageSetIds.contains( imgSet.getId())){
+                                logger.info( "*** Found imgset which has all criteria satisfied " + imgSet.getId() );
+                                imgSetWithAnnotation.add( imgSet );
+                            }
+                        }
+                    }
+                    if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
+                        logger.info( "*** imgSetWithAnnotation.toString() " + imgSetWithAnnotation.toString() );
+                        responseBuilder = Response.ok( imgSetWithAnnotation );
+                        return (List<ImageSet>)responseBuilder.build().getEntity();
+                    }else{
+                        responseBuilder = Response.status( Status.NOT_FOUND );
+                        return (List<ImageSet>)responseBuilder.build();
+                    }
+                }else {
+                    responseBuilder = Response.status( Status.NOT_FOUND );
+                    return (List<ImageSet>)responseBuilder.build();
+                }
+            }else if ( imageSet != null ) {
+                responseBuilder = Response.ok( imageSet );
+                return (List<ImageSet>)responseBuilder.build().getEntity();
+            } else {
+                responseBuilder = Response.status( Status.NOT_FOUND );
+                return (List<ImageSet>)responseBuilder.build();
+            }            
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while filtering image set data" ).build() );
         } catch ( Exception e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while filtering image set data" ).build() );
-        }
-        if ( imageSet != null ) {
-            responseBuilder = Response.ok( imageSet );
-            return (List<ImageSet>)responseBuilder.build().getEntity();
-        } else {
-            responseBuilder = Response.status( Status.NOT_FOUND );
-            return (List<ImageSet>)responseBuilder.build();
         }
     }
 
@@ -551,14 +604,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    //@RequestMapping ( value = "/annotationByImageSets/{imageSets}", method = RequestMethod.GET )
-    @RequestMapping ( value = "/annotation/imagesets/{imageSets}", method = RequestMethod.GET )
+    @RequestMapping ( value = "/annotation/imageset/{imageSets}", method = RequestMethod.GET )
     public List<Annotation> getAnnotationsByImgSet( @PathVariable String imageSets ) {
         List<String> imgSetIds = new ArrayList<String>();
-        String[] idStrings = imageSets.split( "," );
-        for ( int i = 0; i < idStrings.length; i++ )
-            imgSetIds.add( idStrings[i] );
-        return annotationRepository.findByImageSet( imgSetIds );
+        if (  null != imageSets && !imageSets.isEmpty() ) {
+            String[] idStrings = imageSets.split( "," );
+            for ( int i = 0; i < idStrings.length; i++ )
+                imgSetIds.add( idStrings[i] );
+        }
+        return annotationRepository.findByImageSetIn( imgSetIds );
     }
 
     /* (non-Javadoc)
@@ -570,6 +624,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping(value = "/annotation", method = RequestMethod.POST)
     public ApiResponse saveAnnotation(@RequestBody Annotation annotation ) {
         ApiResponse apiResponse = null;
+        logger.info( "!!! annotation = " + annotation.toString() );
         try{
             Annotation newAnnotation = annotationRepository.save( annotation );
             apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, newAnnotation.getId().toString());
@@ -579,4 +634,25 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return apiResponse;
     }
+    
+    @Override
+    @RequestMapping ( value = "/annotation/imageset/type", method = RequestMethod.GET )
+    public List<Annotation> getAnnotationsByImgSetAndType(@QueryParam ( "imageSet" ) String imageSet, @QueryParam ( "type" ) String type ) {
+        List<String> imgSetIds = new ArrayList<String>();
+        if ( null != imageSet && !imageSet.isEmpty() ) {
+            String[] idStrings = imageSet.split( "," );
+            for ( int i = 0; i < idStrings.length; i++ )
+                imgSetIds.add( idStrings[i] );
+            logger.info( "***************** Imagesets = " + imgSetIds.toString() );
+        }
+        List<String> typeLst = new ArrayList<String>();
+        if ( null != type && !type.isEmpty() ) {
+            String[] typeStrings = type.split( "," );
+            for ( int i = 0; i < typeStrings.length; i++ )
+                typeLst.add( typeStrings[i] );
+            logger.info( "***************** Types = " + typeLst.toString() );
+        }
+        return annotationRepository.findByImageSetInAndTypeIn( imgSetIds, typeLst );
+    }
+
 }

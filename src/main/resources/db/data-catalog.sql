@@ -101,3 +101,7 @@ create table if not exists annotation (
  image_set varchar(50) NOT NULL,
  item JSON
 );
+
+alter table annotation 
+CHANGE COLUMN `annotation_date` `annotation_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+

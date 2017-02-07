@@ -164,4 +164,16 @@ public class DataCatalogRestImplTest {
         when( annotationRepository.save(annotation)).thenReturn( annotationList.get( 0 ) );
         assertEquals( "SUCCESS", dataCatalogRest.saveAnnotation( annotation ).getStatus() );       
     }
+    
+    @Test
+    public void testGetAnnotationsByImgSetAndTypeNoException() {
+        String imageSets = new String();
+        String types = new String();
+        try {
+            dataCatalogRest.getAnnotationsByImgSetAndType( imageSets, types );
+            assert (true);
+        } catch ( Exception ex ) {
+            fail();
+        }
+    }
 }

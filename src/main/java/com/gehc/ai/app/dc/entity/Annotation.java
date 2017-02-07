@@ -20,8 +20,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.TemporalType;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.jpa.repository.Temporal;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.dc.filters.JsonConverter;
@@ -58,8 +60,9 @@ public class Annotation implements Serializable {
     /**
      * Date data was annotated. Should be left to database to provide.
      */
-    @Column(name="annotation_date")
-    @JsonFormat(pattern="yyyyMMdd")
+    
+   // @JsonFormat(pattern="yyyyMMdd")
+    @Column(name="annotation_date", columnDefinition="DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Date annotationDate;
     @Column(name="type")
     private String type;
