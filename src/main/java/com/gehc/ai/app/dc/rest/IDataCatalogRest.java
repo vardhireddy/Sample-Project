@@ -14,6 +14,7 @@ package com.gehc.ai.app.dc.rest;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
@@ -159,8 +160,16 @@ public interface IDataCatalogRest {
      */
     List<Study> getStudiesById( String ids );
 
+    /**
+     * @param ids
+     * @return
+     */
     List<Annotation> getAnnotations( String ids );
 
+    /**
+     * @param imageSet
+     * @return
+     */
     List<Annotation> getAnnotationsByImgSet( String imageSet );
 
     /**
@@ -169,4 +178,11 @@ public interface IDataCatalogRest {
      * @return Annotation object created based on the Annotation object given
      */
     ApiResponse saveAnnotation(Annotation annotation);
+    
+    /**
+     * @param imageSets
+     * @param types
+     * @return
+     */
+    List<Annotation> getAnnotationsByImgSetAndType(String imageSets, String types );
 }

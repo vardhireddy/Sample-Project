@@ -89,11 +89,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final java.lang.String PARAM_DELIM = ",";
 
 	private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
-
 	
-	//private static final String ANNOTATION_JOIN = "INNER JOIN annotation_set an ON JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL ";
-	
-	private static final String ANNOTATION_JOIN = " INNER JOIN annotation an ON an.image_set = im.id ";
+	//private static final String ANNOTATION_JOIN = " INNER JOIN annotation an ON an.image_set = im.id ";
 		
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -113,9 +110,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		}
 		builder.append(GET_IMGSET_DATA_BY_ORG_ID);
 		
-		if (annotValue != null) {
+		/*if (annotValue != null) {
 			builder.append(ANNOTATION_JOIN);
-		}
+		}*/
 		builder.append(constructQuery(params));
 
 		logger.info("!!! getImgSet by org id sql = " + builder);
