@@ -104,8 +104,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             //Get Annotation
             if(params.containsKey( ANNOTATIONS )){
                 logger.info( "*** Params has annotations " );
-                if(null != imageSet){
-                    logger.info( "*** Img set is not null " + imageSet.size());
+                if(null != imageSet && imageSet.size()>0){
+                    logger.info( "!!! Img set is not null " + imageSet.size());
                     List<String> imgSetIds = new ArrayList<String>();
                     for(Iterator<ImageSet> imgSetItr = imageSet.iterator(); imgSetItr.hasNext();){
                         ImageSet imgSet = (ImageSet)imgSetItr.next();
@@ -141,30 +141,22 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             }
                         }
                     }
-                    
-                    //Begin no annotation
-                    
-                    
-                    //End no annotation
-                    
                     if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
                         logger.info( "*** imgSetWithAnnotation.toString() " + imgSetWithAnnotation.toString() );
                         responseBuilder = Response.ok( imgSetWithAnnotation );
                         return (List<ImageSet>)responseBuilder.build().getEntity();
                     }else{
-                        responseBuilder = Response.status( Status.NOT_FOUND );
-                        return (List<ImageSet>)responseBuilder.build();
+                        return imageSet;
                     }
-                }else {
-                    responseBuilder = Response.status( Status.NOT_FOUND );
-                    return (List<ImageSet>)responseBuilder.build();
-                }
-            }else if ( imageSet != null ) {
+                }else{
+                    return imageSet;
+                  }
+            }else if ( imageSet != null && imageSet.size()>0) {
+                logger.info( "!!! No annotations params " );
                 responseBuilder = Response.ok( imageSet );
                 return (List<ImageSet>)responseBuilder.build().getEntity();
             } else {
-                responseBuilder = Response.status( Status.NOT_FOUND );
-                return (List<ImageSet>)responseBuilder.build();
+                return imageSet;
             }            
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while filtering image set data" ).build() );
