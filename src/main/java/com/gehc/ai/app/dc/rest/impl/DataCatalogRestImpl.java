@@ -79,6 +79,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String MODALITY = "modality";
     public static final String ANATOMY = "anatomy";
     public static final String ANNOTATIONS = "annotations";
+    public static final String SERIES_INS_UID = "series_instance_uid";
 
     @Autowired
     private IDataCatalogService dataCatalogService;
@@ -94,7 +95,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @RequestMapping ( value = "/dataCatalog/image-set", method = RequestMethod.GET )
     public List<ImageSet> getImgSet( @RequestParam Map<String, String> params ) {
-        Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS ) );
+        Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID ) );
         ResponseBuilder responseBuilder;
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
         List<ImageSet> imgSetWithAnnotation = new ArrayList<ImageSet>();
@@ -140,6 +141,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             }
                         }
                     }
+                    
+                    //Begin no annotation
+                    
+                    
+                    //End no annotation
+                    
                     if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
                         logger.info( "*** imgSetWithAnnotation.toString() " + imgSetWithAnnotation.toString() );
                         responseBuilder = Response.ok( imgSetWithAnnotation );
