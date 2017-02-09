@@ -80,6 +80,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String ANATOMY = "anatomy";
     public static final String ANNOTATIONS = "annotations";
     public static final String SERIES_INS_UID = "series_instance_uid";
+    public static final String ABSENT = "absent";
 
     @Autowired
     private IDataCatalogService dataCatalogService;
@@ -97,13 +98,22 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List<ImageSet> getImgSet( @RequestParam Map<String, String> params ) {
         Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID ) );
         ResponseBuilder responseBuilder;
+        //List of img set based on filter criteria other than annotation
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
+        //List of img set which annotation
         List<ImageSet> imgSetWithAnnotation = new ArrayList<ImageSet>();
+        //List of img set which does not have annotation of particular type 
+        List<ImageSet> imgSetWithNotThatTypeOfAnn = new ArrayList<ImageSet>();
+        //List of final img set which has no annotation + img set of particular type 
+        List<ImageSet> imageSetFinalLst = new ArrayList<ImageSet>();
+        boolean dataWithNoAnnNeeded = false;
         try {
             imageSet = dataCatalogService.getImgSet( validParams );
             //Get Annotation
             if(params.containsKey( ANNOTATIONS )){
                 logger.info( "*** Params has annotations " );
+                String values = params.get(ANNOTATIONS);
+                logger.info( "*** Values for annotations " + values );
                 if(null != imageSet && imageSet.size()>0){
                     logger.info( "!!! Img set is not null " + imageSet.size());
                     List<String> imgSetIds = new ArrayList<String>();
@@ -111,37 +121,61 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         ImageSet imgSet = (ImageSet)imgSetItr.next();
                         imgSetIds.add( imgSet.getId() );
                     }
-                    logger.info( "*** Img set ids from other filters " + imgSetIds.toString() );
-                    String values = params.get(ANNOTATIONS);
-                    logger.info( "*** Values for annotations " + values );
-                    List<String> typeLst = new ArrayList<String>();
-                    if ( null != values && !values.isEmpty() ) {
-                        String[] typeStrings = values.split( "," );
-                        for ( int i = 0; i < typeStrings.length; i++ )
-                            typeLst.add( typeStrings[i] );
-                        logger.info( "***************** Types = " + typeLst.toString() );
-                    }
-                    List<Annotation> annotationLst = annotationRepository.findByImageSetInAndTypeIn( imgSetIds, typeLst );
-                    Set<String> imageSetIds = new HashSet<String>();
-                    if(null != annotationLst && annotationLst.size()>0){
-                        logger.info( "*** Annotations from DB " + annotationLst.toString() );
-                        for(Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();){
-                            Annotation annotation = (Annotation)annotationItr.next();
-                            imageSetIds.add( annotation.getImageSet() );
-                        }                        
-                    }
-                    if(null != imageSetIds && imageSetIds.size()>0){
-                        logger.info( "*** imageSetIds which has annotations " + imageSetIds.toString() );
-                        for(Iterator<ImageSet> imgSetItr = imageSet.iterator(); imgSetItr.hasNext();){
-                            ImageSet imgSet = (ImageSet)imgSetItr.next();
-                            logger.info( "*** Check if this img set has annotation " + imgSet.getId() );
-                            if(imageSetIds.contains( imgSet.getId())){
-                                logger.info( "*** Found imgset which has all criteria satisfied " + imgSet.getId() );
-                                imgSetWithAnnotation.add( imgSet );
+                    logger.info( "++++++ Img set ids from other filters " + imgSetIds.toString() );
+                   
+                    List<String> typeLst = getAnnTypesLst(values);                     
+                     if(typeLst.contains(ABSENT))
+                            dataWithNoAnnNeeded = true;
+                    logger.info( "*** DataWithNoAnnNeeded " + dataWithNoAnnNeeded);
+                    if(null != typeLst && typeLst.size()>0){
+                        if(typeLst.size()==1 && typeLst.contains(ABSENT)){
+                            logger.info( "*** Annotation filter only has absent type = " + typeLst.toString() );
+                            imgSetWithNotThatTypeOfAnn.addAll( imageSet );
+                        }else{
+                            logger.info( "*** Annotation filter types = " + typeLst.toString() );
+                            List<Annotation> annotationLst = annotationRepository.findByImageSetInAndTypeIn( imgSetIds, typeLst );
+                            Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
+                            if(null != uniqueImgSetIds && uniqueImgSetIds.size()>0){
+                                logger.info( "*** uniqueImgSetIds which has annotations " + uniqueImgSetIds.toString() );
+                                for(Iterator<ImageSet> imgSetItr = imageSet.iterator(); imgSetItr.hasNext();){
+                                    ImageSet imgSet = (ImageSet)imgSetItr.next();
+                                    logger.info( "*** Check if this img set has annotation of that type " + imgSet.getId() );
+                                    if(uniqueImgSetIds.contains( imgSet.getId())){
+                                        logger.info( "*** Found imgset which satisfied all criterias " + imgSet.getId() );
+                                        imgSetWithAnnotation.add( imgSet );
+                                    }else if(dataWithNoAnnNeeded){
+                                        logger.info( "*** Found imgset which does not have that particular annotation type " + imgSet.getId() );
+                                        imgSetWithNotThatTypeOfAnn.add( imgSet );
+                                    }
+                                }
                             }
                         }
                     }
-                    if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
+                    if(dataWithNoAnnNeeded && null != imgSetWithNotThatTypeOfAnn && imgSetWithNotThatTypeOfAnn.size()>0){
+                        logger.info( "*** Img set with no annotation or annotation other than the one which is in filtet criteria, imgSetWithNotThatTypeOfAnn.toString() = " + imgSetWithNotThatTypeOfAnn.toString() );
+                        if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
+                            logger.info( "*** Img set which has annotation, imgSetWithAnnotation.toString() = " + imgSetWithAnnotation.toString() );
+                            imageSetFinalLst.addAll( imgSetWithAnnotation );
+                        }
+                        for(Iterator<ImageSet> imgSetItr = imgSetWithNotThatTypeOfAnn.iterator(); imgSetItr.hasNext();){
+                            ImageSet imgSet = (ImageSet)imgSetItr.next();
+                            logger.info( "*** Check if this img set has annotation of any other type " + imgSet.getId() );
+                            List<Annotation> annotationLst = annotationRepository.findByImageSet(imgSet.getId() );
+                            if(null != annotationLst && annotationLst.size()>0){
+                                logger.info( "*** Found imgset which has annotation of other type so remove it from the list " + imgSet.getId() );                               
+                            }else{ 
+                                logger.info( "*** Found imgset which has no annotation so adding to the list " + imgSet.getId() ); 
+                                imageSetFinalLst.add( imgSet );
+                            }
+                        }
+                        if(null != imageSetFinalLst && imageSetFinalLst.size()>0){
+                            logger.info( "*** imageSetFinalLst.toString() " + imageSetFinalLst.toString() );
+                            responseBuilder = Response.ok( imageSetFinalLst );
+                            return (List<ImageSet>)responseBuilder.build().getEntity();
+                        }else{
+                            return imageSet;
+                        }
+                    }else if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
                         logger.info( "*** imgSetWithAnnotation.toString() " + imgSetWithAnnotation.toString() );
                         responseBuilder = Response.ok( imgSetWithAnnotation );
                         return (List<ImageSet>)responseBuilder.build().getEntity();
@@ -149,6 +183,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         return imageSet;
                     }
                 }else{
+                    //Do we need to get img set for annotation only? As per my conversation with Aruna, we will have at least filter by org id so no need of below logic 
+                    /*List<String> typeLst = getAnnTypesLst(values);  
+                    List<Annotation> annotationLst = annotationRepository.findByTypeIn( typeLst );
+                    Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
+                    if(null != uniqueImgSetIds && uniqueImgSetIds.size()>0){
+                        logger.info( "*** uniqueImgSetIds which has annotations " + uniqueImgSetIds.toString() );
+                    }*/
                     return imageSet;
                   }
             }else if ( imageSet != null && imageSet.size()>0) {
@@ -163,6 +204,30 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         } catch ( Exception e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while filtering image set data" ).build() );
         }
+    }
+    
+    private List<String> getAnnTypesLst(String values){
+        List<String> typeLst = new ArrayList<String>();  
+        if ( null != values && !values.isEmpty() ) {
+            String[] typeStrings = values.split( "," );
+            if ( null != typeStrings && typeStrings.length>0 ) {
+                for ( int i = 0; i < typeStrings.length; i++ )
+                    typeLst.add( typeStrings[i].toLowerCase() );
+           }
+        }
+        return typeLst;
+    }
+    
+    private Set<String> getUniqueImgSetIds(List<Annotation> annotationLst){
+        Set<String> uniqueImgSetIds = new HashSet<String>();
+        if(null != annotationLst && annotationLst.size()>0){
+            logger.info( "*** Annotations from list " + annotationLst.toString() );
+            for(Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();){
+                Annotation annotation = (Annotation)annotationItr.next();
+                uniqueImgSetIds.add( annotation.getImageSet() );
+            }                        
+        }
+        return uniqueImgSetIds;
     }
 
     Map<String, String> constructValidParams( Map<String, String> params, List<String> allowedParams ) {

@@ -14,6 +14,7 @@ package com.gehc.ai.app.dc.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.gehc.ai.app.dc.entity.Annotation;
@@ -26,6 +27,7 @@ import com.gehc.ai.app.dc.entity.Annotation;
 public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     List<Annotation> findByTypeIn(List<String> type);
     List<Annotation> findByIdIn(List<Long> ids);
+    List<Annotation> findByImageSet(@Param("imageSet") String imageSet);
     List<Annotation> findByImageSetIn(List<String> imageSet);
     List<Annotation> findByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
     @Override
