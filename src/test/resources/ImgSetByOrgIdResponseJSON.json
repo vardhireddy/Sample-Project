@@ -1,0 +1,24 @@
+[
+	{
+		"schemaVersion": null,
+		"id": "1480291497157",
+		"studyDbId": 71,
+		"patientDbId": 100,
+		"seriesInstanceUid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.877026508860018521147620598474",
+		"acqDate": "20111124",
+		"acqTime": "16.10",
+		"modality": "CT",
+		"anatomy": "CHEST",
+		"description": "Chest Image",
+		"institution": "University of California, San Francisco",
+		"equipment": "GE Healthcare Digital",
+		"dataFormat": "DCM",
+		"uri": "https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/c9cc3bdb-6d70-4f7d-9af8-d4c24d3a3ab2/d/1.3.6.1.4.1.14519.5.2.1.6279.6001.196764647858692982718767974745/1.3.6.1.4.1.14519.5.2.1.6279.6001.877026508860018521147620598474",
+		"instanceCount": 280,
+		"orgId": "LIDC-1",
+		"uploadBy": "SNS-Manager",
+		"uploadDate": "2016-11-28 00:05:14.0",
+		"properties": "null",
+		"patientId": "LIDC-IDRI-0576"
+	}
+]
