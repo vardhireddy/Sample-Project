@@ -25,5 +25,3 @@ spring.jpa.properties.hibernate.format_sql: true
 experiment.targetData.gtMaskLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
 experiment.targetData.imgLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
 experiment.targetData.locationType: s3
-
-

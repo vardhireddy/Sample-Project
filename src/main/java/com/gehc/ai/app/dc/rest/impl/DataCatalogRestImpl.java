@@ -111,7 +111,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             imageSet = dataCatalogService.getImgSet( validParams );
             //Get Annotation
             if(params.containsKey( ANNOTATIONS )){
-                logger.info( "*** Params has annotations " );
+                logger.info( "!!! Params has annotations " );
                 String values = params.get(ANNOTATIONS);
                 logger.info( "*** Values for annotations " + values );
                 if(null != imageSet && imageSet.size()>0){
@@ -148,11 +148,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                                         imgSetWithNotThatTypeOfAnn.add( imgSet );
                                     }
                                 }
+                            }else{
+                                logger.info( "*** Found no imgset which has that particular annotation type so returning nothing");
+                                return  imgSetWithNotThatTypeOfAnn;
                             }
                         }
                     }
                     if(dataWithNoAnnNeeded && null != imgSetWithNotThatTypeOfAnn && imgSetWithNotThatTypeOfAnn.size()>0){
-                        logger.info( "*** Img set with no annotation or annotation other than the one which is in filtet criteria, imgSetWithNotThatTypeOfAnn.toString() = " + imgSetWithNotThatTypeOfAnn.toString() );
+                        logger.info( "*** Img set with no annotation or annotation other than the one which is in filter criteria, imgSetWithNotThatTypeOfAnn.toString() = " + imgSetWithNotThatTypeOfAnn.toString() );
                         if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
                             logger.info( "*** Img set which has annotation, imgSetWithAnnotation.toString() = " + imgSetWithAnnotation.toString() );
                             imageSetFinalLst.addAll( imgSetWithAnnotation );

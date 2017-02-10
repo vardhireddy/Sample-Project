@@ -8,7 +8,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -29,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.DataCollection;
+import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.repository.AnnotationRepository;
 import com.gehc.ai.app.dc.repository.PatientRepository;
 import com.gehc.ai.app.dc.repository.StudyRepository;
@@ -98,6 +101,7 @@ public class DataCatalogRestImplTest {
     private List<DataCollection> dataCollLst;
     private String dataCollId;
     private List<Annotation> annotationList;
+    private List<ImageSet> imgSetLst;
 
     /**
      * Set up.
@@ -120,6 +124,14 @@ public class DataCatalogRestImplTest {
                 annotationList = new ObjectMapper().readValue( getClass().getResourceAsStream( "/AnnotationResponseJSON.json" ), new TypeReference<List<Annotation>>() {
                 } );
               } catch ( IOException e ) {
+                throw e;
+            }
+        }
+        if ( !Optional.ofNullable( imgSetLst ).isPresent() ) {
+            try {
+                imgSetLst = new ObjectMapper().readValue( getClass().getResourceAsStream( "/ImgSetByOrgIdResponseJSON.json" ), new TypeReference<List<ImageSet>>() {
+                } );
+            } catch ( IOException e ) {
                 throw e;
             }
         }
@@ -176,4 +188,76 @@ public class DataCatalogRestImplTest {
             fail();
         }
     }
+    
+    @Test
+    public void testFindByImageSetNoException() {
+        String imageSets = new String();
+        try {
+            dataCatalogRest.getAnnotationsByImgSet( imageSets );
+            assert (true);
+        } catch ( Exception ex ) {
+            fail();
+        }
+    }
+    
+    private Map<String, String> constructQueryParam(String key, String values) {
+        Map<String, String> params = new HashMap<>();
+        params.put(key, values);
+        return params;
+    }
+    
+    @Test
+    public void testgetImgSet() {
+        Map<String, String> input = constructQueryParam("orgId", "LIDC-1");
+        try {
+            when( dataCatalogService.getImgSet( any() ) ).thenReturn( imgSetLst );
+            assertEquals( "LIDC-1", dataCatalogRest.getImgSet( input ).get( 0 ).getOrgId() );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
+    @Test
+    public void testgetImgSetWithAnn() {
+        Map<String, String> input = constructQueryParam("orgId", "LIDC-1");
+        input.putAll(constructQueryParam("annotations", "mask"));
+        try {
+            when( dataCatalogService.getImgSet( any() ) ).thenReturn( imgSetLst );
+            when( annotationRepository.findByImageSetInAndTypeIn( any(), any())).thenReturn( annotationList );
+            assertEquals( "LIDC-1", dataCatalogRest.getImgSet( input ).get( 0 ).getOrgId() );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    
+    @Test
+    public void testgetImgSetWithAnnAbsent() {
+        Map<String, String> input = constructQueryParam("orgId", "LIDC-1");
+        input.putAll(constructQueryParam("annotations", "absent"));
+        try {
+            when( dataCatalogService.getImgSet( any() ) ).thenReturn( imgSetLst );
+            when( annotationRepository.findByImageSet( any())).thenReturn( annotationList );
+            assertEquals( "LIDC-1", dataCatalogRest.getImgSet( input ).get( 0 ).getOrgId() );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+    @Test
+    public void testgetImgSetWithAnnAbsentMask() {
+        Map<String, String> input = constructQueryParam("orgId", "LIDC-1");
+        input.putAll(constructQueryParam("annotations", "absent,mask"));
+        try {
+            when( dataCatalogService.getImgSet( any() ) ).thenReturn( imgSetLst );
+            when( annotationRepository.findByImageSetInAndTypeIn( any(), any())).thenReturn( annotationList );
+            when( annotationRepository.findByImageSet( any())).thenReturn( annotationList );
+            assertEquals( "LIDC-1", dataCatalogRest.getImgSet( input ).get( 0 ).getOrgId() );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( "Method should not throw exception" );
+        }
+    }
+
 }
