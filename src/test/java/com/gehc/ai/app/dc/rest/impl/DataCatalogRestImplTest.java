@@ -33,6 +33,7 @@ import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.repository.AnnotationRepository;
+import com.gehc.ai.app.dc.repository.COSNotificationRepository;
 import com.gehc.ai.app.dc.repository.PatientRepository;
 import com.gehc.ai.app.dc.repository.StudyRepository;
 import com.gehc.ai.app.dc.rest.IDataCatalogRest;
@@ -74,6 +75,11 @@ public class DataCatalogRestImplTest {
         public AnnotationRepository annotationRepository() {
             return mock( AnnotationRepository.class );
         }
+        
+        @Bean
+        public COSNotificationRepository cosNotificationRepository() {
+            return mock( COSNotificationRepository.class );
+        }
     }
 
     @Autowired
@@ -88,6 +94,8 @@ public class DataCatalogRestImplTest {
     private StudyRepository studyRepository;
     @Autowired
     private AnnotationRepository annotationRepository;
+    @Autowired
+    private COSNotificationRepository cosNotificationRepository;
 
     @Value ( "${experiment.targetData.gtMaskLocation}" )
     private String gtMaskLocation;

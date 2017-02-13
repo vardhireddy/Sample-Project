@@ -14,12 +14,12 @@ package com.gehc.ai.app.dc.rest;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.AnnotationSet;
+import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
@@ -185,4 +185,5 @@ public interface IDataCatalogRest {
      * @return
      */
     List<Annotation> getAnnotationsByImgSetAndType(String imageSets, String types );
+    void postCOSNotification(CosNotification n );
 }

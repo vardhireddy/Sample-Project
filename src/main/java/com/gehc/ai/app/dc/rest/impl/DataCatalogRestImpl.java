@@ -53,12 +53,14 @@ import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.AnnotationSet;
+import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
 import com.gehc.ai.app.dc.entity.Study;
 import com.gehc.ai.app.dc.entity.TargetData;
 import com.gehc.ai.app.dc.repository.AnnotationRepository;
+import com.gehc.ai.app.dc.repository.COSNotificationRepository;
 import com.gehc.ai.app.dc.repository.PatientRepository;
 import com.gehc.ai.app.dc.repository.StudyRepository;
 import com.gehc.ai.app.dc.rest.IDataCatalogRest;
@@ -81,7 +83,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String ANNOTATIONS = "annotations";
     public static final String SERIES_INS_UID = "series_instance_uid";
     public static final String ABSENT = "absent";
-
+    
     @Autowired
     private IDataCatalogService dataCatalogService;
 
@@ -490,6 +492,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     private StudyRepository studyRepository;
     @Autowired
     private AnnotationRepository annotationRepository;
+    @Autowired
+    private COSNotificationRepository cosNotificationRepository;
 
     @SuppressWarnings ( "unchecked" )
     @Override
@@ -721,5 +725,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return annotationRepository.findByImageSetInAndTypeIn( imgSetIds, typeLst );
     }
+    
+    @Override
+    @Consumes ( MediaType.APPLICATION_JSON )
+    @RequestMapping ( value = "/dataCatalog/cos-notification", method = RequestMethod.POST )
+    public void postCOSNotification( @RequestBody CosNotification n ) {
+        cosNotificationRepository.save( n );
+     }
 
 }
