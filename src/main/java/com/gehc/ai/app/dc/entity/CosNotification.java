@@ -1,9 +1,12 @@
 package com.gehc.ai.app.dc.entity;
 
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import com.gehc.ai.app.dc.filters.JsonConverter;
 
 /**
  * Created by 200014175 on 11/2/2016.
@@ -23,6 +26,7 @@ public class CosNotification {
      /**
      * Actual message from COS notification, can be parsed
      */
+    @Convert(converter = JsonConverter.class)
     private Object message;
     /**
      * @return the message
