@@ -67,6 +67,16 @@ create table if not exists cos_notification (
  annotation_status varchar(500)
 );
 
+alter table cos_notification 
+drop column time_stamp,
+drop column patient_status,
+drop column study_status,
+drop column imageset_status,
+drop column annotation_status;
+
+alter table cos_notification 
+modify column message json;
+
 alter table image_set
 drop column age, 
 drop column gender, 
@@ -87,7 +97,7 @@ add upload_by varchar(255),
 add upload_date datetime default current_timestamp,
 add properties JSON, 
 add patient_dbid INT,
-add study_dbid INT
+add study_dbid INT;
 
 
 create table if not exists annotation (
