@@ -23,11 +23,18 @@ public class CosNotification {
      /**
      * Actual message from COS notification, can be parsed
      */
-    private String message;
-    public String getMessage() {
+    private Object message;
+    /**
+     * @return the message
+     */
+    public Object getMessage() {
         return message;
     }
-    public void setMessage(String message) {
+    /**
+     * @param message the message to set
+     */
+    public void setMessage( Object message ) {
         this.message = message;
     }
+   
 }
