@@ -97,7 +97,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()
      */
     @SuppressWarnings ( "unchecked" )
-    @RequestMapping ( value = "/datacatalog/image-set", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/image-set", method = RequestMethod.GET )
     public List<ImageSet> getImgSet( @RequestParam Map<String, String> params ) {
         Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, ID ) );
         ResponseBuilder responseBuilder;
@@ -257,7 +257,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/imgsetbydatacollectionid", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/imgsetbydatacollectionid", method = RequestMethod.GET )
     public List<ImageSet> getImgSetByDataCollId( @QueryParam ( "dataCollectionId" ) String dataCollectionId ) {
         ResponseBuilder responseBuilder;
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
@@ -284,7 +284,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/datacollection", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/datacollection", method = RequestMethod.GET )
     public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type ) {
         ResponseBuilder responseBuilder;
         List<DataCollection> dataCollection = new ArrayList<DataCollection>();
@@ -307,7 +307,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
-    @RequestMapping ( value = "/datacatalog/createdatacollection", method = RequestMethod.POST )
+    @RequestMapping ( value = "/dataCatalog/createdatacollection", method = RequestMethod.POST )
     public Response createDataCollection( @RequestBody DataCollection dataCollection ) {
         Response response = null;
         String dcId;
@@ -329,7 +329,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
-    @RequestMapping ( value = "/datacatalog/image-set", method = RequestMethod.POST )
+    @RequestMapping ( value = "/dataCatalog/image-set", method = RequestMethod.POST )
     public String insertImageSet( @RequestBody ImageSet imageSet ) {
         ResponseBuilder responseBuilder;
         String imageSetId = null;
@@ -350,7 +350,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    @RequestMapping ( value = "/datacatalog/healthcheck", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/healthcheck", method = RequestMethod.GET )
     public String healthCheck() {
         return ApplicationConstants.SUCCESS;
     }
@@ -358,7 +358,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
-    @RequestMapping ( value = "/datacatalog/random-annotation-set", method = RequestMethod.POST )
+    @RequestMapping ( value = "/dataCatalog/random-annotation-set", method = RequestMethod.POST )
     public Response insertRandomAnnotationSet( @RequestBody String blob ) {
         // System.out.println("blob = " + blob);
         Response response = null;
@@ -382,7 +382,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
-    @RequestMapping ( value = "/datacatalog/annotation-set", method = RequestMethod.POST )
+    @RequestMapping ( value = "/dataCatalog/annotation-set", method = RequestMethod.POST )
     public Response insertAnnotationSet( @RequestBody AnnotationSet as ) {
         Response response = null;
         int numOfRowsInserted = 0;
@@ -404,7 +404,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/annotation-set", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/annotation-set", method = RequestMethod.GET )
     public List getAnnotationSet( @RequestParam Map<String, String> queryMap ) {
         ResponseBuilder responseBuilder;
         List l = new ArrayList();
@@ -427,7 +427,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/annotation-set/{imagesetids}", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/annotation-set/{imagesetids}", method = RequestMethod.GET )
     public List getAnnotationSet( @PathVariable String imageSetIds, @QueryParam ( "fields" ) String fields ) {
         ResponseBuilder responseBuilder;
         List l = new ArrayList();
@@ -458,7 +458,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/data-collection-target", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/data-collection-target", method = RequestMethod.GET )
     public Map getExperimentTargetData( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type ) {
         logger.info("Entering method getExperimentTargetData --> id: " + id);
         Map tdmap = new HashMap();
@@ -504,7 +504,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/patient", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/patient", method = RequestMethod.GET )
     public List<Patient> getPatient( @RequestParam Map<String, String> queryMap ) {
         Set<String> keys = queryMap.keySet();
         Patient p = new Patient();
@@ -537,7 +537,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/patient/{ids}", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/patient/{ids}", method = RequestMethod.GET )
     public List<Patient> getPatients( @PathVariable String ids ) {
         List<Long> pids = new ArrayList<Long>();
         String[] idStrings = ids.split( "," );
@@ -548,7 +548,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/study", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/study", method = RequestMethod.GET )
     public List<Study> getStudy( @RequestParam Map<String, String> queryMap ) {
         // {
         // "schemaVersion" : "v1",
@@ -609,7 +609,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/study/{ids}", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/study/{ids}", method = RequestMethod.GET )
     public List<Study> getStudiesById( @PathVariable String ids ) {
         List<Long> pids = new ArrayList<Long>();
         String[] idStrings = ids.split( "," );
@@ -621,7 +621,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
-    @RequestMapping ( value = "/datacatalog/patient", method = RequestMethod.POST )
+    @RequestMapping ( value = "/dataCatalog/patient", method = RequestMethod.POST )
     public Patient postPatient( @RequestBody Patient p ) {
         p.setUploadDate( new Date( System.currentTimeMillis() ) );
         patientRepository.save( p );
@@ -631,7 +631,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
-    @RequestMapping ( value = "/datacatalog/study", method = RequestMethod.POST )
+    @RequestMapping ( value = "/dataCatalog/study", method = RequestMethod.POST )
     public Study postStudy( @RequestBody Study s ) {
         s.setUploadDate( new Date( System.currentTimeMillis() ) );
         studyRepository.save( s );
@@ -640,7 +640,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/patient/{patientId}/study", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/patient/{patientId}/study", method = RequestMethod.GET )
     public List<Study> getStudies( @PathVariable String patientId ) {
         // return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
         return studyRepository.findByPatientDbId( Long.valueOf( patientId ) );
@@ -648,7 +648,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/datacatalog/study/{studyId}/image-set", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/study/{studyId}/image-set", method = RequestMethod.GET )
     public List<ImageSet> getImageSetByStudyId( @PathVariable String studyId ) {
         // return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
         // System.err.println("==========finding image sets for study " + studyId );
@@ -735,7 +735,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     
     @Override
     @Consumes ( MediaType.APPLICATION_JSON )
-    @RequestMapping ( value = "/datacatalog/cos-notification", method = RequestMethod.POST )
+    @RequestMapping ( value = "/dataCatalog/cos-notification", method = RequestMethod.POST )
     public void postCOSNotification( @RequestBody CosNotification n ) {
         cosNotificationRepository.save( n );
      }
