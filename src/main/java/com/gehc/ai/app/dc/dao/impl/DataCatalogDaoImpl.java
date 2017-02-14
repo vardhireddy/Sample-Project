@@ -52,8 +52,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     /** The logger. */
     private static Logger logger = LoggerFactory.getLogger( DataCatalogDaoImpl.class );
 
-	private static final String DB_SCHEMA_VERSION = "v1.0";
-	private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT distinct im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
+       private static final String GET_IMGSET_DATA_BY_ORG_ID = "SELECT distinct im.id, im.schemaVersion, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
 			+ " acq_date, acq_time, description, institution, equipment, instance_count, im.upload_by, im.upload_date, im.properties, p.patient_id, im.instance_count FROM image_set im  "
 			+ " join patient p on im.patient_dbid = p.id ";
 	private static final String GET_IMGSET_DATA_BY_STUDY_ID = "SELECT im.id, series_instance_uid, study_dbid, patient_dbid, orgId, modality, anatomy, dataFormat, uri, "
@@ -71,7 +70,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	
 	private static final String GET_DC_SUFFIX = " order by json_extract(a.data, '$.createdDate') desc ";
 
-	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, series_instance_uid, study_dbid, patient_dbid, orgId, "
+	private static final String GET_IMAGESET_BY_DATA_COLL_ID = "SELECT imgSet.id, imgSet.schemaVersion, series_instance_uid, study_dbid, patient_dbid, orgId, "
 			+ " modality, anatomy, dataFormat, uri, acq_date, "
 			+ " acq_time, description, institution, equipment, instance_count, imgSet.upload_by, imgSet.upload_date, imgSet.properties, p.patient_id, imgSet.instance_count "
 			+ "FROM data_collection dataColl, image_set imgSet join patient p on imgSet.patient_dbid = p.id "
@@ -281,7 +280,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			ObjectMapper mapper = new ObjectMapper();
 			jdbcTemplate.update(
 					INSERT_IMAGE_SET,
-					new Object[] { imageSetId, DB_SCHEMA_VERSION, imageSet.getOrgId(), imageSet.getModality(), imageSet.getAnatomy(),
+					new Object[] { imageSetId, imageSet.getSchemaVersion(), imageSet.getOrgId(), imageSet.getModality(), imageSet.getAnatomy(),
 							imageSet.getDataFormat(), imageSet.getUri(), imageSet.getSeriesInstanceUid(), imageSet.getAcqDate(), imageSet.getAcqTime(),
 							imageSet.getDescription(), imageSet.getInstitution(), imageSet.getEquipment(), imageSet.getInstanceCount(), imageSet.getUploadBy(),
 							mapper.writeValueAsString(imageSet.getProperties()), imageSet.getPatientDbId(), imageSet.getStudyDbId()},
@@ -469,6 +468,7 @@ class ImageSetWithMoreInfoRowMapper implements RowMapper<ImageSet> {
 		ImageSet imageSet = new ImageSet();
 		try {
 			imageSet.setId(rs.getString("id"));
+			imageSet.setSchemaVersion( rs.getString("schemaVersion") );
 			imageSet.setSeriesInstanceUid(rs.getString("series_instance_uid"));
 			imageSet.setStudyDbId(rs.getLong("study_dbid"));
 			imageSet.setPatientDbId(rs.getLong("patient_dbid"));
