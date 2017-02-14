@@ -203,7 +203,7 @@ public class ImageSet {
 		this.uploadDate = uploadDate;
 	}
 	public Object getProperties() {
-		return properties;
+	    return properties;
 	}
 	public void setProperties(Object properties) {
 		this.properties = properties;
