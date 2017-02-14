@@ -460,9 +460,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/data-collection-target", method = RequestMethod.GET )
     public Map getExperimentTargetData( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type ) {
+        logger.info("Entering method getExperimentTargetData --> id: " + id);
         Map tdmap = new HashMap();
         try {
             List<TargetData> l = dataCatalogService.getExperimentTargetData( id );
+            logger.info("getExperimentTargetData service call return a list of size --> : " + l.size());
+
             if ( l.size() > 0 ) {
                 LinkedHashMap fileMap = new LinkedHashMap();
                 for ( int i = 0; i < l.size(); i++ ) {
@@ -479,11 +482,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 tdmap.put( "locationType", locationType );
                 tdmap.put( "gtMaskLocation", gtMaskLocation );
                 tdmap.put( "imgLocation", imgLocation );
+                logger.info("getExperimentTargetData --> received data with annotations and converted them to targetData structure and this is the data hashmap --> : " + tdmap.toString());
+
             }
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        logger.info("getExperimentTargetData --> Converted targetData : " + tdmap.toString());
         return tdmap;
     }
 
