@@ -82,6 +82,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String ANATOMY = "anatomy";
     public static final String ANNOTATIONS = "annotations";
     public static final String SERIES_INS_UID = "series_instance_uid";
+    public static final String ID = "im.id";
     public static final String ABSENT = "absent";
     
     @Autowired
@@ -98,7 +99,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @RequestMapping ( value = "/datacatalog/image-set", method = RequestMethod.GET )
     public List<ImageSet> getImgSet( @RequestParam Map<String, String> params ) {
-        Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID ) );
+        Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, ID ) );
         ResponseBuilder responseBuilder;
         //List of img set based on filter criteria other than annotation
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
@@ -732,5 +733,4 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public void postCOSNotification( @RequestBody CosNotification n ) {
         cosNotificationRepository.save( n );
      }
-
 }
