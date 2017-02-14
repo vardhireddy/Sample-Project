@@ -257,7 +257,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/dataCatalog/imgsetbydatacollectionid", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/imgSetByDataCollectionId", method = RequestMethod.GET )
     public List<ImageSet> getImgSetByDataCollId( @QueryParam ( "dataCollectionId" ) String dataCollectionId ) {
         ResponseBuilder responseBuilder;
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
@@ -284,7 +284,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/dataCatalog/datacollection", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
     public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type ) {
         ResponseBuilder responseBuilder;
         List<DataCollection> dataCollection = new ArrayList<DataCollection>();
@@ -307,7 +307,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
-    @RequestMapping ( value = "/dataCatalog/createdatacollection", method = RequestMethod.POST )
+    @RequestMapping ( value = "/dataCatalog/createDataCollection", method = RequestMethod.POST )
     public Response createDataCollection( @RequestBody DataCollection dataCollection ) {
         Response response = null;
         String dcId;
@@ -350,7 +350,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    @RequestMapping ( value = "/dataCatalog/healthcheck", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/healthCheck", method = RequestMethod.GET )
     public String healthCheck() {
         return ApplicationConstants.SUCCESS;
     }
@@ -427,7 +427,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/dataCatalog/annotation-set/{imagesetids}", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/annotation-set/{imageSetIds}", method = RequestMethod.GET )
     public List getAnnotationSet( @PathVariable String imageSetIds, @QueryParam ( "fields" ) String fields ) {
         ResponseBuilder responseBuilder;
         List l = new ArrayList();
