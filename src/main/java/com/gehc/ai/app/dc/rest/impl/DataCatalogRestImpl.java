@@ -124,12 +124,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         ImageSet imgSet = (ImageSet)imgSetItr.next();
                         imgSetIds.add( imgSet.getId() );
                     }
-                    logger.info( "++++++ Img set ids from other filters " + imgSetIds.toString() );
-                   
                     List<String> typeLst = getAnnTypesLst(values);                     
                      if(typeLst.contains(ABSENT))
                             dataWithNoAnnNeeded = true;
-                    logger.info( "*** DataWithNoAnnNeeded " + dataWithNoAnnNeeded);
                     if(null != typeLst && typeLst.size()>0){
                         if(typeLst.size()==1 && typeLst.contains(ABSENT)){
                             logger.info( "*** Annotation filter only has absent type = " + typeLst.toString() );
@@ -158,14 +155,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         }
                     }
                     if(dataWithNoAnnNeeded && null != imgSetWithNotThatTypeOfAnn && imgSetWithNotThatTypeOfAnn.size()>0){
-                        logger.info( "*** Img set with no annotation or annotation other than the one which is in filter criteria, imgSetWithNotThatTypeOfAnn.toString() = " + imgSetWithNotThatTypeOfAnn.toString() );
                         if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
                             logger.info( "*** Img set which has annotation, imgSetWithAnnotation.toString() = " + imgSetWithAnnotation.toString() );
                             imageSetFinalLst.addAll( imgSetWithAnnotation );
                         }
                         for(Iterator<ImageSet> imgSetItr = imgSetWithNotThatTypeOfAnn.iterator(); imgSetItr.hasNext();){
                             ImageSet imgSet = (ImageSet)imgSetItr.next();
-                            logger.info( "*** Check if this img set has annotation of any other type " + imgSet.getId() );
                             List<Annotation> annotationLst = annotationRepository.findByImageSet(imgSet.getId() );
                             if(null != annotationLst && annotationLst.size()>0){
                                 logger.info( "*** Found imgset which has annotation of other type so remove it from the list " + imgSet.getId() );                               
