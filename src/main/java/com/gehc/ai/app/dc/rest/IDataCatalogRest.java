@@ -179,11 +179,7 @@ public interface IDataCatalogRest {
      */
     ApiResponse saveAnnotation(Annotation annotation);
     
-    /**
-     * @param imageSets
-     * @param types
-     * @return
-     */
-    List<Annotation> getAnnotationsByImgSetAndType(String imageSets, String types );
     void postCOSNotification(CosNotification n );
+    
+  //  void deleteAnnotation(String id);
 }

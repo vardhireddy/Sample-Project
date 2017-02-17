@@ -185,7 +185,7 @@ public class DataCatalogRestImplTest {
         assertEquals( "SUCCESS", dataCatalogRest.saveAnnotation( annotation ).getStatus() );       
     }
     
-    @Test
+/*    @Test
     public void testGetAnnotationsByImgSetAndTypeNoException() {
         String imageSets = new String();
         String types = new String();
@@ -195,7 +195,7 @@ public class DataCatalogRestImplTest {
         } catch ( Exception ex ) {
             fail();
         }
-    }
+    }*/
     
     @Test
     public void testFindByImageSetNoException() {
