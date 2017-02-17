@@ -32,4 +32,5 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     List<Annotation> findByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
     @Override
     <S extends Annotation> S save(S entity);
+    <S extends Annotation> S delete(S entity);
 }

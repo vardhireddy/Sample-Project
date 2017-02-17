@@ -676,16 +676,27 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return annotationRepository.findByIdIn( aids );
     }
 
-    @Override
-    @RequestMapping ( value = "/annotation/imageset/{imageSets}", method = RequestMethod.GET )
-    public List<Annotation> getAnnotationsByImgSet( @PathVariable String imageSets ) {
+/*    @Override
+    @RequestMapping ( value = "/annotation", method = RequestMethod.GET )
+    public List<Annotation> getAnnotationsByImgSet(@QueryParam ( "imagesetid" ) String imagesetid ) {
         List<String> imgSetIds = new ArrayList<String>();
-        if (  null != imageSets && !imageSets.isEmpty() ) {
-            String[] idStrings = imageSets.split( "," );
+        if (  null != imagesetid && !imagesetid.isEmpty() ) {
+            String[] idStrings = imagesetid.split( "," );
             for ( int i = 0; i < idStrings.length; i++ )
                 imgSetIds.add( idStrings[i] );
         }
         return annotationRepository.findByImageSetIn( imgSetIds );
+    }*/
+    
+    @Override
+    @RequestMapping ( value = "/annotation", method = RequestMethod.GET )
+    public List<Annotation> getAnnotationsByImgSet(@QueryParam ( "imagesetid" ) String imagesetid ) {
+        logger.info("@@@!!  Use query params" );
+        if (  null != imagesetid && !imagesetid.isEmpty() ) {
+            return annotationRepository.findByImageSet( imagesetid );
+        }else {
+            return null;
+        }
     }
 
     /* (non-Javadoc)
@@ -706,26 +717,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.INTERNAL_SERVER_ERROR_CODE, ApplicationConstants.FAILURE, null);
         }
         return apiResponse;
-    }
-    
-    @Override
-    @RequestMapping ( value = "/annotation/imageset/type", method = RequestMethod.GET )
-    public List<Annotation> getAnnotationsByImgSetAndType(@QueryParam ( "imageSet" ) String imageSet, @QueryParam ( "type" ) String type ) {
-        List<String> imgSetIds = new ArrayList<String>();
-        if ( null != imageSet && !imageSet.isEmpty() ) {
-            String[] idStrings = imageSet.split( "," );
-            for ( int i = 0; i < idStrings.length; i++ )
-                imgSetIds.add( idStrings[i] );
-            logger.info( "***************** Imagesets = " + imgSetIds.toString() );
-        }
-        List<String> typeLst = new ArrayList<String>();
-        if ( null != type && !type.isEmpty() ) {
-            String[] typeStrings = type.split( "," );
-            for ( int i = 0; i < typeStrings.length; i++ )
-                typeLst.add( typeStrings[i] );
-            logger.info( "***************** Types = " + typeLst.toString() );
-        }
-        return annotationRepository.findByImageSetInAndTypeIn( imgSetIds, typeLst );
     }
     
     @Override
