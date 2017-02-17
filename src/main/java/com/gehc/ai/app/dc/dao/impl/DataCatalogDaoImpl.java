@@ -251,29 +251,29 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	@Override
 	public String createDataCollection(DataCollection dataCollection)
 			throws Exception {
-		int numOfRowsInserted = 0;
-		if (null != dataCollection) {
+	    String dataCollId = null;    
+	    if (null != dataCollection) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new java.util.Date());
 			dataCollection.setId(String.valueOf(calendar.getTimeInMillis()));
 			dataCollection.setSchemaVersion("v1.0");
 			dataCollection.setCreatedDate(String.valueOf(calendar.getTimeInMillis()));
 			ObjectMapper mapper = new ObjectMapper();
-			numOfRowsInserted = jdbcTemplate.update(
+			 jdbcTemplate.update(
 					INSERT_DATA_COLLECTION,
 					new Object[] { dataCollection.getId(),
 							mapper.writeValueAsString(dataCollection) },
 					new int[] { Types.VARCHAR, Types.VARCHAR });
+			 dataCollId = dataCollection.getId();
 		}
-		return dataCollection.getId();
+		return dataCollId;
 	}
 
 
 	@Override
 	public String insertImageSet(ImageSet imageSet) throws Exception {
-		logger.info("*** Image set " + imageSet.toString());
 		String imageSetId = null;
-		if (null != imageSet) {
+		if (null != imageSet && null != imageSet.getOrgId() && !imageSet.getOrgId().isEmpty()) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new java.util.Date());
 			imageSetId = String.valueOf(calendar.getTimeInMillis());
