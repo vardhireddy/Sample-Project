@@ -665,29 +665,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return (List<ImageSet>)responseBuilder.build();
         }
     }
-
-    @Override
-    @RequestMapping ( value = "/annotation/{ids}", method = RequestMethod.GET )
-    public List<Annotation> getAnnotations( @PathVariable String ids ) {
-        List<Long> aids = new ArrayList<Long>();
-        String[] idStrings = ids.split( "," );
-        for ( int i = 0; i < idStrings.length; i++ )
-            aids.add( Long.valueOf( idStrings[i] ) );
-        return annotationRepository.findByIdIn( aids );
-    }
-
-/*    @Override
-    @RequestMapping ( value = "/annotation", method = RequestMethod.GET )
-    public List<Annotation> getAnnotationsByImgSet(@QueryParam ( "imagesetid" ) String imagesetid ) {
-        List<String> imgSetIds = new ArrayList<String>();
-        if (  null != imagesetid && !imagesetid.isEmpty() ) {
-            String[] idStrings = imagesetid.split( "," );
-            for ( int i = 0; i < idStrings.length; i++ )
-                imgSetIds.add( idStrings[i] );
-        }
-        return annotationRepository.findByImageSetIn( imgSetIds );
-    }*/
-    
+   
     @Override
     @RequestMapping ( value = "/annotation", method = RequestMethod.GET )
     public List<Annotation> getAnnotationsByImgSet(@QueryParam ( "imagesetid" ) String imagesetid ) {
@@ -725,4 +703,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public void postCOSNotification( @RequestBody CosNotification n ) {
         cosNotificationRepository.save( n );
      }
+  
+    @Override
+    @RequestMapping ( value = "/annotation/{ids}", method = RequestMethod.DELETE )
+    public void deleteAnnotation( @PathVariable String ids ) {
+       if(null != ids && ids.length()>0){
+        String[] idStrings = ids.split( "," );
+            for ( int i = 0; i < idStrings.length; i++ ){
+                    annotationRepository.delete( Long.valueOf( idStrings[i] )  );
+            }
+       }
+    }
 }
