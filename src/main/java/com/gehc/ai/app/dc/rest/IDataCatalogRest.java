@@ -163,7 +163,7 @@ public interface IDataCatalogRest {
     /**
      * @param ids
      */
-    void deleteAnnotation( String ids );
+    ApiResponse deleteAnnotation( String ids );
 
     /**
      * @param imageSet
@@ -179,6 +179,4 @@ public interface IDataCatalogRest {
     ApiResponse saveAnnotation(Annotation annotation);
     
     void postCOSNotification(CosNotification n );
-    
-    //void deleteAnnotation(Long id);
 }

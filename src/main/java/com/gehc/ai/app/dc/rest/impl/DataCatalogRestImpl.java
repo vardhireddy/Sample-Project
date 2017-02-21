@@ -669,7 +669,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/annotation", method = RequestMethod.GET )
     public List<Annotation> getAnnotationsByImgSet(@QueryParam ( "imagesetid" ) String imagesetid ) {
-        logger.info("@@@!!  Use query params" );
         if (  null != imagesetid && !imagesetid.isEmpty() ) {
             return annotationRepository.findByImageSet( imagesetid );
         }else {
@@ -686,7 +685,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping(value = "/annotation", method = RequestMethod.POST)
     public ApiResponse saveAnnotation(@RequestBody Annotation annotation ) {
         ApiResponse apiResponse = null;
-        logger.info( "!!! annotation = " + annotation.toString() );
         try{
             Annotation newAnnotation = annotationRepository.save( annotation );
             apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, newAnnotation.getId().toString());
@@ -706,12 +704,22 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
   
     @Override
     @RequestMapping ( value = "/annotation/{ids}", method = RequestMethod.DELETE )
-    public void deleteAnnotation( @PathVariable String ids ) {
-       if(null != ids && ids.length()>0){
-        String[] idStrings = ids.split( "," );
-            for ( int i = 0; i < idStrings.length; i++ ){
-                    annotationRepository.delete( Long.valueOf( idStrings[i] )  );
+    public ApiResponse deleteAnnotation( @PathVariable String ids ) {
+        ApiResponse apiResponse = null;
+        try {
+            if(null != ids && ids.length()>0){
+                String[] idStrings = ids.split( "," );
+                if(null != idStrings && idStrings.length>0){
+                    for ( int i = 0; i < idStrings.length; i++ ){
+                        annotationRepository.delete( Long.valueOf( idStrings[i] )  );
+                    }
+                }
             }
-       }
+            apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, ids );
+        } catch (Exception e ) {
+            logger.error("Exception occured while calling delete annotation ", e);
+            apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.INTERNAL_SERVER_ERROR_CODE, "Id does not exist", ids);
+        }
+        return apiResponse;
     }
 }
