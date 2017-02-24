@@ -129,4 +129,12 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	public List<ImageSet> getImageSetByStudyId(String studyId) {
         return dataCatalogDao.getImageSetByStudyId(studyId);
 	}
+
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.service.IDataCatalogService#getImageSetByPatientId(java.lang.String)
+     */
+    @Override
+    public List<ImageSet> getImageSetByPatientId( String patientid ) {
+        return dataCatalogDao.getImageSetByPatientId( patientid );
+    }
 }
