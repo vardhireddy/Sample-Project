@@ -89,6 +89,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
 	
+	private static final String GET_IMGSET_DATA_BY_PATIENT_ID = "SELECT im.id, orgId FROM image_set im join patient p on im.patient_dbid = p.id where p.patient_id = ";
+	
 	//private static final String ANNOTATION_JOIN = " INNER JOIN annotation an ON an.image_set = im.id ";
 		
 	@Autowired
@@ -459,7 +461,18 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		return imageSetList;
 	}
 
-
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getImageSetByPatientId(java.lang.String)
+     */
+    @Override
+    public List<ImageSet> getImageSetByPatientId( String patientid ) {
+        List<ImageSet> imageSetList;
+        StringBuilder builder = new StringBuilder(GET_IMGSET_DATA_BY_PATIENT_ID);
+        builder.append("'" + patientid + "'");
+        logger.info("!!!! getImageSetByPatientId sql = " + builder);
+        imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetInfoRowMapper());
+        return imageSetList;
+    }
 }
 
 class ImageSetWithMoreInfoRowMapper implements RowMapper<ImageSet> {
@@ -547,3 +560,17 @@ class ImageSetRowMapper implements RowMapper<ImageSet> {
 		return imageSet;
 	}
 }
+
+class ImageSetInfoRowMapper implements RowMapper<ImageSet> {
+	        @Override
+	        public ImageSet mapRow(ResultSet rs, int rowNum) throws SQLException {
+	                ImageSet imageSet = new ImageSet();
+	                try {
+	                        imageSet.setId(rs.getString("id"));
+	                        imageSet.setOrgId(rs.getString("orgId"));	                                            
+	                } catch (Exception e) {
+	                        throw new SQLException(e);
+	                }
+	                return imageSet;
+	        }
+	}	
