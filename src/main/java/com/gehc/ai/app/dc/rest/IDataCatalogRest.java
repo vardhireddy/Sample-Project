@@ -16,8 +16,6 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import org.json.JSONObject;
-
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.AnnotationSet;
