@@ -14,6 +14,7 @@ package com.gehc.ai.app.dc.rest;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
@@ -24,6 +25,8 @@ import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
 import com.gehc.ai.app.dc.entity.Study;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author 212071558
@@ -83,7 +86,7 @@ public interface IDataCatalogRest {
     /**
      * inserts a random annotation set into the database
      * 
-     * @param jsonString annotation set to be inserted to the database
+     * @param as annotation set to be inserted to the database
      * @return Response object wrapping the result of the insertion.
      */
     Response insertAnnotationSet( AnnotationSet as );
@@ -107,6 +110,16 @@ public interface IDataCatalogRest {
      * @return target data that matches id and type
      */
     Map getExperimentTargetData( String id, String type );
+
+    /**
+     * @param id id of target data
+     * @return Annotation data for imagesets in a given Datacollection
+     */
+
+    @SuppressWarnings ("unchecked")
+    @RequestMapping(value = "/dataCatalog/annotationByDataCollectionId", method = RequestMethod.GET)
+    List getAnnotationByDataColId(@QueryParam("id") String id,
+                                  @QueryParam("annotationType") String annotationType);
 
     /**
      * @param queryMap fields from patient table columns
@@ -173,7 +186,7 @@ public interface IDataCatalogRest {
 
     /**
      * Save an Annotation
-     * @param Annotation
+     * @param annotation
      * @return Annotation object created based on the Annotation object given
      */
     ApiResponse saveAnnotation(Annotation annotation);

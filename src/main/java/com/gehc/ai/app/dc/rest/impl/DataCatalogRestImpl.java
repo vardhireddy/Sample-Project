@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import com.gehc.ai.app.dc.entity.*;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,14 +52,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
-import com.gehc.ai.app.dc.entity.Annotation;
-import com.gehc.ai.app.dc.entity.AnnotationSet;
-import com.gehc.ai.app.dc.entity.CosNotification;
-import com.gehc.ai.app.dc.entity.DataCollection;
-import com.gehc.ai.app.dc.entity.ImageSet;
-import com.gehc.ai.app.dc.entity.Patient;
-import com.gehc.ai.app.dc.entity.Study;
-import com.gehc.ai.app.dc.entity.TargetData;
 import com.gehc.ai.app.dc.repository.AnnotationRepository;
 import com.gehc.ai.app.dc.repository.COSNotificationRepository;
 import com.gehc.ai.app.dc.repository.PatientRepository;
@@ -453,6 +446,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings ( "unchecked" )
     @Override
+    @Deprecated
     @RequestMapping ( value = "/dataCatalog/data-collection-target", method = RequestMethod.GET )
     public Map getExperimentTargetData( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type ) {
         logger.info("Entering method getExperimentTargetData --> id: " + id);
@@ -486,6 +480,33 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         logger.info("getExperimentTargetData --> Converted targetData : " + tdmap.toString());
         return tdmap;
+    }
+
+    @SuppressWarnings ("unchecked")
+    @Override
+    @RequestMapping (value = "/dataCatalog/annotation-by-datacollectionid", method = RequestMethod.GET)
+    public List getAnnotationByDataColId(@QueryParam ("id") String id,
+                                         @QueryParam ("annotationType") String annotationType) {
+        logger.info("Entering method getAnnotationByDataColId --> id: " + id);
+
+        if ((id == null) || (id.length() == 0)) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).entity("Datacollection id is required to get annotation for a data collection").build());
+        }
+
+        ResponseBuilder responseBuilder;
+        List<AnnotationImgSetDataCol> l;
+        try {
+             l = dataCatalogService.getAnnotationByDataColId(id, annotationType);
+        } catch (Exception e) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving annotation for data collection").build() );
+        }
+        if (l != null) {
+            responseBuilder = Response.ok(l);
+            return (List)responseBuilder.build().getEntity();
+        }
+        responseBuilder = Response.status( Status.NOT_FOUND );
+        return (List)responseBuilder.build();
+
     }
 
     @Autowired

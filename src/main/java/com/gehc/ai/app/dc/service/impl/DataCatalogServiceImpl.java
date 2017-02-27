@@ -14,15 +14,12 @@ package com.gehc.ai.app.dc.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.gehc.ai.app.dc.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
-import com.gehc.ai.app.dc.entity.AnnotationSet;
-import com.gehc.ai.app.dc.entity.DataCollection;
-import com.gehc.ai.app.dc.entity.ImageSet;
-import com.gehc.ai.app.dc.entity.TargetData;
 import com.gehc.ai.app.dc.service.IDataCatalogService;
 
 /**
@@ -124,6 +121,17 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         }
         return l;
 	}
+
+    @Override
+    public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) throws Exception {
+        List l = null;
+        try {
+            l = dataCatalogDao.getAnnotationByDataColId(dataCollectionId, annotationType);
+        } catch ( Exception e ) {
+            throw new Exception( "Exception occurred while retreiving target data ", e );
+        }
+        return l;
+    }
 
 	@Override
 	public List<ImageSet> getImageSetByStudyId(String studyId) {
