@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.gehc.ai.app.dc.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +38,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
-import com.gehc.ai.app.dc.entity.AnnotationSet;
-import com.gehc.ai.app.dc.entity.Creator;
-import com.gehc.ai.app.dc.entity.DataCollection;
-import com.gehc.ai.app.dc.entity.ImageSet;
-import com.gehc.ai.app.dc.entity.TargetData;
 
 /**
  * @author 212071558
@@ -90,7 +87,14 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
 	
 	//private static final String ANNOTATION_JOIN = " INNER JOIN annotation an ON an.image_set = im.id ";
-		
+
+	private static final String GET_ANNOTATION_DATA_BY_DC_ID = "SELECT dc.id dc_id, im.id  im_id, an.id annotation_id,"
+			+ "im.patient_dbid, im.uri,"
+			+ "an.type annotation_type, an.item annotation_item, an.annotator_id, an.annotation_date "
+			+ "FROM data_collection dc "
+			+ "inner join image_set im ON JSON_SEARCH(dc.data, 'one', im.id) IS NOT NULL "
+			+ "inner join annotation an ON im.id = an.image_set ";
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -408,6 +412,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	}
 
 
+	@Deprecated
 	@Override
 	public List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception {
 		/*final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.data, '$**.mask.uri') "
@@ -448,6 +453,37 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 	}
 
 	@Override
+	public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) {
+		List<AnnotationImgSetDataCol> annotationImgSetDataCols = new ArrayList<AnnotationImgSetDataCol>();
+
+        StringBuilder builder = new StringBuilder(GET_ANNOTATION_DATA_BY_DC_ID);
+
+        builder = builder.append("WHERE dc.id = ?");
+
+        if(null != annotationType && annotationType.length() > 0) {
+            builder = builder.append(" AND an.type = ? ");
+        }
+
+        logger.info("Get Annotation by Data Collection id; SQL: " + builder + "dataCollectionId  = " + dataCollectionId + " and annotationType = " + annotationType);
+        annotationImgSetDataCols = jdbcTemplate.query(builder.toString(),
+                new PreparedStatementSetter() {
+                    @Override
+                    public void setValues(java.sql.PreparedStatement ps)
+                            throws SQLException {
+                        int index = 0;
+                        ps.setString(++index, dataCollectionId);
+                        if(null != annotationType && annotationType.length() > 0) {
+                            ps.setString(++index, annotationType);
+                        }
+                    }
+                },
+                new AnnotationImgSetDataColRowMapper());
+
+
+		return annotationImgSetDataCols;
+	}
+
+	@Override
 	public List<ImageSet> getImageSetByStudyId(String studyId) {
 		List<ImageSet> imageSetList;
 		StringBuilder builder = new StringBuilder(GET_IMGSET_DATA_BY_STUDY_ID);
@@ -458,8 +494,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 		imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
 		return imageSetList;
 	}
-
-
 }
 
 class ImageSetWithMoreInfoRowMapper implements RowMapper<ImageSet> {
@@ -546,4 +580,33 @@ class ImageSetRowMapper implements RowMapper<ImageSet> {
 		}
 		return imageSet;
 	}
+}
+
+class AnnotationImgSetDataColRowMapper implements RowMapper<AnnotationImgSetDataCol> {
+	@Override
+	public AnnotationImgSetDataCol mapRow(ResultSet rs, int rowNum) throws SQLException {
+		AnnotationImgSetDataCol annotationImgSetDataCol = new AnnotationImgSetDataCol();
+		try {
+			annotationImgSetDataCol.setDcId(rs.getString("dc_id"));
+			annotationImgSetDataCol.setImId(rs.getString("im_id"));
+			annotationImgSetDataCol.setAnnotationId(rs.getString("annotation_id"));
+			annotationImgSetDataCol.setPatientDbid(rs.getString("patient_dbid"));
+			annotationImgSetDataCol.setUri(rs.getString("uri"));
+			annotationImgSetDataCol.setAnnotationType(rs.getString("annotation_type"));
+			annotationImgSetDataCol.setAnnotationId(rs.getString("annotator_id"));
+			annotationImgSetDataCol.setAnnotationDate(rs.getString("annotation_date"));
+
+            TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            HashMap<String,Object> o = mapper.readValue(rs.getString("annotation_item"), typeRef);
+            annotationImgSetDataCol.setAnnotationItem(o);
+
+        } catch (Exception e) {
+			throw new SQLException(e);
+		}
+		return annotationImgSetDataCol;
+	}
+
 }

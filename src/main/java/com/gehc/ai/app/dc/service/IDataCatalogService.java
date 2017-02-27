@@ -14,10 +14,7 @@ package com.gehc.ai.app.dc.service;
 import java.util.List;
 import java.util.Map;
 
-import com.gehc.ai.app.dc.entity.AnnotationSet;
-import com.gehc.ai.app.dc.entity.DataCollection;
-import com.gehc.ai.app.dc.entity.ImageSet;
-import com.gehc.ai.app.dc.entity.TargetData;
+import com.gehc.ai.app.dc.entity.*;
 
 /**
  * @author 212071558
@@ -94,13 +91,22 @@ public interface IDataCatalogService {
 	 */
 	List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception;
 	/**
-	 * 
+	 *
 	 * @param dataCollectionIds
 	 * @return targe data associated with the data collection
 	 * @throws Exception
 	 */
 	List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception;
-	
+
+	/**
+	 *
+	 * @param dataCollectionId
+     * @param annotationType mask, point, contour etc to return that particular type of annotation data
+	 * @return annotation data associated with the data collection
+	 * @throws Exception
+	 */
+	List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) throws Exception;
+
 	/**
 	 * 
 	 * @param studyId
