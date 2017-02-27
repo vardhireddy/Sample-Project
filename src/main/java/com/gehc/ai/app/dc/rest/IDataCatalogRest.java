@@ -192,4 +192,6 @@ public interface IDataCatalogRest {
     ApiResponse saveAnnotation(Annotation annotation);
     
     void postCOSNotification(CosNotification n );
+    
+    List<ImageSet> getImageSetByPatientId( String patientid );
 }

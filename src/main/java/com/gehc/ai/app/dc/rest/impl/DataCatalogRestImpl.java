@@ -743,4 +743,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return apiResponse;
     }
+
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#getImageSetBypatientId(java.lang.String)
+     */
+    @Override
+    @RequestMapping ( value = "/dataCatalog/imageset", method = RequestMethod.GET )
+    public List<ImageSet> getImageSetByPatientId(@QueryParam ( "patientid" ) String patientid) {
+        return dataCatalogService.getImageSetByPatientId( patientid );
+    }
 }

@@ -113,4 +113,6 @@ public interface IDataCatalogService {
 	 * @return image sets associated with the studyId
 	 */
 	List<ImageSet> getImageSetByStudyId(String studyId);
+	
+	List<ImageSet> getImageSetByPatientId(String patientid);
 }
