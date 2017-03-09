@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -31,7 +32,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import com.gehc.ai.app.dc.entity.*;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +41,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,10 +52,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
+import com.gehc.ai.app.dc.entity.Annotation;
+import com.gehc.ai.app.dc.entity.AnnotationImgSetDataCol;
+import com.gehc.ai.app.dc.entity.AnnotationSet;
+import com.gehc.ai.app.dc.entity.CosNotification;
+import com.gehc.ai.app.dc.entity.DataCollection;
+import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.Patient;
+import com.gehc.ai.app.dc.entity.Study;
+import com.gehc.ai.app.dc.entity.TargetData;
 import com.gehc.ai.app.dc.repository.AnnotationRepository;
 import com.gehc.ai.app.dc.repository.COSNotificationRepository;
 import com.gehc.ai.app.dc.repository.PatientRepository;
@@ -83,6 +97,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Autowired
     private ResponseGenerator responseGenerator;
+    @Autowired
+    private RestTemplate restTemplate;
+    @Value("${uom.user.me.url}")
+    private String uomMeUrl;
 
     /*
      * (non-Javadoc)
@@ -273,7 +291,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
-    public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type ) {
+    public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
+      //logger.info(" orgId in request = "+ request.getAttribute( "orgId" ));
         ResponseBuilder responseBuilder;
         List<DataCollection> dataCollection = new ArrayList<DataCollection>();
         try {
@@ -751,5 +770,42 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping ( value = "/dataCatalog/image-set-by-patientid", method = RequestMethod.GET )
     public List<ImageSet> getImageSetByPatientId(@QueryParam ( "patientid" ) String patientid) {
         return dataCatalogService.getImageSetByPatientId( patientid );
+    }
+    @Override
+    public String getOrgIdBasedOnSessionToken(String authToken){
+        logger.info( " *** In getOrgIdBasedOnSessionToken, authToken = " + authToken );
+        HttpHeaders headers = new HttpHeaders();
+        headers.set( HttpHeaders.AUTHORIZATION, authToken );
+        headers.setContentType( org.springframework.http.MediaType.APPLICATION_JSON );
+        HttpEntity<String> requestEntity = new HttpEntity<>( headers );
+        //String jsonString = restTemplate.getForObject( uomMeUrl, String.class );
+        
+        ResponseEntity<Object> responseEntity = null;
+        responseEntity = restTemplate.exchange( "https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi/v1/user/me?level.value=2", HttpMethod.GET, requestEntity, Object.class );
+        Object userObject = "[]";
+        if ( responseEntity.hasBody() ) {
+            userObject = responseEntity.getBody();
+            logger.info("----------userObject : " + userObject);
+        } else {
+            logger.info("----------userObject body has no content");
+        }
+        return "1";
+    }
+
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#updateDataCollection(com.gehc.ai.app.dc.entity.DataCollection)
+     */
+    @Override
+    @RequestMapping ( value = "/datacatalog", method = RequestMethod.PUT )
+    public ApiResponse updateDataCollection(@RequestBody DataCollection dataCollection ) {
+        ApiResponse apiResponse = null;
+        try {
+            logger.info(" *** In updateDataCollection rest");
+            apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS,  dataCatalogService.updateDataCollection( dataCollection ));
+        } catch ( Exception e ) {
+            logger.error("Exception occured while updating the data collection ", e);
+            apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.INTERNAL_SERVER_ERROR_CODE, "Failed to update the data collection ", dataCollection.getId());
+        }
+        return apiResponse;
     }
 }

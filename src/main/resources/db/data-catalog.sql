@@ -115,3 +115,5 @@ create table if not exists annotation (
 alter table annotation 
 CHANGE COLUMN `annotation_date` `annotation_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
+alter table data_collection 
+add properties JSON;

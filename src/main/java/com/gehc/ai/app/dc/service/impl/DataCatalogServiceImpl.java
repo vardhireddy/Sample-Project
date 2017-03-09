@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.gehc.ai.app.dc.entity.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -144,5 +145,13 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
     @Override
     public List<ImageSet> getImageSetByPatientId( String patientid ) {
         return dataCatalogDao.getImageSetByPatientId( patientid );
+    }
+
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.service.IDataCatalogService#updateDataCollection(com.gehc.ai.app.dc.entity.DataCollection)
+     */
+    @Override
+    public String updateDataCollection( DataCollection dataCollection ) throws Exception {
+         return dataCatalogDao.updateDataCollection( dataCollection );
     }
 }

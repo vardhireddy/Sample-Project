@@ -115,4 +115,11 @@ public interface IDataCatalogService {
 	List<ImageSet> getImageSetByStudyId(String studyId);
 	
 	List<ImageSet> getImageSetByPatientId(String patientid);
+	
+        /**
+         * @param dataCollection
+         * @return
+         * @throws Exception
+         */
+        String updateDataCollection(DataCollection dataCollection) throws Exception;
 }
