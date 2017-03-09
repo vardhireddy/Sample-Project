@@ -608,7 +608,7 @@ class AnnotationImgSetDataColRowMapper implements RowMapper<AnnotationImgSetData
 			annotationImgSetDataCol.setPatientDbid(rs.getString("patient_dbid"));
 			annotationImgSetDataCol.setUri(rs.getString("uri"));
 			annotationImgSetDataCol.setAnnotationType(rs.getString("annotation_type"));
-			annotationImgSetDataCol.setAnnotationId(rs.getString("annotator_id"));
+			annotationImgSetDataCol.setAnnotatorId(rs.getString("annotator_id"));
 			annotationImgSetDataCol.setAnnotationDate(rs.getString("annotation_date"));
 
             TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
