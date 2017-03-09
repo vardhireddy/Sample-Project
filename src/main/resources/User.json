@@ -1,0 +1,106 @@
+{
+  "resourceType": "ResourcesUser",
+  "_id": "254f024c-2e67-4532-b875-7b8f337859a8",
+  "name": {
+    "family": [
+      "Skynet"
+    ],
+    "given": [
+      "Team  "
+    ]
+  },
+  "externalId": [
+    {
+      "system": "UOM",
+      "value": "254f024c-2e67-4532-b875-7b8f337859a8"
+    },
+    {
+      "system": "IDM",
+      "value": "us-east-1:705cbc15-72e9-4506-bf89-f1e338b327c1"
+    }
+  ],
+  "role": [
+    {
+      "code": [
+        {
+          "system": "urn:hc.ge.com/pfh/platform/user-role:V1",
+          "code": "siteadmin",
+          "display": "siteadmin"
+        },
+        {
+          "system": "urn:hc.ge.com/pfh/platform/user-role:V1",
+          "code": "practitioner",
+          "display": "Healthcare Provider"
+        }
+      ],
+      "scopingOrganization": {
+        "reference": "site/4bae3bf4-dd83-429d-b555-1c13efa73277",
+        "display": "GEHC India"
+      },
+      "status": "active"
+    },
+    {
+      "code": [
+        {
+          "system": "urn:hc.ge.com/pfh/platform/user-role:V1",
+          "code": "siteadmin",
+          "display": "siteadmin"
+        },
+        {
+          "system": "urn:hc.ge.com/pfh/platform/user-role:V1",
+          "code": "practitioner",
+          "display": "Healthcare Provider"
+        }
+      ],
+      "scopingOrganization": {
+        "reference": "site/740b6846-ed5d-413a-92ad-017ff4d932c9",
+        "display": "GEHC San Ramon"
+      },
+      "status": "active"
+    },
+    {
+      "code": [
+        {
+          "system": "urn:hc.ge.com/pfh/platform/user-role:V1",
+          "code": "orgadmin",
+          "display": "orgadmin"
+        },
+        {
+          "system": "urn:hc.ge.com/pfh/platform/user-role:V1",
+          "code": "practitioner",
+          "display": "Healthcare Provider"
+        }
+      ],
+      "scopingOrganization": {
+        "reference": "organization/61939267-d195-499f-bfd8-7d92875c7035",
+        "display": "LIDC-1"
+      },
+      "status": "active"
+    }
+  ],
+  "telecom": [
+    {
+      "system": "email",
+      "value": "healthcare.skynet-dev@ge.com",
+      "use": "work"
+    },
+    {
+      "system": "phone",
+      "value": "+1-9876543209",
+      "use": "mobile"
+    },
+    {
+      "system": "phone",
+      "value": "+1-9259687098",
+      "use": "home"
+    }
+  ],
+  "status": "active",
+  "principalName": "skynet.team",
+  "acceptedAgreement": [
+    {
+      "accepted": true,
+      "date": "2017-01-18T00:55:50-00:00"
+    }
+  ]
+}

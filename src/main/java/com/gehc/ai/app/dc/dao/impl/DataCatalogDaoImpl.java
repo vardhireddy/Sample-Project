@@ -26,6 +26,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gehc.ai.app.dc.entity.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 + " json_extract(a.data, '$.createdDate') as createdDate, "
                 + " json_extract(a.data, '$.creator.name') as creatorName,"
                 + " json_extract(a.data, '$.creator.id') as creatorId, "
-                + " JSON_LENGTH(json_extract(a.data, '$.imageSets')) as imageSetsSize FROM data_collection a ";
+                + " JSON_LENGTH(json_extract(a.data, '$.imageSets')) as imageSetsSize, a.properties as properties FROM data_collection a ";
 	
 	private static final String GET_DC_SUFFIX = " order by json_extract(a.data, '$.createdDate') desc ";
 
@@ -96,6 +97,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ "FROM data_collection dc "
 			+ "inner join image_set im ON JSON_SEARCH(dc.data, 'one', im.id) IS NOT NULL "
 			+ "inner join annotation an ON im.id = an.image_set ";
+	
+	private static final String UPDATE_DATA_COLLECTION = "update data_collection set properties = ? where id = ? ";
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -509,6 +512,26 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetInfoRowMapper());
         return imageSetList;
     }
+
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#updateDataCollection(com.gehc.ai.app.dc.entity.DataCollection)
+     */
+    @Override
+    public String updateDataCollection( DataCollection dataCollection ) throws Exception {
+        String dataCollId = null;    
+        if (null != dataCollection) {
+            logger.info(" !!! In updateDataCollection dao");
+            logger.info(" *** In updateDataCollection dao, id " +   dataCollection.getId());
+                     ObjectMapper mapper = new ObjectMapper();
+                     logger.info(" *** In updateDataCollection dao" +  mapper.writeValueAsString(dataCollection.getProperties()));
+                     jdbcTemplate.update(
+                                    UPDATE_DATA_COLLECTION,
+                                    new Object[] { mapper.writeValueAsString(dataCollection.getProperties()), dataCollection.getId()},
+                                    new int[] { Types.VARCHAR, Types.VARCHAR });
+                     dataCollId = dataCollection.getId();
+            }
+            return dataCollId;        
+    }
 }
 
 class ImageSetWithMoreInfoRowMapper implements RowMapper<ImageSet> {
@@ -559,6 +582,7 @@ class DataCollectionRowMapper implements RowMapper<DataCollection> {
 			creator.setId(rs.getString("creatorId"));
 			dataCollection.setCreator(creator);
 			dataCollection.setImageSetsSize(rs.getInt("imageSetsSize"));
+			dataCollection.setProperties( rs.getString("properties"));
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}

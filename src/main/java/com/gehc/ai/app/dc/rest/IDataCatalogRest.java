@@ -14,8 +14,13 @@ package com.gehc.ai.app.dc.rest;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.dc.entity.Annotation;
@@ -25,8 +30,6 @@ import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
 import com.gehc.ai.app.dc.entity.Study;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author 212071558
@@ -54,7 +57,7 @@ public interface IDataCatalogRest {
      * @param type TODO
      * @return List<DataCollection>
      */
-    List<DataCollection> getDataCollection( String id, String type );
+    List<DataCollection> getDataCollection( String id, String type, HttpServletRequest request);
 
     /**
      * Create Data Collection
@@ -191,7 +194,26 @@ public interface IDataCatalogRest {
      */
     ApiResponse saveAnnotation(Annotation annotation);
     
+    /**
+     * @param n
+     */
     void postCOSNotification(CosNotification n );
     
+    /**
+     * @param patientid
+     * @return
+     */
     List<ImageSet> getImageSetByPatientId( String patientid );
+    
+    /**
+     * @param authToken
+     * @return
+     */
+    String getOrgIdBasedOnSessionToken(String authToken);
+    
+    /**
+     * @param dataCollection
+     * @return
+     */
+    ApiResponse updateDataCollection( DataCollection dataCollection );
 }

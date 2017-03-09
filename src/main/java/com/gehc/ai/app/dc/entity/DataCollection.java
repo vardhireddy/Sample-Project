@@ -14,6 +14,13 @@ package com.gehc.ai.app.dc.entity;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.gehc.ai.app.dc.filters.JsonConverter;
+
 
 /**
  * @author 212071558
@@ -30,6 +37,23 @@ public class DataCollection implements Serializable {
     private String createdDate;
     private int imageSetsSize;
     private String type;
+    /**
+     * Flexible JSON object to store properties of data collection
+     */
+    @Convert(converter = JsonConverter.class)
+    private Object properties;
+    /**
+     * @return the properties
+     */
+    public Object getProperties() {
+        return properties;
+    }
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties( Object properties ) {
+        this.properties = properties;
+    }
     /**
      * @return the type
      */
@@ -140,9 +164,10 @@ public class DataCollection implements Serializable {
      * @param createdDate
      * @param imageSetsSize
      * @param type
+     * @param properties
      * @param creator
      */
-    public DataCollection( String id, String schemaVersion, String name, String description, String[] imageSets, String createdDate, int imageSetsSize, String type, Creator creator ) {
+    public DataCollection( String id, String schemaVersion, String name, String description, String[] imageSets, String createdDate, int imageSetsSize, String type, Object properties, Creator creator ) {
         super();
         this.id = id;
         this.schemaVersion = schemaVersion;
@@ -152,6 +177,7 @@ public class DataCollection implements Serializable {
         this.createdDate = createdDate;
         this.imageSetsSize = imageSetsSize;
         this.type = type;
+        this.properties = properties;
         this.creator = creator;
     }
     /* (non-Javadoc)
@@ -159,6 +185,7 @@ public class DataCollection implements Serializable {
      */
     @Override
     public String toString() {
-        return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion + ", name=" + name + ", description=" + description + ", imageSets=" + Arrays.toString( imageSets ) + ", createdDate=" + createdDate + ", imageSetsSize=" + imageSetsSize + ", type=" + type + ", creator=" + creator + "]";
+        return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion + ", name=" + name + ", description=" + description + ", imageSets=" + Arrays.toString( imageSets ) + ", createdDate=" + createdDate + ", imageSetsSize=" + imageSetsSize + ", type=" + type + ", properties=" + properties + ", creator=" + creator + "]";
     }
+
 }

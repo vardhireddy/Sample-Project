@@ -15,17 +15,33 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
+//import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+//import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
 /**
  * @author 212071558
  *
  */
+@ComponentScan ( {"com.gehc"} )
 @PropertySource({"classpath:application.yml"})
 @Configuration
-public class AppConfig {
+public class AppConfig extends WebMvcConfigurerAdapter{
+    
+/*    @Bean
+    public DataCatalogInterceptor dataCatalogInterceptor() {
+        return new DataCatalogInterceptor();
+    }
+    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry){
+        registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/**");
+    }*/
     /** The dataSource */
     @Autowired
     private DataSource dataSource;
