@@ -1,5 +1,5 @@
-##Local
-##spring.datasource.url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
+###Local
+###spring.datasource.url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
 #spring.datasource.url = jdbc:mysql://localhost:3306/deeplearning?useLegacyDatetimeCode=false&serverTimezone=PST
 #spring.datasource.username = root
 #spring.datasource.password = root
