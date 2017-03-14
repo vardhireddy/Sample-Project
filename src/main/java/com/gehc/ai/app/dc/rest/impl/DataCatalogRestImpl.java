@@ -291,12 +291,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
-    public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
-        logger.info(" orgId in request = "+ request.getAttribute( "orgId" ));
+   // public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
+    public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type) {
         ResponseBuilder responseBuilder;
         List<DataCollection> dataCollection = new ArrayList<DataCollection>();
         try {
-            dataCollection = dataCatalogService.getDataCollection( id, type, request.getAttribute( "orgId" ).toString() );
+        //    dataCollection = dataCatalogService.getDataCollection( id, type, request.getAttribute( "orgId" ).toString() );
+            dataCollection = dataCatalogService.getDataCollection( id, type);
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
         } catch ( Exception e ) {

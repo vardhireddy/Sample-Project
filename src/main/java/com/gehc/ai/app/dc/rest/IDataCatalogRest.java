@@ -57,7 +57,8 @@ public interface IDataCatalogRest {
      * @param type TODO
      * @return List<DataCollection>
      */
-    List<DataCollection> getDataCollection( String id, String type, HttpServletRequest request);
+    //List<DataCollection> getDataCollection( String id, String type, HttpServletRequest request);
+    List<DataCollection> getDataCollection( String id, String type);
 
     /**
      * Create Data Collection
