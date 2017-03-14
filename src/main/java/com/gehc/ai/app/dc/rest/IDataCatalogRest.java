@@ -57,7 +57,8 @@ public interface IDataCatalogRest {
      * @param type TODO
      * @return List<DataCollection>
      */
-    List<DataCollection> getDataCollection( String id, String type, HttpServletRequest request);
+    //List<DataCollection> getDataCollection( String id, String type, HttpServletRequest request);
+    List<DataCollection> getDataCollection( String id, String type);
 
     /**
      * Create Data Collection
@@ -206,14 +207,14 @@ public interface IDataCatalogRest {
     List<ImageSet> getImageSetByPatientId( String patientid );
     
     /**
-     * @param authToken
-     * @return
-     */
-    String getOrgIdBasedOnSessionToken(String authToken);
-    
-    /**
      * @param dataCollection
      * @return
      */
     ApiResponse updateDataCollection( DataCollection dataCollection );
+    
+    /**
+     * @param id
+     * @return
+     */
+    List<Annotation> getAnnotationsById( String ids );
 }
