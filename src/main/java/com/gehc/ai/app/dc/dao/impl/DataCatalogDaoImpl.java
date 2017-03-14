@@ -85,7 +85,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
 	private static final java.lang.String PARAM_DELIM = ",";
 
-	private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
+	private static final String INSERT_ANNOTATION_SET = " insert into annotation_set (id, data) values (?, ?) ";
 	
 	private static final String GET_IMGSET_DATA_BY_PATIENT_ID = "SELECT im.id, orgId FROM image_set im join patient p on im.patient_dbid = p.id where p.patient_id = ";
 	
