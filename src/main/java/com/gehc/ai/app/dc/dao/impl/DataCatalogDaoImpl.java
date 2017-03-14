@@ -75,7 +75,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ "where dataColl.id = ? "
 			+ "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
 
-	private static final String INSERT_DATA_COLLECTION = " insert into data_collection () values (?, ?) ";
+	private static final String INSERT_DATA_COLLECTION = " insert into data_collection (id, data) values (?, ?) ";
 	
 	private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, orgId, modality, anatomy, "
 			+ " dataFormat, uri, series_instance_uid, acq_date, acq_time, "
