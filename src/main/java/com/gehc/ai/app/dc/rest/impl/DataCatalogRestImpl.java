@@ -292,11 +292,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
     public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
-      //logger.info(" orgId in request = "+ request.getAttribute( "orgId" ));
+        logger.info(" orgId in request = "+ request.getAttribute( "orgId" ));
         ResponseBuilder responseBuilder;
         List<DataCollection> dataCollection = new ArrayList<DataCollection>();
         try {
-            dataCollection = dataCatalogService.getDataCollection( id, type );
+            dataCollection = dataCatalogService.getDataCollection( id, type, request.getAttribute( "orgId" ).toString() );
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
         } catch ( Exception e ) {
@@ -771,27 +771,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List<ImageSet> getImageSetByPatientId(@QueryParam ( "patientid" ) String patientid) {
         return dataCatalogService.getImageSetByPatientId( patientid );
     }
-    @Override
-    public String getOrgIdBasedOnSessionToken(String authToken){
-        logger.info( " *** In getOrgIdBasedOnSessionToken, authToken = " + authToken );
-        HttpHeaders headers = new HttpHeaders();
-        headers.set( HttpHeaders.AUTHORIZATION, authToken );
-        headers.setContentType( org.springframework.http.MediaType.APPLICATION_JSON );
-        HttpEntity<String> requestEntity = new HttpEntity<>( headers );
-        //String jsonString = restTemplate.getForObject( uomMeUrl, String.class );
-        
-        ResponseEntity<Object> responseEntity = null;
-        responseEntity = restTemplate.exchange( "https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi/v1/user/me?level.value=2", HttpMethod.GET, requestEntity, Object.class );
-        Object userObject = "[]";
-        if ( responseEntity.hasBody() ) {
-            userObject = responseEntity.getBody();
-            logger.info("----------userObject : " + userObject);
-        } else {
-            logger.info("----------userObject body has no content");
-        }
-        return "1";
-    }
-
+   
     /* (non-Javadoc)
      * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#updateDataCollection(com.gehc.ai.app.dc.entity.DataCollection)
      */
@@ -807,5 +787,22 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.INTERNAL_SERVER_ERROR_CODE, "Failed to update the data collection ", dataCollection.getId());
         }
         return apiResponse;
+    }
+
+    /* (non-Javadoc)
+     * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#getAnnotationsById(java.lang.Long)
+     */
+    @Override
+    @RequestMapping ( value = "/annotation/{ids}", method = RequestMethod.GET )
+    public List<Annotation> getAnnotationsById( @PathVariable String ids ) {
+        if(null != ids && ids.length()>0){
+            List<Long> idsLst = new ArrayList<Long>();
+            String[] idStrings = ids.split( "," );
+            for ( int i = 0; i < idStrings.length; i++ )
+                idsLst.add( Long.valueOf( idStrings[i] ) );
+            return annotationRepository.findByIdIn( idsLst );
+        }else{
+            return null;
+        }
     }
 }

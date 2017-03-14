@@ -206,14 +206,14 @@ public interface IDataCatalogRest {
     List<ImageSet> getImageSetByPatientId( String patientid );
     
     /**
-     * @param authToken
-     * @return
-     */
-    String getOrgIdBasedOnSessionToken(String authToken);
-    
-    /**
      * @param dataCollection
      * @return
      */
     ApiResponse updateDataCollection( DataCollection dataCollection );
+    
+    /**
+     * @param id
+     * @return
+     */
+    List<Annotation> getAnnotationsById( String ids );
 }
