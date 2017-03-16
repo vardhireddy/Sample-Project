@@ -19,10 +19,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
-//import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-//import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
 /**
  * @author 212071558
@@ -33,7 +32,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class AppConfig extends WebMvcConfigurerAdapter{
     
-/*    @Bean
+    @Bean
     public DataCatalogInterceptor dataCatalogInterceptor() {
         return new DataCatalogInterceptor();
     }
@@ -41,7 +40,8 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     @Override
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/**");
-    }*/
+    }
+    
     /** The dataSource */
     @Autowired
     private DataSource dataSource;

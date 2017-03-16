@@ -117,3 +117,6 @@ CHANGE COLUMN `annotation_date` `annotation_date` DATETIME DEFAULT CURRENT_TIMES
 
 alter table data_collection 
 add properties JSON;
+
+alter table data_collection 
+add org_id varchar(255);

@@ -44,13 +44,14 @@ public interface IDataCatalogService {
      * Get Data Collection
      * @param id TODO
      * @param type TODO
-     * 
+     * @param orgId TODO
      * @return List<DataCollection>
      *
      * @throws Exception
      */
-    List<DataCollection> getDataCollection(String id , String type ) throws Exception;
-   /**
+     List<DataCollection> getDataCollection(String id  , String type , String orgId  ) throws Exception;
+     
+    /**
     *  Get Image set by Id
     *  
     * @param dataCollectionId
