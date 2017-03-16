@@ -288,6 +288,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
     public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
+       logger.info( "*** In getDataCollection, orgId = " + request.getAttribute( "orgId" ) );
         ResponseBuilder responseBuilder;
         List<DataCollection> dataCollection = new ArrayList<DataCollection>();
         try {

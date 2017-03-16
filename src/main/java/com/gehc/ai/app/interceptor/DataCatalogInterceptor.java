@@ -57,8 +57,9 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      */
     @Override
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {
-        logger.info( " **** In preHandle method ");
+        logger.info( " **** In preHandle method ");        
         if(null != req)    
+            logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
             req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
             return true;
     }
@@ -111,7 +112,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
                                 Map<String, String> dataInRole = (HashMap<String, String>)valueInRole;
                                 if(dataInRole.get( "reference" ).startsWith( "organization" )){
                                     orgId = dataInRole.get( "reference" ).substring( (dataInRole.get( "reference" ).indexOf( "/" ))+1 );
-                                    logger.info( "Org id = " + orgId );
+                                    logger.info( "*** In getOrgIdBasedOnSessionToken, Org id = " + orgId );
                                     break;
                                 }
                             }
