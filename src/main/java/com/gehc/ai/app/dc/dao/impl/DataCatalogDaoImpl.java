@@ -186,7 +186,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
         @Override
         public List<DataCollection> getDataCollection(String id  , String type , String orgId  ) throws Exception {
-                logger.info(" In DAO getDataCollection, orgId = " + orgId);
+                logger.info(" !!! In DAO getDataCollection, orgId = " + orgId);
                 List<DataCollection> dataCollectionList = new ArrayList<DataCollection>();
                 StringBuilder queryBuilder = new StringBuilder();
                 queryBuilder.append(GET_DC_PREFIX);
@@ -247,6 +247,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                                                                 }
                                                         },      new DataCollectionRowMapper());
                         }
+                }else{
+                    logger.info(" !!! In DAO getDataCollection, orgId is null ");
                 }
                 return dataCollectionList;
         }
