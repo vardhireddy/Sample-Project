@@ -12,6 +12,7 @@
 package com.gehc.ai.app.interceptor;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -31,7 +32,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,6 +60,17 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
         logger.info( " !!! In preHandle method ");        
         if(null != req){    
            logger.info( " *** In preHandle method, req.getMethod() = " + req.getMethod());
+           logger.info( " *** In preHandle method, req.getAuthType() = " + req.getAuthType());
+           logger.info( " *** In preHandle method, req.getContentType() = " + req.getContentType());
+           logger.info( " *** In preHandle method, req.getHeaderNames() = " + req.getHeaderNames());
+           logger.info( " *** In preHandle method, req.getHeader Authorization = " + req.getHeader("authorization"));
+           Enumeration headerNames = req.getHeaderNames();
+           while (headerNames.hasMoreElements()) {
+                   String key = (String) headerNames.nextElement();
+                   logger.info( " *** In preHandle method, req.getHeaderNames() key = " + key);
+                   String value = req.getHeader(key);
+                   logger.info( " *** In preHandle method, req.getHeaderNames() value = " + value);
+           }
            if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
                logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
                req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
