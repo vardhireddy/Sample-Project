@@ -59,9 +59,13 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {
         logger.info( " !!! In preHandle method ");        
         if(null != req){    
-            logger.info( " !!! In preHandle method, req.toString() = " + req.toString());
-            logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
-            req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
+           logger.info( " *** In preHandle method, req.getMethod() = " + req.getMethod());
+           if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
+               logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
+               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
+           }else{
+               logger.info( " **** In preHandle method req method is options ");
+           }
         }else{
             logger.info( " !!! In preHandle method req is null ");   
         }
@@ -77,8 +81,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      */
     @Override
     public void afterCompletion( HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3 ) throws Exception {
-        logger.info( " !!! In afterCompletion method" );
-        
+        logger.info( " !!! In afterCompletion method" );        
     }
 
     /* (non-Javadoc)
