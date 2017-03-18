@@ -57,10 +57,23 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      */
     @Override
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {
-        logger.info( " **** In preHandle method ");        
-        if(null != req)    
-            logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
-            req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
+        logger.info( " !!! In preHandle method ");        
+        if(null != req){    
+           logger.info( " *** In preHandle method, req.getMethod() = " + req.getMethod());
+           if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
+               logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
+               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
+           }else{
+               logger.info( " **** In preHandle method req method is options ");
+           }
+        }else{
+            logger.info( " !!! In preHandle method req is null ");   
+        }
+        if(null != obj){
+            logger.info( " !!! In preHandle method obj.toString()=  " + obj.toString());  
+        }else{
+            logger.info( " !!! In preHandle method obj is null ");  
+        }
             return true;
     }
     /* (non-Javadoc)
@@ -68,8 +81,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      */
     @Override
     public void afterCompletion( HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3 ) throws Exception {
-        logger.info( " *** In afterCompletion method" );
-        
+        logger.info( " !!! In afterCompletion method" );        
     }
 
     /* (non-Javadoc)
@@ -77,13 +89,13 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      */
     @Override
     public void postHandle( HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, ModelAndView arg3 ) throws Exception {
-        logger.info( " *** In postHandle method" );
+        logger.info( " !!! In postHandle method" );
         
     }
     
     @SuppressWarnings ( "unchecked" )
     public String getOrgIdBasedOnSessionToken(String authToken) throws Exception{
-        logger.info( "  In getOrgIdBasedOnSessionToken, authToken = " + authToken );
+        logger.info( " !!!  In getOrgIdBasedOnSessionToken, authToken = " + authToken );
         String orgId = null;
         HttpHeaders headers = new HttpHeaders();
         headers.set( HttpHeaders.AUTHORIZATION, authToken );
@@ -121,7 +133,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
                 }                
             }
         } else {
-            logger.info("----------Response Entity User Object has no content");
+            logger.info("!!! Response Entity User Object has no content");
         }
         return orgId;
     }
