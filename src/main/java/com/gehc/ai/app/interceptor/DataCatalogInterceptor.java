@@ -63,7 +63,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
            logger.info( " *** In preHandle method, req.getAuthType() = " + req.getAuthType());
            logger.info( " *** In preHandle method, req.getContentType() = " + req.getContentType());
            logger.info( " *** In preHandle method, req.getHeaderNames() = " + req.getHeaderNames());
-           logger.info( " *** In preHandle method, req.getHeader Authorization = " + req.getHeader("authorization"));
+           logger.info( " *** In preHandle method, req.getHeader Authorization = " + req.getHeader("Authorization"));
            Enumeration headerNames = req.getHeaderNames();
            while (headerNames.hasMoreElements()) {
                    String key = (String) headerNames.nextElement();
@@ -81,7 +81,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
             logger.info( " !!! In preHandle method req is null ");   
         }
         if(null != obj){
-            logger.info( " !!! In preHandle method obj.toString()=  " + obj.toString());  
+            logger.info( " !!! In preHandle method obj.toString()  " + obj.toString());  
         }else{
             logger.info( " !!! In preHandle method obj is null ");  
         }
