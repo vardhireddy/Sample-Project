@@ -59,32 +59,29 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {
         logger.info( " !!! In preHandle method ");        
         if(null != req){    
-           logger.info( " *** In preHandle method, req.getMethod() = " + req.getMethod());
-           logger.info( " *** In preHandle method, req.getAuthType() = " + req.getAuthType());
-           logger.info( " *** In preHandle method, req.getContentType() = " + req.getContentType());
-           logger.info( " *** In preHandle method, req.getHeaderNames() = " + req.getHeaderNames());
-           logger.info( " *** In preHandle method, req.getHeader Authorization = " + req.getHeader("Authorization"));
+           logger.info( " ---- In preHandle method, req.getMethod() = " + req.getMethod());
+           logger.info( " ---- In preHandle method, get all the headers  ");
            Enumeration headerNames = req.getHeaderNames();
            while (headerNames.hasMoreElements()) {
                    String key = (String) headerNames.nextElement();
-                   logger.info( " *** In preHandle method, req.getHeaderNames() key = " + key);
+                   logger.info( " --- In preHandle method, req.getHeaderNames() key = " + key);
                    String value = req.getHeader(key);
-                   logger.info( " *** In preHandle method, req.getHeaderNames() value = " + value);
+                   logger.info( " --- In preHandle method, req.getHeaderNames() value = " + value);
            }
-           if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
+           /*if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
                logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
                req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
            }else{
                logger.info( " **** In preHandle method req method is options ");
-           }
+           }*/
         }else{
             logger.info( " !!! In preHandle method req is null ");   
         }
-        if(null != obj){
+        /*if(null != obj){
             logger.info( " !!! In preHandle method obj.toString()  " + obj.toString());  
         }else{
             logger.info( " !!! In preHandle method obj is null ");  
-        }
+        }*/
             return true;
     }
     /* (non-Javadoc)
