@@ -68,6 +68,9 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
                    String value = req.getHeader(key);
                    logger.info( " --- In preHandle method, req.getHeaderNames() value = " + value);
            }
+           //Need to remove the below omce I can get the user org id
+           logger.info( " ---- In preHandle method, setting the org id as 61939267-d195-499f-bfd8-7d92875c7035 ");
+           req.setAttribute( "orgId", "61939267-d195-499f-bfd8-7d92875c7035" );
            /*if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
                logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
                req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
