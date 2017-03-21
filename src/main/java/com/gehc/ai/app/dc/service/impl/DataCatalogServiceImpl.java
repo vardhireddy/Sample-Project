@@ -81,11 +81,11 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         return imageSet;
 	}
 	@Override
-	public String createDataCollection(DataCollection dataCollection)
+	public String createDataCollection(DataCollection dataCollection, String orgId)
 			throws Exception {
         String dataCollectionId;
         try {
-            dataCollectionId = dataCatalogDao.createDataCollection(dataCollection);
+            dataCollectionId = dataCatalogDao.createDataCollection(dataCollection, orgId);
          } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving data collection ", e );
         }
