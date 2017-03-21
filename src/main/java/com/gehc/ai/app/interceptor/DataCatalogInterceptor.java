@@ -59,32 +59,38 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {
         logger.info( " !!! In preHandle method ");        
         if(null != req){    
+        	boolean foundAuthToken = false;
            logger.info( " ---- In preHandle method, req.getMethod() = " + req.getMethod());
            logger.info( " ---- In preHandle method, get all the headers  ");
-           Enumeration headerNames = req.getHeaderNames();
-           while (headerNames.hasMoreElements()) {
-                   String key = (String) headerNames.nextElement();
-                   logger.info( " --- In preHandle method, req.getHeaderNames() key = " + key);
-                   String value = req.getHeader(key);
-                   logger.info( " --- In preHandle method, req.getHeaderNames() value = " + value);
-           }
-           //Need to remove the below omce I can get the user org id
-           logger.info( " ---- In preHandle method, setting the org id as 61939267-d195-499f-bfd8-7d92875c7035 ");
-           req.setAttribute( "orgId", "61939267-d195-499f-bfd8-7d92875c7035" );
-           /*if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
-               logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
-               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
+           if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
+	           Enumeration headerNames = req.getHeaderNames();
+	           String key = null;
+	           String value = null;
+	           while (headerNames.hasMoreElements()) {
+	                   key = (String) headerNames.nextElement();
+	                   logger.info( " --- In preHandle method, req.getHeaderNames() key = " + key);
+	                   value = req.getHeader(key);
+	                   logger.info( " --- In preHandle method, req.getHeaderNames() value = " + value);
+	                   if(key.equalsIgnoreCase(HttpHeaders.AUTHORIZATION)){
+	                	   logger.info( " --- In preHandle method, found the authorization key" );
+	                	   foundAuthToken = true;
+	                   }
+	           }
+	           if(foundAuthToken){
+	               logger.info( " **** In preHandle method, auth token = " + value);
+	               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(value) );
+	           }else{
+		           //Need to remove the below omce I can get the user org id for all the API cals
+		           logger.info( " ---- In preHandle method, setting the org id as 61939267-d195-499f-bfd8-7d92875c7035 ");
+		           req.setAttribute( "orgId", "61939267-d195-499f-bfd8-7d92875c7035" );
+	           }
            }else{
                logger.info( " **** In preHandle method req method is options ");
-           }*/
+           }
         }else{
             logger.info( " !!! In preHandle method req is null ");   
         }
-        /*if(null != obj){
-            logger.info( " !!! In preHandle method obj.toString()  " + obj.toString());  
-        }else{
-            logger.info( " !!! In preHandle method obj is null ");  
-        }*/
+        
             return true;
     }
     /* (non-Javadoc)
@@ -108,45 +114,48 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     public String getOrgIdBasedOnSessionToken(String authToken) throws Exception{
         logger.info( " !!!  In getOrgIdBasedOnSessionToken, authToken = " + authToken );
         String orgId = null;
-        HttpHeaders headers = new HttpHeaders();
-        headers.set( HttpHeaders.AUTHORIZATION, authToken );
-        headers.setContentType( org.springframework.http.MediaType.APPLICATION_JSON );
-        HttpEntity<String> requestEntity = new HttpEntity<>( headers );
-        ResponseEntity<Object> responseEntity = null;
-        responseEntity = restTemplate.exchange( uomMeUrl, HttpMethod.GET, requestEntity, Object.class );
-        Object userObject = "{}";
-        if ( null != responseEntity && responseEntity.hasBody() ) {
-            userObject = responseEntity.getBody();
-            LinkedHashMap<String, Object> userData = (LinkedHashMap)userObject;
-            Iterator<Entry<String,Object>> itr = userData.entrySet().iterator();
-            while (itr.hasNext() && orgId==null) {
-                Entry<String,Object> entry = itr.next();
-                String key = entry.getKey();
-                if(key.equalsIgnoreCase( "role" )){
-                    ArrayList<Object> list = (ArrayList<Object>)entry.getValue();
-                    for(int i=0; i < list.size(); i++){
-                        LinkedHashMap<String, Object> roleValue = (LinkedHashMap)(list.get( i ));
-                        Iterator<Entry<String,Object>> roleItr = roleValue.entrySet().iterator();
-                        while (roleItr.hasNext()) {
-                            Entry<String,Object> roleEntry = roleItr.next();
-                            String roleKey = roleEntry.getKey();
-                            if(roleKey.equalsIgnoreCase( "scopingOrganization" )){
-                                Object valueInRole = (Object)roleEntry.getValue();
-                                Map<String, String> dataInRole = (HashMap<String, String>)valueInRole;
-                                if(dataInRole.get( "reference" ).startsWith( "organization" )){
-                                    orgId = dataInRole.get( "reference" ).substring( (dataInRole.get( "reference" ).indexOf( "/" ))+1 );
-                                    logger.info( "*** In getOrgIdBasedOnSessionToken, Org id = " + orgId );
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }                
-            }
-        } else {
-            logger.info("!!! Response Entity User Object has no content");
-        }
-        return orgId;
+        if (null != authToken) {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(HttpHeaders.AUTHORIZATION, authToken);
+			headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+			ResponseEntity<Object> responseEntity = null;
+			responseEntity = restTemplate.exchange(uomMeUrl, HttpMethod.GET, requestEntity, Object.class);
+			Object userObject = "{}";
+			if (null != responseEntity && responseEntity.hasBody()) {
+				userObject = responseEntity.getBody();
+				LinkedHashMap<String, Object> userData = (LinkedHashMap) userObject;
+				Iterator<Entry<String, Object>> itr = userData.entrySet().iterator();
+				while (itr.hasNext() && orgId == null) {
+					Entry<String, Object> entry = itr.next();
+					String key = entry.getKey();
+					if (key.equalsIgnoreCase("role")) {
+						ArrayList<Object> list = (ArrayList<Object>) entry.getValue();
+						for (int i = 0; i < list.size(); i++) {
+							LinkedHashMap<String, Object> roleValue = (LinkedHashMap) (list.get(i));
+							Iterator<Entry<String, Object>> roleItr = roleValue.entrySet().iterator();
+							while (roleItr.hasNext()) {
+								Entry<String, Object> roleEntry = roleItr.next();
+								String roleKey = roleEntry.getKey();
+								if (roleKey.equalsIgnoreCase("scopingOrganization")) {
+									Object valueInRole = (Object) roleEntry.getValue();
+									Map<String, String> dataInRole = (HashMap<String, String>) valueInRole;
+									if (dataInRole.get("reference").startsWith("organization")) {
+										orgId = dataInRole.get("reference")
+												.substring((dataInRole.get("reference").indexOf("/")) + 1);
+										logger.info("*** In getOrgIdBasedOnSessionToken, Org id = " + orgId);
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			} else {
+				logger.info("!!! Response Entity User Object has no content");
+			} 
+		}
+		return orgId;
     }
 
 }
