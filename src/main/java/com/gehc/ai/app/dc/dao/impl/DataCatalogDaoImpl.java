@@ -72,10 +72,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         + " modality, anatomy, dataFormat, uri, acq_date, "
                         + " acq_time, description, institution, equipment, instance_count, imgSet.upload_by, imgSet.upload_date, imgSet.properties, p.patient_id, imgSet.instance_count "
                         + "FROM data_collection dataColl, image_set imgSet join patient p on imgSet.patient_dbid = p.id "
-                        + "where dataColl.id = ? "
+                        + "where dataColl.id = ? and dataColl.org_id = ? "
                         + "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
 
-        private static final String INSERT_DATA_COLLECTION = " insert into data_collection (id, data) values (?, ?) ";
+        private static final String INSERT_DATA_COLLECTION = " insert into data_collection (id, data, org_id) values (?, ?, ?) ";
         
         private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, orgId, modality, anatomy, "
                         + " dataFormat, uri, series_instance_uid, acq_date, acq_time, "
@@ -255,8 +255,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         }
 
         @Override
-        public List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception {
-                List<ImageSet> imageSetList = new ArrayList<ImageSet>();
+        public List<ImageSet> getImgSetByDataCollId(String dataCollectionId, String orgId) throws Exception {
+        	 logger.info("*** Get ImgSetd by DataCollId for org id " + orgId);   
+        	List<ImageSet> imageSetList = new ArrayList<ImageSet>();
                 logger.info("*** Get ImgSet and patient id by DataCollId = " + dataCollectionId);
                 if (null != dataCollectionId && dataCollectionId.length() > 0) {
                         imageSetList = jdbcTemplate.query(GET_IMAGESET_BY_DATA_COLL_ID,
@@ -266,6 +267,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                                                                 throws SQLException {
                                                         int index = 0;
                                                         ps.setString(++index, dataCollectionId);
+                                                        ps.setString(++index, orgId);
                                                 }
                                         }, new ImageSetWithMoreInfoRowMapper());
                 }
@@ -285,26 +287,37 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         if(null != orgId){
                         	logger.info("%%% IN DAO to create dc with org id " + orgId);
                         	dataCollection.setOrgId(orgId);
+                        	ObjectMapper mapper = new ObjectMapper();
+                            jdbcTemplate.update(
+                                           INSERT_DATA_COLLECTION,
+                                           new Object[] { dataCollection.getId(),
+                                                           mapper.writeValueAsString(dataCollection), dataCollection.getOrgId() },
+                                           new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR });
+                            dataCollId = dataCollection.getId();
+                        }else{
+	                        ObjectMapper mapper = new ObjectMapper();
+	                         jdbcTemplate.update(
+	                                        INSERT_DATA_COLLECTION,
+	                                        new Object[] { dataCollection.getId(),
+	                                                        mapper.writeValueAsString(dataCollection) },
+	                                        new int[] { Types.VARCHAR, Types.VARCHAR });
+	                         dataCollId = dataCollection.getId();
                         }
-                        ObjectMapper mapper = new ObjectMapper();
-                         jdbcTemplate.update(
-                                        INSERT_DATA_COLLECTION,
-                                        new Object[] { dataCollection.getId(),
-                                                        mapper.writeValueAsString(dataCollection) },
-                                        new int[] { Types.VARCHAR, Types.VARCHAR });
-                         dataCollId = dataCollection.getId();
                 }
                 return dataCollId;
         }
 
 
         @Override
-        public String insertImageSet(ImageSet imageSet) throws Exception {
+        public String insertImageSet(ImageSet imageSet, String orgId) throws Exception {
                 String imageSetId = null;
+                //TODO: Add check for org id 
+                //if(null != orgId && orgId.equalsIgnoreCase(imageSet.getOrgId()))
                 if (null != imageSet && null != imageSet.getOrgId() && !imageSet.getOrgId().isEmpty()) {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(new java.util.Date());
                         imageSetId = String.valueOf(calendar.getTimeInMillis());
+                      
                         ObjectMapper mapper = new ObjectMapper();
                         jdbcTemplate.update(
                                         INSERT_IMAGE_SET,
@@ -317,6 +330,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                                                     Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR,
                                                     Types.VARCHAR, Types.BIGINT, Types.BIGINT});
                         }
+                
                 return imageSetId;
         }
         

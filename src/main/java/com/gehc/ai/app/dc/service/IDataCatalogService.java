@@ -55,10 +55,11 @@ public interface IDataCatalogService {
     *  Get Image set by Id
     *  
     * @param dataCollectionId
+     * @param orgId TODO
     * @return List<ImageSet>
     * @throws Exception
     */
-    List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception;
+    List<ImageSet> getImgSetByDataCollId(String dataCollectionId, String orgId) throws Exception;
     /**
      * Create Data Collection
      * 
@@ -70,10 +71,11 @@ public interface IDataCatalogService {
     String createDataCollection(DataCollection dataCollection, String orgId) throws Exception;
     /**
      * @param imageSet
+     * @param orgId TODO
      * @return
      * @throws Exception
      */
-    String insertImageSet(ImageSet imageSet) throws Exception;
+    String insertImageSet(ImageSet imageSet, String orgId) throws Exception;
 
     /**
      * 

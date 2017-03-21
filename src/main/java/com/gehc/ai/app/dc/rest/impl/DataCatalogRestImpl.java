@@ -260,11 +260,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/imgSetByDataCollectionId", method = RequestMethod.GET )
-    public List<ImageSet> getImgSetByDataCollId( @QueryParam ( "dataCollectionId" ) String dataCollectionId ) {
-        ResponseBuilder responseBuilder;
+    public List<ImageSet> getImgSetByDataCollId( @QueryParam ( "dataCollectionId" ) String dataCollectionId, HttpServletRequest request ) {
+        logger.info( "!!! In REST getImgSetByDataCollId, orgId = " + request.getAttribute( "orgId" ) );
+    	ResponseBuilder responseBuilder;
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
         try {
-            imageSet = dataCatalogService.getImgSetByDataCollId( dataCollectionId );
+        	if(null != request.getAttribute( "orgId" )){
+        		imageSet = dataCatalogService.getImgSetByDataCollId( dataCollectionId, request.getAttribute( "orgId" ).toString() );
+        	}else{
+        		imageSet = dataCatalogService.getImgSetByDataCollId( dataCollectionId, null );
+        	}
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving image set by data collection id" ).build() );
         } catch ( Exception e ) {
@@ -343,11 +348,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
     @RequestMapping ( value = "/dataCatalog/image-set", method = RequestMethod.POST )
-    public String insertImageSet( @RequestBody ImageSet imageSet ) {
+    public String insertImageSet( @RequestBody ImageSet imageSet, HttpServletRequest request ) {
+    	logger.info( "%%% In REST  insertImageSet, orgId = " + request.getAttribute( "orgId" ) );
         ResponseBuilder responseBuilder;
         String imageSetId = null;
         try {
-            imageSetId = dataCatalogService.insertImageSet( imageSet );
+        	if(null != request.getAttribute( "orgId" )){
+        		imageSetId = dataCatalogService.insertImageSet( imageSet, request.getAttribute( "orgId" ).toString() );
+        	}else{
+        		imageSetId = dataCatalogService.insertImageSet( imageSet, null );
+        	}
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while inserting the image set" ).build() );
         } catch ( Exception e ) {

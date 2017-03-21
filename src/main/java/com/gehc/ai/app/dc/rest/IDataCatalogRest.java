@@ -46,9 +46,10 @@ public interface IDataCatalogRest {
      * Get Image Set by Data Collection Id
      * 
      * @param dataCollectionId
+     * @param request TODO
      * @return List<ImageSet>
      */
-    List<ImageSet> getImgSetByDataCollId( String dataCollectionId );
+    List<ImageSet> getImgSetByDataCollId( String dataCollectionId, HttpServletRequest request );
 
     /**
      * Get Data Collection
@@ -69,9 +70,10 @@ public interface IDataCatalogRest {
 
     /**
      * @param imageSet
+     * @param request TODO
      * @return
      */
-    String insertImageSet( ImageSet imageSet );
+    String insertImageSet( ImageSet imageSet, HttpServletRequest request );
 
     /**
      * @return String Success

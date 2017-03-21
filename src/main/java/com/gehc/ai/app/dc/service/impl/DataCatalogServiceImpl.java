@@ -71,10 +71,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         return dataCollection;
     }
 	@Override
-	public List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception {
+	public List<ImageSet> getImgSetByDataCollId(String dataCollectionId, String orgId) throws Exception {
 		List<ImageSet> imageSet = null;
         try {
-               imageSet = dataCatalogDao.getImgSetByDataCollId(dataCollectionId);
+               imageSet = dataCatalogDao.getImgSetByDataCollId(dataCollectionId, orgId);
          } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving data collection ", e );
         }
@@ -92,8 +92,8 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		return dataCollectionId;
 	}
     @Override
-    public String insertImageSet(ImageSet imageSet) throws Exception {
-        return dataCatalogDao.insertImageSet(imageSet);
+    public String insertImageSet(ImageSet imageSet, String orgId) throws Exception {
+        return dataCatalogDao.insertImageSet(imageSet, orgId);
     }
     
 	@Override

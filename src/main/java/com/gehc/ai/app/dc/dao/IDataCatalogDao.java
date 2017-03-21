@@ -52,10 +52,11 @@ public interface IDataCatalogDao {
      * Get Image Set by Id
      * 
      * @param dataCollectionId
+     * @param orgId TODO
      * @return List<ImageSet>
      * @throws Exception
      */
-    List<ImageSet> getImgSetByDataCollId(String dataCollectionId) throws Exception;
+    List<ImageSet> getImgSetByDataCollId(String dataCollectionId, String orgId) throws Exception;
     
     /**
      * Create a Data Collection
@@ -69,10 +70,11 @@ public interface IDataCatalogDao {
 
     /**
      * @param imageSet
+     * @param orgId TODO
      * @return
      * @throws Exception
      */
-    String insertImageSet(ImageSet imageSet) throws Exception;
+    String insertImageSet(ImageSet imageSet, String orgId) throws Exception;
     
     /**
      * inserts annotation set into the datacatalog database
