@@ -57,11 +57,11 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      */
     @Override
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {
-        logger.info( " --- In preHandle method ");        
+        logger.info( " ### In preHandle method ");        
         if(null != req){    
         	boolean foundAuthToken = false;
-           logger.info( " ---- In preHandle method, req.getMethod() = " + req.getMethod());
-           logger.info( " ---- In preHandle method, get all the headers  ");
+           logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod());
+           logger.info( " ### In preHandle method, get all the headers  ");
            if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
 	           Enumeration headerNames = req.getHeaderNames();
 	           String key = null;
@@ -72,15 +72,18 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 	                   value = req.getHeader(key);
 	                   logger.info( " --- In preHandle method, req.getHeaderNames() value = " + value);
 	                   if(key.equalsIgnoreCase(HttpHeaders.AUTHORIZATION)){
-	                	   logger.info( " --- In preHandle method, found the authorization key" );
+	                	   logger.info( " ### In preHandle method, found the authorization key" );
 	                	   foundAuthToken = true;
 	                	   //Uncommet below when we don't need to see all the headers
 	                	   //break;
 	                   }
 	           }
 	           if(foundAuthToken){
-	               logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
-	               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
+	              // logger.info( " **** In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
+	               //req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
+		           //Need to remove the below omce I can get the user org id for all the API cals
+		           logger.info( " ---- In preHandle method, setting the org id as 61939267-d195-499f-bfd8-7d92875c7035 ");
+		           req.setAttribute( "orgId", "61939267-d195-499f-bfd8-7d92875c7035" );
 	           }else{
 		           //Need to remove the below omce I can get the user org id for all the API cals
 		           logger.info( " ---- In preHandle method, setting the org id as 61939267-d195-499f-bfd8-7d92875c7035 ");
