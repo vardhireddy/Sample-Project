@@ -187,6 +187,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         @Override
         public List<DataCollection> getDataCollection(String id  , String type , String orgId  ) throws Exception {
                 logger.info(" !!! In DAO getDataCollection, orgId = " + orgId);
+                
                 List<DataCollection> dataCollectionList = new ArrayList<DataCollection>();
                 StringBuilder queryBuilder = new StringBuilder();
                 queryBuilder.append(GET_DC_PREFIX);
@@ -272,7 +273,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         }
 
         @Override
-        public String createDataCollection(DataCollection dataCollection)
+        public String createDataCollection(DataCollection dataCollection, String orgId)
                         throws Exception {
             String dataCollId = null;    
             if (null != dataCollection) {
@@ -281,6 +282,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         dataCollection.setId(String.valueOf(calendar.getTimeInMillis()));
                         dataCollection.setSchemaVersion("v1.0");
                         dataCollection.setCreatedDate(String.valueOf(calendar.getTimeInMillis()));
+                        if(null != orgId){
+                        	logger.info("%%% IN DAO to create dc with org id " + orgId);
+                        	dataCollection.setOrgId(orgId);
+                        }
                         ObjectMapper mapper = new ObjectMapper();
                          jdbcTemplate.update(
                                         INSERT_DATA_COLLECTION,

@@ -292,7 +292,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ResponseBuilder responseBuilder;
         List<DataCollection> dataCollection = new ArrayList<DataCollection>();
         try {
-            dataCollection = dataCatalogService.getDataCollection( id, type, request.getAttribute( "orgId" ).toString() );
+            if(null != request.getAttribute( "orgId" )){
+            	dataCollection = dataCatalogService.getDataCollection( id, type, request.getAttribute( "orgId" ).toString() );
+            }else{
+            	//dataCollection = dataCatalogService.getDataCollection( id, type, null );
+            	dataCollection = dataCatalogService.getDataCollection( id, type, "61939267-d195-499f-bfd8-7d92875c7035"  );
+            }
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
         } catch ( Exception e ) {
@@ -311,11 +316,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
     @RequestMapping ( value = "/dataCatalog/createDataCollection", method = RequestMethod.POST )
-    public Response createDataCollection( @RequestBody DataCollection dataCollection ) {
+    public Response createDataCollection( @RequestBody DataCollection dataCollection, HttpServletRequest request ) {
+    	logger.info( "%%% In REST  create DataCollection, orgId = " + request.getAttribute( "orgId" ) );
         Response response = null;
         String dcId;
         try {
-            dcId = dataCatalogService.createDataCollection( dataCollection );
+        	if(null != request.getAttribute( "orgId" )){
+        		dcId = dataCatalogService.createDataCollection( dataCollection, request.getAttribute( "orgId" ).toString() );
+        	}else{
+        		dcId = dataCatalogService.createDataCollection( dataCollection, null );
+        	}
             if ( StringUtils.isEmpty( dcId ) ) {
                 response = Response.status( Status.NO_CONTENT ).entity( "No data collection got created" ).build();
             } else {

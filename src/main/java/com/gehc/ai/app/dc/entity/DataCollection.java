@@ -35,8 +35,17 @@ public class DataCollection implements Serializable {
     private String description;
     private String[] imageSets;
     private String createdDate;
-    private int imageSetsSize;
+    public String getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
+
+
+	private int imageSetsSize;
     private String type;
+    private String orgId;
     /**
      * Flexible JSON object to store properties of data collection
      */
@@ -155,37 +164,26 @@ public class DataCollection implements Serializable {
         super();
         // TODO Auto-generated constructor stub
     }
-    /**
-     * @param id
-     * @param schemaVersion
-     * @param name
-     * @param description
-     * @param imageSets
-     * @param createdDate
-     * @param imageSetsSize
-     * @param type
-     * @param properties
-     * @param creator
-     */
-    public DataCollection( String id, String schemaVersion, String name, String description, String[] imageSets, String createdDate, int imageSetsSize, String type, Object properties, Creator creator ) {
-        super();
-        this.id = id;
-        this.schemaVersion = schemaVersion;
-        this.name = name;
-        this.description = description;
-        this.imageSets = imageSets;
-        this.createdDate = createdDate;
-        this.imageSetsSize = imageSetsSize;
-        this.type = type;
-        this.properties = properties;
-        this.creator = creator;
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion + ", name=" + name + ", description=" + description + ", imageSets=" + Arrays.toString( imageSets ) + ", createdDate=" + createdDate + ", imageSetsSize=" + imageSetsSize + ", type=" + type + ", properties=" + properties + ", creator=" + creator + "]";
-    }
-
+	public DataCollection(String id, String schemaVersion, String name, String description, String[] imageSets,
+			String createdDate, int imageSetsSize, String type, String orgId, Object properties, Creator creator) {
+		super();
+		this.id = id;
+		this.schemaVersion = schemaVersion;
+		this.name = name;
+		this.description = description;
+		this.imageSets = imageSets;
+		this.createdDate = createdDate;
+		this.imageSetsSize = imageSetsSize;
+		this.type = type;
+		this.orgId = orgId;
+		this.properties = properties;
+		this.creator = creator;
+	}
+	@Override
+	public String toString() {
+		return "DataCollection [id=" + id + ", schemaVersion=" + schemaVersion + ", name=" + name + ", description="
+				+ description + ", imageSets=" + Arrays.toString(imageSets) + ", createdDate=" + createdDate
+				+ ", imageSetsSize=" + imageSetsSize + ", type=" + type + ", orgId=" + orgId + ", properties="
+				+ properties + ", creator=" + creator + "]";
+	}
 }

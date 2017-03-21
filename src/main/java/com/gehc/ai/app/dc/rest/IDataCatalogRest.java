@@ -62,9 +62,10 @@ public interface IDataCatalogRest {
      * Create Data Collection
      * 
      * @param dataCollection
+     * @param request TODO
      * @return response
      */
-    Response createDataCollection( DataCollection dataCollection );
+    Response createDataCollection( DataCollection dataCollection, HttpServletRequest request );
 
     /**
      * @param imageSet

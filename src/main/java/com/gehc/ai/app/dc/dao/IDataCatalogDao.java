@@ -61,10 +61,11 @@ public interface IDataCatalogDao {
      * Create a Data Collection
      * 
      * @param dataCollection
+     * @param orgId TODO
      * @return number of n=rows inserted
      * @throws Exception
      */
-    String createDataCollection(DataCollection dataCollection) throws Exception;
+    String createDataCollection(DataCollection dataCollection, String orgId) throws Exception;
 
     /**
      * @param imageSet
