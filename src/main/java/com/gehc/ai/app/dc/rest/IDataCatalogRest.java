@@ -87,7 +87,7 @@ public interface IDataCatalogRest {
      * @param jsonString ignored
      * @return Response object wrapping the result of the insertion.
      */
-    Response insertRandomAnnotationSet( String jsonString );
+  //  Response insertRandomAnnotationSet( String jsonString );
 
     /**
      * inserts a random annotation set into the database
@@ -95,20 +95,20 @@ public interface IDataCatalogRest {
      * @param as annotation set to be inserted to the database
      * @return Response object wrapping the result of the insertion.
      */
-    Response insertAnnotationSet( AnnotationSet as );
+   // Response insertAnnotationSet( AnnotationSet as );
 
     /**
      * @param imageSetIds image sets id
      * @param fields fields defined in the JSON structure of the annotation
      * @return List of annotation sets given image set ids
      */
-    List getAnnotationSet( String imageSetIds, String fields );
+  //  List getAnnotationSet( String imageSetIds, String fields );
 
     /**
      * @param queryMap a map of annotation set key-values
      * @return annotation sets given the query map
      */
-    List getAnnotationSet( Map<String, String> queryMap );
+    //List getAnnotationSet( Map<String, String> queryMap );
 
     /**
      * @param id id of target data
