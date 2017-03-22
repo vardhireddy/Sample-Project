@@ -38,9 +38,10 @@ public interface IDataCatalogRest {
      * Get Image Set by Org Id
      *
      * @param params
+     * @param request TODO
      * @return List<ImageSet>
      */
-    List<ImageSet> getImgSet( Map<String, String> params );
+    List<ImageSet> getImgSet( Map<String, String> params, HttpServletRequest request );
 
     /**
      * Get Image Set by Data Collection Id
@@ -209,9 +210,10 @@ public interface IDataCatalogRest {
     
     /**
      * @param dataCollection
+     * @param request TODO
      * @return
      */
-    ApiResponse updateDataCollection( DataCollection dataCollection );
+    ApiResponse updateDataCollection( DataCollection dataCollection, HttpServletRequest request );
     
     /**
      * @param id

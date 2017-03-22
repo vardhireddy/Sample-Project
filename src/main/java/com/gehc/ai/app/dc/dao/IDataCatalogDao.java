@@ -25,10 +25,11 @@ public interface IDataCatalogDao {
      * Gets the data catalog.
      * 
      * @param params
+     * @param orgId TODO
      * @return List<ImageSet>
      * @throws Exception
      */
-    List<ImageSet> getImgSet(Map<String, String> params) throws Exception;
+    List<ImageSet> getImgSet(Map<String, String> params, String orgId) throws Exception;
     
     /**
      * Get Image Set Ids for a Data collection Id
@@ -119,8 +120,9 @@ public interface IDataCatalogDao {
 	List<ImageSet> getImageSetByPatientId(String patientid);
 	/**
 	 * @param dataCollection
+	 * @param orgId TODO
 	 * @return
 	 * @throws Exception
 	 */
-	String updateDataCollection(DataCollection dataCollection) throws Exception;
+	String updateDataCollection(DataCollection dataCollection, String orgId) throws Exception;
 }

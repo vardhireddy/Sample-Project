@@ -36,10 +36,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
      * @see com.gehc.ai.app.dc.service.IDataCatalogService#getDataCatalog()
      */
     @Override
-    public List<ImageSet> getImgSet(Map<String, String> params) throws Exception {
+    public List<ImageSet> getImgSet(Map<String, String> params, String orgId) throws Exception {
         List<ImageSet> imageSet = null;
         try {
-            imageSet = dataCatalogDao.getImgSet(params);
+            imageSet = dataCatalogDao.getImgSet(params, orgId);
         } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving data collection ", e );
         }
@@ -151,7 +151,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
      * @see com.gehc.ai.app.dc.service.IDataCatalogService#updateDataCollection(com.gehc.ai.app.dc.entity.DataCollection)
      */
     @Override
-    public String updateDataCollection( DataCollection dataCollection ) throws Exception {
-         return dataCatalogDao.updateDataCollection( dataCollection );
+    public String updateDataCollection( DataCollection dataCollection, String orgId ) throws Exception {
+         return dataCatalogDao.updateDataCollection( dataCollection, orgId );
     }
 }

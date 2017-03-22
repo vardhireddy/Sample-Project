@@ -96,7 +96,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         + "inner join image_set im ON JSON_SEARCH(dc.data, 'one', im.id) IS NOT NULL "
                         + "inner join annotation an ON im.id = an.image_set ";
         
-        private static final String UPDATE_DATA_COLLECTION = "update data_collection set properties = ? where id = ? ";
+        private static final String UPDATE_DATA_COLLECTION = "update data_collection set properties = ? where id = ? and org_id = ? ";
 
         @Autowired
         private JdbcTemplate jdbcTemplate;
@@ -107,7 +107,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
          * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getDataCatalog()
          */
         @Override
-        public List<ImageSet> getImgSet(Map<String, String> params) throws Exception {
+        public List<ImageSet> getImgSet(Map<String, String> params, String orgId) throws Exception {
+        	//Note: Not using the org id from the token but using the one which is being passed as a parameter
                 List<ImageSet> imageSetList;
                 StringBuilder builder = new StringBuilder();
                 String annotValue = null;
@@ -115,10 +116,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         annotValue = params.remove("annotations");
                 }
                 builder.append(GET_IMGSET_DATA_BY_ORG_ID);
-                
-                /*if (annotValue != null) {
-                        builder.append(ANNOTATION_JOIN);
-                }*/
                 builder.append(constructQuery(params));
 
                 logger.info("!!! getImgSet by org id sql = " + builder);
@@ -550,17 +547,17 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
      * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#updateDataCollection(com.gehc.ai.app.dc.entity.DataCollection)
      */
     @Override
-    public String updateDataCollection( DataCollection dataCollection ) throws Exception {
+    public String updateDataCollection( DataCollection dataCollection, String orgId ) throws Exception {
         String dataCollId = null;    
         if (null != dataCollection) {
-            logger.info(" !!! In updateDataCollection dao");
+            logger.info(" !!! In updateDataCollection dao, orgId " + orgId);
             logger.info(" *** In updateDataCollection dao, id " +   dataCollection.getId());
                      ObjectMapper mapper = new ObjectMapper();
                      logger.info(" *** In updateDataCollection dao" +  mapper.writeValueAsString(dataCollection.getProperties()));
                      jdbcTemplate.update(
                                     UPDATE_DATA_COLLECTION,
-                                    new Object[] { mapper.writeValueAsString(dataCollection.getProperties()), dataCollection.getId()},
-                                    new int[] { Types.VARCHAR, Types.VARCHAR });
+                                    new Object[] { mapper.writeValueAsString(dataCollection.getProperties()), dataCollection.getId(), orgId},
+                                    new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR });
                      dataCollId = dataCollection.getId();
             }
             return dataCollId;        
