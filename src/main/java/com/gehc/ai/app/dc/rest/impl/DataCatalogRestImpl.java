@@ -105,8 +105,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @RequestMapping ( value = "/dataCatalog/image-set", method = RequestMethod.GET )
-    public List<ImageSet> getImgSet( @RequestParam Map<String, String> params ) {
-        Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, ID ) );
+    public List<ImageSet> getImgSet( @RequestParam Map<String, String> params, HttpServletRequest request ) {
+    	logger.info( "!!! In REST getImgSet, orgId = " + request.getAttribute( "orgId" ) );
+    	Map<String, String> validParams = constructValidParams( params, Arrays.asList( ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, ID ) );
         ResponseBuilder responseBuilder;
         //List of img set based on filter criteria other than annotation
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
@@ -118,12 +119,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         List<ImageSet> imageSetFinalLst = new ArrayList<ImageSet>();
         boolean dataWithNoAnnNeeded = false;
         try {
-            imageSet = dataCatalogService.getImgSet( validParams );
+        	if(null != request.getAttribute( "orgId" )){
+        		imageSet = dataCatalogService.getImgSet( validParams, request.getAttribute( "orgId" ).toString() );
+        	}else{
+        		imageSet = dataCatalogService.getImgSet( validParams, null );
+        	}
             //Get Annotation
             if(params.containsKey( ANNOTATIONS )){
                 logger.info( "!!! Params has annotations " );
                 String values = params.get(ANNOTATIONS);
-                logger.info( "*** Values for annotations " + values );
                 if(null != imageSet && imageSet.size()>0){
                     logger.info( "!!! Img set is not null " + imageSet.size());
                     List<String> imgSetIds = new ArrayList<String>();
@@ -793,11 +797,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @Override
     @RequestMapping ( value = "/datacatalog", method = RequestMethod.PUT )
-    public ApiResponse updateDataCollection(@RequestBody DataCollection dataCollection ) {
+    public ApiResponse updateDataCollection(@RequestBody DataCollection dataCollection, HttpServletRequest request ) {
+    	 logger.info( "+++ !!! In REST updateDataCollection, orgId = " + request.getAttribute( "orgId" ) );
         ApiResponse apiResponse = null;
         try {
             logger.info(" *** In updateDataCollection rest");
-            apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS,  dataCatalogService.updateDataCollection( dataCollection ));
+            if(null != request.getAttribute( "orgId" )){
+            	apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS,  dataCatalogService.updateDataCollection( dataCollection, request.getAttribute( "orgId" ).toString() ));
+            }else{
+            	apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS,  dataCatalogService.updateDataCollection( dataCollection, null ));
+            }
         } catch ( Exception e ) {
             logger.error("Exception occured while updating the data collection ", e);
             apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.INTERNAL_SERVER_ERROR_CODE, "Failed to update the data collection ", dataCollection.getId());

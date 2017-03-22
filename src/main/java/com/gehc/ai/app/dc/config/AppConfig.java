@@ -42,8 +42,12 @@ public class AppConfig extends WebMvcConfigurerAdapter{
        // registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/**");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/dataCollection");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/createDataCollection");
-    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/image-set");
+    	//Will not set the ingterceptor for insert image-set, patient and study bcoz it being called from SNS manager using skynet role
+    	//ToDo:Once SNS manger will use the right credentials then will check the caller of these API is LF APP role
+    	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/image-set");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/imgSetByDataCollectionId");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/image-set");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog");
     }
     
     /** The dataSource */
