@@ -304,8 +304,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             if(null != request.getAttribute( "orgId" )){
             	dataCollection = dataCatalogService.getDataCollection( id, type, request.getAttribute( "orgId" ).toString() );
             }else{
-            	//dataCollection = dataCatalogService.getDataCollection( id, type, null );
-            	dataCollection = dataCatalogService.getDataCollection( id, type, "61939267-d195-499f-bfd8-7d92875c7035"  );
+            	dataCollection = dataCatalogService.getDataCollection( id, type, null );
+            	//dataCollection = dataCatalogService.getDataCollection( id, type, "61939267-d195-499f-bfd8-7d92875c7035"  );
             }
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
@@ -382,12 +382,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return ApplicationConstants.SUCCESS;
     }
 
-    @Override
+  //TODO: Remove the comment code below if it's not being used
+/*    @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
     @RequestMapping ( value = "/dataCatalog/random-annotation-set", method = RequestMethod.POST )
     public Response insertRandomAnnotationSet( @RequestBody String blob ) {
-        // System.out.println("blob = " + blob);
+        
         Response response = null;
         int numOfRowsInserted = 0;
         try {
@@ -404,9 +405,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         // return response;
         return null;
-    }
+    }*/
 
-    @Override
+  //TODO: Remove the comment code below if it's not being used
+/*    @Override
     @Consumes ( MediaType.APPLICATION_JSON )
     @Produces ( MediaType.APPLICATION_JSON )
     @RequestMapping ( value = "/dataCatalog/annotation-set", method = RequestMethod.POST )
@@ -427,9 +429,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         // return response;
         return null;
-    }
+    }*/
 
-    @SuppressWarnings ( "unchecked" )
+    //TODO: Remove the comment code below if it's not being used
+   /* @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/annotation-set", method = RequestMethod.GET )
     public List getAnnotationSet( @RequestParam Map<String, String> queryMap ) {
@@ -450,9 +453,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             responseBuilder = Response.status( Status.NOT_FOUND );
             return (List)responseBuilder.build();
         }
-    }
-
-    @SuppressWarnings ( "unchecked" )
+    }*/
+  //TODO: Remove the comment code below if it's not being used
+/*    @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/annotation-set/{imageSetIds}", method = RequestMethod.GET )
     public List getAnnotationSet( @PathVariable String imageSetIds, @QueryParam ( "fields" ) String fields ) {
@@ -472,7 +475,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             responseBuilder = Response.status( Status.NOT_FOUND );
             return (List)responseBuilder.build();
         }
-    }
+    }*/
 
     @Value ( "${experiment.targetData.gtMaskLocation}" )
     private String gtMaskLocation;
