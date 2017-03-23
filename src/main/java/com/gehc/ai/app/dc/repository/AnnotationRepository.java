@@ -14,6 +14,7 @@ package com.gehc.ai.app.dc.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -32,6 +33,8 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     List<Annotation> findByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
     List<Annotation> findByImageSetAndOrgId(@Param("imageSet") String imageSet, @Param("orgId") String orgId);
     List<Annotation> findByIdInAndOrgId(List<Long> ids, String orgId);
+ //   @Query(value="delete from annotation a where a.id = ?1")
+  //  void deleteById(Long id);
     @Override
     <S extends Annotation> S save(S entity);
     <S extends Annotation> S delete(S entity);

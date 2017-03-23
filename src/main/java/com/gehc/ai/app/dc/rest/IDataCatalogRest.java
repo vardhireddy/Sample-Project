@@ -182,8 +182,9 @@ public interface IDataCatalogRest {
 
     /**
      * @param ids
+     * @param request TODO
      */
-    ApiResponse deleteAnnotation( String ids );
+    ApiResponse deleteAnnotation( String ids, HttpServletRequest request );
 
     /**
      * @param imageSet
