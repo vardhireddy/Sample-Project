@@ -43,6 +43,7 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/dataCollection");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/createDataCollection");
     	//Will not set the interceptor for insert image-set, annotation, patient and study bcoz it being called from SNS manager using skynet id
+    	// Also get image set by series instanse uid is being called from sns magaer
     	//TODO:Once SNS manger will use the right credentials then will check the caller of these API is LF APP
     	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/image-set");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/imgSetByDataCollectionId");
@@ -51,7 +52,10 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/data-collection-target");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation/{ids}");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation");
-    }
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/patient/{ids}");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/study/{ids}");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/image-set-by-patientid");
+  }
     
     /** The dataSource */
     @Autowired

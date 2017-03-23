@@ -489,7 +489,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         }
 
         @Override
-        public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) {
+        public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType, String orgId) {
                 List<AnnotationImgSetDataCol> annotationImgSetDataCols = new ArrayList<AnnotationImgSetDataCol>();
 
         StringBuilder builder = new StringBuilder(GET_ANNOTATION_DATA_BY_DC_ID);
@@ -535,10 +535,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
      * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getImageSetByPatientId(java.lang.String)
      */
     @Override
-    public List<ImageSet> getImageSetByPatientId( String patientid ) {
+    public List<ImageSet> getImageSetByPatientId( String patientid, String orgId ) {
         List<ImageSet> imageSetList;
         StringBuilder builder = new StringBuilder(GET_IMGSET_DATA_BY_PATIENT_ID);
         builder.append("'" + patientid + "'");
+        builder.append(" and im.orgId = ");
+        builder.append("'" + orgId + "'");
         logger.info("!!!! getImageSetByPatientId sql = " + builder);
         imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetInfoRowMapper());
         return imageSetList;

@@ -124,10 +124,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	}
 
     @Override
-    public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) throws Exception {
+    public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType, String orgId) throws Exception {
         List l = null;
         try {
-            l = dataCatalogDao.getAnnotationByDataColId(dataCollectionId, annotationType);
+            l = dataCatalogDao.getAnnotationByDataColId(dataCollectionId, annotationType, null);
         } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving target data ", e );
         }
@@ -143,8 +143,8 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
      * @see com.gehc.ai.app.dc.service.IDataCatalogService#getImageSetByPatientId(java.lang.String)
      */
     @Override
-    public List<ImageSet> getImageSetByPatientId( String patientid ) {
-        return dataCatalogDao.getImageSetByPatientId( patientid );
+    public List<ImageSet> getImageSetByPatientId( String patientid, String orgId ) {
+        return dataCatalogDao.getImageSetByPatientId( patientid, orgId );
     }
 
     /* (non-Javadoc)

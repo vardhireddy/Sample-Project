@@ -137,6 +137,7 @@ public class Study {
     /**
      * The organization who owns or uploads the data. This could be an entry in an org database
      */
+    @Column(name="org_id")
     private String orgId;
     public String getOrgId() {
         return orgId;
