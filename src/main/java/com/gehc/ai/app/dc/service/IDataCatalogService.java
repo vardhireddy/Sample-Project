@@ -98,10 +98,11 @@ public interface IDataCatalogService {
 	/**
 	 *
 	 * @param dataCollectionIds
+	 * @param orgId TODO
 	 * @return targe data associated with the data collection
 	 * @throws Exception
 	 */
-	List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception;
+	List<TargetData> getExperimentTargetData(String dataCollectionIds, String orgId) throws Exception;
 
 	/**
 	 *

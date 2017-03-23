@@ -113,12 +113,13 @@ public interface IDataCatalogRest {
     /**
      * @param id id of target data
      * @param type type of target data
+     * @param request TODO
      * @return target data that matches id and type
      */
-    Map getExperimentTargetData( String id, String type );
+    Map getExperimentTargetData( String id, String type, HttpServletRequest request );
 
     /**
-     * @param id id of target data
+     * @param id id of data collection       
      * @return Annotation data for imagesets in a given Datacollection
      */
 
