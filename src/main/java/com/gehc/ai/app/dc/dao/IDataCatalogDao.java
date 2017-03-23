@@ -107,10 +107,11 @@ public interface IDataCatalogDao {
 	/**
 	 *
 	 * @param dataCollectionId data collection id
+	 * @param orgId TODO
 	 * @return Annotation data for imagesets for a give data collection
 	 * @throws Exception
 	 */
-	List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) throws Exception;
+	List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType, String orgId) throws Exception;
 
 	/**
 	 * 
@@ -118,7 +119,7 @@ public interface IDataCatalogDao {
 	 * @return imagesets matching studyId
 	 */
 	List<ImageSet> getImageSetByStudyId(String studyId);
-	List<ImageSet> getImageSetByPatientId(String patientid);
+	List<ImageSet> getImageSetByPatientId(String patientid, String orgId);
 	/**
 	 * @param dataCollection
 	 * @param orgId TODO

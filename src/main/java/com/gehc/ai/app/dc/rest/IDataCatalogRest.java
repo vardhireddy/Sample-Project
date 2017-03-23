@@ -120,13 +120,14 @@ public interface IDataCatalogRest {
 
     /**
      * @param id id of data collection       
+     * @param request TODO
      * @return Annotation data for imagesets in a given Datacollection
      */
 
     @SuppressWarnings ("unchecked")
     @RequestMapping(value = "/dataCatalog/annotationByDataCollectionId", method = RequestMethod.GET)
     List getAnnotationByDataColId(@QueryParam("id") String id,
-                                  @QueryParam("annotationType") String annotationType);
+                                  @QueryParam("annotationType") String annotationType, HttpServletRequest request);
 
     /**
      * @param queryMap fields from patient table columns
@@ -170,15 +171,17 @@ public interface IDataCatalogRest {
 
     /**
      * @param ids
+     * @param request TODO
      * @return patients based on a list of comma separated id's
      */
-    List<Patient> getPatients( String ids );
+    List<Patient> getPatients( String ids, HttpServletRequest request );
 
     /**
      * @param ids
+     * @param request TODO
      * @return studies based on a list of comma separated id's
      */
-    List<Study> getStudiesById( String ids );
+    List<Study> getStudiesById( String ids, HttpServletRequest request );
 
     /**
      * @param ids
@@ -207,9 +210,10 @@ public interface IDataCatalogRest {
     
     /**
      * @param patientid
+     * @param request TODO
      * @return
      */
-    List<ImageSet> getImageSetByPatientId( String patientid );
+    List<ImageSet> getImageSetByPatientId( String patientid, HttpServletRequest request );
     
     /**
      * @param dataCollection

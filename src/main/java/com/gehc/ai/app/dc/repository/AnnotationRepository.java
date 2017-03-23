@@ -37,5 +37,5 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
   //  void deleteById(Long id);
     @Override
     <S extends Annotation> S save(S entity);
-    <S extends Annotation> S delete(S entity);
+  //  <S extends Annotation> S delete(S entity);
 }

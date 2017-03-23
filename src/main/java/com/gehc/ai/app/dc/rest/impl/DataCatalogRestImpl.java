@@ -535,9 +535,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping (value = "/dataCatalog/annotation-by-datacollectionid", method = RequestMethod.GET)
     public List getAnnotationByDataColId(@QueryParam ("id") String id,
-                                         @QueryParam ("annotationType") String annotationType) {
+                                         @QueryParam ("annotationType") String annotationType, HttpServletRequest request) {
         logger.info("Entering method getAnnotationByDataColId --> id: " + id);
-
+        logger.info( "!!! *** In REST getAnnotationByDataColId, orgId = " + request.getAttribute( "orgId" ) );
+        //TODO:Check if this API is being used or not
         if ((id == null) || (id.length() == 0)) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).entity("Datacollection id is required to get annotation for a data collection").build());
         }
@@ -545,7 +546,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> l;
         try {
-             l = dataCatalogService.getAnnotationByDataColId(id, annotationType);
+             l = dataCatalogService.getAnnotationByDataColId(id, annotationType, null);
         } catch (Exception e) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving annotation for data collection").build() );
         }
@@ -603,12 +604,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/patient/{ids}", method = RequestMethod.GET )
-    public List<Patient> getPatients( @PathVariable String ids ) {
+    public List<Patient> getPatients( @PathVariable String ids, HttpServletRequest request ) {
+    	logger.info( "*** In REST getPatients, orgId = " + request.getAttribute( "orgId" ) );
         List<Long> pids = new ArrayList<Long>();
         String[] idStrings = ids.split( "," );
         for ( int i = 0; i < idStrings.length; i++ )
             pids.add( Long.valueOf( idStrings[i] ) );
-        return patientRepository.findByIdIn( pids );
+       // return patientRepository.findByIdIn( pids );
+        if(null != request.getAttribute( "orgId" )){
+        	return patientRepository.findByIdInAndOrgId(pids, request.getAttribute( "orgId" ).toString());
+        }else{
+        	return patientRepository.findByIdInAndOrgId(pids, null);
+        }
     }
 
     @SuppressWarnings ( "unchecked" )
@@ -675,12 +682,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/study/{ids}", method = RequestMethod.GET )
-    public List<Study> getStudiesById( @PathVariable String ids ) {
-        List<Long> pids = new ArrayList<Long>();
+    public List<Study> getStudiesById( @PathVariable String ids, HttpServletRequest request ) {
+    	logger.info( "*** In REST getStudiesById, orgId = " + request.getAttribute( "orgId" ) );
+    	List<Long> pids = new ArrayList<Long>();
         String[] idStrings = ids.split( "," );
         for ( int i = 0; i < idStrings.length; i++ )
             pids.add( Long.valueOf( idStrings[i] ) );
-        return studyRepository.findByIdIn( pids );
+       if(null != request.getAttribute( "orgId" )){
+        return studyRepository.findByIdInAndOrgId(pids, request.getAttribute( "orgId" ).toString() );
+       }else{
+    	   return studyRepository.findByIdInAndOrgId(pids, null );
+       }
+    	   
     }
 
     @Override
@@ -783,20 +796,28 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ApiResponse deleteAnnotation( @PathVariable String ids, HttpServletRequest request ) {
     	logger.info( "+++ !!! In REST deleteAnnotation, orgId = " + request.getAttribute( "orgId" ) );
         ApiResponse apiResponse = null;
+        Annotation ann = new Annotation();
         try {
             if(null != ids && ids.length()>0){
                 String[] idStrings = ids.split( "," );
                 if(null != idStrings && idStrings.length>0){
                     for ( int i = 0; i < idStrings.length; i++ ){
-                        annotationRepository.delete( Long.valueOf( idStrings[i] )  );
-                    	// annotationRepository.deleteById( Long.valueOf( idStrings[i] )  );
+                    	ann.setId(Long.valueOf( idStrings[i] ));
+                    	if(null != request.getAttribute( "orgId" )){
+                    		ann.setOrgId(request.getAttribute( "orgId" ).toString());
+                        	annotationRepository.delete( ann );
+                    	}else{
+                    		//annotationRepository.delete( Long.valueOf( idStrings[i] )  );
+                    		apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE, "Id does not exist", ids);
+                    	}
+                    	
                  }
                 }
             }
             apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, ids );
         } catch (Exception e ) {
             logger.error("Exception occured while calling delete annotation ", e);
-            apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.INTERNAL_SERVER_ERROR_CODE, "Id does not exist", ids);
+            apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE, "Id does not exist", ids);
         }
         return apiResponse;
     }
@@ -806,8 +827,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @Override
     @RequestMapping ( value = "/dataCatalog/image-set-by-patientid", method = RequestMethod.GET )
-    public List<ImageSet> getImageSetByPatientId(@QueryParam ( "patientid" ) String patientid) {
-        return dataCatalogService.getImageSetByPatientId( patientid );
+    public List<ImageSet> getImageSetByPatientId(@QueryParam ( "patientid" ) String patientid, HttpServletRequest request) {
+    	logger.info( "+++ !!! In REST getImageSetByPatientId, orgId = " + request.getAttribute( "orgId" ) );
+    	if(null != request.getAttribute( "orgId" )){
+    		return dataCatalogService.getImageSetByPatientId( patientid, request.getAttribute( "orgId" ).toString() );
+    	}else{
+    		return dataCatalogService.getImageSetByPatientId( patientid, null );
+    	}
     }
    
     /* (non-Javadoc)
