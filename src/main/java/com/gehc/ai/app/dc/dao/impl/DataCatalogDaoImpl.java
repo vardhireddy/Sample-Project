@@ -449,21 +449,22 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
         @Deprecated
         @Override
-        public List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception {
-                /*final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.data, '$**.mask.uri') "
-                                + "as gtMask from image_set im inner join annotation_set an ON "
-                                + "JSON_SEARCH(an.data, 'one', im.id, NULL, '$.imageSets') "
-                                + "IS NOT NULL inner join data_collection dc ON "
-                                + "JSON_SEARCH(dc.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL "
-                                + "WHERE dc.id=" + dataCollectionIds+ ";";*/
-            
-            final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.item, '$.uri') "
+        public List<TargetData> getExperimentTargetData(String dataCollectionIds, String orgId) throws Exception {
+                logger.info("*** In DAO getExperimentTargetData, org id is " + orgId);
+            /*final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.item, '$.uri') "
                     + "as gtMask from image_set im inner join annotation an ON "
                     + "an.image_set = im.id "
                     + "inner join data_collection dc ON "
                     + "JSON_SEARCH(dc.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL "
-                    + "WHERE dc.id=" + dataCollectionIds+ " and an.type = 'mask' ;";
-                
+                    + "WHERE dc.id=" + dataCollectionIds+ " and an.type = 'mask' ;";*/
+            
+        	final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.item, '$.uri') "
+                    + "as gtMask from image_set im inner join annotation an ON "
+                    + "an.image_set = im.id "
+                    + "inner join data_collection dc ON "
+                    + "JSON_SEARCH(dc.data, 'one', im.id, NULL, '$.imageSets') IS NOT NULL "
+                    + "WHERE im.orgId = '" + orgId +"' and dc.id=" + dataCollectionIds+ " and an.type = 'mask' ;";
+        	
                 List<TargetData> alist = new ArrayList<TargetData>();
                 alist = jdbcTemplate.query(query, new ResultSetExtractor<List<TargetData>>() {
                         @Override

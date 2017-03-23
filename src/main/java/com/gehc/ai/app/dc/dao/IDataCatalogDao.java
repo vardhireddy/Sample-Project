@@ -98,10 +98,11 @@ public interface IDataCatalogDao {
 	/**
 	 * 
 	 * @param dataCollectionIds data collection id
+	 * @param orgId TODO
 	 * @return experiment target data for the collection, specifically from those image sets with annotation
 	 * @throws Exception
 	 */
-	List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception;
+	List<TargetData> getExperimentTargetData(String dataCollectionIds, String orgId) throws Exception;
 
 	/**
 	 *

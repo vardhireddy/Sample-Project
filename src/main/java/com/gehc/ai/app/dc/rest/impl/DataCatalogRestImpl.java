@@ -490,11 +490,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Deprecated
     @RequestMapping ( value = "/dataCatalog/data-collection-target", method = RequestMethod.GET )
-    public Map getExperimentTargetData( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type ) {
-        logger.info("Entering method getExperimentTargetData --> id: " + id);
+    public Map getExperimentTargetData( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request ) {
+    	logger.info( "!!! *** In REST getExperimentTargetData, orgId = " + request.getAttribute( "orgId" ) );
+    	logger.info("Entering method getExperimentTargetData --> id: " + id);
         Map tdmap = new HashMap();
+        List<TargetData> l = new ArrayList<TargetData>();
         try {
-            List<TargetData> l = dataCatalogService.getExperimentTargetData( id );
+            if(null != request.getAttribute( "orgId" )){
+            	l = dataCatalogService.getExperimentTargetData( id, request.getAttribute( "orgId" ).toString() );
+            }else{
+            	l = dataCatalogService.getExperimentTargetData( id, null );
+            }
             logger.info("getExperimentTargetData service call return a list of size --> : " + l.size());
 
             if ( l.size() > 0 ) {

@@ -113,10 +113,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
     }
 
 	@Override
-	public List<TargetData> getExperimentTargetData(String dataCollectionIds) throws Exception {
+	public List<TargetData> getExperimentTargetData(String dataCollectionIds, String orgId) throws Exception {
 		List l = null;
         try {
-               l = dataCatalogDao.getExperimentTargetData(dataCollectionIds);
+               l = dataCatalogDao.getExperimentTargetData(dataCollectionIds, orgId);
          } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving target data ", e );
         }
