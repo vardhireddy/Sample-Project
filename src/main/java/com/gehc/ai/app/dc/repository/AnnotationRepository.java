@@ -30,6 +30,8 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     List<Annotation> findByImageSet(@Param("imageSet") String imageSet);
     List<Annotation> findByImageSetIn(List<String> imageSet);
     List<Annotation> findByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
+    List<Annotation> findByImageSetAndOrgId(@Param("imageSet") String imageSet, @Param("orgId") String orgId);
+    List<Annotation> findByIdInAndOrgId(List<Long> ids, String orgId);
     @Override
     <S extends Annotation> S save(S entity);
     <S extends Annotation> S delete(S entity);
