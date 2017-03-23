@@ -187,9 +187,10 @@ public interface IDataCatalogRest {
 
     /**
      * @param imageSet
+     * @param request TODO
      * @return
      */
-    List<Annotation> getAnnotationsByImgSet( String imageSet );
+    List<Annotation> getAnnotationsByImgSet( String imageSet, HttpServletRequest request );
 
     /**
      * Save an Annotation
@@ -217,8 +218,9 @@ public interface IDataCatalogRest {
     ApiResponse updateDataCollection( DataCollection dataCollection, HttpServletRequest request );
     
     /**
+     * @param request TODO
      * @param id
      * @return
      */
-    List<Annotation> getAnnotationsById( String ids );
+    List<Annotation> getAnnotationsById( String ids, HttpServletRequest request );
 }
