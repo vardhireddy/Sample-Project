@@ -51,11 +51,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.gehc.ai.app.common.constants.ApplicationConstants;
+//import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.AnnotationImgSetDataCol;
-import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;
@@ -64,6 +64,7 @@ import com.gehc.ai.app.dc.entity.Study;
 import com.gehc.ai.app.dc.entity.TargetData;
 import com.gehc.ai.app.dc.repository.AnnotationRepository;
 import com.gehc.ai.app.dc.repository.COSNotificationRepository;
+//import com.gehc.ai.app.dc.repository.COSNotificationRepository;
 import com.gehc.ai.app.dc.repository.PatientRepository;
 import com.gehc.ai.app.dc.repository.StudyRepository;
 import com.gehc.ai.app.dc.rest.IDataCatalogRest;
@@ -779,7 +780,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
   
     @Override
     @RequestMapping ( value = "/annotation/{ids}", method = RequestMethod.DELETE )
-    public ApiResponse deleteAnnotation( @PathVariable String ids ) {
+    public ApiResponse deleteAnnotation( @PathVariable String ids, HttpServletRequest request ) {
+    	logger.info( "+++ !!! In REST deleteAnnotation, orgId = " + request.getAttribute( "orgId" ) );
         ApiResponse apiResponse = null;
         try {
             if(null != ids && ids.length()>0){
@@ -787,7 +789,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 if(null != idStrings && idStrings.length>0){
                     for ( int i = 0; i < idStrings.length; i++ ){
                         annotationRepository.delete( Long.valueOf( idStrings[i] )  );
-                    }
+                    	// annotationRepository.deleteById( Long.valueOf( idStrings[i] )  );
+                 }
                 }
             }
             apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, ids );

@@ -20,9 +20,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.TemporalType;
-
-import org.springframework.data.jpa.repository.Temporal;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -34,6 +33,8 @@ import com.gehc.ai.app.dc.filters.JsonConverter;
  */
 @Entity
 @JsonInclude(Include.NON_NULL)
+@Table(name = "annotation")
+@XmlRootElement(name = "annotation")
 public class Annotation implements Serializable {
 
     /**
