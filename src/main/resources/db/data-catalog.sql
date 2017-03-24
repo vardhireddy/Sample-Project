@@ -120,3 +120,6 @@ add properties JSON;
 
 alter table data_collection 
 add org_id varchar(255);
+
+alter table cos_notification 
+add org_id varchar(255);
