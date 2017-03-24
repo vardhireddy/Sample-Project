@@ -159,15 +159,17 @@ public interface IDataCatalogRest {
 
     /**
      * @param patientId
+     * @param request TODO
      * @return studies given a patient
      */
-    List<Study> getStudies( String patientId );
+    List<Study> getStudies( String patientId, HttpServletRequest request );
 
     /**
      * @param studyId
+     * @param request TODO
      * @return image sets associated with the studyId
      */
-    List<ImageSet> getImageSetByStudyId( String studyId );
+    List<ImageSet> getImageSetByStudyId( String studyId, HttpServletRequest request );
 
     /**
      * @param ids
