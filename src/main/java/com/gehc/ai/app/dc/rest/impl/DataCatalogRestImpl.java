@@ -536,7 +536,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping (value = "/dataCatalog/annotation-by-datacollectionid", method = RequestMethod.GET)
     public List getAnnotationByDataColId(@QueryParam ("id") String id,
                                          @QueryParam ("annotationType") String annotationType, HttpServletRequest request) {
-        logger.info("Entering method getAnnotationByDataColId --> id: " + id);
+        logger.info("*** Entering method getAnnotationByDataColId --> id: " + id);
         logger.info( "!!! *** In REST getAnnotationByDataColId, orgId = " + request.getAttribute( "orgId" ) );
         //TODO:Check if this API is being used or not
         if ((id == null) || (id.length() == 0)) {

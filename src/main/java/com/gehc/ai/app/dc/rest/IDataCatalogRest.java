@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.dc.entity.Annotation;
-import com.gehc.ai.app.dc.entity.AnnotationSet;
 import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.ImageSet;

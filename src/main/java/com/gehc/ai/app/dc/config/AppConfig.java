@@ -55,7 +55,8 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/study/{ids}");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/image-set-by-patientid");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/study/{studyId}/image-set");
-    	
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/annotation-by-datacollectionid");
+    	  	
   }
     
     /** The dataSource */
