@@ -494,8 +494,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
         StringBuilder builder = new StringBuilder(GET_ANNOTATION_DATA_BY_DC_ID);
 
-        builder = builder.append("WHERE dc.id = ?");
-
+        builder = builder.append(" WHERE dc.id = ? ");
+        builder = builder.append(" AND im.orgId = ? ");
         if(null != annotationType && annotationType.length() > 0) {
             builder = builder.append(" AND an.type = ? ");
         }
@@ -508,6 +508,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                             throws SQLException {
                         int index = 0;
                         ps.setString(++index, dataCollectionId);
+                        ps.setString(++index, orgId);
                         if(null != annotationType && annotationType.length() > 0) {
                             ps.setString(++index, annotationType);
                         }
@@ -520,12 +521,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         }
 
         @Override
-        public List<ImageSet> getImageSetByStudyId(String studyId) {
+        public List<ImageSet> getImageSetByStudyId(String studyId, String orgId) {
                 List<ImageSet> imageSetList;
                 StringBuilder builder = new StringBuilder(GET_IMGSET_DATA_BY_STUDY_ID);
-                
                 builder.append("'" + studyId + "'");
-
+                builder.append(" and im.orgId = ");
+                builder.append("'" + orgId + "'");
                 logger.info("*** getImageSetByStudyId sql = " + builder);
                 imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
                 return imageSetList;

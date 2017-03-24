@@ -116,9 +116,10 @@ public interface IDataCatalogDao {
 	/**
 	 * 
 	 * @param studyId
+	 * @param orgId TODO
 	 * @return imagesets matching studyId
 	 */
-	List<ImageSet> getImageSetByStudyId(String studyId);
+	List<ImageSet> getImageSetByStudyId(String studyId, String orgId);
 	List<ImageSet> getImageSetByPatientId(String patientid, String orgId);
 	/**
 	 * @param dataCollection

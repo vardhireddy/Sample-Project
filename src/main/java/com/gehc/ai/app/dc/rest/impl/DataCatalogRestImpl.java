@@ -546,7 +546,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> l;
         try {
-             l = dataCatalogService.getAnnotationByDataColId(id, annotationType, null);
+            if(null != request.getAttribute( "orgId" )) {
+            	l = dataCatalogService.getAnnotationByDataColId(id, annotationType, request.getAttribute( "orgId" ).toString());
+            }else{
+            	l = dataCatalogService.getAnnotationByDataColId(id, annotationType, null);
+            }
         } catch (Exception e) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving annotation for data collection").build() );
         }
@@ -719,22 +723,28 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/patient/{patientId}/study", method = RequestMethod.GET )
-    public List<Study> getStudies( @PathVariable String patientId ) {
-        // return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
-        return studyRepository.findByPatientDbId( Long.valueOf( patientId ) );
+    public List<Study> getStudies( @PathVariable String patientId, HttpServletRequest request ) {
+    	logger.info( "*** In REST getStudies, orgId = " + request.getAttribute( "orgId" ) );
+        if(null != request.getAttribute( "orgId" )){
+    	return studyRepository.findByPatientDbIdAndOrgId( Long.valueOf( patientId ), request.getAttribute( "orgId" ).toString() );
+        }else{
+        	return studyRepository.findByPatientDbIdAndOrgId( Long.valueOf( patientId ), null );
+        }
     }
 
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/study/{studyId}/image-set", method = RequestMethod.GET )
-    public List<ImageSet> getImageSetByStudyId( @PathVariable String studyId ) {
-        // return patientRepository.findOne(Long.valueOf(patientId)).getStudies();
-        // System.err.println("==========finding image sets for study " + studyId );
+    public List<ImageSet> getImageSetByStudyId( @PathVariable String studyId, HttpServletRequest request ) {
+    	logger.info( "*** In REST getImageSetByStudyId, orgId = " + request.getAttribute( "orgId" ) );
         ResponseBuilder responseBuilder;
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
         try {
-
-            imageSet = dataCatalogService.getImageSetByStudyId( studyId );
+        	if(null != request.getAttribute( "orgId" )){
+        		imageSet = dataCatalogService.getImageSetByStudyId( studyId, request.getAttribute( "orgId" ).toString());
+        	}else{
+        		imageSet = dataCatalogService.getImageSetByStudyId( studyId, null );
+        	}
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while filtering image set data" ).build() );
         } catch ( Exception e ) {
@@ -761,7 +771,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     	 if (  null != imagesetid && !imagesetid.isEmpty() && null != request.getAttribute( "orgId" )) {
     		 	return annotationRepository.findByImageSetAndOrgId(imagesetid, request.getAttribute( "orgId" ).toString());
             }else {
-             return null;
+             return annotationRepository.findByImageSetAndOrgId(imagesetid, null);
          }
     }
 
@@ -873,7 +883,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
            // return annotationRepository.findByIdIn( idsLst );
             return annotationRepository.findByIdInAndOrgId( idsLst, request.getAttribute( "orgId" ).toString() );
         }else{
-            return null;
+            return new ArrayList<Annotation>();
         }
     }
 }

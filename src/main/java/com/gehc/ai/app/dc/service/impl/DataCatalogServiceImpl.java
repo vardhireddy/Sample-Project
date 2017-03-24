@@ -127,7 +127,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
     public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType, String orgId) throws Exception {
         List l = null;
         try {
-            l = dataCatalogDao.getAnnotationByDataColId(dataCollectionId, annotationType, null);
+            l = dataCatalogDao.getAnnotationByDataColId(dataCollectionId, annotationType, orgId);
         } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving target data ", e );
         }
@@ -135,8 +135,8 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
     }
 
 	@Override
-	public List<ImageSet> getImageSetByStudyId(String studyId) {
-        return dataCatalogDao.getImageSetByStudyId(studyId);
+	public List<ImageSet> getImageSetByStudyId(String studyId, String orgId) {
+        return dataCatalogDao.getImageSetByStudyId(studyId, orgId);
 	}
 
     /* (non-Javadoc)
