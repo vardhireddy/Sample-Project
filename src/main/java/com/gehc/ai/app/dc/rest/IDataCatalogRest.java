@@ -119,14 +119,13 @@ public interface IDataCatalogRest {
 
     /**
      * @param id id of data collection       
-     * @param request TODO
      * @return Annotation data for imagesets in a given Datacollection
      */
 
     @SuppressWarnings ("unchecked")
     @RequestMapping(value = "/dataCatalog/annotationByDataCollectionId", method = RequestMethod.GET)
     List getAnnotationByDataColId(@QueryParam("id") String id,
-                                  @QueryParam("annotationType") String annotationType, HttpServletRequest request);
+                                  @QueryParam("annotationType") String annotationType);
 
     /**
      * @param queryMap fields from patient table columns

@@ -124,10 +124,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	}
 
     @Override
-    public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType, String orgId) throws Exception {
+    public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) throws Exception {
         List l = null;
         try {
-            l = dataCatalogDao.getAnnotationByDataColId(dataCollectionId, annotationType, orgId);
+            l = dataCatalogDao.getAnnotationByDataColId(dataCollectionId, annotationType);
         } catch ( Exception e ) {
             throw new Exception( "Exception occurred while retreiving target data ", e );
         }

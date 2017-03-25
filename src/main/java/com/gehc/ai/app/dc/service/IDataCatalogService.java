@@ -108,11 +108,10 @@ public interface IDataCatalogService {
 	 *
 	 * @param dataCollectionId
 	 * @param annotationType mask, point, contour etc to return that particular type of annotation data
-	 * @param orgId TODO
-     * @return annotation data associated with the data collection
+	 * @return annotation data associated with the data collection
 	 * @throws Exception
 	 */
-	List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType, String orgId) throws Exception;
+	List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) throws Exception;
 
 	/**
 	 * 
