@@ -535,9 +535,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping (value = "/dataCatalog/annotation-by-datacollectionid", method = RequestMethod.GET)
     public List getAnnotationByDataColId(@QueryParam ("id") String id,
-                                         @QueryParam ("annotationType") String annotationType, HttpServletRequest request) {
+                                         @QueryParam ("annotationType") String annotationType) {
         logger.info("*** Entering method getAnnotationByDataColId --> id: " + id);
-        logger.info( "!!! *** In REST getAnnotationByDataColId, orgId = " + request.getAttribute( "orgId" ) );
+      
         //TODO:Check if this API is being used or not
         if ((id == null) || (id.length() == 0)) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).entity("Datacollection id is required to get annotation for a data collection").build());
@@ -546,11 +546,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> l;
         try {
-            if(null != request.getAttribute( "orgId" )) {
-            	l = dataCatalogService.getAnnotationByDataColId(id, annotationType, request.getAttribute( "orgId" ).toString());
-            }else{
-            	l = dataCatalogService.getAnnotationByDataColId(id, annotationType, null);
-            }
+            	l = dataCatalogService.getAnnotationByDataColId(id, annotationType);
         } catch (Exception e) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving annotation for data collection").build() );
         }

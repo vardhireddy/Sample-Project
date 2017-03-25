@@ -489,13 +489,14 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         }
 
         @Override
-        public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType, String orgId) {
+        public List<AnnotationImgSetDataCol> getAnnotationByDataColId(String dataCollectionId, String annotationType) {
                 List<AnnotationImgSetDataCol> annotationImgSetDataCols = new ArrayList<AnnotationImgSetDataCol>();
 
         StringBuilder builder = new StringBuilder(GET_ANNOTATION_DATA_BY_DC_ID);
 
         builder = builder.append(" WHERE dc.id = ? ");
-        builder = builder.append(" AND im.orgId = ? ");
+        //Called by experiment so will not get the org
+      //  builder = builder.append(" AND im.orgId = ? ");
         if(null != annotationType && annotationType.length() > 0) {
             builder = builder.append(" AND an.type = ? ");
         }
@@ -508,7 +509,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                             throws SQLException {
                         int index = 0;
                         ps.setString(++index, dataCollectionId);
-                        ps.setString(++index, orgId);
+                     //   ps.setString(++index, orgId);
                         if(null != annotationType && annotationType.length() > 0) {
                             ps.setString(++index, annotationType);
                         }
