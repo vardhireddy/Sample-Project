@@ -64,22 +64,23 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
         if(null != req){    
         	boolean foundAuthToken = false;
            logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod());
+           logger.info( " ### In preHandle method, req.getServletPath() = " + req.getServletPath());
            if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
 	           Enumeration headerNames = req.getHeaderNames();
 	           String key = null;
 	           String value = null;
 	           while (headerNames.hasMoreElements()) {
 	                   key = (String) headerNames.nextElement();
-	                   logger.info( " --- In preHandle method, req.getHeaderNames() key = " + key);
 	                   value = req.getHeader(key);
-	                   logger.info( " --- In preHandle method, req.getHeaderNames() value = " + value);
 	                   if(key.equalsIgnoreCase(HttpHeaders.AUTHORIZATION)){
 	                	   logger.info( " ### In preHandle method, found the authorization key" );
 	                	   foundAuthToken = true;
 	                	   break;
 	                   }
 	           }
-	           if(foundAuthToken){
+	           if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().equalsIgnoreCase("/api/v1/annotation")){
+	        	   logger.info( " +++ In preHandle method, save annotation is getting called so not looking for org id");
+	           }else if(foundAuthToken){
 	               logger.info( " +++ In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
 	               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
 	           }else{
