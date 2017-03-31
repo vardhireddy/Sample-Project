@@ -870,14 +870,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/annotation/{ids}", method = RequestMethod.GET )
     public List<Annotation> getAnnotationsById( @PathVariable String ids, HttpServletRequest request ) {
-    	 logger.info( "*** In REST getAnnotationsById, orgId = " + request.getAttribute( "orgId" ) );
-        if(null != ids && ids.length()>0 && null != request.getAttribute( "orgId" )){
+      //  if(null != ids && ids.length()>0 && null != request.getAttribute( "orgId" )){
+    	  if(null != ids && ids.length()>0){
             List<Long> idsLst = new ArrayList<Long>();
             String[] idStrings = ids.split( "," );
             for ( int i = 0; i < idStrings.length; i++ )
                 idsLst.add( Long.valueOf( idStrings[i] ) );
-           // return annotationRepository.findByIdIn( idsLst );
-            return annotationRepository.findByIdInAndOrgId( idsLst, request.getAttribute( "orgId" ).toString() );
+            return annotationRepository.findByIdIn( idsLst );
+           // return annotationRepository.findByIdInAndOrgId( idsLst, request.getAttribute( "orgId" ).toString() );
         }else{
             return new ArrayList<Annotation>();
         }
