@@ -605,17 +605,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/patient/{ids}", method = RequestMethod.GET )
     public List<Patient> getPatients( @PathVariable String ids, HttpServletRequest request ) {
-    	//logger.info( "*** In REST getPatients, orgId = " + request.getAttribute( "orgId" ) );
+    	logger.info( "*** In REST getPatients, orgId = " + request.getAttribute( "orgId" ) );
         List<Long> pids = new ArrayList<Long>();
         String[] idStrings = ids.split( "," );
         for ( int i = 0; i < idStrings.length; i++ )
             pids.add( Long.valueOf( idStrings[i] ) );
-        return patientRepository.findByIdIn( pids );
-        /*if(null != request.getAttribute( "orgId" )){
+       // return patientRepository.findByIdIn( pids );
+        if(null != request.getAttribute( "orgId" )){
         	return patientRepository.findByIdInAndOrgId(pids, request.getAttribute( "orgId" ).toString());
         }else{
         	return patientRepository.findByIdInAndOrgId(pids, null);
-        }*/
+        }
     }
 
     @SuppressWarnings ( "unchecked" )
@@ -683,17 +683,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/study/{ids}", method = RequestMethod.GET )
     public List<Study> getStudiesById( @PathVariable String ids, HttpServletRequest request ) {
-    	//logger.info( "*** In REST getStudiesById, orgId = " + request.getAttribute( "orgId" ) );
+    	logger.info( "*** In REST getStudiesById, orgId = " + request.getAttribute( "orgId" ) );
     	List<Long> pids = new ArrayList<Long>();
         String[] idStrings = ids.split( "," );
         for ( int i = 0; i < idStrings.length; i++ )
             pids.add( Long.valueOf( idStrings[i] ) );
-        return studyRepository.findByIdIn(pids);
-       /*if(null != request.getAttribute( "orgId" )){
+        //return studyRepository.findByIdIn(pids);
+       if(null != request.getAttribute( "orgId" )){
         return studyRepository.findByIdInAndOrgId(pids, request.getAttribute( "orgId" ).toString() );
        }else{
     	   return studyRepository.findByIdInAndOrgId(pids, null );
-       }*/
+       }
     	   
     }
 
@@ -721,29 +721,29 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/patient/{patientId}/study", method = RequestMethod.GET )
     public List<Study> getStudies( @PathVariable String patientId, HttpServletRequest request ) {
-    //	logger.info( "*** In REST getStudies, orgId = " + request.getAttribute( "orgId" ) );
-    	return studyRepository.findByPatientDbId( Long.valueOf( patientId ));
-        /*if(null != request.getAttribute( "orgId" )){
+    	logger.info( "*** In REST getStudies, orgId = " + request.getAttribute( "orgId" ) );
+    	//return studyRepository.findByPatientDbId( Long.valueOf( patientId ));
+        if(null != request.getAttribute( "orgId" )){
     	return studyRepository.findByPatientDbIdAndOrgId( Long.valueOf( patientId ), request.getAttribute( "orgId" ).toString() );
         }else{
         	return studyRepository.findByPatientDbIdAndOrgId( Long.valueOf( patientId ), null );
-        }*/
+        }
     }
 
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/study/{studyId}/image-set", method = RequestMethod.GET )
     public List<ImageSet> getImageSetByStudyId( @PathVariable String studyId, HttpServletRequest request ) {
-    //	logger.info( "*** In REST getImageSetByStudyId, orgId = " + request.getAttribute( "orgId" ) );
+    	logger.info( "*** In REST getImageSetByStudyId, orgId = " + request.getAttribute( "orgId" ) );
         ResponseBuilder responseBuilder;
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
         try {
-        	imageSet = dataCatalogService.getImageSetByStudyId( studyId, null);
-        	/*if(null != request.getAttribute( "orgId" )){
+        	//imageSet = dataCatalogService.getImageSetByStudyId( studyId, null);
+        	if(null != request.getAttribute( "orgId" )){
         		imageSet = dataCatalogService.getImageSetByStudyId( studyId, request.getAttribute( "orgId" ).toString());
         	}else{
         		imageSet = dataCatalogService.getImageSetByStudyId( studyId, null );
-        	}*/
+        	}
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while filtering image set data" ).build() );
         } catch ( Exception e ) {
