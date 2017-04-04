@@ -526,8 +526,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 List<ImageSet> imageSetList;
                 StringBuilder builder = new StringBuilder(GET_IMGSET_DATA_BY_STUDY_ID);
                 builder.append("'" + studyId + "'");
-                builder.append(" and im.orgId = ");
-                builder.append("'" + orgId + "'");
+             //   builder.append(" and im.orgId = ");
+             //   builder.append("'" + orgId + "'");
                 logger.info("*** getImageSetByStudyId sql = " + builder);
                 imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetRowMapper());
                 return imageSetList;

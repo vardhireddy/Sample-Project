@@ -734,15 +734,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/study/{studyId}/image-set", method = RequestMethod.GET )
     public List<ImageSet> getImageSetByStudyId( @PathVariable String studyId, HttpServletRequest request ) {
-    	logger.info( "*** In REST getImageSetByStudyId, orgId = " + request.getAttribute( "orgId" ) );
+    //	logger.info( "*** In REST getImageSetByStudyId, orgId = " + request.getAttribute( "orgId" ) );
         ResponseBuilder responseBuilder;
         List<ImageSet> imageSet = new ArrayList<ImageSet>();
         try {
-        	if(null != request.getAttribute( "orgId" )){
+        	imageSet = dataCatalogService.getImageSetByStudyId( studyId, null);
+        	/*if(null != request.getAttribute( "orgId" )){
         		imageSet = dataCatalogService.getImageSetByStudyId( studyId, request.getAttribute( "orgId" ).toString());
         	}else{
         		imageSet = dataCatalogService.getImageSetByStudyId( studyId, null );
-        	}
+        	}*/
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while filtering image set data" ).build() );
         } catch ( Exception e ) {
