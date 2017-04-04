@@ -13,9 +13,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource(collectionResourceRel = "study", path = "study")
 public interface StudyRepository extends JpaRepository<Study, Long> {
-	//List<Study> findByPatientDbId(@Param("patient_dbid") Long id);
+	List<Study> findByPatientDbId(@Param("patient_dbid") Long id);
 	List<Study> findByPatientDbIdAndOrgId(@Param("patient_dbid") Long id, @Param("orgId") String orgId);
-	//List<Study> findByIdIn(List<Long> ids);
+	List<Study> findByIdIn(List<Long> ids);
 	List<Study> findByIdInAndOrgId(List<Long> ids, String orgId);
 
 }
