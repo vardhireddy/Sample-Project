@@ -571,7 +571,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/patient", method = RequestMethod.GET )
-    public List<Patient> getPatient( @RequestParam Map<String, String> queryMap ) {
+    public List<Patient> getPatient( HttpServletRequest request ){
+    	logger.info( "*** In REST get all Patients, orgId = " + request.getAttribute( "orgId" ) );
+    	if(null != request.getAttribute( "orgId" )){
+        	return patientRepository.findByOrgId(request.getAttribute( "orgId" ).toString());
+        }else{
+        	return patientRepository.findByOrgId(null);
+        }
+    }
+    
+    /*public List<Patient> getPatient( @RequestParam Map<String, String> queryMap ) {
         Set<String> keys = queryMap.keySet();
         Patient p = new Patient();
         for ( Iterator<String> it = keys.iterator(); it.hasNext(); ) {
@@ -599,7 +608,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             }
         }
         return patientRepository.findAll( Example.of( p ) );
-    }
+    }*/
 
     @SuppressWarnings ( "unchecked" )
     @Override
