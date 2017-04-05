@@ -131,7 +131,8 @@ public interface IDataCatalogRest {
      * @param queryMap fields from patient table columns
      * @return list of patient satisfying search criteria
      */
-    List<Patient> getPatient( Map<String, String> queryMap );
+//    List<Patient> getPatient( Map<String, String> queryMap );
+      List<Patient> getPatient( HttpServletRequest request );
 
     /**
      * @param queryMap list of studies satisfying search criteria
