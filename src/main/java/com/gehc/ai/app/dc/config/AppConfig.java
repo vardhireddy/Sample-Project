@@ -61,6 +61,7 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	//Following will be used in experiment service so will not get the org
     	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/annotation-by-datacollectionid");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/patient");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/study");
   }
     
     /** The dataSource */

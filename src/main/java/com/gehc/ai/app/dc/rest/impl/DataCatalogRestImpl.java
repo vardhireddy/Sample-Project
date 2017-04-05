@@ -627,26 +627,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
     }
 
-    @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/study", method = RequestMethod.GET )
-    public List<Study> getStudy( @RequestParam Map<String, String> queryMap ) {
-        // {
-        // "schemaVersion" : "v1",
-        // "patientDbId" : 456,
-        // "studyInstanceUid" : "DICOM tag (0020,000D)",
-        // "studyDate" : "DICOM tag (0008,0020)",
-        // "studyTime" : "DICOM tag (0008,0030)",
-        // "studyId" : "DICOM tag (0020,0010)",
-        // "studyDescription" : "DICOM tag (0008,1030)",
-        // "referringPhysician" : "DICOM tag (0008, 0090)",
-        // "studyUrl" : null,
-        // "orgId" : "Should come from UOM",
-        // "uploadDate" : null,
-        // "uploadBy" : "Should come from UOM",
-        // "properties" : {
-        // "anything" : "can go here"
-        // },
+    public List<Study> getStudy( HttpServletRequest request ) {
+    	logger.info( "*** In REST get all syudy, orgId = " + request.getAttribute( "orgId" ) );
+    	return request.getAttribute( "orgId" ) == null ? studyRepository.findByOrgId( null ) : studyRepository.findByOrgId(request.getAttribute( "orgId" ).toString());
+    }
+    /*public List<Study> getStudy( @RequestParam Map<String, String> queryMap ) {
         Set<String> keys = queryMap.keySet();
         Study s = new Study();
         String sortCol = null;
@@ -686,7 +673,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         }
         return sortCol == null ? studyRepository.findAll( Example.of( s ) ) : studyRepository.findAll( Example.of( s ), new Sort( Direction.fromString( sortdir ), sortCol ) );
-    }
+    }*/
 
     @SuppressWarnings ( "unchecked" )
     @Override
