@@ -138,8 +138,9 @@ public interface IDataCatalogRest {
      * @param queryMap list of studies satisfying search criteria
      * @return
      */
-    List<Study> getStudy( Map<String, String> queryMap );
-
+    //List<Study> getStudy( Map<String, String> queryMap );
+      List<Study> getStudy( HttpServletRequest request );
+      
     /**
      * add patient to database
      * 
