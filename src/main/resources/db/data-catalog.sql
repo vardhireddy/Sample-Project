@@ -123,3 +123,9 @@ add org_id varchar(255);
 
 alter table cos_notification 
 add org_id varchar(255);
+
+alter table patient  
+CHANGE COLUMN `upload_date` `upload_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+alter table study  
+CHANGE COLUMN `upload_date` `upload_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
