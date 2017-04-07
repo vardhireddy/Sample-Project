@@ -14,9 +14,9 @@
 
 ##AWS
 #New Dev DB below
-spring.datasource.url: jdbc:mysql://dd13e7t1i438cg0.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/lfdb
-spring.datasource.username: dbadmin123
-spring.datasource.password: d165376b867
+spring.datasource.url: ${spring_datasource_url:jdbc:mysql://dd13e7t1i438cg0.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/lfdb}
+spring.datasource.username: ${spring_datatsource_username:dbadmin123}
+spring.datasource.password: ${spring_datasource_password:d165376b867}
 spring.data.rest.base-path: /api/v1/dataCatalog
 spring.jpa.properties.hibernate.show_sql: true
 spring.jpa.properties.hibernate.use_sql_comments: true
@@ -25,4 +25,4 @@ experiment.targetData.gtMaskLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.
 experiment.targetData.imgLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
 experiment.targetData.locationType: s3
 #uom.user.me.url: https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi/v1/user/me?level.value=2
-uom.user.me.url: ${prdge_idom_uomapi_url:https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi}/v1/user/me?level.value=2
+uom.user.me.url: ${uom_api_gateway_url:https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi}/v1/user/me?level.value=2
