@@ -50,8 +50,9 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/data-collection-target");
     	//Excluding the below as Countor2Mask is going to use below API
-    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation/*").excludePathPatterns("/api/v1/annotation/{ids}");
-    	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation/{ids}");
+    	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation/*").excludePathPatterns("/api/v1/annotation/{ids}");
+    	//commented above and add below to make sure delete is working. Will add the logic for get method for C2M
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation/{ids}");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/patient/{ids}");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/patient/{patientId}/study");
