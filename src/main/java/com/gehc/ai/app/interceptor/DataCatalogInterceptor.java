@@ -84,6 +84,8 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 	        	   logger.info( " +++ In preHandle method, save patient is getting called so not looking for org id");
 	           }else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/study")){
 	        	   logger.info( " +++ In preHandle method, save study is getting called so not looking for org id");
+	           }else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("GET") && null != req.getServletPath() && req.getServletPath().startsWith("/api/v1/annotation")){
+	        	   logger.info( " +++ In preHandle method, get annotation is getting called so not looking for org id as C2M is using it");
 	           }else if(foundAuthToken){
 	               logger.info( " +++ In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
 	               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );

@@ -811,15 +811,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     	if(null != request.getAttribute( "orgId" )){
                     		ann.setOrgId(request.getAttribute( "orgId" ).toString());
                         	annotationRepository.delete( ann );
+                        	 apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, ids );
                     	}else{
                     		//annotationRepository.delete( Long.valueOf( idStrings[i] )  );
-                    		apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE, "Id does not exist", ids);
+                    		apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE, "Org Id is ", null);
                     	}
-                    	
-                 }
+                    }
+                }else{
+                	apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE, "Org Id does not exist", ids);
                 }
             }
-            apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, ids );
+          
         } catch (Exception e ) {
             logger.error("Exception occured while calling delete annotation ", e);
             apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE, "Id does not exist", ids);
