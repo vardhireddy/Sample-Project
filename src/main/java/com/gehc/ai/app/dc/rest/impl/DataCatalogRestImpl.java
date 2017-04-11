@@ -833,12 +833,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/image-set-by-patientid", method = RequestMethod.GET )
     public List<ImageSet> getImageSetByPatientId(@QueryParam ( "patientid" ) String patientid, HttpServletRequest request) {
-    	logger.info( "+++ !!! In REST getImageSetByPatientId, orgId = " + request.getAttribute( "orgId" ) );
-    	if(null != request.getAttribute( "orgId" )){
+    	//logger.info( "+++ !!! In REST getImageSetByPatientId, orgId = " + request.getAttribute( "orgId" ) );
+    	/*if(null != request.getAttribute( "orgId" )){
     		return dataCatalogService.getImageSetByPatientId( patientid, request.getAttribute( "orgId" ).toString() );
     	}else{
     		return dataCatalogService.getImageSetByPatientId( patientid, null );
-    	}
+    	}*/
+    	//commented above as this is alos being used from SNS Manager
+    	return dataCatalogService.getImageSetByPatientId( patientid, null );
     }
    
     /* (non-Javadoc)

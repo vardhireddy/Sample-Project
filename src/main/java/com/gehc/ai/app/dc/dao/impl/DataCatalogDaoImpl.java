@@ -541,8 +541,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         List<ImageSet> imageSetList;
         StringBuilder builder = new StringBuilder(GET_IMGSET_DATA_BY_PATIENT_ID);
         builder.append("'" + patientid + "'");
-        builder.append(" and im.orgId = ");
-        builder.append("'" + orgId + "'");
+        //commented below as this api is being also used in SNS manager
+      //  builder.append(" and im.orgId = ");
+      //  builder.append("'" + orgId + "'");
         logger.info("!!!! getImageSetByPatientId sql = " + builder);
         imageSetList = jdbcTemplate.query(builder.toString(), new ImageSetInfoRowMapper());
         return imageSetList;
