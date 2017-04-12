@@ -815,7 +815,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         	 apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, ids );
                     	}else{
                     		//annotationRepository.delete( Long.valueOf( idStrings[i] )  );
-                    		apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE, "Org Id is ", null);
+                    		//apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE, "Org Id is ", null);
+                    		//commented above as org id will not be avaiable for get annotation by ids as C2M is using it
+                    		annotationRepository.delete( ann );
+                       	 apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, ids );
                     	}
                     }
                 }else{
