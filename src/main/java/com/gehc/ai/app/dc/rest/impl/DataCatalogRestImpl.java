@@ -758,16 +758,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping ( value = "/annotation", method = RequestMethod.GET )
     public List<Annotation> getAnnotationsByImgSet(@QueryParam ( "imagesetid" ) String imagesetid, HttpServletRequest request ) {
     	   logger.info( "*** In REST getAnnotationsByImgSet, orgId = " + request.getAttribute( "orgId" ) );
-       /* if (  null != imagesetid && !imagesetid.isEmpty() ) {
+    	   //Commented out org id as get annotation by id is not part of interceptor as C2M is using it 
+        if (  null != imagesetid && !imagesetid.isEmpty() ) {
             return annotationRepository.findByImageSet( imagesetid );
         }else {
             return null;
-        }*/
-    	 if (  null != imagesetid && !imagesetid.isEmpty() && null != request.getAttribute( "orgId" )) {
+        }
+    	 /*if (  null != imagesetid && !imagesetid.isEmpty() && null != request.getAttribute( "orgId" )) {
     		 	return annotationRepository.findByImageSetAndOrgId(imagesetid, request.getAttribute( "orgId" ).toString());
             }else {
              return annotationRepository.findByImageSetAndOrgId(imagesetid, null);
-         }
+         }*/
     }
 
     /* (non-Javadoc)
