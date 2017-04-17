@@ -35,11 +35,8 @@ public class AppConfig extends WebMvcConfigurerAdapter{
 
 
     @Bean
-    /*
-    *DataCatalogInterceptor
-    * @return Interceptor
-     */
     public DataCatalogInterceptor dataCatalogInterceptor() {
+       // @return Interceptor
         return new DataCatalogInterceptor();
     }
     

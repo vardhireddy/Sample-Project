@@ -14,7 +14,12 @@ package com.gehc.ai.app.dc.dao.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.dc.dao.IDataCatalogDao;
-import com.gehc.ai.app.dc.entity.*;
+import com.gehc.ai.app.dc.entity.AnnotationImgSetDataCol;
+import com.gehc.ai.app.dc.entity.AnnotationSet;
+import com.gehc.ai.app.dc.entity.Creator;
+import com.gehc.ai.app.dc.entity.DataCollection;
+import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.TargetData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +34,14 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author 212071558
