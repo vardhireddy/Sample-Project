@@ -53,11 +53,16 @@ public class ApiResponse {
         this.id = id;
     }
 
+    /** Default Constructor.
+     */
     public ApiResponse() {
         super();
         // TODO Auto-generated constructor stub
     }
 
+    /**
+     * Constructor used for setting values
+     */
     public ApiResponse( String status, String code, String message, String id ) {
         super();
         this.status = status;
