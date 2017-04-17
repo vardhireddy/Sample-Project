@@ -35,13 +35,18 @@ import org.springframework.web.client.RestTemplate;
 @PropertySource({"classpath:application.yml"})
 public class App {
     /**
-     * 
+     * main
+     * Method that runs the application
      * @param args accept arguments
      */
     public static void main( String[] args ) {
            SpringApplication.run( App.class, args );
     }
-    
+
+    /**
+     * restTemplate
+     * @return template object
+     */
     @Bean
     public RestTemplate restTemplate() {
 

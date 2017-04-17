@@ -21,6 +21,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
 /**
@@ -31,7 +32,11 @@ import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 @PropertySource({"classpath:application.yml"})
 @Configuration
 public class AppConfig extends WebMvcConfigurerAdapter{
-    
+
+    /*
+    *DataCatalogInterceptor
+    * @return Interceptor
+     */
     @Bean
     public DataCatalogInterceptor dataCatalogInterceptor() {
         return new DataCatalogInterceptor();

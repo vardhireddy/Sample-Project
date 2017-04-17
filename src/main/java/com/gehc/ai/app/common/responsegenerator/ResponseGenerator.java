@@ -25,9 +25,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResponseGenerator {
 
-    /** The logger. */
-    private static Logger logger = LoggerFactory.getLogger( ResponseGenerator.class );
-
     /**
      * Response on create.
      *

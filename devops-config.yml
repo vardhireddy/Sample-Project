@@ -15,7 +15,8 @@ BasicVars:
    aws_upload_files: 
    repo_url: https://github.build.ge.com/GEHC-AI/gehc-ai-datacatalog.git
    custom_pre_commands: 
-   custom_post_commands: 
+   custom_post_commands:
+
 
 DockerVars:
    docker_additional_args: 
@@ -40,7 +41,7 @@ KpiVars:
    kpi_elapsed_time_id: 
 
 SonarVars:
-   aws_run_sonar: false
+   aws_run_sonar: true
    sonar_additional_args: 
 
 TestingVars:
