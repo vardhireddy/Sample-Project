@@ -62,6 +62,10 @@ public class ApiResponse {
 
     /**
      * Constructor used for setting values
+     * @param status
+     * @param code
+     * @param message
+     * @param id
      */
     public ApiResponse( String status, String code, String message, String id ) {
         super();
