@@ -138,13 +138,14 @@ public class Annotation implements Serializable {
      * @return the annotationDate
      */
     public Date getAnnotationDate() {
-        return annotationDate;
+        return new Date(annotationDate.getTime());
     }
     /**
      * @param annotationDate the annotationDate to set
      */
     public void setAnnotationDate( Date annotationDate ) {
-        this.annotationDate = annotationDate;
+        this.annotationDate = new Date(annotationDate.getTime());
+
     }
     /**
      * @return the type
