@@ -33,11 +33,12 @@ import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 @Configuration
 public class AppConfig extends WebMvcConfigurerAdapter{
 
+
+    @Bean
     /*
     *DataCatalogInterceptor
     * @return Interceptor
      */
-    @Bean
     public DataCatalogInterceptor dataCatalogInterceptor() {
         return new DataCatalogInterceptor();
     }

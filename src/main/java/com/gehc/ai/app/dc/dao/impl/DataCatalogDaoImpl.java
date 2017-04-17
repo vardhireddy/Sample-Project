@@ -11,22 +11,10 @@
  */
 package com.gehc.ai.app.dc.dao.impl;
 
-import java.sql.Array;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.dc.dao.IDataCatalogDao;
 import com.gehc.ai.app.dc.entity.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +25,11 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.dc.dao.IDataCatalogDao;
+import java.sql.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.*;
 
 /**
  * @author 212071558
@@ -83,7 +74,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         + " properties, patient_dbid, study_dbid) "
                         + " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        private static final java.lang.String PARAM_DELIM = ",";
+//        private static final java.lang.String PARAM_DELIM = ",";
 
         private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
         
@@ -111,10 +102,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         	//Note: Not using the org id from the token but using the one which is being passed as a parameter
                 List<ImageSet> imageSetList;
                 StringBuilder builder = new StringBuilder();
-                String annotValue = null;
-                if (params != null && params.get("annotations") != null) {
-                        annotValue = params.remove("annotations");
-                }
+//                String annotValue = null;
+//                if (params != null && params.get("annotations") != null) {
+//                        annotValue = params.remove("annotations");
+//                }
                 builder.append(GET_IMGSET_DATA_BY_ORG_ID);
                 builder.append(constructQuery(params));
 
@@ -363,20 +354,24 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 
                 if (fields == null || fields.equals("")) {
                         fs =  ANNOT_SET_COLUMNS;
-                } else 
-                        fs = fields.split(",");
+                } else {
+                    fs = fields.split(",");
+                }
                 
                 boolean containsIdCol = false;
                 for (int i = 0; i < fs.length; i++) {
                         sql.append("json_extract(data, '$." + fs[i] + "') as " + fs[i]);
-                        if (fs[i].equals("id"))
-                                containsIdCol = true;
-                        if (i < fs.length - 1)
-                                sql.append(", ");
+                        if (fs[i].equals("id")) {
+                            containsIdCol = true;
+                        }
+                        if (i < fs.length - 1) {
+                            sql.append(", ");
+                        }
                 }
                 
-                if (!containsIdCol)
-                        sql.append(", id ");
+                if (!containsIdCol) {
+                    sql.append(", id ");
+                }
                 
                 sql.append(" from annotation_set");
                 
@@ -389,8 +384,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         //where JSON_SEARCH(data, 'one', '0.09418948718780629', null, '$.imageSets') is not null
                         for (int k = 0; k < isets.length; k++) {
                                 sql.append("JSON_SEARCH(data, 'one', " + isets[k] + ", null, '$.imageSets') is not null");
-                                if (k < isets.length - 1)
-                                        sql.append(" and ");
+                                if (k < isets.length - 1) {
+                                    sql.append(" and ");
+                                }
                         }
                 }
                 
@@ -403,8 +399,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                                         String key = it.next();
                                         String value = queryMap.get(key);
                                         sql.append("JSON_SEARCH(data, 'one', " + value + ", null, '$." + key + "') is not null");
-                                        if (it.hasNext())
-                                                sql.append(" and ");
+                                        if (it.hasNext()) {
+                                            sql.append(" and ");
+                                        }
                                 }
                         }
                 }
@@ -446,7 +443,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 return alist;
         }
 
-
+        /*
+        *@deprecated
+         */
         @Deprecated
         @Override
         public List<TargetData> getExperimentTargetData(String dataCollectionIds, String orgId) throws Exception {
