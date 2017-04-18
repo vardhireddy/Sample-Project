@@ -86,9 +86,17 @@ public class AnnotationSet {
 	public void setCreatorId(String creatorId) {
 		this.creatorId = creatorId;
 	}
-	
+
+	/*
+	* declare the item variable
+	 */
 	public List<Object> items;
-	
+
+	/**
+	 * main
+	 * Method that runs the application
+	 * @param args accept arguments
+	 */
 	public static void main(String [] args) throws IOException {
 //		AnnotationSet as = AnnotationSet.createRandom();
 //		ObjectMapper mapper = new ObjectMapper();
@@ -107,7 +115,10 @@ public class AnnotationSet {
 		System.out.println(getJson(as));
 		
 	}
-	
+
+	/**
+	 * @param as the annotation set
+	 */
 	public void set(AnnotationSet as) {
 		this.id = as.id;
 		this.creatorId = as.creatorId;
@@ -118,7 +129,10 @@ public class AnnotationSet {
 		this.orgName = as.orgName;
 		this.items = as.items;
 	}
-	
+
+	/**
+	 * @return as the annotation set
+	 */
 	public static AnnotationSet createRandom() {
 		AnnotationSet as = new AnnotationSet();
 		as.id = "" + System.currentTimeMillis();
@@ -135,11 +149,22 @@ public class AnnotationSet {
 		as.items.add(new Mask());
 		return as;
 	}
-	
+
+	/**
+	 * method to read data from JSON
+	 * @param jsonString the json string
+	 * @return map
+	 */
 	public static AnnotationSet readFromJson(String jsonString) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		return (AnnotationSet) mapper.readValue(jsonString, AnnotationSet.class);
 	}
+
+	/**
+	 * method to get the JSON
+	 * @param as the Annotation set
+	 * @return map
+	 */
 	public static String getJson(AnnotationSet as) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(as);
@@ -147,6 +172,9 @@ public class AnnotationSet {
 }
 
 class ObjectType1 {
+	/*
+	* id of the object
+	 */
 	@JsonProperty ("objectId")
 	public String objectId;
 	public String getObjectId() {
@@ -180,19 +208,35 @@ class ObjectType1 {
 		this.poiData = poiData;
 	}
 
+	/*
+	* name of the object
+	 */
 	@JsonProperty("objectName")
 	public String objectName;
+	/*
+	* type of the object
+	 */
 	@JsonProperty("objectType")
 	public String objectType;
+	/*
+	* public variable diameter
+	 */
 	@JsonProperty("diameter")
 	public double diameter;
+	/*
+	* The point data
+	 */
 	@JsonProperty("poiData")
 	double [] poiData;
+	/*
+	* createRandom
+	* @return the object
+	 */
 	public static ObjectType1 createRandom() {
 		ObjectType1 i = new ObjectType1();
 		i.objectId = "1";
 		i.objectName = "Nodule";
-		i.objectType = "" + (int) (Math.random() * 5 + 1);
+		i.objectType = Integer.toString((int) (Math.random() * 5 + 1));
 		i.diameter = 5 + Math.random() * 20;
 		i.poiData = new double [] {Math.random()*10, Math.random()*10, Math.random() * 10};
 		return i;
@@ -200,6 +244,9 @@ class ObjectType1 {
 }
 
 class Mask {
+	/*
+	* The mask
+	 */
 	@JsonProperty ("mask")
 	public Map<String, Map<String, String>> mask;
 	

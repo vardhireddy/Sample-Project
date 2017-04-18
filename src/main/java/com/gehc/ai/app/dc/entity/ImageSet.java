@@ -136,7 +136,7 @@ public class ImageSet {
     }
 
     /**
-     * 
+     * default constructor
      */
     public ImageSet() {
         super();
@@ -208,6 +208,15 @@ public class ImageSet {
 	public void setProperties(Object properties) {
 		this.properties = properties;
 	}
+
+	/*
+	* @param schemaVersion, @param id, @param studyDbId
+	* @param patientDbId, @param seriesInstanceUid, @param acqDate
+	* @param acqTime, @param modality, @param anatomy
+	* @param description, @param institution, @param equipment,
+	* @param dataFormat, @param uri, @param instanceCount, @param orgId,
+	* @param uploadBy, @param uploadDate, @param properties
+	 */
 	public ImageSet(String schemaVersion, String id, Long studyDbId,
 			Long patientDbId, String seriesInstanceUid, String acqDate,
 			String acqTime, String modality, String anatomy,
