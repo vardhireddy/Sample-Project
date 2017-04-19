@@ -169,7 +169,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         @Override
         public String[] getImgSetIdForDC(String id) throws Exception {
                 jdbcTemplate.query(GET_IMAGESET_ID, new ResultSetExtractor<String[]>() {
-                        String[] imgSetId;
+                        private String[] imgSetId;
 
                         @Override
                         public String[] extractData(ResultSet rs) throws SQLException,
@@ -181,7 +181,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                                 return imgSetId;
                         }
                 });
-                return null;
+                return new String[]{};
         }
 
         @Override
@@ -339,7 +339,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 int numOfRowsInserted = 0;
                 AnnotationSet annotationSet = annotationSetJson;
                 if (annotationSet != null) {
-                        annotationSet.setId("" + System.currentTimeMillis());
+                        annotationSet.setId(Long.toString(System.currentTimeMillis()));
                         ObjectMapper mapper = new ObjectMapper();
                         numOfRowsInserted = jdbcTemplate.update(
                                 INSERT_ANNOTATION_SET,
@@ -361,7 +361,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         
         @Override
         public List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception {
-                StringBuffer sql = new StringBuffer("SELECT DISTINCT ");
+                StringBuilder sql = new StringBuilder("SELECT DISTINCT ");
                 String [] fs = null;
                 
                 if (fields == null || fields.equals("")) {
@@ -455,12 +455,14 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 return alist;
         }
 
-
-        @Deprecated
-        @Override
         /*
         *@deprecated
+        * @param dataCollectionIds
+        * @param orgId
+        * @return Array List
          */
+        @Deprecated
+        @Override
         public List<TargetData> getExperimentTargetData(String dataCollectionIds, String orgId) throws Exception {
                 logger.info("*** In DAO getExperimentTargetData, org id is " + orgId);
             /*final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.item, '$.uri') "

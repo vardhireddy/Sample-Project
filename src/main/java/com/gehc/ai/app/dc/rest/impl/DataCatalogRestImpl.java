@@ -492,6 +492,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Deprecated
     /*
     * @deprecated
+    * @param id
+    * @param type
+    * @param request
+    * @return hashmap
      */
     @RequestMapping ( value = "/dataCatalog/data-collection-target", method = RequestMethod.GET )
     public Map getExperimentTargetData( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request ) {

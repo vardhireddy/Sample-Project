@@ -117,7 +117,7 @@ public class AnnotationSet {
 //		System.out.println(mapper.writeValueAsString(as));
 		LineNumberReader lr = new LineNumberReader(
 			new InputStreamReader(AnnotationSet.class.getResourceAsStream("SampleAnnotationSet")));
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		String line;
 		while ((line = lr.readLine())!=null) {
 			buf.append(line);
@@ -149,7 +149,7 @@ public class AnnotationSet {
 	 */
 	public static AnnotationSet createRandom() {
 		AnnotationSet as = new AnnotationSet();
-		as.id = "" + System.currentTimeMillis();
+		as.id = Long.toString(System.currentTimeMillis());
 		as.creatorId = "1";
 		as.schemaVersion = "v1";
 		as.creatorType = "expert";
