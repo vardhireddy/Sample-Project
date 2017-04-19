@@ -178,7 +178,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                                         Array imgSet = rs.getArray("imageSetId");
                                         imgSetId = (String[]) imgSet.getArray();
                                 }
-                                return imgSetId;
+                                return Arrays.copyOf(imgSetId, imgSetId.length);
                         }
                 });
                 return new String[]{};
@@ -455,8 +455,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 return alist;
         }
 
-        /*
-        *@deprecated
+        /**
+        * @deprecated
         * @param dataCollectionIds
         * @param orgId
         * @return Array List

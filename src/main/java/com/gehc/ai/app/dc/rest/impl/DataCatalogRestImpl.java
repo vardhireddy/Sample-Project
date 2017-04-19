@@ -105,6 +105,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()
      */
     @SuppressWarnings ( "unchecked" )
+    @Override
     @RequestMapping ( value = "/dataCatalog/image-set", method = RequestMethod.GET )
     public List<ImageSet> getImgSet( @RequestParam Map<String, String> params, HttpServletRequest request ) {
     	logger.info( "!!! In REST getImgSet, orgId = " + request.getAttribute( "orgId" ) );
@@ -129,7 +130,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             if(params.containsKey( ANNOTATIONS )){
                 logger.info( "!!! Params has annotations " );
                 String values = params.get(ANNOTATIONS);
-                if(null != imageSet && imageSet.size()>0){
+                if(null != imageSet && !imageSet.isEmpty()){
                     logger.info( "!!! Img set is not null " + imageSet.size());
                     List<String> imgSetIds = new ArrayList<String>();
                     for(Iterator<ImageSet> imgSetItr = imageSet.iterator(); imgSetItr.hasNext();){
@@ -139,7 +140,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     List<String> typeLst = getAnnTypesLst(values);                     
                      if(typeLst.contains(ABSENT))
                             dataWithNoAnnNeeded = true;
-                    if(null != typeLst && typeLst.size()>0){
+                    if(null != typeLst && !typeLst.isEmpty()){
                         if(typeLst.size()==1 && typeLst.contains(ABSENT)){
                             logger.info( "*** Annotation filter only has absent type = " + typeLst.toString() );
                             imgSetWithNotThatTypeOfAnn.addAll( imageSet );
@@ -147,7 +148,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             logger.info( "*** Annotation filter types = " + typeLst.toString() );
                             List<Annotation> annotationLst = annotationRepository.findByImageSetInAndTypeIn( imgSetIds, typeLst );
                             Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
-                            if(null != uniqueImgSetIds && uniqueImgSetIds.size()>0){
+                            if(null != uniqueImgSetIds && !uniqueImgSetIds.isEmpty()){
                                 logger.info( "*** uniqueImgSetIds which has annotations " + uniqueImgSetIds.toString() );
                                 for(Iterator<ImageSet> imgSetItr = imageSet.iterator(); imgSetItr.hasNext();){
                                     ImageSet imgSet = (ImageSet)imgSetItr.next();
@@ -166,29 +167,29 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             }
                         }
                     }
-                    if(dataWithNoAnnNeeded && null != imgSetWithNotThatTypeOfAnn && imgSetWithNotThatTypeOfAnn.size()>0){
-                        if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
+                    if(dataWithNoAnnNeeded && null != imgSetWithNotThatTypeOfAnn && !imgSetWithNotThatTypeOfAnn.isEmpty()){
+                        if(null != imgSetWithAnnotation && !imgSetWithAnnotation.isEmpty()){
                             logger.info( "*** Img set which has annotation, imgSetWithAnnotation.toString() = " + imgSetWithAnnotation.toString() );
                             imageSetFinalLst.addAll( imgSetWithAnnotation );
                         }
                         for(Iterator<ImageSet> imgSetItr = imgSetWithNotThatTypeOfAnn.iterator(); imgSetItr.hasNext();){
                             ImageSet imgSet = (ImageSet)imgSetItr.next();
                             List<Annotation> annotationLst = annotationRepository.findByImageSet(imgSet.getId() );
-                            if(null != annotationLst && annotationLst.size()>0){
+                            if(null != annotationLst && !annotationLst.isEmpty()){
                                 logger.info( "*** Found imgset which has annotation of other type so remove it from the list " + imgSet.getId() );                               
                             }else{ 
                                 logger.info( "*** Found imgset which has no annotation so adding to the list " + imgSet.getId() ); 
                                 imageSetFinalLst.add( imgSet );
                             }
                         }
-                        if(null != imageSetFinalLst && imageSetFinalLst.size()>0){
+                        if(null != imageSetFinalLst && !imageSetFinalLst.isEmpty()){
                             logger.info( "*** imageSetFinalLst.toString() " + imageSetFinalLst.toString() );
                             responseBuilder = Response.ok( imageSetFinalLst );
                             return (List<ImageSet>)responseBuilder.build().getEntity();
                         }else{
                             return imageSet;
                         }
-                    }else if(null != imgSetWithAnnotation && imgSetWithAnnotation.size()>0){
+                    }else if(null != imgSetWithAnnotation && !imgSetWithAnnotation.isEmpty()){
                         logger.info( "*** imgSetWithAnnotation.toString() " + imgSetWithAnnotation.toString() );
                         responseBuilder = Response.ok( imgSetWithAnnotation );
                         return (List<ImageSet>)responseBuilder.build().getEntity();
@@ -205,7 +206,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     }*/
                     return imageSet;
                   }
-            }else if ( imageSet != null && imageSet.size()>0) {
+            }else if ( imageSet != null && !imageSet.isEmpty()) {
                 logger.info( "!!! No annotations params " );
                 responseBuilder = Response.ok( imageSet );
                 return (List<ImageSet>)responseBuilder.build().getEntity();
@@ -233,7 +234,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     
     private Set<String> getUniqueImgSetIds(List<Annotation> annotationLst){
         Set<String> uniqueImgSetIds = new HashSet<String>();
-        if(null != annotationLst && annotationLst.size()>0){
+        if(null != annotationLst && !annotationLst.isEmpty()){
             logger.info( "*** Annotations from list " + annotationLst.toString() );
             for(Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();){
                 Annotation annotation = (Annotation)annotationItr.next();
@@ -490,7 +491,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @Deprecated
-    /*
+    /**
     * @deprecated
     * @param id
     * @param type
@@ -511,7 +512,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             }
             logger.info("getExperimentTargetData service call return a list of size --> : " + l.size());
 
-            if ( l.size() > 0 ) {
+            if ( !l.isEmpty() ) {
                 LinkedHashMap fileMap = new LinkedHashMap();
                 for ( int i = 0; i < l.size(); i++ ) {
                     TargetData td = l.get( i );
