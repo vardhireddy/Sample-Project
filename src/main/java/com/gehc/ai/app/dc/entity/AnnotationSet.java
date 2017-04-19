@@ -104,9 +104,6 @@ public class AnnotationSet {
 		this.creatorId = creatorId;
 	}
 
-	/*
-	* declare the item variable
-	 */
 	public List<Object> items;
 
 	/**
