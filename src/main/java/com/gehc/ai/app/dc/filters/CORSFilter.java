@@ -1,5 +1,3 @@
-package com.gehc.ai.app.dc.filters;
-
 /*
  * CORSFilter.java
  *
@@ -12,7 +10,7 @@ package com.gehc.ai.app.dc.filters;
  * under which the software has been supplied.
  */
 
-
+package com.gehc.ai.app.dc.filters;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
