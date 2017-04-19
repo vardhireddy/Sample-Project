@@ -488,16 +488,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Value ( "${experiment.targetData.locationType}" )
     private String locationType;
 
+    /**
+     * @deprecated
+     * @param id
+     * @param type
+     * @param request
+     * @return hashmap
+     */
     @SuppressWarnings ( "unchecked" )
     @Override
     @Deprecated
-    /**
-    * @deprecated
-    * @param id
-    * @param type
-    * @param request
-    * @return hashmap
-     */
     @RequestMapping ( value = "/dataCatalog/data-collection-target", method = RequestMethod.GET )
     public Map getExperimentTargetData( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request ) {
     	logger.info( "!!! *** In REST getExperimentTargetData, orgId = " + request.getAttribute( "orgId" ) );
