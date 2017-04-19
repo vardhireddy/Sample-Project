@@ -455,11 +455,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 return alist;
         }
 
+
+        @Deprecated
+        @Override
         /*
         *@deprecated
          */
-        @Deprecated
-        @Override
         public List<TargetData> getExperimentTargetData(String dataCollectionIds, String orgId) throws Exception {
                 logger.info("*** In DAO getExperimentTargetData, org id is " + orgId);
             /*final String query = "select im.patient_dbid as pid, im.uri as img, JSON_EXTRACT(an.item, '$.uri') "

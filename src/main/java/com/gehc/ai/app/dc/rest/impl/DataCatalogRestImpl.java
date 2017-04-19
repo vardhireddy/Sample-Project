@@ -490,6 +490,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings ( "unchecked" )
     @Override
     @Deprecated
+    /*
+    * @deprecated
+     */
     @RequestMapping ( value = "/dataCatalog/data-collection-target", method = RequestMethod.GET )
     public Map getExperimentTargetData( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request ) {
     	logger.info( "!!! *** In REST getExperimentTargetData, orgId = " + request.getAttribute( "orgId" ) );
@@ -509,7 +512,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 for ( int i = 0; i < l.size(); i++ ) {
                     TargetData td = l.get( i );
                     HashMap hm = new HashMap();
-                    String imgFullPath = td.img;
+//                    String imgFullPath = td.img;
                     if(null != td.gtMask && !td.gtMask.isEmpty()){
                         hm.put( "gtMask", td.gtMask.startsWith( gtMaskLocation ) ? td.gtMask.substring( gtMaskLocation.length() ) : td.gtMask );
                     }
