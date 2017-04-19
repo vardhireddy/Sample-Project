@@ -164,11 +164,13 @@ public class Study {
     @Column(name="upload_date")
     @JsonFormat(pattern="yyyyMMdd")
     private Date uploadDate;
-    public Date getUploadDate() {
-        return uploadDate;
+    public Date getUploadDate()
+    {
+        return new Date(uploadDate.getTime());
     }
-    public void setUploadDate(Date uploadDate) {
-        this.uploadDate = uploadDate;
+    public void setUploadDate(Date uploadDate)
+    {
+        this.uploadDate = new Date(uploadDate.getTime());
     }
 
     /**
