@@ -14,8 +14,11 @@ package com.gehc.ai.app.dc.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import com.gehc.ai.app.dc.entity.*;
-
+import com.gehc.ai.app.dc.entity.AnnotationImgSetDataCol;
+import com.gehc.ai.app.dc.entity.AnnotationSet;
+import com.gehc.ai.app.dc.entity.DataCollection;
+import com.gehc.ai.app.dc.entity.ImageSet;
+import com.gehc.ai.app.dc.entity.TargetData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;

@@ -68,10 +68,10 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
            if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
 	           Enumeration headerNames = req.getHeaderNames();
 	           String key = null;
-	           String value = null;
+//	           String value = null;
 	           while (headerNames.hasMoreElements()) {
 	                   key = (String) headerNames.nextElement();
-	                   value = req.getHeader(key);
+				       String value = req.getHeader(key);
 	                   if(key.equalsIgnoreCase(HttpHeaders.AUTHORIZATION)){
 	                	   logger.info( " ### In preHandle method, found the authorization key" );
 	                	   foundAuthToken = true;

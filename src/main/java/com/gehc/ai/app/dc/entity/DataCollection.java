@@ -156,9 +156,9 @@ public class DataCollection implements Serializable {
     public void setImageSets( String[] imageSets ) {
         this.imageSets = imageSets;
     }
- 
+
 	/**
-     * 
+     *
      */
     public DataCollection() {
         super();
