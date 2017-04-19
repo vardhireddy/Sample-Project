@@ -148,7 +148,7 @@ public class DataCollection implements Serializable {
      * @return the imageSets
      */
     public String[] getImageSets() {
-        return imageSets;
+        return Arrays.copyOf(imageSets, imageSets.length);
     }
     /**
      * @param imageSets the imageSets to set

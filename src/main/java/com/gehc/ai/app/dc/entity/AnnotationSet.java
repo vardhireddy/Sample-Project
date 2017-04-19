@@ -104,7 +104,7 @@ public class AnnotationSet {
 		this.creatorId = creatorId;
 	}
 
-	public List<Object> items;
+	private List<Object> items;
 
 	/**
 	 * main
@@ -241,7 +241,7 @@ class ObjectType1 {
 	* The point data
 	 */
 	@JsonProperty("poiData")
-	double [] poiData;
+	public double [] poiData;
 	/*
 	* createRandom
 	* @return the object
