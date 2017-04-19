@@ -25,9 +25,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/*
+* This class describes the annotation placed on a medical image
+* @author : 212071558
+ */
 public class AnnotationSet {
-	/* The schema version */
+
 	@JsonProperty("schemaVersion")
+	/* The schema version */
 	public String schemaVersion;
 	
 	public String getSchemaVersion() {
