@@ -14,10 +14,8 @@ package com.gehc.ai.app.dc.entity;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.security.SecureRandom;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -73,10 +71,10 @@ public class AnnotationSet {
 		this.creatorType = creatorType;
 	}
 	public List<Object> getItems() {
-		return items;
+		return Collections.unmodifiableList(items);
 	}
 	public void setItems(List<Object> items) {
-		this.items = items;
+		this.items = Collections.unmodifiableList(items);
 	}
 	
 	@JsonProperty("id")
@@ -221,7 +219,7 @@ class ObjectType1 {
 	public void setPoiData(double[] poiData) {
 		this.poiData = poiData;
 	}
-
+	private static final SecureRandom secureRandom = new SecureRandom();
 	/*
 	* name of the object
 	 */
@@ -250,9 +248,9 @@ class ObjectType1 {
 		ObjectType1 i = new ObjectType1();
 		i.objectId = "1";
 		i.objectName = "Nodule";
-		i.objectType = Integer.toString((int) (Math.random() * 5 + 1));
-		i.diameter = 5 + Math.random() * 20;
-		i.poiData = new double [] {Math.random()*10, Math.random()*10, Math.random() * 10};
+		i.objectType = Integer.toString((int) (secureRandom.nextInt() * 5 + 1));
+		i.diameter = 5 + secureRandom.nextInt() * 20;
+		i.poiData = new double [] {secureRandom.nextInt()*10, secureRandom.nextInt()*10, secureRandom.nextInt() * 10};
 		return i;
 	}
 }

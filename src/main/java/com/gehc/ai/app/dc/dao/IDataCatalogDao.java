@@ -14,11 +14,7 @@ package com.gehc.ai.app.dc.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.gehc.ai.app.dc.entity.AnnotationImgSetDataCol;
-import com.gehc.ai.app.dc.entity.AnnotationSet;
-import com.gehc.ai.app.dc.entity.DataCollection;
-import com.gehc.ai.app.dc.entity.ImageSet;
-import com.gehc.ai.app.dc.entity.TargetData;
+import com.gehc.ai.app.dc.entity.*;
 
 /**
  * @author 212071558

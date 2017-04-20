@@ -363,13 +363,13 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         public List getAnnotationSet(String imageSets, String fields, Map<String, String> queryMap) throws Exception {
                 StringBuilder sql = new StringBuilder("SELECT DISTINCT ");
                 String [] fs = null;
-                
+
                 if (fields == null || fields.equals("")) {
                         fs =  ANNOT_SET_COLUMNS;
                 } else {
                     fs = fields.split(",");
                 }
-                
+
                 boolean containsIdCol = false;
                 for (int i = 0; i < fs.length; i++) {
                         sql.append("json_extract(data, '$." + fs[i] + "') as " + fs[i]);
@@ -380,13 +380,13 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                             sql.append(", ");
                         }
                 }
-                
+
                 if (!containsIdCol) {
                     sql.append(", id ");
                 }
-                
+
                 sql.append(" from annotation_set");
-                
+
                 boolean search = false;
                 if (imageSets != null && !imageSets.equals("")) {
                         System.out.println("imagesets = " + imageSets);
@@ -401,12 +401,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                                 }
                         }
                 }
-                
+
                 if (queryMap.size() > 0) {
                         if (!search) {
                                 sql.append(" where ");
                                 Set<String> keys = queryMap.keySet();
-                                
+
                                 for (Iterator<String> it = keys.iterator(); it.hasNext();) {
                                         String key = it.next();
                                         String value = queryMap.get(key);
@@ -419,8 +419,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 }
                 sql.append(";");
                 System.out.println(sql);
-                
-                
+
+
                 List alist = new ArrayList();
 //              alist.add(imageSets);
 //              alist.add(fields);
@@ -451,7 +451,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                     return asList;
                         }
                 });
-                
+
                 return alist;
         }
 
