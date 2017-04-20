@@ -15,7 +15,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -249,7 +253,7 @@ class ObjectType1 {
 		i.objectId = "1";
 		i.objectName = "Nodule";
 		i.objectType = Integer.toString((int) (secureRandom.nextInt() * 5 + 1));
-		i.diameter = 5 + secureRandom.nextInt() * 20;
+		i.diameter = (double)5 + secureRandom.nextInt() * 20;
 		i.poiData = new double [] {secureRandom.nextInt()*10, secureRandom.nextInt()*10, secureRandom.nextInt() * 10};
 		return i;
 	}
