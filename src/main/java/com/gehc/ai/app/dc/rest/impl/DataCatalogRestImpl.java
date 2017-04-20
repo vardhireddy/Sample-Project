@@ -770,7 +770,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         if (  null != imagesetid && !imagesetid.isEmpty() ) {
             return annotationRepository.findByImageSet( imagesetid );
         }else {
-            return null;
+            return new ArrayList<Annotation>();
         }
     	 /*if (  null != imagesetid && !imagesetid.isEmpty() && null != request.getAttribute( "orgId" )) {
     		 	return annotationRepository.findByImageSetAndOrgId(imagesetid, request.getAttribute( "orgId" ).toString());

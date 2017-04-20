@@ -17,7 +17,12 @@ import com.gehc.ai.app.dc.filters.JsonConverter;
 
 import java.sql.Date;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * Created by 200014175 on 10/28/2016.

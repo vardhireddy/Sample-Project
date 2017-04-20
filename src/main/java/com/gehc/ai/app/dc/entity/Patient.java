@@ -15,7 +15,12 @@ package com.gehc.ai.app.dc.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gehc.ai.app.dc.filters.JsonConverter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.sql.Date;
 
