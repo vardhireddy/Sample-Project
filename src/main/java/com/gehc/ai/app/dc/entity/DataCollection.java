@@ -50,7 +50,7 @@ public class DataCollection implements Serializable {
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
-    private Object properties;
+    private transient Object properties;
     /**
      * @return the properties
      */
@@ -89,7 +89,7 @@ public class DataCollection implements Serializable {
 	}
 
 
-	private Creator creator;
+	private transient Creator creator;
     public Creator getCreator() {
 		return creator;
 	}
@@ -148,7 +148,7 @@ public class DataCollection implements Serializable {
      * @return the imageSets
      */
     public String[] getImageSets() {
-        return Arrays.copyOf(imageSets, imageSets.length);
+        return imageSets;
     }
     /**
      * @param imageSets the imageSets to set
