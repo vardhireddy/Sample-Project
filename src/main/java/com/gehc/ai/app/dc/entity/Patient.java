@@ -156,7 +156,7 @@ public class Patient implements Serializable {
      * Flexible JSON object to store any other parameter of interest
      */
     @Convert(converter = JsonConverter.class)
-    private transient Object properties;
+    private Object properties;
     public Object getProperties() {
         return properties;
     }

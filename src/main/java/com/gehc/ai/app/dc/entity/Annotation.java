@@ -73,7 +73,7 @@ public class Annotation implements Serializable {
      * Flexible JSON object to store annotated items
      */
     @Convert(converter = JsonConverter.class)
-    private transient Object item;
+    private Object item;
     /**
      * @return the id
      */

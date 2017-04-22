@@ -13,6 +13,7 @@ package com.gehc.ai.app.dc.entity;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Properties;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -50,17 +51,17 @@ public class DataCollection implements Serializable {
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
-    private transient Object properties;
+    private String properties;
     /**
      * @return the properties
      */
-    public Object getProperties() {
+    public String getProperties() {
         return properties;
     }
     /**
      * @param properties the properties to set
      */
-    public void setProperties( Object properties ) {
+    public void setProperties( String properties ) {
         this.properties = properties;
     }
     /**
@@ -89,7 +90,7 @@ public class DataCollection implements Serializable {
 	}
 
 
-	private transient Creator creator;
+	private Creator creator;
     public Creator getCreator() {
 		return creator;
 	}
@@ -165,7 +166,7 @@ public class DataCollection implements Serializable {
         // TODO Auto-generated constructor stub
     }
 	public DataCollection(String id, String schemaVersion, String name, String description, String[] imageSets,
-			String createdDate, int imageSetsSize, String type, String orgId, Object properties, Creator creator) {
+			String createdDate, int imageSetsSize, String type, String orgId, String properties, Creator creator) {
 		super();
 		this.id = id;
 		this.schemaVersion = schemaVersion;
