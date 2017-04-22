@@ -149,13 +149,20 @@ public class DataCollection implements Serializable {
      * @return the imageSets
      */
     public String[] getImageSets() {
-        return imageSets;
+
+        return this.imageSets;
     }
     /**
      * @param imageSets the imageSets to set
      */
     public void setImageSets( String[] imageSets ) {
-        this.imageSets = imageSets;
+
+        if(imageSets == null) {
+            this.imageSets = new String[0];
+        } else {
+            this.imageSets = Arrays.copyOf(imageSets, imageSets.length);
+        }
+//        this.imageSets = imageSets;
     }
 
 	/**
@@ -172,7 +179,12 @@ public class DataCollection implements Serializable {
 		this.schemaVersion = schemaVersion;
 		this.name = name;
 		this.description = description;
-		this.imageSets = imageSets;
+        if(imageSets == null) {
+            this.imageSets = new String[0];
+        } else {
+            this.imageSets = Arrays.copyOf(imageSets, imageSets.length);
+        }
+//		this.imageSets = imageSets;
 		this.createdDate = createdDate;
 		this.imageSetsSize = imageSetsSize;
 		this.type = type;
