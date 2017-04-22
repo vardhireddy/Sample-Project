@@ -178,7 +178,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                                         Array imgSet = rs.getArray("imageSetId");
                                         imgSetId = (String[]) imgSet.getArray();
                                 }
-                                return Arrays.copyOf(imgSetId, imgSetId.length);
+                                return imgSetId;
                         }
                 });
                 return new String[]{};
@@ -491,7 +491,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         if(null != rs.getString("gtMask") && !rs.getString("gtMask").isEmpty()){
                            // td.gtMask = rs.getString("gtMask").replaceAll("\\[\"", "").replaceAll("\"\\]", "");
                              td.gtMask = rs.getString("gtMask").replace("\"", "");
-                             td.gtMask.trim();
+//                             td.gtMask.trim();
                         }                       
                         asList.add(td);
                     }
