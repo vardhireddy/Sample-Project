@@ -11,7 +11,10 @@
  */
 package com.gehc.ai.app.dc.entity;
 
-public class Creator {
+import java.io.Serializable;
+
+public class Creator implements Serializable {
+	private static final long serialVersionUID = 1L;
     private String id;
     public String getId() {
 		return (id==null)?id:id.replaceAll("^\"|\"$", "");
