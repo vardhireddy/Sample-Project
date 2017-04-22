@@ -156,11 +156,11 @@ public class Patient implements Serializable {
      * Flexible JSON object to store any other parameter of interest
      */
     @Convert(converter = JsonConverter.class)
-    private Object properties;
-    public Object getProperties() {
+    private String properties;
+    public String getProperties() {
         return properties;
     }
-    public void setProperties(Object properties) {
+    public void setProperties(String properties) {
         this.properties = properties;
     }
 }
