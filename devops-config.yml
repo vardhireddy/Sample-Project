@@ -41,7 +41,7 @@ KpiVars:
    kpi_elapsed_time_id: 
 
 SonarVars:
-   aws_run_sonar: true
+   aws_run_sonar: false
    sonar_additional_args: 
 
 TestingVars:
