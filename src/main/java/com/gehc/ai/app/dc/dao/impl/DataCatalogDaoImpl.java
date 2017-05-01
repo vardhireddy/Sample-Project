@@ -114,10 +114,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         	//Note: Not using the org id from the token but using the one which is being passed as a parameter
                 List<ImageSet> imageSetList;
                 StringBuilder builder = new StringBuilder();
-//                String annotValue = null;
-//                if (params != null && params.get("annotations") != null) {
-//                        annotValue = params.remove("annotations");
-//                }
+                String annotValue = null;
+                if (params != null && params.get("annotations") != null) {
+                        annotValue = params.remove("annotations");
+                }
                 builder.append(GET_IMGSET_DATA_BY_ORG_ID);
                 builder.append(constructQuery(params));
 
