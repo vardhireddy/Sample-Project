@@ -166,8 +166,9 @@ public class Study {
     /**
      * Date data was uploaded into database. Should be left to database to provide.
      */
-    @Column(name="upload_date")
-    @JsonFormat(pattern="yyyyMMdd")
+    //@Column(name="upload_date")
+    //@JsonFormat(pattern="yyyyMMdd")
+    @Column(name="upload_date", columnDefinition="DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Date uploadDate;
     public Date getUploadDate()
     {
