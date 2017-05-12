@@ -64,6 +64,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
         logger.info( " --- In preHandle method ");        
         if(null != req){
 		   String orgId = req.getParameter("org-id");
+		   logger.info("DC prehandle, org-id in request: " + orgId);
 		   if (!StringUtils.isEmpty(orgId)) {
 			   logger.info("DC prehandle, where org-id is passed: " + orgId);
 				req.setAttribute("orgId", orgId);
