@@ -35,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,8 +62,13 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {
         logger.info( " --- In preHandle method ");        
-        if(null != req){    
-        	boolean foundAuthToken = false;
+        if(null != req){
+		   String orgId = req.getParameter("org-id");
+		   if (!StringUtils.isEmpty(orgId)) {
+				req.setAttribute("orgId", orgId);
+				return true;
+		   }
+		   boolean foundAuthToken = false;
            logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod());
            logger.info( " ### In preHandle method, req.getServletPath() = " + req.getServletPath());
            if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
