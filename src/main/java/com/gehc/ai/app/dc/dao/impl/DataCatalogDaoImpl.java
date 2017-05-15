@@ -90,7 +90,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
         private static final String INSERT_ANNOTATION_SET = " insert into annotation_set () values (?, ?) ";
         
-        private static final String GET_IMGSET_DATA_BY_PATIENT_ID = "SELECT im.id, im.orgId, im.modality, im.anatomy FROM image_set im join patient p on im.patient_dbid = p.id where p.patient_id = ";
+        private static final String GET_IMGSET_DATA_BY_PATIENT_ID = "SELECT im.id, im.orgId, im.modality, im.anatomy, im.patient_dbid, im.study_dbid FROM image_set im join patient p on im.patient_dbid = p.id where p.patient_id = ";
         
         private static final String GET_ANNOTATION_DATA_BY_DC_ID = "SELECT dc.id dc_id, im.id  im_id, an.id annotation_id,"
                         + "im.patient_dbid, im.uri,"
@@ -709,6 +709,8 @@ class ImageSetInfoRowMapper implements RowMapper<ImageSet> {
                                 imageSet.setOrgId(rs.getString("orgId"));  
                                 imageSet.setModality(rs.getString("modality")); 
                                 imageSet.setAnatomy(rs.getString("anatomy")); 
+                                imageSet.setPatientDbId(rs.getLong("patient_dbid"));
+                                imageSet.setStudyDbId(rs.getLong("study_dbid"));
                         } catch (Exception e) {
                                 throw new SQLException(e);
                         }
