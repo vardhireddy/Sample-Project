@@ -25,6 +25,7 @@ import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
+import com.gehc.ai.app.dc.entity.DataSet;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
 import com.gehc.ai.app.dc.entity.Study;
@@ -230,4 +231,12 @@ public interface IDataCatalogRest {
      * @return
      */
     List<Annotation> getAnnotationsById( String ids, HttpServletRequest request );
+    
+    /**
+     * Get Data Set
+     * 
+     * @param type TODO
+     * @return List<DataCollection>
+     */
+  //  List<DataSet> getDataSet( Long id, String type, HttpServletRequest request);
 }

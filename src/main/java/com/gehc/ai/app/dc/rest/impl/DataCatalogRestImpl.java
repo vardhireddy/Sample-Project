@@ -38,9 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,12 +55,14 @@ import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
+import com.gehc.ai.app.dc.entity.DataSet;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
 import com.gehc.ai.app.dc.entity.Study;
 import com.gehc.ai.app.dc.entity.TargetData;
 import com.gehc.ai.app.dc.repository.AnnotationRepository;
 import com.gehc.ai.app.dc.repository.COSNotificationRepository;
+import com.gehc.ai.app.dc.repository.DataSetRepository;
 //import com.gehc.ai.app.dc.repository.COSNotificationRepository;
 import com.gehc.ai.app.dc.repository.PatientRepository;
 import com.gehc.ai.app.dc.repository.StudyRepository;
@@ -575,6 +574,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     private AnnotationRepository annotationRepository;
     @Autowired
     private COSNotificationRepository cosNotificationRepository;
+    @Autowired
+    private DataSetRepository dataSetRepository;
 
     @SuppressWarnings ( "unchecked" )
     @Override
@@ -897,4 +898,35 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ArrayList<Annotation>();
         }
     }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()
+     */
+  /*  @SuppressWarnings ( "unchecked" )
+    @Override
+    @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
+    public List<DataSet> getDataSet( @QueryParam ( "id" ) Long id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
+       logger.info( "!!! In REST getDataCollection, orgId = " + request.getAttribute( "orgId" ) );
+        ResponseBuilder responseBuilder;
+        List<DataSet> dataCollection = new ArrayList<DataSet>();
+        try {
+            if(null != request.getAttribute( "orgId" )){
+            	dataCollection = dataSetRepository.findByIdAndOrgId(id, request.getAttribute( "orgId" ).toString());
+            	logger.info( "!!! dataCollection = " + dataCollection.toString() );
+            }
+        } catch ( ServiceException e ) {
+            throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
+        } catch ( Exception e ) {
+            throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
+        }
+        if ( dataCollection != null ) {
+            responseBuilder = Response.ok( dataCollection );
+            return (List<DataSet>)responseBuilder.build().getEntity();
+        } else {
+            responseBuilder = Response.status( Status.NOT_FOUND );
+            return (List<DataSet>)responseBuilder.build();
+        }
+    }*/
 }

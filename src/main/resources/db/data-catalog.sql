@@ -129,3 +129,17 @@ CHANGE COLUMN `upload_date` `upload_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON 
 
 alter table study  
 CHANGE COLUMN `upload_date` `upload_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+create table if not exists data_set ( 
+ id INT auto_increment primary key,
+ schema_version varchar(5),
+ org_id varchar(255),
+ name varchar(200),
+ type varchar(50),
+ description varchar(500),
+ image_sets JSON,
+ created_by varchar(200),
+ created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+ properties JSON
+)
+
