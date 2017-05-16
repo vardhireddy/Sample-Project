@@ -67,6 +67,20 @@ public class ImageSet {
     private String uploadDate;
     private Object properties;
     private String patientId;
+    private String age;
+    public String getAge() {
+		return age;
+	}
+	public void setAge(String age) {
+		this.age = age;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	private String gender;
     public String getPatientId() {
 		return patientId;
 	}
