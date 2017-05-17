@@ -296,7 +296,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
+   // @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
     public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
        logger.info( "!!! In REST getDataCollection, orgId = " + request.getAttribute( "orgId" ) );
         ResponseBuilder responseBuilder;
@@ -904,18 +904,26 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      * 
      * @see com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()
      */
-  /*  @SuppressWarnings ( "unchecked" )
+    @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/data-set", method = RequestMethod.GET )
     public List<DataSet> getDataSet( @QueryParam ( "id" ) Long id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
-       logger.info( "!!! In REST getDataCollection, orgId = " + request.getAttribute( "orgId" ) );
+      // logger.info( "$$$$ In REST getDataSet, orgId = " + request.getAttribute( "orgId" ) );
+    	//TODO : Need to add interceptor to get org id
         ResponseBuilder responseBuilder;
         List<DataSet> dataCollection = new ArrayList<DataSet>();
         try {
-            if(null != request.getAttribute( "orgId" )){
-            	dataCollection = dataSetRepository.findByIdAndOrgId(id, request.getAttribute( "orgId" ).toString());
-            	logger.info( "!!! dataCollection = " + dataCollection.toString() );
-            }
+            //if(null != request.getAttribute( "orgId" )){
+        	if(null != id && null != type && !type.isEmpty()){
+        		//dataCollection = dataSetRepository.findByIdAndType(id, type);
+        		dataCollection = dataSetRepository.findByIdAndTypeAndOrgId(id, type, "61939267-d195-499f-bfd8-7d92875c7035");
+        	}else if(null != id){
+        		//dataCollection = dataSetRepository.findByIdAndOrgId(id, request.getAttribute( "orgId" ).toString());
+            	dataCollection = dataSetRepository.findByIdAndOrgId(id, "61939267-d195-499f-bfd8-7d92875c7035");
+        	}else if(null != type && !type.isEmpty()){
+        		dataCollection = dataSetRepository.findByTypeAndOrgId(type, "61939267-d195-499f-bfd8-7d92875c7035");
+        	}
+           // }
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
         } catch ( Exception e ) {
@@ -928,5 +936,5 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             responseBuilder = Response.status( Status.NOT_FOUND );
             return (List<DataSet>)responseBuilder.build();
         }
-    }*/
+    }
 }

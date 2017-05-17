@@ -238,5 +238,5 @@ public interface IDataCatalogRest {
      * @param type TODO
      * @return List<DataCollection>
      */
-  //  List<DataSet> getDataSet( Long id, String type, HttpServletRequest request);
+    List<DataSet> getDataSet( Long id, String type, HttpServletRequest request);
 }
