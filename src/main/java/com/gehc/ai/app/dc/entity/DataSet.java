@@ -8,10 +8,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.dc.filters.JsonConverter;
 
 @Entity
+@JsonInclude(Include.NON_NULL)
+@Table(name = "data_set")
 public class DataSet implements Serializable {
 
 	/**
@@ -39,7 +44,24 @@ public class DataSet implements Serializable {
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
-    private String properties;
+    private Object properties;
+    
+    public Object getProperties() {
+		return properties;
+	}
+	public void setProperties(Object properties) {
+		this.properties = properties;
+	}
+	public Object getImageSets() {
+		return imageSets;
+	}
+	public void setImageSets(Object imageSets) {
+		this.imageSets = imageSets;
+	}
+	@Convert(converter = JsonConverter.class)
+    @Column ( name = "image_sets" )
+    private Object imageSets;
+    
 	public Long getId() {
 		return id;
 	}
@@ -87,11 +109,5 @@ public class DataSet implements Serializable {
 	}
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
-	}
-	public String getProperties() {
-		return properties;
-	}
-	public void setProperties(String properties) {
-		this.properties = properties;
 	}
 }
