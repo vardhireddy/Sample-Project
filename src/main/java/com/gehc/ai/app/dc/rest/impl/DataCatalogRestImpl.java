@@ -296,7 +296,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings ( "unchecked" )
     @Override
-   // @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
+    @RequestMapping ( value = "/dataCatalog/dataCollection", method = RequestMethod.GET )
     public List<DataCollection> getDataCollection( @QueryParam ( "id" ) String id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
        logger.info( "!!! In REST getDataCollection, orgId = " + request.getAttribute( "orgId" ) );
         ResponseBuilder responseBuilder;
