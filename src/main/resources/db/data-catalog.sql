@@ -143,3 +143,13 @@ create table if not exists data_set (
  properties JSON
 )
 
+
+create table if not exists annotation_properties ( 
+ id INT auto_increment primary key,
+ schema_version varchar(5),
+ org_id varchar(255),
+ resource_name varchar(500),
+ classes JSON, 
+ created_by varchar(200),
+ created_date DATETIME DEFAULT CURRENT_TIMESTAMP
+ )

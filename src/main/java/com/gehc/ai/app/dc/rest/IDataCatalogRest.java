@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.dc.entity.Annotation;
+import com.gehc.ai.app.dc.entity.AnnotationProperties;
 import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.DataSet;
@@ -239,4 +240,8 @@ public interface IDataCatalogRest {
      * @return List<DataCollection>
      */
     List<DataSet> getDataSet( Long id, String type, HttpServletRequest request);
+    
+    List<AnnotationProperties> getAnnotationProp(String org_id);
+    
+    ApiResponse saveAnnotationProperties(AnnotationProperties annotationProp );
 }
