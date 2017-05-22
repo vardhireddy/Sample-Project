@@ -53,6 +53,7 @@ import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import com.gehc.ai.app.dc.entity.Annotation;
 import com.gehc.ai.app.dc.entity.AnnotationImgSetDataCol;
+import com.gehc.ai.app.dc.entity.AnnotationProperties;
 import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.DataSet;
@@ -60,6 +61,7 @@ import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
 import com.gehc.ai.app.dc.entity.Study;
 import com.gehc.ai.app.dc.entity.TargetData;
+import com.gehc.ai.app.dc.repository.AnnotationPropRepository;
 import com.gehc.ai.app.dc.repository.AnnotationRepository;
 import com.gehc.ai.app.dc.repository.COSNotificationRepository;
 import com.gehc.ai.app.dc.repository.DataSetRepository;
@@ -576,7 +578,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     private COSNotificationRepository cosNotificationRepository;
     @Autowired
     private DataSetRepository dataSetRepository;
-
+    @Autowired
+    private AnnotationPropRepository annotationPropRepository;
+    
     @SuppressWarnings ( "unchecked" )
     @Override
     @RequestMapping ( value = "/dataCatalog/patient", method = RequestMethod.GET )
@@ -936,5 +940,46 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             responseBuilder = Response.status( Status.NOT_FOUND );
             return (List<DataSet>)responseBuilder.build();
         }
+    }
+    
+    @SuppressWarnings ( "unchecked" )
+    @Override
+    @RequestMapping ( value = "/annotation/properties", method = RequestMethod.GET )
+    public List<AnnotationProperties> getAnnotationProp(@QueryParam ( "orgId" ) String orgId) {
+        ResponseBuilder responseBuilder;
+        List<AnnotationProperties> annotationProperties = new ArrayList<AnnotationProperties>();
+        try {
+           if(null != orgId && !orgId.isEmpty()){
+        	   annotationProperties = annotationPropRepository.findByOrgId(orgId);
+        	}
+           
+        } catch ( ServiceException e ) {
+            throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
+        } catch ( Exception e ) {
+            throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
+        }
+        if ( annotationProperties != null ) {
+            responseBuilder = Response.ok( annotationProperties );
+            return (List<AnnotationProperties>)responseBuilder.build().getEntity();
+        } else {
+            responseBuilder = Response.status( Status.NOT_FOUND );
+            return (List<AnnotationProperties>)responseBuilder.build();
+        }
+    }
+    
+    @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RequestMapping(value = "/annotation/properties", method = RequestMethod.POST)
+    public ApiResponse saveAnnotationProperties(@RequestBody AnnotationProperties annotationProp ) {
+        ApiResponse apiResponse = null;
+        try{
+        	AnnotationProperties newAnnotationProp = annotationPropRepository.save(annotationProp);
+            apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, newAnnotationProp.getId().toString());
+        } catch (Exception e) {
+            logger.error("Exception occured while calling save AnnotationProperties ", e);
+            apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.INTERNAL_SERVER_ERROR_CODE, ApplicationConstants.FAILURE, null);
+        }
+        return apiResponse;
     }
 }
