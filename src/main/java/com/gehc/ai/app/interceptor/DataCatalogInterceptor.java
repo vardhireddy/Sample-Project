@@ -52,7 +52,13 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 
     @Value("${uom.user.me.url}")
     private String uomMeUrl;
-    
+
+	@Value("${dev.mode}")
+	private String devMode;
+
+	@Value("${dev.orgId}")
+	private String devOrgId;
+
     @Autowired
     private RestTemplate restTemplate;
  
@@ -86,17 +92,19 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 	                	   break;
 	                   }
 	           }
-	           if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().equalsIgnoreCase("/api/v1/annotation")){
+	           if (null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().equalsIgnoreCase("/api/v1/annotation")){
 	        	   logger.info( " +++ In preHandle method, save annotation is getting called so not looking for org id");
-	           }else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/patient")){
+	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/patient")){
 	        	   logger.info( " +++ In preHandle method, save patient is getting called so not looking for org id");
-	           }else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/study")){
+	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/study")){
 	        	   logger.info( " +++ In preHandle method, save study is getting called so not looking for org id");
-	           }else if(foundAuthToken){
+	           } else if(foundAuthToken){
 	               logger.info( " +++ In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
 	               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
-	           }else{
-	        	throw new WebApplicationException( Response.status( Status.FORBIDDEN ).entity( "User is not authorized" ).build() );    
+	           } else if (!foundAuthToken && !StringUtils.isEmpty(devMode) && devMode.equalsIgnoreCase("true")) {
+					   req.setAttribute("orgId", devOrgId);
+			   } else {
+	        	throw new WebApplicationException( Response.status( Status.FORBIDDEN ).entity( "User is not authorized" ).build() );
 	           }
            }else{
                logger.info( " **** In preHandle method req method is options ");

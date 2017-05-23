@@ -51,17 +51,17 @@ public class DataCollection implements Serializable {
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
-    private String properties;
+    private Object properties;
     /**
      * @return the properties
      */
-    public String getProperties() {
+    public Object getProperties() {
         return properties;
     }
     /**
      * @param properties the properties to set
      */
-    public void setProperties( String properties ) {
+    public void setProperties( Object properties ) {
         this.properties = properties;
     }
     /**

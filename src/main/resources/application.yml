@@ -1,15 +1,17 @@
 ####Local
-#spring.datasource.url = jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
-#spring.datasource.username = root
-#spring.datasource.password = root
-#spring.data.rest.base-path=/api/v1/dataCatalog
-#spring.jpa.properties.hibernate.show_sql=true
-#spring.jpa.properties.hibernate.use_sql_comments=true
-#spring.jpa.properties.hibernate.format_sql=true
-#experiment.targetData.gtMaskLocation = https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
-#experiment.targetData.imgLocation = https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
-#experiment.targetData.locationType = s3
-#uom.user.me.url=https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi/v1/user/me?level.value=2
+#spring.datasource.url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
+#spring.datasource.username: root
+#spring.datasource.password: root
+#spring.data.rest.base-path: /api/v1/dataCatalog
+#spring.jpa.properties.hibernate.show_sql: true
+#spring.jpa.properties.hibernate.use_sql_comments: true
+#spring.jpa.properties.hibernate.format_sql: true
+#experiment.targetData.gtMaskLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
+#experiment.targetData.imgLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
+#experiment.targetData.locationType: s3
+#uom.user.me.url: https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi/v1/user/me?level.value=2
+#dev.mode: true
+#dev.orgId: 61939267-d195-499f-bfd8-7d92875c7035
 
 ##AWS
 #New Dev DB below
@@ -24,3 +26,4 @@ experiment.targetData.gtMaskLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.
 experiment.targetData.imgLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
 experiment.targetData.locationType: s3
 uom.user.me.url: ${uom_api_gateway_url:https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi}/v1/user/me?level.value=2
+dev.mode: false
