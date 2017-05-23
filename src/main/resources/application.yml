@@ -27,3 +27,4 @@ experiment.targetData.imgLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com
 experiment.targetData.locationType: s3
 uom.user.me.url: ${uom_api_gateway_url:https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi}/v1/user/me?level.value=2
 dev.mode: false
+dev.orgId: null
