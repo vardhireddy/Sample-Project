@@ -912,7 +912,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/dataCatalog/data-set", method = RequestMethod.GET )
     public List<DataSet> getDataSet( @QueryParam ( "id" ) Long id, @QueryParam ( "type" ) String type, HttpServletRequest request) {
-      // logger.info( "$$$$ In REST getDataSet, orgId = " + request.getAttribute( "orgId" ) );
     	//TODO : Need to add interceptor to get org id
         ResponseBuilder responseBuilder;
         List<DataSet> dataCollection = new ArrayList<DataSet>();
@@ -944,9 +943,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     
     @SuppressWarnings ( "unchecked" )
     @Override
-    @RequestMapping ( value = "/annotation/properties", method = RequestMethod.GET )
-    public List<AnnotationProperties> getAnnotationProp(@QueryParam ( "orgId" ) String orgId) {
-        ResponseBuilder responseBuilder;
+    @RequestMapping ( value = "/annotation-properties", method = RequestMethod.GET )
+    public List<AnnotationProperties> getAnnotationProperties(@QueryParam ( "orgId" ) String orgId) {
+    	logger.info( "*** In getAnnotationProperties, orgId = " + orgId );
+    	ResponseBuilder responseBuilder;
         List<AnnotationProperties> annotationProperties = new ArrayList<AnnotationProperties>();
         try {
            if(null != orgId && !orgId.isEmpty()){
@@ -954,9 +954,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         	}
            
         } catch ( ServiceException e ) {
-            throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
+            throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the annotation prop" ).build() );
         } catch ( Exception e ) {
-            throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the data collection" ).build() );
+            throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the annotation prop" ).build() );
         }
         if ( annotationProperties != null ) {
             responseBuilder = Response.ok( annotationProperties );
@@ -970,9 +970,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RequestMapping(value = "/annotation/properties", method = RequestMethod.POST)
+    @RequestMapping(value = "/annotation-properties", method = RequestMethod.POST)
     public ApiResponse saveAnnotationProperties(@RequestBody AnnotationProperties annotationProp ) {
-        ApiResponse apiResponse = null;
+    	logger.info( "*** In saveAnnotationProperties, annotationProp = " + annotationProp );
+    	ApiResponse apiResponse = null;
         try{
         	AnnotationProperties newAnnotationProp = annotationPropRepository.save(annotationProp);
             apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(), ApplicationConstants.SUCCESS, newAnnotationProp.getId().toString());

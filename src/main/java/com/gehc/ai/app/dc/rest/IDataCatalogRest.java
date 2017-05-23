@@ -241,7 +241,7 @@ public interface IDataCatalogRest {
      */
     List<DataSet> getDataSet( Long id, String type, HttpServletRequest request);
     
-    List<AnnotationProperties> getAnnotationProp(String org_id);
+    List<AnnotationProperties> getAnnotationProperties(String org_id);
     
     ApiResponse saveAnnotationProperties(AnnotationProperties annotationProp );
 }
