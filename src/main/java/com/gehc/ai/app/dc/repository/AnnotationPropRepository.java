@@ -12,7 +12,7 @@ import com.gehc.ai.app.dc.entity.AnnotationProperties;
  * @author 212071558
  *
  */
-@RepositoryRestResource(collectionResourceRel = "annotation_properties", path = "properties")
+@RepositoryRestResource(collectionResourceRel = "annotation_properties", path = "annotation-properties")
 public interface AnnotationPropRepository extends JpaRepository<AnnotationProperties, Long> {
     @Override
     <S extends AnnotationProperties> S save(S entity);

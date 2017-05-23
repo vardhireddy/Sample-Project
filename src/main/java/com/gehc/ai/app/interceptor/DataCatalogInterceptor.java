@@ -66,8 +66,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      * @see org.springframework.web.servlet.HandlerInterceptor#preHandle(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object)
      */
     @Override
-    public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {
-        logger.info( " --- In preHandle method ");        
+    public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {      
         if(null != req){
 		   String orgId = req.getParameter("org-id");
 		   logger.info("DC prehandle, org-id in request: " + orgId);
@@ -134,7 +133,6 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     
     @SuppressWarnings ( "unchecked" )
     public String getOrgIdBasedOnSessionToken(String authToken) throws Exception{
-        logger.info( " !!!  In getOrgIdBasedOnSessionToken, authToken = " + authToken );
         String orgId = null;
         if (null != authToken) {
 			HttpHeaders headers = new HttpHeaders();

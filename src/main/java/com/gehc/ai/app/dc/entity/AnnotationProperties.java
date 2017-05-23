@@ -29,8 +29,16 @@ public class AnnotationProperties {
     private String orgId;
     
     @Column(name="resource_name")
-    private String resorceName;
-    /**
+    private String resourceName;
+    public String getResourceName() {
+		return resourceName;
+	}
+
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+
+	/**
      * Flexible JSON object to store classes
      */
     @Convert(converter = JsonConverter.class)
@@ -64,14 +72,6 @@ public class AnnotationProperties {
 
 	public void setOrgId(String orgId) {
 		this.orgId = orgId;
-	}
-
-	public String getResorceName() {
-		return resorceName;
-	}
-
-	public void setResorceName(String resorceName) {
-		this.resorceName = resorceName;
 	}
 
 	public Object getClasses() {
