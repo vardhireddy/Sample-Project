@@ -78,7 +78,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         + "where dataColl.id = ? and dataColl.org_id = ? "
                         + "and JSON_SEARCH(dataColl.data, 'one', imgSet.id) is not null ";
 
-        private static final String INSERT_DATA_COLLECTION = " insert into data_collection (id, data, org_id) values (?, ?, ?) ";
+        private static final String INSERT_DATA_COLLECTION = " insert into data_collection (id, data, org_id, properties) values (?, ?, ?, ?) ";
         
         private static final String INSERT_IMAGE_SET = " insert into image_set (id, schemaVersion, orgId, modality, anatomy, "
                         + " dataFormat, uri, series_instance_uid, acq_date, acq_time, "
@@ -285,14 +285,14 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         dataCollection.setSchemaVersion("v1.0");
                         dataCollection.setCreatedDate(String.valueOf(calendar.getTimeInMillis()));
                         if(null != orgId){
-                        	logger.info("%%% IN DAO to create dc with org id " + orgId);
+                        	logger.info("---- In createDataCollection to create dc with org id " + orgId);
                         	dataCollection.setOrgId(orgId);
                         	ObjectMapper mapper = new ObjectMapper();
                             jdbcTemplate.update(
                                            INSERT_DATA_COLLECTION,
                                            new Object[] { dataCollection.getId(),
-                                                           mapper.writeValueAsString(dataCollection), dataCollection.getOrgId() },
-                                           new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR });
+                                                           mapper.writeValueAsString(dataCollection), dataCollection.getOrgId(), mapper.writeValueAsString(dataCollection.getProperties()) },
+                                           new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR });
                             dataCollId = dataCollection.getId();
                         }else{
 	                        ObjectMapper mapper = new ObjectMapper();
