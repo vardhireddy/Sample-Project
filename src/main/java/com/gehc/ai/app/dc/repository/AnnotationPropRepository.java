@@ -17,4 +17,5 @@ public interface AnnotationPropRepository extends JpaRepository<AnnotationProper
     @Override
     <S extends AnnotationProperties> S save(S entity);
     List<AnnotationProperties> findByOrgId(@Param("orgId") String orgId);
+    List<AnnotationProperties> findByOrgIdIn(List<String> orgId);
 }

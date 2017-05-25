@@ -945,14 +945,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping ( value = "/annotation-properties", method = RequestMethod.GET )
     public List<AnnotationProperties> getAnnotationProperties(@QueryParam ( "orgId" ) String orgId) {
-    	logger.info( "*** In getAnnotationProperties, orgId = " + orgId );
+    	logger.info( "--- In getAnnotationProperties, orgId = " + orgId );
     	ResponseBuilder responseBuilder;
         List<AnnotationProperties> annotationProperties = new ArrayList<AnnotationProperties>();
         try {
-           if(null != orgId && !orgId.isEmpty()){
+        	//Get all the properties for that particular org and where org is null
         	   annotationProperties = annotationPropRepository.findByOrgId(orgId);
-        	}
-           
+        	   annotationProperties.addAll(annotationPropRepository.findByOrgId(null));      
         } catch ( ServiceException e ) {
             throw new WebApplicationException( Response.status( Status.INTERNAL_SERVER_ERROR ).entity( "Operation failed while retrieving the annotation prop" ).build() );
         } catch ( Exception e ) {
