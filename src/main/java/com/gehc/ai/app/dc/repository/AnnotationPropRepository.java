@@ -16,5 +16,5 @@ import com.gehc.ai.app.dc.entity.AnnotationProperties;
 public interface AnnotationPropRepository extends JpaRepository<AnnotationProperties, Long> {
     @Override
     <S extends AnnotationProperties> S save(S entity);
-    List<AnnotationProperties> findByOrgId(@Param("orgId") String orgId);
+    List<AnnotationProperties> findByOrgId(@Param("orgId") String orgId);    
 }
