@@ -314,28 +314,31 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 //TODO: Add check for org id 
                 //if(null != orgId && orgId.equalsIgnoreCase(imageSet.getOrgId()))
                 if (null != imageSet && null != imageSet.getOrgId() && !imageSet.getOrgId().isEmpty()) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(new java.util.Date());
-                        imageSetId = String.valueOf(calendar.getTimeInMillis());
-                        logger.info("===== DAO insertImageSet " + " id " + imageSetId + " imageSet = " + imageSet.toString());
-                        ObjectMapper mapper = new ObjectMapper();
-                        Object[] tempObj = new Object[] { imageSetId, imageSet.getSchemaVersion(), imageSet.getOrgId(), imageSet.getModality(), imageSet.getAnatomy(),
-                            imageSet.getDataFormat(), imageSet.getUri(), imageSet.getSeriesInstanceUid(), imageSet.getAcqDate(), imageSet.getAcqTime(),
-                            imageSet.getDescription(), imageSet.getInstitution(), imageSet.getEquipment(), imageSet.getInstanceCount(), imageSet.getUploadBy(),
-                            mapper.writeValueAsString(imageSet.getProperties()), imageSet.getPatientDbId(), imageSet.getStudyDbId()};
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new java.util.Date());
+                    imageSetId = String.valueOf(calendar.getTimeInMillis());
+                    logger.info("===== DAO insertImageSet " + " id " + imageSetId + " imageSet = " + imageSet.toString());
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        Object[] tempObj = new Object[]{imageSetId, imageSet.getSchemaVersion(), imageSet.getOrgId(), imageSet.getModality(), imageSet.getAnatomy(),
+                                imageSet.getDataFormat(), imageSet.getUri(), imageSet.getSeriesInstanceUid(), imageSet.getAcqDate(), imageSet.getAcqTime(),
+                                imageSet.getDescription(), imageSet.getInstitution(), imageSet.getEquipment(), imageSet.getInstanceCount(), imageSet.getUploadBy(),
+                                mapper.writeValueAsString(imageSet.getProperties()), imageSet.getPatientDbId(), imageSet.getStudyDbId()};
                         logger.info("===== DAO insertImageSet Object " + " id " + imageSetId + " object = ");
                         for (int i = 0; i < tempObj.length; i++) {
                             logger.info("===== " + tempObj[i]);
                         }
                         jdbcTemplate.update(
-                                        INSERT_IMAGE_SET,
-                                        tempObj,
-                                        new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-                                                    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-                                                    Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR,
-                                                    Types.VARCHAR, Types.BIGINT, Types.BIGINT});
-                        }
-                
+                                INSERT_IMAGE_SET,
+                                tempObj,
+                                new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+                                        Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+                                        Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR,
+                                        Types.VARCHAR, Types.BIGINT, Types.BIGINT});
+                    } catch (Exception jsx) {
+                        logger.info("---- Caught Exception while mapping JSON object" + jsx);
+                    }
+                }
                 return imageSetId;
         }
         
