@@ -317,7 +317,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(new java.util.Date());
                         imageSetId = String.valueOf(calendar.getTimeInMillis());
-                      
+                        logger.info("===== DAO insertImageSet object = " + imageSet.toString());
                         ObjectMapper mapper = new ObjectMapper();
                         jdbcTemplate.update(
                                         INSERT_IMAGE_SET,

@@ -363,6 +363,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         	if(null != request.getAttribute( "orgId" )){
         		imageSetId = dataCatalogService.insertImageSet( imageSet, request.getAttribute( "orgId" ).toString() );
         	}else{
+        	    logger.info("DCRI.insertImageSet orgId is not available");
         		imageSetId = dataCatalogService.insertImageSet( imageSet, null );
         	}
         } catch ( ServiceException e ) {
