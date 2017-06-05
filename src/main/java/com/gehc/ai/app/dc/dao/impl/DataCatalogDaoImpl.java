@@ -317,14 +317,19 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(new java.util.Date());
                         imageSetId = String.valueOf(calendar.getTimeInMillis());
-                        logger.info("===== DAO insertImageSet object = " + imageSet.toString());
+                        logger.info("===== DAO insertImageSet " + " id " + imageSetId + " imageSet = " + imageSet.toString());
                         ObjectMapper mapper = new ObjectMapper();
+                        Object[] tempObj = new Object[] { imageSetId, imageSet.getSchemaVersion(), imageSet.getOrgId(), imageSet.getModality(), imageSet.getAnatomy(),
+                            imageSet.getDataFormat(), imageSet.getUri(), imageSet.getSeriesInstanceUid(), imageSet.getAcqDate(), imageSet.getAcqTime(),
+                            imageSet.getDescription(), imageSet.getInstitution(), imageSet.getEquipment(), imageSet.getInstanceCount(), imageSet.getUploadBy(),
+                            mapper.writeValueAsString(imageSet.getProperties()), imageSet.getPatientDbId(), imageSet.getStudyDbId()};
+                        logger.info("===== DAO insertImageSet Object " + " id " + imageSetId + " object = ");
+                        for (int i = 0; i < tempObj.length; i++) {
+                            logger.info("===== " + tempObj[i]);
+                        }
                         jdbcTemplate.update(
                                         INSERT_IMAGE_SET,
-                                        new Object[] { imageSetId, imageSet.getSchemaVersion(), imageSet.getOrgId(), imageSet.getModality(), imageSet.getAnatomy(),
-                                                        imageSet.getDataFormat(), imageSet.getUri(), imageSet.getSeriesInstanceUid(), imageSet.getAcqDate(), imageSet.getAcqTime(),
-                                                        imageSet.getDescription(), imageSet.getInstitution(), imageSet.getEquipment(), imageSet.getInstanceCount(), imageSet.getUploadBy(),
-                                                        mapper.writeValueAsString(imageSet.getProperties()), imageSet.getPatientDbId(), imageSet.getStudyDbId()},
+                                        tempObj,
                                         new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
                                                     Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
                                                     Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR,
