@@ -314,9 +314,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
                 //TODO: Add check for org id 
                 //if(null != orgId && orgId.equalsIgnoreCase(imageSet.getOrgId()))
                 if (null != imageSet && null != imageSet.getOrgId() && !imageSet.getOrgId().isEmpty()) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new java.util.Date());
-                    imageSetId = String.valueOf(calendar.getTimeInMillis());
+//                    Calendar calendar = Calendar.getInstance();
+//                    calendar.setTime(new java.util.Date());
+//                    imageSetId = String.valueOf(calendar.getTimeInMillis());
+                    long imsetid = imageSet.getPatientDbId()*100000000 + imageSet.getStudyDbId();
+                    imageSetId = String.valueOf(imsetid);
                     logger.info("===== DAO insertImageSet " + " id " + imageSetId + " imageSet = " + imageSet.toString());
                     ObjectMapper mapper = new ObjectMapper();
                     try {
