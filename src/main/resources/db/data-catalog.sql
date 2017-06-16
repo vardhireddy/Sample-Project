@@ -153,3 +153,25 @@ create table if not exists annotation_properties (
  created_by varchar(200),
  created_date DATETIME DEFAULT CURRENT_TIMESTAMP
  )
+ 
+create table if not exists image_series ( 
+id BIGINT auto_increment primary key,
+schema_version varchar(50),
+org_id varchar(255),
+modality varchar(50),
+anatomy varchar(100),
+data_format varchar(100),
+uri varchar(500),
+series_instance_uid varchar(255),
+description varchar(100),
+institution varchar(100),
+equipment varchar(100),
+instance_count INT,
+properties JSON, 
+upload_by varchar(255),
+upload_date datetime default current_timestamp,
+patient_dbid INT,
+study_dbid INT
+);
+
+alter table image_series AUTO_INCREMENT=1496700263266;

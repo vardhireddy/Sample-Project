@@ -12,8 +12,8 @@
 
 package com.gehc.ai.app.dc.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.gehc.ai.app.dc.filters.JsonConverter;
+import java.io.Serializable;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -21,8 +21,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.io.Serializable;
-import java.sql.Date;
+
+import com.gehc.ai.app.dc.filters.JsonConverter;
 
 /**
  * Created by 200014175 on 10/27/2016.

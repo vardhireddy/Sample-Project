@@ -27,6 +27,7 @@ import com.gehc.ai.app.dc.entity.AnnotationProperties;
 import com.gehc.ai.app.dc.entity.CosNotification;
 import com.gehc.ai.app.dc.entity.DataCollection;
 import com.gehc.ai.app.dc.entity.DataSet;
+import com.gehc.ai.app.dc.entity.ImageSeries;
 import com.gehc.ai.app.dc.entity.ImageSet;
 import com.gehc.ai.app.dc.entity.Patient;
 import com.gehc.ai.app.dc.entity.Study;
@@ -39,7 +40,7 @@ public interface IDataCatalogRest {
      * Get Image Set by Org Id
      *
      * @param params
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return List<ImageSet>
      */
     List<ImageSet> getImgSet( Map<String, String> params, HttpServletRequest request );
@@ -48,7 +49,7 @@ public interface IDataCatalogRest {
      * Get Image Set by Data Collection Id
      * 
      * @param dataCollectionId
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return List<ImageSet>
      */
     List<ImageSet> getImgSetByDataCollId( String dataCollectionId, HttpServletRequest request );
@@ -56,7 +57,7 @@ public interface IDataCatalogRest {
     /**
      * Get Data Collection
      * 
-     * @param type TODO
+     * @param type, DC type like Annotation or Experiment
      * @return List<DataCollection>
      */
     List<DataCollection> getDataCollection( String id, String type, HttpServletRequest request);
@@ -65,14 +66,14 @@ public interface IDataCatalogRest {
      * Create Data Collection
      * 
      * @param dataCollection
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return response
      */
     Response createDataCollection( DataCollection dataCollection, HttpServletRequest request );
 
     /**
      * @param imageSet
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return
      */
     String insertImageSet( ImageSet imageSet, HttpServletRequest request );
@@ -83,38 +84,9 @@ public interface IDataCatalogRest {
     String healthCheck();
 
     /**
-     * inserts a random annotation set into the database
-     * 
-     * @param jsonString ignored
-     * @return Response object wrapping the result of the insertion.
-     */
-  //  Response insertRandomAnnotationSet( String jsonString );
-
-    /**
-     * inserts a random annotation set into the database
-     * 
-     * @param as annotation set to be inserted to the database
-     * @return Response object wrapping the result of the insertion.
-     */
-   // Response insertAnnotationSet( AnnotationSet as );
-
-    /**
-     * @param imageSetIds image sets id
-     * @param fields fields defined in the JSON structure of the annotation
-     * @return List of annotation sets given image set ids
-     */
-  //  List getAnnotationSet( String imageSetIds, String fields );
-
-    /**
-     * @param queryMap a map of annotation set key-values
-     * @return annotation sets given the query map
-     */
-    //List getAnnotationSet( Map<String, String> queryMap );
-
-    /**
      * @param id id of target data
      * @param type type of target data
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return target data that matches id and type
      */
     Map getExperimentTargetData( String id, String type, HttpServletRequest request );
@@ -133,14 +105,12 @@ public interface IDataCatalogRest {
      * @param queryMap fields from patient table columns
      * @return list of patient satisfying search criteria
      */
-//    List<Patient> getPatient( Map<String, String> queryMap );
       List<Patient> getPatient( HttpServletRequest request );
 
     /**
      * @param queryMap list of studies satisfying search criteria
      * @return
      */
-    //List<Study> getStudy( Map<String, String> queryMap );
       List<Study> getStudy( HttpServletRequest request );
       
     /**
@@ -161,41 +131,41 @@ public interface IDataCatalogRest {
 
     /**
      * @param patientId
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return studies given a patient
      */
     List<Study> getStudies( String patientId, HttpServletRequest request );
 
     /**
      * @param studyId
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return image sets associated with the studyId
      */
     List<ImageSet> getImageSetByStudyId( String studyId, HttpServletRequest request );
 
     /**
      * @param ids
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return patients based on a list of comma separated id's
      */
     List<Patient> getPatients( String ids, HttpServletRequest request );
 
     /**
      * @param ids
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return studies based on a list of comma separated id's
      */
     List<Study> getStudiesById( String ids, HttpServletRequest request );
 
     /**
      * @param ids
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      */
     ApiResponse deleteAnnotation( String ids, HttpServletRequest request );
 
     /**
      * @param imageSet
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return
      */
     List<Annotation> getAnnotationsByImgSet( String imageSet, HttpServletRequest request );
@@ -214,34 +184,85 @@ public interface IDataCatalogRest {
     
     /**
      * @param patientid
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return
      */
     List<ImageSet> getImageSetByPatientId( String patientid, HttpServletRequest request );
     
     /**
      * @param dataCollection
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @return
      */
     ApiResponse updateDataCollection( DataCollection dataCollection, HttpServletRequest request );
     
     /**
-     * @param request TODO
+     * @param request, to get an org id based on authentication token
      * @param id
      * @return
      */
     List<Annotation> getAnnotationsById( String ids, HttpServletRequest request );
     
     /**
-     * Get Data Set
      * 
-     * @param type TODO
-     * @return List<DataCollection>
+     * @param org_id
+     * @return list of annotation properties
      */
-    List<DataSet> getDataSet( Long id, String type, HttpServletRequest request);
-    
     List<AnnotationProperties> getAnnotationProperties(String org_id);
     
+    /**
+     * 
+     * @param annotationProp
+     * @return API response with annotation id
+     */
     ApiResponse saveAnnotationProperties(AnnotationProperties annotationProp );
+    
+    /**
+     * Insert or update an DataSet
+     * 
+     * @param d data set object
+     * @return recently saved object
+     */
+    DataSet saveDataSet( DataSet d );
+    
+    /**
+     * Insert or update an image series
+     * 
+     * @param i image series object
+     * @return recently saved object
+     */
+    ImageSeries saveImageSeries( ImageSeries i );
+    
+    /**
+     * Get Image Series by Patient id
+     * @param patientId
+     * @return list of Image Series
+     */
+    List<ImageSeries> getImgSerByPatientId( String patientId );
+    
+    /**
+     * Get Image Series by Data Set Id
+     * 
+     * @param id
+     * @param request, to get an org id based on authentication token
+     * @return list of Image Series
+     */
+    List<ImageSeries> getImgSerByDSId( Long id, HttpServletRequest request );
+    
+    /**
+     * Get Data Set by it's id
+     * 
+     * @param id
+     * @param request, to get an org id based on authentication token
+     * @return list of Data Set
+     */
+    List<DataSet> getDataSetById( Long id, HttpServletRequest request);
+    
+    /**
+     * Get Data Set by type
+     * @param type
+     * @param request, to get an org id based on authentication token
+     * @return list of Data Set
+     */
+    List<DataSet> getDataSetByType( String type, HttpServletRequest request);
 }
