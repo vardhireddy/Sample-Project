@@ -1051,9 +1051,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@Override
 	@RequestMapping(value = "/datacatalog/patient/{patientId}/image-series", method = RequestMethod.GET)
-	public List<ImageSeries> getImgSerByPatientId(@PathVariable String patientId) {
+	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String patientId) {
 		logger.info("[Image Series] Get img series for patient id " + patientId);
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
+		//TODO:Use ManyToOne mapping between Image Series and Patient
 		if (null != patientId && patientId.length() > 0) {
 			List<Patient> patLst = patientRepository.findByPatientId(patientId);
 			if (null != patLst && patLst.size() > 0) {
@@ -1069,7 +1070,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@Override
 	@RequestMapping(value = "/datacatalog/data-set/{id}/image-series", method = RequestMethod.GET)
-	public List<ImageSeries> getImgSerByDSId(@PathVariable Long id, HttpServletRequest request) {
+	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id, HttpServletRequest request) {
 		// TODO: Need to add Interceptor
 		logger.info("[Image Series] Get img series for DC id " + id);
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
@@ -1081,6 +1082,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				@SuppressWarnings("unchecked")
 				List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
 				if (null != imgSeries && imgSeries.size() > 0) {
+					//TODO:Use findByIdIn to avoid the loop 
 					for (int i = 0; i < imgSeries.size(); i++) {
 						Long imgSerId = Long.valueOf(imgSeries.get(i).toString());
 						logger.info("*** Now get the img set by id = " + imgSerId);

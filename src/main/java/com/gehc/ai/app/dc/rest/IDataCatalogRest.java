@@ -238,7 +238,7 @@ public interface IDataCatalogRest {
      * @param patientId
      * @return list of Image Series
      */
-    List<ImageSeries> getImgSerByPatientId( String patientId );
+    List<ImageSeries> getImgSeriesByPatientId( String patientId );
     
     /**
      * Get Image Series by Data Set Id
@@ -247,7 +247,7 @@ public interface IDataCatalogRest {
      * @param request, to get an org id based on authentication token
      * @return list of Image Series
      */
-    List<ImageSeries> getImgSerByDSId( Long id, HttpServletRequest request );
+    List<ImageSeries> getImgSeriesByDSId( Long id, HttpServletRequest request );
     
     /**
      * Get Data Set by it's id
