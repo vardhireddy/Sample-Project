@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.gehc</groupId>
+    <artifactId>gehc-ai-datacatalog-integration-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>datacatalog integration test</name>
+    <description>datacatalog app Integration Test for the AWS deployment</description>
+
+    <parent>
+        <groupId>com.gehc</groupId>
+        <artifactId>gehc-ai-datacatalog</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <h2.version>1.4.193</h2.version>
+        <java.version>1.8</java.version>
+        <rest.assured.version>2.3.3</rest.assured.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.gehc</groupId>
+            <artifactId>gehc-ai-datacatalog-app</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <!-- The destination file for the code coverage report has to be set
+                                  to the same value in the parent pom and in each module pom. Then JaCoCo will
+                                  add up information in the same report, so that, it will give the cross-module
+                                  code coverage. -->
+                    <destFile>${project.basedir}/../target/jacoco.exec</destFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
