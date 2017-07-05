@@ -24,7 +24,7 @@ DockerVars:
    dockerfile_location: 
 
 MvnVars:
-   mvn_additional_args: 
+   mvn_additional_args: -Pall
    mvn_deploy: false
    mvn_deploy_additional_args: 
 
