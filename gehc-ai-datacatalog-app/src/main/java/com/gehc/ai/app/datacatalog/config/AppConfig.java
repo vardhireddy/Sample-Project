@@ -71,7 +71,7 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/study");
     	
     	//Added for new APIs after refactoring
-    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-set/type/{type}");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection/type/{type}");
     	
   }
     

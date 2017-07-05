@@ -1022,7 +1022,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RequestMapping(value = "/datacatalog/data-set", method = RequestMethod.POST)
+	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST)
 	public DataSet saveDataSet(@RequestBody DataSet d) {
 		// TODO: Need to add interceptor
 		dataSetRepository.save(d);
@@ -1050,7 +1050,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 * String)
 	 */
 	@Override
-	@RequestMapping(value = "/datacatalog/patient/{patientId}/image-series", method = RequestMethod.GET)
+	@RequestMapping(value = "/datacatalog/patient/{patientId}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String patientId) {
 		logger.info("[Image Series] Get img series for patient id " + patientId);
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
@@ -1069,7 +1069,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 * @see IDataCatalogRest#getImgSerByDSId(java.lang.Long, javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	@RequestMapping(value = "/datacatalog/data-set/{id}/image-series", method = RequestMethod.GET)
+	@RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id, HttpServletRequest request) {
 		// TODO: Need to add Interceptor
 		logger.info("[Image Series] Get img series for DC id " + id);
@@ -1098,7 +1098,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 * @see IDataCatalogRest#getDataSetById(java.lang.Long, javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	@RequestMapping(value = "/datacatalog/data-set/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/datacatalog/data-collection/{id}", method = RequestMethod.GET)
 	public List<DataSet> getDataSetById(@PathVariable Long id, HttpServletRequest request) {
 		// TODO: Need to add Interceptor
 		logger.info("Get DC for id " + id);
@@ -1110,7 +1110,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 * @see IDataCatalogRest#getDataSetByType(java.lang.String, javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	@RequestMapping(value = "/datacatalog/data-set/type/{type}", method = RequestMethod.GET)
+	@RequestMapping(value = "/datacatalog/data-collection/type/{type}", method = RequestMethod.GET)
 	public List<DataSet> getDataSetByType(@PathVariable String type, HttpServletRequest request) {
 		logger.info("+++ !!! In REST getDataSetByType, orgId = " + request.getAttribute("orgId"));
 		logger.info("Get DC for type " + type);
