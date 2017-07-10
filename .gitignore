@@ -2,6 +2,7 @@
 *.classpath
 *.project
 *.settings/*
+**/*.iml
 /gehc-ai-datacatalog-app/gehc-ai-datacatalog-app.iml
 /gehc-ai-datacatalog-app/target/
 /gehc-ai-datacatalog-component-test/target/
