@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.gehc</groupId>
+    <artifactId>gehc-ai-datacatalog-contract-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>datacatalog contract test</name>
+    <description>datacatalog app Contract Test for the AWS deployment</description>
+
+    <parent>
+        <groupId>com.gehc</groupId>
+        <artifactId>gehc-ai-datacatalog</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <h2.version>1.4.193</h2.version>
+        <pactjvm.version>3.3.1</pactjvm.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.gehc</groupId>
+            <artifactId>gehc-ai-datacatalog-app</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+            <version>${h2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>au.com.dius</groupId>
+            <artifactId>pact-jvm-provider-junit_2.11</artifactId>
+            <version>${pactjvm.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>au.com.dius</groupId>
+            <artifactId>pact-jvm-consumer-junit_2.11</artifactId>
+            <version>3.3.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>au.com.dius</groupId>
+                <artifactId>pact-jvm-provider-junit_2.11</artifactId>
+                <version>${pactjvm.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <!-- The destination file for the code coverage report has to be set
+                                  to the same value in the parent pom and in each module pom. Then JaCoCo will
+                                  add up information in the same report, so that, it will give the cross-module
+                                  code coverage. -->
+                    <destFile>${project.basedir}/../target/jacoco.exec</destFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

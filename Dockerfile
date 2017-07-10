@@ -1,6 +1,6 @@
 FROM java:8-alpine
 
-ADD target/*.jar app.jar
+ADD ./gehc-ai-datacatalog-app/target/*-exec.jar app.jar
 
 EXPOSE 8282
 

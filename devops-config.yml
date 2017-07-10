@@ -24,7 +24,7 @@ DockerVars:
    dockerfile_location: 
 
 MvnVars:
-   mvn_additional_args: 
+   mvn_additional_args: -Pall
    mvn_deploy: false
    mvn_deploy_additional_args: 
 
@@ -42,13 +42,13 @@ KpiVars:
 
 SonarVars:
    aws_run_sonar: false
-   sonar_additional_args: 
+   sonar_additional_args: -P all
 
 TestingVars:
-   test_component_command: 
-   test_contract_command: 
-   test_unit_command: 
-   test_integration_command: 
+   test_component_command: mvn -q verify -P component
+   test_contract_command: mvn -q verify -P contract
+   test_unit_command: mvn -q test -P unit
+   test_integration_command: mvn -q verify -P integration
 
 DevEnvVars:
    aws_dev_cluster_name: dev-lf-cluster-dev-lf-LFCluster-1B3JGY0O2HP9Z
