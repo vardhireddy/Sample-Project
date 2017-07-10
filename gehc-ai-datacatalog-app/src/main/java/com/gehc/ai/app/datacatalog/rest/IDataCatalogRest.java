@@ -259,6 +259,15 @@ public interface IDataCatalogRest {
     List<DataSet> getDataSetById( Long id, HttpServletRequest request);
     
     /**
+     * Get All Data Set by it's id
+     * 
+     * @param id
+     * @param request, to get an org id based on authentication token
+     * @return list of Data Set
+     */
+    List<DataSet> getAllDataSet(HttpServletRequest request);
+    
+    /**
      * Get Data Set by type
      * @param type
      * @param request, to get an org id based on authentication token
