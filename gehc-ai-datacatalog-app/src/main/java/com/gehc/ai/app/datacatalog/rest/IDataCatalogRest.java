@@ -283,4 +283,23 @@ public interface IDataCatalogRest {
      * @return List<ImageSeries>
      */
     List<ImageSeries> getImgSeries(Map<String, String> params, HttpServletRequest request );
+    
+    /**
+     * Get Image Series by Series Instance UUId
+     * 
+     * @param seriesInstUid
+     * @param request, to get an org id based on authentication token
+     * @return list of Image Series
+     */
+    List<ImageSeries> getImgSeriesBySeriesUId( String seriesInstUid);
+    
+    /**
+     * Get Image Series by Series Instance UUId
+     * 
+     * @param id
+     * @param request TODO
+     * @param request, to get an org id based on authentication token
+     * @return list of Image Series
+     */
+    List<ImageSeries> getImgSeriesById( Long id, HttpServletRequest request);
 }
