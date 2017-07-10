@@ -302,4 +302,14 @@ public interface IDataCatalogRest {
      * @return list of Image Series
      */
     List<ImageSeries> getImgSeriesById( Long id, HttpServletRequest request);
+    
+    /**
+     * Get Image Series by Series Instance UUId
+     * 
+     * @param id
+     * @param request TODO
+     * @param request, to get an org id based on authentication token
+     * @return list of Image Series
+     */
+    List<ImageSeries> getImgSeriesByStudyDbId( Long studyDbId, HttpServletRequest request);
 }
