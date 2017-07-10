@@ -91,7 +91,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String SERIES_INS_UID = "series_instance_uid";
 	public static final String ID = "im.id";
 	public static final String ABSENT = "absent";
-//TODO: Implememnt to get img set by SERIES_INS_UID, ID
+//TODO: Implememnt to get img set by  ID
 	@Autowired
 	private IDataCatalogService dataCatalogService;
 
@@ -1275,5 +1275,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			imgSerWithPatientLst.add(imageSeries);
 		}
 		return imgSerWithPatientLst;
+	}
+
+	@Override
+	@RequestMapping(value = "/datacatalog/image-series/series-instance-uid/{seriesInstanceUid}", method = RequestMethod.GET)
+	public List<ImageSeries> getImgSeriesBySeriesUId(@PathVariable String seriesInstanceUid) {
+		return imageSeriesRepository.findBySeriesInstanceUid(seriesInstanceUid);
+	}
+
+	@Override
+	@RequestMapping(value = "/datacatalog/image-series/id/{id}", method = RequestMethod.GET)
+	public List<ImageSeries> getImgSeriesById(@PathVariable Long id, HttpServletRequest request) {
+		//TODO: Add interceptor
+		// Hard coding the org Id until interceptor has been added
+		return imageSeriesRepository.findByIdAndOrgId(id, "61939267-d195-499f-bfd8-7d92875c7035");
 	}
 }
