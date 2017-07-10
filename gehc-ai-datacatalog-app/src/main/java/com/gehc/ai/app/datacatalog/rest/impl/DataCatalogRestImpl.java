@@ -677,7 +677,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	@Override
-	@RequestMapping(value = "/dataCatalog/study", method = RequestMethod.GET)
+	@RequestMapping(value = "/datacatalog/study", method = RequestMethod.GET)
 	public List<Study> getStudy(HttpServletRequest request) {
 		logger.info("*** In REST get all syudy, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? studyRepository.findByOrgId(null)
