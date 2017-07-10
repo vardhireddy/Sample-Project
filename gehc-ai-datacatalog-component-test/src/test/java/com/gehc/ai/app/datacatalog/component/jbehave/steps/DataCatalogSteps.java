@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.ImageSet;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -43,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DataCatalogSteps {
 
     private final DataSetRepository dataSetRepository;
+    private final ImageSeriesRepository imageSeriesRepository;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -50,10 +53,11 @@ public class DataCatalogSteps {
     private RowMapper rm;
 
     @Autowired
-    public DataCatalogSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository) {
+    public DataCatalogSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository,ImageSeriesRepository imageSeriesRepository) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
+        this.imageSeriesRepository = imageSeriesRepository;
 
     }
 
@@ -74,8 +78,8 @@ public class DataCatalogSteps {
     public void getdataSet() throws Exception {
         dataSetSetUpForId();
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/data-set/1234567")
-                        .content(MediaType.APPLICATION_JSON)
+                get("/api/v1/datacatalog/data-collection/1234567")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
 
@@ -88,18 +92,19 @@ public class DataCatalogSteps {
     }
 
 
-    @When("Get data collection details by its type")
+    @When("Get data collection image-set details by its id")
     public void getdataSetByType() throws Exception {
-        dataSetSetUpForType();
+        dataSetSetUpForImageSet();
+
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/data-set/type/Annotation")
-                        .content(MediaType.APPLICATION_JSON)
+                get("/api/v1/datacatalog/data-collection/123/image-set")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
 
     }
 
-    @Then("verify data collection details by its type")
+    @Then("verify data collection image-set details by its id")
     public void verifyGetDatSetByType() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
@@ -108,41 +113,39 @@ public class DataCatalogSteps {
     @When("save DataSet")
     public void saveDataSet() throws Exception {
 
+        DataSet dataSet = getSaveDataSet();
+        when(dataSetRepository.save(any(DataSet.class))).thenReturn(dataSet);
+
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/datacatalog/data-collection")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(defnToJSON(dataSet))
+                .requestAttr("orgId", "123")
+
+        );
+
+    }
+
+    private DataSet getSaveDataSet() {
         DataSet dataSet = new DataSet();
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
         dataSet.setDescription("test");
         SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         String dateInString = "22-01-2017 10:20:56";
-        Date date = new Date();
-        try {
-            date = sdf.parse(dateInString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
         dataSet.setCreatedDate(dateInString);
-        dataSet.setImageSets(new ImageSet());
         dataSet.setName("Test");
         dataSet.setProperties(new Properties());
-
         dataSet.setOrgId("123");
         dataSet.setSchemaVersion("123");
         dataSet.setType("Annotation");
-        when(dataSetRepository.save(any(DataSet.class))).thenReturn(dataSet);
-        retrieveResult = mockMvc.perform(
-                post("/api/v1/datacatalog/data-set")
-                        .content(MediaType.APPLICATION_JSON)
-                        .content(defnToJSON(dataSet))
-                        .param("org-id", "12")
-
-        );
-
+        return dataSet;
     }
 
     @Then("verify Saving DataSet")
     public void verifySaveDatSet() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
+        retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"123\",\"createdBy\":\"test\",\"properties\":{}}")));
     }
 
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
@@ -167,6 +170,40 @@ public class DataCatalogSteps {
     private void dataSetSetUpForType() {
         List<DataSet> dataSets = getDataSets();
         when(dataSetRepository.findByTypeAndOrgId(anyString(), anyString())).thenReturn(dataSets);
+    }
+
+    private void dataSetSetUpForImageSet() {
+        List<DataSet> dataSets = new ArrayList<DataSet>();
+        DataSet dataSet = new DataSet();
+        dataSet.setId(1L);
+        dataSet.setCreatedBy("test");
+        ImageSet imageSet =new ImageSet();
+        imageSet.setAge("90");
+        imageSet.setAnatomy("Chest");
+        imageSet.setDataFormat("Test");
+        imageSet.setDescription("Test");
+        imageSet.setEquipment("Test");
+        imageSet.setGender( "Test");
+        imageSet.setId("Test");
+        imageSet.setInstanceCount(1);
+        imageSet.setInstitution("Test");
+        imageSet.setModality("Test");
+        imageSet.setOrgId("123");
+        imageSet.setPatientDbId(anyLong());
+        dataSet.setImageSets(imageSet);
+        ImageSet imageSet1 =new ImageSet();
+        imageSet1.setAge("90");
+        imageSet1.setAnatomy("Chest");
+        imageSet1.setDataFormat("Test");
+        dataSet.setImageSets(imageSet1);
+        dataSets.add(dataSet);
+        when(dataSetRepository.findByIdAndOrgId(anyLong(), anyString())).thenReturn(dataSets);
+        List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+        ImageSeries imageSeries = new ImageSeries();
+        imageSeries.setId(1L);
+        imageSeries.setDescription("TEST");
+        imageSeriesList.add(imageSeries);
+        when(imageSeriesRepository.findById(1L)).thenReturn(imageSeriesList);
     }
 }
 
