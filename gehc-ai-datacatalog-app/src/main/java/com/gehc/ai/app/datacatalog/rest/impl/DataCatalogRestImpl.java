@@ -91,7 +91,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String SERIES_INS_UID = "series_instance_uid";
 	public static final String ID = "im.id";
 	public static final String ABSENT = "absent";
-//TODO: Implememnt to get img set by  ID
+	// TODO: Implememnt to get img set by ID
 	@Autowired
 	private IDataCatalogService dataCatalogService;
 
@@ -1120,7 +1120,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		// Hard coding the org Id until interceptor has been added
 		return dataSetRepository.findByOrgId("61939267-d195-499f-bfd8-7d92875c7035");
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1162,12 +1162,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			// List of img set which does not have annotation
 			List<ImageSeries> imgSetWithOutAnn = new ArrayList<ImageSeries>();
 
-
 			try {
 				if (null != validParams) {
 					if (validParams.containsKey(ORG_ID)) {
 						List<String> orgIdLst = getListFromParams(validParams.get(ORG_ID));
-		
+
 						if (validParams.containsKey(MODALITY)) {
 							List<String> modalityLst = getListFromParams(validParams.get(MODALITY));
 							if (validParams.containsKey(ANATOMY)) {
@@ -1232,13 +1231,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							}
 						}
 
-						if (null != imgSetWithAnnotation && imgSetWithAnnotation.size() > 0) { 
+						if (null != imgSetWithAnnotation && imgSetWithAnnotation.size() > 0) {
 							// Data with Annotation
 							return getPatientForImgSeriesLst(imgSetWithAnnotation);
-						} else if (null != imgSetWithOutAnn && imgSetWithOutAnn.size() > 0) { 
+						} else if (null != imgSetWithOutAnn && imgSetWithOutAnn.size() > 0) {
 							// Data with no Annotation
 							return getPatientForImgSeriesLst(imgSetWithOutAnn);
-						} else if (!validParams.containsKey(ANNOTATIONS)) { // DC without Annotation criteria
+						} else if (!validParams.containsKey(ANNOTATIONS)) { // DC
+																			// without
+																			// Annotation
+																			// criteria
 							return getPatientForImgSeriesLst(imageSeriesLst);
 						}
 					}
@@ -1250,7 +1252,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			return new ArrayList<ImageSeries>();
 		}
 	}
-	
+
 	private List<String> getListFromParams(String values) {
 		List<String> valueLst = new ArrayList<String>();
 		if (null != values && !values.isEmpty()) {
@@ -1262,16 +1264,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		return valueLst;
 	}
-	
+
 	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
 		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
-		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr
-				.hasNext();) {
+		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-			imageSeries.setPatient(
-					patientRepository.findById(new Long(imageSeries.getPatientDbId())).get(0));
-			logger.info(
-					"Get Patient Id in imageSeriesLst " + imageSeries.getPatient().getPatientId());
+			imageSeries.setPatient(patientRepository.findById(new Long(imageSeries.getPatientDbId())).get(0));
+			logger.info("Get Patient Id in imageSeriesLst " + imageSeries.getPatient().getPatientId());
 			imgSerWithPatientLst.add(imageSeries);
 		}
 		return imgSerWithPatientLst;
@@ -1286,8 +1285,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/image-series/id/{id}", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesById(@PathVariable Long id, HttpServletRequest request) {
-		//TODO: Add interceptor
+		// TODO: Add interceptor
 		// Hard coding the org Id until interceptor has been added
 		return imageSeriesRepository.findByIdAndOrgId(id, "61939267-d195-499f-bfd8-7d92875c7035");
+	}
+
+	@Override
+	@RequestMapping(value = "/datacatalog/image-series/study-dbid/{studyDbId}", method = RequestMethod.GET)
+	public List<ImageSeries> getImgSeriesByStudyDbId(@PathVariable Long studyDbId, HttpServletRequest request) {
+		// TODO: Add interceptor
+		// Hard coding the org Id until interceptor has been added
+		return imageSeriesRepository.findByStudyDbIdAndOrgId(studyDbId, "61939267-d195-499f-bfd8-7d92875c7035");
 	}
 }
