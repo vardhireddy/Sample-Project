@@ -1110,6 +1110,20 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see IDataCatalogRest#getDataSetById(java.lang.Long,
+	 * javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.GET)
+	public List<DataSet> getAllDataSet(HttpServletRequest request) {
+		// TODO: Need to add Interceptor
+		// Hard coding the org Id until interceptor has been added
+		return dataSetRepository.findByOrgId("61939267-d195-499f-bfd8-7d92875c7035");
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see IDataCatalogRest#getDataSetByType(java.lang.String,
 	 * javax.servlet.http.HttpServletRequest)
 	 */
