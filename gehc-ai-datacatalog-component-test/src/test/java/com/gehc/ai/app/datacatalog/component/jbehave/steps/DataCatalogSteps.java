@@ -74,7 +74,7 @@ public class DataCatalogSteps {
     public void getdataSet() throws Exception {
         dataSetSetUpForId();
         retrieveResult = mockMvc.perform(
-                get("/api/v1//datacatalog/data-set/1234567")
+                get("/api/v1/datacatalog/data-set/1234567")
                         .content(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
@@ -92,7 +92,7 @@ public class DataCatalogSteps {
     public void getdataSetByType() throws Exception {
         dataSetSetUpForType();
         retrieveResult = mockMvc.perform(
-                get("/api/v1//datacatalog/data-set/type/Annotation")
+                get("/api/v1/datacatalog/data-set/type/Annotation")
                         .content(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
