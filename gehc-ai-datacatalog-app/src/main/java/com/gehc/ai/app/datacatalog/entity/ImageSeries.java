@@ -73,6 +73,12 @@ public class ImageSeries implements Serializable {
 	@JoinColumn(name="id") 
 	private Patient patient;
 
+	public Patient getPatient() {
+		return patient;
+	}
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -175,28 +181,30 @@ public class ImageSeries implements Serializable {
 	public void setProperties(Object properties) {
 		this.properties = properties;
 	}
-	public ImageSeries(Long id, String schemaVersion, Long studyDbId, Long patientDbId, String seriesInstanceUid,
-			String modality, String anatomy, String description, String institution, String equipment,
-			String dataFormat, String uri, int instanceCount, String orgId, String uploadBy, Date uploadDate,
-			Object properties) {
+	
+	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
+			String uri, String seriesInstanceUid, String description, String institution, String equipment,
+			int instanceCount, Object properties, String uploadBy, Date uploadDate, Long patientDbId, Long studyDbId,
+			Patient patient) {
 		super();
 		this.id = id;
 		this.schemaVersion = schemaVersion;
-		this.studyDbId = studyDbId;
-		this.patientDbId = patientDbId;
-		this.seriesInstanceUid = seriesInstanceUid;
+		this.orgId = orgId;
 		this.modality = modality;
 		this.anatomy = anatomy;
+		this.dataFormat = dataFormat;
+		this.uri = uri;
+		this.seriesInstanceUid = seriesInstanceUid;
 		this.description = description;
 		this.institution = institution;
 		this.equipment = equipment;
-		this.dataFormat = dataFormat;
-		this.uri = uri;
 		this.instanceCount = instanceCount;
-		this.orgId = orgId;
+		this.properties = properties;
 		this.uploadBy = uploadBy;
 		this.uploadDate = uploadDate;
-		this.properties = properties;
+		this.patientDbId = patientDbId;
+		this.studyDbId = studyDbId;
+		this.patient = patient;
 	}
 	public ImageSeries() {
 		super();
@@ -204,11 +212,12 @@ public class ImageSeries implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "ImageSeries [id=" + id + ", schemaVersion=" + schemaVersion + ", studyDbId=" + studyDbId
-				+ ", patientDbId=" + patientDbId + ", seriesInstanceUid=" + seriesInstanceUid + ", modality=" + modality
-				+ ", anatomy=" + anatomy + ", description=" + description + ", institution=" + institution
-				+ ", equipment=" + equipment + ", dataFormat=" + dataFormat + ", uri=" + uri + ", instanceCount="
-				+ instanceCount + ", orgId=" + orgId + ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate
-				+ ", properties=" + properties + "]";
+		return "ImageSeries [id=" + id + ", schemaVersion=" + schemaVersion + ", orgId=" + orgId + ", modality="
+				+ modality + ", anatomy=" + anatomy + ", dataFormat=" + dataFormat + ", uri=" + uri
+				+ ", seriesInstanceUid=" + seriesInstanceUid + ", description=" + description + ", institution="
+				+ institution + ", equipment=" + equipment + ", instanceCount=" + instanceCount + ", properties="
+				+ properties + ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
+				+ ", studyDbId=" + studyDbId + ", patient=" + patient + "]";
 	}
+	
 }

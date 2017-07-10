@@ -265,4 +265,13 @@ public interface IDataCatalogRest {
      * @return list of Data Set
      */
     List<DataSet> getDataSetByType( String type, HttpServletRequest request);
+
+    /**
+     * Get Image Set by Org Id
+     *
+     * @param params
+     * @param request, to get an org id based on authentication token
+     * @return List<ImageSeries>
+     */
+    List<ImageSeries> getImgSeries(Map<String, String> params, HttpServletRequest request );
 }
