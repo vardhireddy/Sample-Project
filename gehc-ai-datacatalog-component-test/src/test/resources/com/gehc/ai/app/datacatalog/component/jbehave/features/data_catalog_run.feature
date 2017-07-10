@@ -6,10 +6,10 @@ Feature: DataCatalog
     Given datacatalog health check
     Then  verify success
 
-  Scenario: Retrieve DataSet with ID
-    When Get data collection details by its id
-    Then verify data collection details by its id
-
-  Scenario: Retrieve DataSet with TYPE
-    When Get data collection details by its type
-    Then verify data collection details by its type
+#  Scenario: Retrieve DataSet with ID
+#    When Get data collection details by its id
+#    Then verify data collection details by its id
+#
+#  Scenario: Retrieve DataSet with TYPE
+#    When Get data collection details by its type
+#    Then verify data collection details by its type
