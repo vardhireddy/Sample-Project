@@ -22,12 +22,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 /**
  * Created by 200014175 on 10/27/2016.
  */
 @Entity
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class Patient implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -91,7 +91,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String SERIES_INS_UID = "series_instance_uid";
 	public static final String ID = "im.id";
 	public static final String ABSENT = "absent";
-
+//TODO: Implememnt to get img set by SERIES_INS_UID, ID
 	@Autowired
 	private IDataCatalogService dataCatalogService;
 
@@ -284,8 +284,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * IDataCatalogRest#getImageSetByDataCollectionId()
+	 * @see IDataCatalogRest#getImageSetByDataCollectionId()
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -327,7 +326,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/dataCatalog/dataCollection", method = RequestMethod.GET)
 	public List<DataCollection> getDataCollection(@QueryParam("id") String id, @QueryParam("type") String type,
-                                                  HttpServletRequest request) {
+			HttpServletRequest request) {
 		logger.info("!!! In REST getDataCollection, orgId = " + request.getAttribute("orgId"));
 		ResponseBuilder responseBuilder;
 		List<DataCollection> dataCollection = new ArrayList<DataCollection>();
@@ -821,8 +820,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * IDataCatalogRest#saveAnnotation(com.gehc.ai.app.
+	 * @see IDataCatalogRest#saveAnnotation(com.gehc.ai.app.
 	 * dc.entity.Annotation)
 	 */
 	@Override
@@ -898,9 +896,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * IDataCatalogRest#getImageSetBypatientId(java.lang
-	 * .String)
+	 * @see IDataCatalogRest#getImageSetBypatientId(java.lang .String)
 	 */
 	@Override
 	@RequestMapping(value = "/dataCatalog/image-set-by-patientid", method = RequestMethod.GET)
@@ -921,8 +917,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * IDataCatalogRest#updateDataCollection(com.gehc.ai
+	 * @see IDataCatalogRest#updateDataCollection(com.gehc.ai
 	 * .app.dc.entity.DataCollection)
 	 */
 	@Override
@@ -951,9 +946,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * IDataCatalogRest#getAnnotationsById(java.lang.
-	 * Long)
+	 * @see IDataCatalogRest#getAnnotationsById(java.lang. Long)
 	 */
 	@Override
 	@RequestMapping(value = "/annotation/{ids}", method = RequestMethod.GET)
@@ -1016,7 +1009,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return apiResponse;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see IDataCatalogRest#saveDataSet(DataSet)
 	 */
 	@Override
@@ -1029,7 +1024,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return d;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see IDataCatalogRest#saveImageSeries(ImageSeries)
 	 */
 	@Override
@@ -1045,16 +1042,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	/*
 	 * To get the image set based on the patient id like LIDC-IDRI-0286
 	 * 
-	 * @see
-	 * IDataCatalogRest#getImgSerByPatientId(java.lang.
-	 * String)
+	 * @see IDataCatalogRest#getImgSerByPatientId(java.lang. String)
 	 */
 	@Override
 	@RequestMapping(value = "/datacatalog/patient/{patientId}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String patientId) {
 		logger.info("[Image Series] Get img series for patient id " + patientId);
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
-		//TODO:Use ManyToOne mapping between Image Series and Patient
+		// TODO:Use ManyToOne mapping between Image Series and Patient
 		if (null != patientId && patientId.length() > 0) {
 			List<Patient> patLst = patientRepository.findByPatientId(patientId);
 			if (null != patLst && patLst.size() > 0) {
@@ -1065,8 +1060,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imgSerLst;
 	}
 
-	/* (non-Javadoc)
-	 * @see IDataCatalogRest#getImgSerByDSId(java.lang.Long, javax.servlet.http.HttpServletRequest)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see IDataCatalogRest#getImgSerByDSId(java.lang.Long,
+	 * javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
@@ -1076,13 +1074,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
 		List<DataSet> dsLst = new ArrayList<DataSet>();
 		if (null != id) {
-			//Hard coding the org Id until interceptor has been added 
+			// Hard coding the org Id until interceptor has been added
 			dsLst = dataSetRepository.findByIdAndOrgId(id, "61939267-d195-499f-bfd8-7d92875c7035");
 			if (null != dsLst && dsLst.size() > 0) {
 				@SuppressWarnings("unchecked")
 				List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
 				if (null != imgSeries && imgSeries.size() > 0) {
-					//TODO:Use findByIdIn to avoid the loop 
+					// TODO:Use findByIdIn to avoid the loop
 					for (int i = 0; i < imgSeries.size(); i++) {
 						Long imgSerId = Long.valueOf(imgSeries.get(i).toString());
 						logger.info("*** Now get the img set by id = " + imgSerId);
@@ -1094,20 +1092,26 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imgSerLst;
 	}
 
-	/* (non-Javadoc)
-	 * @see IDataCatalogRest#getDataSetById(java.lang.Long, javax.servlet.http.HttpServletRequest)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see IDataCatalogRest#getDataSetById(java.lang.Long,
+	 * javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}", method = RequestMethod.GET)
 	public List<DataSet> getDataSetById(@PathVariable Long id, HttpServletRequest request) {
 		// TODO: Need to add Interceptor
 		logger.info("Get DC for id " + id);
-		//Hard coding the org Id until interceptor has been added 
+		// Hard coding the org Id until interceptor has been added
 		return dataSetRepository.findByIdAndOrgId(id, "61939267-d195-499f-bfd8-7d92875c7035");
 	}
 
-	/* (non-Javadoc)
-	 * @see IDataCatalogRest#getDataSetByType(java.lang.String, javax.servlet.http.HttpServletRequest)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see IDataCatalogRest#getDataSetByType(java.lang.String,
+	 * javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/type/{type}", method = RequestMethod.GET)
@@ -1119,5 +1123,143 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		} else {
 			return null;
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see IDataCatalogRest#getDataCollection()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
+	public List<ImageSeries> getImgSeries(@RequestParam Map<String, String> params, HttpServletRequest request) {
+		{
+			// TODO: Add interceptor if needed as we are not using the org id
+			// from the token but using the one which is being passed as a
+			// parameter
+			// as user can have access to more than 1 org in future
+			Map<String, String> validParams = constructValidParams(params,
+					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS));
+			// List of img set based on filter criteria other than annotation
+			List<ImageSeries> imageSeriesLst;// = new ArrayList<ImageSeries>();
+			// List of img set with annotation
+			List<ImageSeries> imgSetWithAnnotation = new ArrayList<ImageSeries>();
+			// List of img set which does not have annotation
+			List<ImageSeries> imgSetWithOutAnn = new ArrayList<ImageSeries>();
+
+
+			try {
+				if (null != validParams) {
+					if (validParams.containsKey(ORG_ID)) {
+						List<String> orgIdLst = getListFromParams(validParams.get(ORG_ID));
+		
+						if (validParams.containsKey(MODALITY)) {
+							List<String> modalityLst = getListFromParams(validParams.get(MODALITY));
+							if (validParams.containsKey(ANATOMY)) {
+								List<String> anatomyLst = getListFromParams(validParams.get(ANATOMY));
+								imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst,
+										anatomyLst, modalityLst);
+							} else {
+								imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst,
+										modalityLst);
+							}
+						} else if (validParams.containsKey(ANATOMY)) {
+							List<String> anatomyLst = getListFromParams(validParams.get(ANATOMY));
+							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
+						} else {
+							imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
+						}
+
+						// Get the data with annotation filter
+						if (validParams.containsKey(ANNOTATIONS)) {
+							List<String> typeLst = getListFromParams(validParams.get(ANNOTATIONS));
+							if (null != typeLst && !typeLst.isEmpty()) {
+								List<Annotation> annotationLst = new ArrayList<Annotation>();
+								// List of image series id based on criteria
+								// other than annotation
+								List<String> imgSeriesIdLst = new ArrayList<String>();
+								for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr
+										.hasNext();) {
+									ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+									logger.info("Get imageSeries id " + imageSeries.getId());
+									imgSeriesIdLst.add((imageSeries.getId()).toString());
+								}
+								if (typeLst.contains(ABSENT)) {
+									annotationLst = annotationRepository.findByImageSetIn(imgSeriesIdLst);
+									Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
+									logger.info("# Get uniqueImgSetIds size() " + uniqueImgSetIds.size());
+									if (null != uniqueImgSetIds && !uniqueImgSetIds.isEmpty()) {
+										for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
+												.iterator(); imgSeriesItr.hasNext();) {
+											ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+											logger.info("Get imageSeries id " + imageSeries.getId());
+											if (!uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
+												imgSetWithOutAnn.add(imageSeries);
+											}
+										}
+									}
+								} else {
+									annotationLst = annotationRepository.findByImageSetInAndTypeIn(imgSeriesIdLst,
+											typeLst);
+									Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
+									logger.info("Get uniqueImgSetIds.size() " + uniqueImgSetIds.size());
+									if (null != uniqueImgSetIds && !uniqueImgSetIds.isEmpty()) {
+										for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
+												.iterator(); imgSeriesItr.hasNext();) {
+											ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+											logger.info("Get imageSeries id " + imageSeries.getId());
+											if (uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
+												imgSetWithAnnotation.add(imageSeries);
+											}
+										}
+									}
+								}
+							}
+						}
+
+						if (null != imgSetWithAnnotation && imgSetWithAnnotation.size() > 0) { 
+							// Data with Annotation
+							return getPatientForImgSeriesLst(imgSetWithAnnotation);
+						} else if (null != imgSetWithOutAnn && imgSetWithOutAnn.size() > 0) { 
+							// Data with no Annotation
+							return getPatientForImgSeriesLst(imgSetWithOutAnn);
+						} else if (!validParams.containsKey(ANNOTATIONS)) { // DC without Annotation criteria
+							return getPatientForImgSeriesLst(imageSeriesLst);
+						}
+					}
+				}
+			} catch (Exception e) {
+				throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity("Operation failed while filtering image set data").build());
+			}
+			return new ArrayList<ImageSeries>();
+		}
+	}
+	
+	private List<String> getListFromParams(String values) {
+		List<String> valueLst = new ArrayList<String>();
+		if (null != values && !values.isEmpty()) {
+			String[] valueStrings = values.split(",");
+			if (null != valueStrings && valueStrings.length > 0) {
+				for (int i = 0; i < valueStrings.length; i++)
+					valueLst.add(valueStrings[i].toLowerCase());
+			}
+		}
+		return valueLst;
+	}
+	
+	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
+		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
+		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr
+				.hasNext();) {
+			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+			imageSeries.setPatient(
+					patientRepository.findById(new Long(imageSeries.getPatientDbId())).get(0));
+			logger.info(
+					"Get Patient Id in imageSeriesLst " + imageSeries.getPatient().getPatientId());
+			imgSerWithPatientLst.add(imageSeries);
+		}
+		return imgSerWithPatientLst;
 	}
 }

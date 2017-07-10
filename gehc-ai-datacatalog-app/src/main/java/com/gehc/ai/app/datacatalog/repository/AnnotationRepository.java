@@ -31,6 +31,8 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     List<Annotation> findByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
     List<Annotation> findByImageSetAndOrgId(@Param("imageSet") String imageSet, @Param("orgId") String orgId);
     List<Annotation> findByIdInAndOrgId(List<Long> ids, String orgId);
+    List<String> findDistinctImageSetByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
+    List<String> findDistinctImageSetByImageSetIn(List<String> imageSets);
  //   @Query(value="delete from annotation a where a.id = ?1")
   //  void deleteById(Long id);
     @Override
