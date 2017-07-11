@@ -44,3 +44,18 @@ Feature: DataCatalog
     Given Retrieve image series by series instance uid - DataSetUp Provided
     When Get image series by series instance uid
     Then verify image series by series instance uid
+
+  Scenario: Store image set data
+    Given Store an image set data - DataSetUp Provided
+    When Store an image set data
+    Then verify Store an image set data
+
+  Scenario: Get Imageset by study
+    Given Get Imageset by study - DataSetUp Provided
+    When Get Imageset by study
+    Then verify Imageset by study
+
+#  Scenario: Get Image set based on filter criteria
+#    Given Get Image set based on filter criteria - DataSetUp Provided
+#    When Get Image set based on filter criteria
+#    Then verify Image set based on filter criteria
