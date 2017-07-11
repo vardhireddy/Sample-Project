@@ -734,7 +734,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RequestMapping(value = "/dataCatalog/patient", method = RequestMethod.POST)
+	@RequestMapping(value = "/datacatalog/patient", method = RequestMethod.POST)
 	public Patient postPatient(@RequestBody Patient p) {
 		p.setUploadDate(new Date(System.currentTimeMillis()));
 		patientRepository.save(p);
@@ -744,7 +744,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RequestMapping(value = "/dataCatalog/study", method = RequestMethod.POST)
+	@RequestMapping(value = "/datacatalog/study", method = RequestMethod.POST)
 	public Study postStudy(@RequestBody Study s) {
 		s.setUploadDate(new Date(System.currentTimeMillis()));
 		studyRepository.save(s);
@@ -765,6 +765,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 	}
 
+	//TODO:Delete below as other API will support this
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/dataCatalog/study/{studyId}/image-set", method = RequestMethod.GET)
@@ -1045,13 +1046,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 * @see IDataCatalogRest#getImgSerByPatientId(java.lang. String)
 	 */
 	@Override
-	@RequestMapping(value = "/datacatalog/patient/{patientId}/image-set", method = RequestMethod.GET)
-	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String patientId) {
-		logger.info("[Image Series] Get img series for patient id " + patientId);
+	@RequestMapping(value = "/datacatalog/patient/{ids}/image-set", method = RequestMethod.GET)
+	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String ids) {
+		logger.info("[Image Series] Get img series for patient id " + ids);
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
 		// TODO:Use ManyToOne mapping between Image Series and Patient
-		if (null != patientId && patientId.length() > 0) {
-			List<Patient> patLst = patientRepository.findByPatientId(patientId);
+		if (null != ids && ids.length() > 0) {
+			List<Patient> patLst = patientRepository.findByPatientId(ids);
 			if (null != patLst && patLst.size() > 0) {
 				logger.info("*** Patient DB id " + ((Patient) (patLst.get(0))).getId());
 				imgSerLst = imageSeriesRepository.findByPatientDbId(((Patient) (patLst.get(0))).getId());
@@ -1296,5 +1297,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		// TODO: Add interceptor
 		// Hard coding the org Id until interceptor has been added
 		return imageSeriesRepository.findByStudyDbIdAndOrgId(studyDbId, "61939267-d195-499f-bfd8-7d92875c7035");
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/datacatalog/study/patient/{patientDbid}", method = RequestMethod.GET)
+	public List<Study> getStudiesByPatientDbid(@PathVariable String patientDbid, HttpServletRequest request) {
+		logger.info("*** In REST getStudiesByPatientDbid, orgId = " + request.getAttribute("orgId"));
+		if (null != request.getAttribute("orgId")) {
+			return studyRepository.findByPatientDbIdAndOrgId(Long.valueOf(patientDbid),
+					request.getAttribute("orgId").toString());
+		} else {
+			return studyRepository.findByPatientDbIdAndOrgId(Long.valueOf(patientDbid), null);
+		}
 	}
 }
