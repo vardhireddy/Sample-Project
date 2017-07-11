@@ -6,9 +6,11 @@ import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.ImageSet;
+import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -46,6 +48,7 @@ public class DataCatalogSteps {
 
     private final DataSetRepository dataSetRepository;
     private final ImageSeriesRepository imageSeriesRepository;
+    private final PatientRepository patientRepository;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -53,11 +56,13 @@ public class DataCatalogSteps {
     private RowMapper rm;
 
     @Autowired
-    public DataCatalogSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository) {
+    public DataCatalogSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository,PatientRepository patientRepository) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
         this.imageSeriesRepository = imageSeriesRepository;
+        this.patientRepository = patientRepository;
+
 
     }
 
@@ -74,9 +79,13 @@ public class DataCatalogSteps {
         retrieveResult.andExpect(status().isOk());
     }
 
+    @Given("Retrieve DataCatalog with ID DataSetUp Provided")
+    public void givenDataSetForId() throws Exception {
+        dataCollectionSetUpForId();
+    }
+
     @When("Get data collection details by its id")
     public void getdataSetForId() throws Exception {
-        dataCollectionSetUpForId();
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/1234567")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -91,9 +100,14 @@ public class DataCatalogSteps {
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
 
+    @Given("Retrieve DataCatalog with Org ID DataSetUp Provided")
+    public void givenDataSetForOrgId() throws Exception {
+        dataCollectionSetUpForOrgId();
+    }
+
     @When("Get data collection by Org Id")
     public void getdataSet() throws Exception {
-        dataCollectionSetUpForOrgId();
+
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -108,10 +122,11 @@ public class DataCatalogSteps {
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
 
+
+
     @When("Get data collection image-set details by its id")
     public void getdataSetByType() throws Exception {
         dataCollectionSetUpForImageSet();
-
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/123/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -126,22 +141,23 @@ public class DataCatalogSteps {
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
 
-    @When("save DataSet")
-    public void saveDataSet() throws Exception {
-
+    @Given("Save DataSet - DataSetUp Provided")
+    public void givenSaveDataSet() throws Exception {
         DataSet dataSet = getSaveDataSet();
         when(dataSetRepository.save(any(DataSet.class))).thenReturn(dataSet);
+    }
 
+    @When("save DataSet")
+    public void saveDataSet() throws Exception {
+        DataSet dataSet = getSaveDataSet();
         retrieveResult = mockMvc.perform(
                 post("/api/v1/datacatalog/data-collection")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(defnToJSON(dataSet))
                         .requestAttr("orgId", "123")
-
         );
 
     }
-
 
     @Then("verify Saving DataSet")
     public void verifySaveDatSet() throws Exception {
@@ -149,10 +165,13 @@ public class DataCatalogSteps {
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"123\",\"createdBy\":\"test\",\"properties\":{}}")));
     }
 
+    @Given("Retrieve DataSet by Type DataSetUp Provided")
+    public void givenDataSetByType() throws Exception {
+        dataCollectionSetUpByType();
+    }
 
     @When("Get data collection by Type -  Annotation")
-    public void getdataCollectionByType() throws Exception {
-        dataCollectionSetUpByType();
+    public void getDataCollectionByType() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/type/Annotation")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -167,7 +186,70 @@ public class DataCatalogSteps {
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
 
+    @Given("Retrieve image series by patient id - DataSetUp Provided")
+    public void givenImageSeriesByPatientId() throws Exception {
+        dataSetUpImageSeriesByPatientId();
+    }
 
+    @When("Get image series by patient id")
+    public void getImageSeriesByPatientId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/patient/123/image-set")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+
+    }
+
+    @Then("verify image series by patient id")
+    public void verifyImageSeriesByPatientId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"description\":\"test\",\"instanceCount\":0}]")));
+    }
+
+    @Given("Retrieve image series by id - DataSetUp Provided")
+    public void givenImageSeriesById() throws Exception {
+        dataSetUpImageSeriesById();
+    }
+
+    @When("Get image series by image series id")
+    public void getImageSeriesById() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-series/id/123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+
+    }
+
+    @Then("verify image series by image series id")
+    public void verifyImageSeriesById() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"description\":\"test\",\"instanceCount\":0}]")));
+    }
+
+    @Given("Retrieve image series by series instance uid - DataSetUp Provided")
+    public void givenImageSeriesBySeriesInstanceId() throws Exception {
+        dataSetUpImageSeriesBySeriesInstanceId();
+
+    }
+
+    @When("Get image series by series instance uid")
+    public void getImageSeriesBySeriesInstanceId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-series/series-instance-uid/1/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+
+    }
+
+    @Then("verify image series by series instance uid")
+    public void verifyImageSeriesBySeriesInstanceId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"description\":\"test\",\"instanceCount\":0}]")));
+    }
+    
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(dataSet);
@@ -195,6 +277,41 @@ public class DataCatalogSteps {
         return dataSets;
     }
 
+    private void dataSetUpImageSeriesByPatientId() {
+        List<Patient> patLst = getPatients();
+        List<ImageSeries> imgSerLst = getImageSeries();
+        when(patientRepository.findByPatientId(anyString())).thenReturn(patLst);
+        when(imageSeriesRepository.findByPatientDbId(anyLong())).thenReturn(imgSerLst);
+    }
+
+    private void dataSetUpImageSeriesById() {
+        List<ImageSeries> imgSerLst = getImageSeries();
+        when(imageSeriesRepository.findByIdAndOrgId(anyLong(),anyString())).thenReturn(imgSerLst);
+    }
+
+    private void dataSetUpImageSeriesBySeriesInstanceId() {
+        List<ImageSeries> imgSerLst = getImageSeries();
+        when(imageSeriesRepository.findBySeriesInstanceUid(anyString())).thenReturn(imgSerLst);
+    }
+
+    private List<ImageSeries> getImageSeries() {
+        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
+        ImageSeries imageSeries = new ImageSeries();
+        imageSeries.setId(1L);
+        imageSeries.setDescription("test");
+        imgSerLst.add(imageSeries);
+        return imgSerLst;
+    }
+
+    private List<Patient> getPatients() {
+        List<Patient> patLst = new ArrayList<Patient>();
+        Patient patient = new Patient();
+        patient.setAge("90");
+        patient.setId(1L);
+        patient.setOrgId("123");
+        patLst.add(patient);
+        return patLst;
+    }
 
     private void dataCollectionSetUpByType() {
         List<DataSet> dataSets = getDataSets();

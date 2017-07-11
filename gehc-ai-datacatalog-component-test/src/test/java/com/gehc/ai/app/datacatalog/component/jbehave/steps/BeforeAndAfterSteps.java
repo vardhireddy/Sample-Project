@@ -4,6 +4,7 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.ScenarioType;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +25,9 @@ public class BeforeAndAfterSteps {
     @MockBean
     ImageSeriesRepository imageSeriesRepository;
 
+    @MockBean
+    PatientRepository patientRepository;
+
     @BeforeScenario(uponType = ScenarioType.ANY)
     public void initStorageBeforeScenario() {
     }
@@ -33,6 +37,7 @@ public class BeforeAndAfterSteps {
         reset(annotationRepository);
         reset(dataSetRepository);
         reset(imageSeriesRepository);
+        reset(patientRepository);
 
     }
 
