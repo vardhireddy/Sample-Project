@@ -42,4 +42,5 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     Page<Patient> findAllByOrderByIdDesc(Pageable pageable);
     List<Patient> findById(@Param("id") Long id);
+    List<Patient> findDistinctByOrgId(@Param("orgid") String id);
 }
