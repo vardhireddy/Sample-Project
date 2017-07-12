@@ -19,7 +19,7 @@ import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
-@Table(name = "image_series")
+@Table(name = "image_set")
 public class ImageSeries implements Serializable {
 	/**
 	 * 
@@ -72,6 +72,21 @@ public class ImageSeries implements Serializable {
 	@OneToOne
 	@JoinColumn(name="id") 
 	private Patient patient;
+	
+	private String acqDate;
+    public String getAcqDate() {
+		return acqDate;
+	}
+	public void setAcqDate(String acqDate) {
+		this.acqDate = acqDate;
+	}
+	public String getAcqTime() {
+		return acqTime;
+	}
+	public void setAcqTime(String acqTime) {
+		this.acqTime = acqTime;
+	}
+	private String acqTime;
 
 	public Patient getPatient() {
 		return patient;
@@ -182,10 +197,11 @@ public class ImageSeries implements Serializable {
 		this.properties = properties;
 	}
 	
+	
 	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
 			String uri, String seriesInstanceUid, String description, String institution, String equipment,
 			int instanceCount, Object properties, String uploadBy, Date uploadDate, Long patientDbId, Long studyDbId,
-			Patient patient) {
+			Patient patient, String acqDate, String acqTime) {
 		super();
 		this.id = id;
 		this.schemaVersion = schemaVersion;
@@ -205,6 +221,8 @@ public class ImageSeries implements Serializable {
 		this.patientDbId = patientDbId;
 		this.studyDbId = studyDbId;
 		this.patient = patient;
+		this.acqDate = acqDate;
+		this.acqTime = acqTime;
 	}
 	public ImageSeries() {
 		super();
@@ -217,7 +235,7 @@ public class ImageSeries implements Serializable {
 				+ ", seriesInstanceUid=" + seriesInstanceUid + ", description=" + description + ", institution="
 				+ institution + ", equipment=" + equipment + ", instanceCount=" + instanceCount + ", properties="
 				+ properties + ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
-				+ ", studyDbId=" + studyDbId + ", patient=" + patient + "]";
+				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", acqDate=" + acqDate + ", acqTime=" + acqTime
+				+ "]";
 	}
-	
 }

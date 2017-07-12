@@ -174,4 +174,6 @@ patient_dbid INT,
 study_dbid INT
 );
 
+ALTER TABLE lfdb.image_set MODIFY COLUMN id BIGINT(20); 
+
 alter table image_series AUTO_INCREMENT=1496700263266;
