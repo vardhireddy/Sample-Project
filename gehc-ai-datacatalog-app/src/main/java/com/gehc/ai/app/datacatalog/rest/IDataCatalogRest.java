@@ -37,47 +37,6 @@ import com.gehc.ai.app.datacatalog.entity.Study;
  * @author 212071558
  */
 public interface IDataCatalogRest {
-    /**
-     * Get Image Set by Org Id
-     *
-     * @param params
-     * @param request, to get an org id based on authentication token
-     * @return List<ImageSet>
-     */
-    List<ImageSet> getImgSet(Map<String, String> params, HttpServletRequest request );
-
-    /**
-     * Get Image Set by Data Collection Id
-     * 
-     * @param dataCollectionId
-     * @param request, to get an org id based on authentication token
-     * @return List<ImageSet>
-     */
-    List<ImageSet> getImgSetByDataCollId( String dataCollectionId, HttpServletRequest request );
-
-    /**
-     * Get Data Collection
-     * 
-     * @param type, DC type like Annotation or Experiment
-     * @return List<DataCollection>
-     */
-    List<DataCollection> getDataCollection(String id, String type, HttpServletRequest request);
-    
-    /**
-     * Create Data Collection
-     * 
-     * @param dataCollection
-     * @param request, to get an org id based on authentication token
-     * @return response
-     */
-    Response createDataCollection( DataCollection dataCollection, HttpServletRequest request );
-
-    /**
-     * @param imageSet
-     * @param request, to get an org id based on authentication token
-     * @return
-     */
-    String insertImageSet( ImageSet imageSet, HttpServletRequest request );
 
     /**
      * @return String Success
@@ -92,21 +51,6 @@ public interface IDataCatalogRest {
      */
     Map getExperimentTargetData( String id, String type, HttpServletRequest request );
 
-    /**
-     * @param id id of data collection       
-     * @return Annotation data for imagesets in a given Datacollection
-     */
-
-    @SuppressWarnings ("unchecked")
-    @RequestMapping(value = "/dataCatalog/annotationByDataCollectionId", method = RequestMethod.GET)
-    List getAnnotationByDataColId(@QueryParam("id") String id,
-                                  @QueryParam("annotationType") String annotationType);
-
-    /**
-     * @param queryMap fields from patient table columns
-     * @return list of patient satisfying search criteria
-     */
-      List<Patient> getPatient( HttpServletRequest request );
 
     /**
      * @param queryMap list of studies satisfying search criteria
@@ -129,20 +73,6 @@ public interface IDataCatalogRest {
      * @return study added
      */
     Study postStudy( Study s );
-
-    /**
-     * @param patientId
-     * @param request, to get an org id based on authentication token
-     * @return studies given a patient
-     */
-    List<Study> getStudies( String patientId, HttpServletRequest request );
-
-    /**
-     * @param studyId
-     * @param request, to get an org id based on authentication token
-     * @return image sets associated with the studyId
-     */
-    List<ImageSet> getImageSetByStudyId( String studyId, HttpServletRequest request );
 
     /**
      * @param ids
@@ -184,20 +114,6 @@ public interface IDataCatalogRest {
     void postCOSNotification(CosNotification n );
     
     /**
-     * @param patientid
-     * @param request, to get an org id based on authentication token
-     * @return
-     */
-    List<ImageSet> getImageSetByPatientId( String patientid, HttpServletRequest request );
-    
-    /**
-     * @param dataCollection
-     * @param request, to get an org id based on authentication token
-     * @return
-     */
-    ApiResponse updateDataCollection( DataCollection dataCollection, HttpServletRequest request );
-    
-    /**
      * @param request, to get an org id based on authentication token
      * @param id
      * @return
@@ -222,9 +138,10 @@ public interface IDataCatalogRest {
      * Insert or update an DataSet
      * 
      * @param d data set object
+     * @param request TODO
      * @return recently saved object
      */
-    DataSet saveDataSet( DataSet d );
+    DataSet saveDataSet( DataSet d, HttpServletRequest request );
     
     /**
      * Insert or update an image series
@@ -260,15 +177,6 @@ public interface IDataCatalogRest {
     List<DataSet> getDataSetById( Long id, HttpServletRequest request);
     
     /**
-     * Get All Data Set by it's id
-     * 
-     * @param id
-     * @param request, to get an org id based on authentication token
-     * @return list of Data Set
-     */
-    List<DataSet> getAllDataSet(HttpServletRequest request);
-    
-    /**
      * Get Data Set by type
      * @param type
      * @param request, to get an org id based on authentication token
@@ -283,16 +191,7 @@ public interface IDataCatalogRest {
      * @param request, to get an org id based on authentication token
      * @return List<ImageSeries>
      */
-    List<ImageSeries> getImgSeries(Map<String, String> params, HttpServletRequest request );
-    
-    /**
-     * Get Image Series by Series Instance UUId
-     * 
-     * @param seriesInstUid
-     * @param request, to get an org id based on authentication token
-     * @return list of Image Series
-     */
-    List<ImageSeries> getImgSeriesBySeriesUId( String seriesInstUid);
+    List<ImageSeries> getImgSeries(Map<String, String> params );
     
     /**
      * Get Image Series by Series Instance UUId
@@ -320,4 +219,10 @@ public interface IDataCatalogRest {
      * @return studies given a patient
      */
     List<Study> getStudiesByPatientDbid(String patientDbid, HttpServletRequest request);
+    
+    /**
+     * @param request
+     * @return
+     */
+    List<Patient> getAllPatients(HttpServletRequest request);
 }

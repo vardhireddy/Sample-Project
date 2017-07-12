@@ -59,9 +59,9 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	//commented above and add below to make sure delete is working. Will add the logic for get method for C2M
     	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation/{ids}");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation");
-    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/patient/{ids}");
+
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/patient/{patientId}/study");
-    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/study/patient/{patientDbid}");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/patient/{patientDbid}/study");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/study/{ids}");
     	//Commented below as this api is also being used in SNS manager
     	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/image-set-by-patientid");
@@ -69,11 +69,17 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	//Following will be used in experiment service so will not get the org
     	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/annotation-by-datacollectionid");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/patient");
-    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/dataCatalog/study");
-    	
+
+    
     	//Added for new APIs after refactoring
-    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection/type/{type}");
-    	
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/study/{studyId}/image-set");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/image-set/{id}");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection/{id}/image-set");   
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection/{id}");    
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/patient/{ids}");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/patient");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/study");
   }
     
     /** The dataSource */
