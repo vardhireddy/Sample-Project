@@ -152,7 +152,7 @@ public class DataCatalogSteps {
                 post("/api/v1/datacatalog/data-collection")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(defnToJSON(dataSet))
-                        .requestAttr("orgId", "123")
+                        .param("org-id", "12")
         );
 
     }
