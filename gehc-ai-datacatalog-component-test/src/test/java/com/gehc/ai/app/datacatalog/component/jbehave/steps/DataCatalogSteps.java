@@ -70,7 +70,7 @@ public class DataCatalogSteps {
     @Given("datacatalog health check")
     public void datacatalogHealthCheck() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/dataCatalog/healthCheck")
+                get("/api/v1/datacatalog/healthcheck")
         );
     }
 
@@ -171,7 +171,7 @@ public class DataCatalogSteps {
     @When("Get data collection by Type -  Annotation")
     public void getDataCollectionByType() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/data-collection/type/Annotation")
+                get("/api/v1/datacatalog/data-collection?type=Annotation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
@@ -214,7 +214,7 @@ public class DataCatalogSteps {
     @When("Get image series by image series id")
     public void getImageSeriesById() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-series/id/123")
+                get("/api/v1/datacatalog/image-set/123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
@@ -236,7 +236,7 @@ public class DataCatalogSteps {
     @When("Get image series by series instance uid")
     public void getImageSeriesBySeriesInstanceId() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-series/series-instance-uid/1/")
+                get("/api/v1/datacatalog/image-set?series-instance-uid=1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
@@ -259,7 +259,7 @@ public class DataCatalogSteps {
     public void StoreAnImageSetData() throws Exception {
         List<ImageSeries> imageSeries= getImageSeries();
         retrieveResult = mockMvc.perform(
-                post("/api/v1/datacatalog/image-series")
+                post("/api/v1/datacatalog/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(imageSeriesToJSON(imageSeries.get(0)))
                         .requestAttr("orgId", "123")
@@ -284,7 +284,7 @@ public class DataCatalogSteps {
     @When("Get Imageset by study")
     public void getImagesetByStudy() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-series/study-dbid/123")
+                get("/api/v1/datacatalog/study/123/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
@@ -306,7 +306,7 @@ public class DataCatalogSteps {
     @When("Get Image set based on filter criteria")
     public void getImagesetImageBasedOnFilterCriteria() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-series?orgId=61939267-d195-499f-bfd8-7d92875c7035&modality=CT&annotations=point&anatomy=Lung")
+                get("/api/v1/datacatalog/image-set?orgId=61939267-d195-499f-bfd8-7d92875c7035&modality=CT&annotations=point&anatomy=Lung")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
@@ -366,7 +366,7 @@ public class DataCatalogSteps {
 
     private void dataSetUpImageSeriesBySeriesInstanceId() {
         List<ImageSeries> imgSerLst = getImageSeries();
-        when(imageSeriesRepository.findBySeriesInstanceUid(anyString())).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImagesetByStudy() {
