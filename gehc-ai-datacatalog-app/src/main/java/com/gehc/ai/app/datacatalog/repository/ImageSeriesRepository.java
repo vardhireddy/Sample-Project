@@ -8,7 +8,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
-@RepositoryRestResource(collectionResourceRel = "image_series", path = "image-series")
+@RepositoryRestResource(collectionResourceRel = "image_set", path = "image_set")
 public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> {
     @Override
     <S extends ImageSeries> S save(S entity);
