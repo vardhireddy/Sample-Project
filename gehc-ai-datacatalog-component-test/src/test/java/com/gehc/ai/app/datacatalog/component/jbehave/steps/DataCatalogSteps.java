@@ -70,7 +70,7 @@ public class DataCatalogSteps {
     @Given("datacatalog health check")
     public void datacatalogHealthCheck() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/healthcheck")
+                get("/api/v1/dataCatalog/healthCheck")
         );
     }
 
