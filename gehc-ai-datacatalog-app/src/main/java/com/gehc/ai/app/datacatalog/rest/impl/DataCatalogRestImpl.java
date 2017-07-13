@@ -739,11 +739,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
 		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
-		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
-			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-			imageSeries.setPatient(patientRepository.findById(new Long(imageSeries.getPatientDbId())).get(0));
+		try {
+			for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
+				ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+				imageSeries.setPatient(patientRepository.findById(new Long(imageSeries.getPatientDbId())).get(0));
 //			logger.info("Get Patient Id in imageSeriesLst " + imageSeries.getPatient().getPatientId());
-			imgSerWithPatientLst.add(imageSeries);
+				imgSerWithPatientLst.add(imageSeries);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return imgSerWithPatientLst;
 	}
