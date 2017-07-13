@@ -253,7 +253,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/study", method = RequestMethod.GET)
 	public List<Study> getStudy(HttpServletRequest request) {
-		logger.info("*** In REST get all syudy, orgId = " + request.getAttribute("orgId"));
+		logger.info("*** In REST get all studies, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? new ArrayList<Study>()
 				: studyRepository.findByOrgId(request.getAttribute("orgId").toString());
 	}
@@ -563,7 +563,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					// TODO:Use findByIdIn to avoid the loop
 					for (int i = 0; i < imgSeries.size(); i++) {
 						Long imgSerId = Long.valueOf(imgSeries.get(i).toString());
-						logger.info("*** Now get the img set by id = " + imgSerId);
+//						logger.info("*** Now get the img set by id = " + imgSerId);
 						imgSerLst.addAll(imageSeriesRepository.findById(Long.valueOf(imgSeries.get(i).toString())));
 					}
 				}
@@ -659,7 +659,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 								for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr
 										.hasNext();) {
 									ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-									logger.info("Get imageSeries id " + imageSeries.getId());
+//									logger.info("Get imageSeries id " + imageSeries.getId());
 									imgSeriesIdLst.add((imageSeries.getId()).toString());
 								}
 								if (typeLst.contains(ABSENT)) {
@@ -670,7 +670,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 										for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
 												.iterator(); imgSeriesItr.hasNext();) {
 											ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-											logger.info("Get imageSeries id " + imageSeries.getId());
+//											logger.info("Get imageSeries id " + imageSeries.getId());
 											if (!uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
 												imgSetWithOutAnn.add(imageSeries);
 											}
@@ -685,7 +685,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 										for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
 												.iterator(); imgSeriesItr.hasNext();) {
 											ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-											logger.info("Get imageSeries id " + imageSeries.getId());
+//											logger.info("Get imageSeries id " + imageSeries.getId());
 											if (uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
 												imgSetWithAnnotation.add(imageSeries);
 											}
@@ -746,7 +746,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
 			imageSeries.setPatient(patientRepository.findById(new Long(imageSeries.getPatientDbId())).get(0));
-			logger.info("Get Patient Id in imageSeriesLst " + imageSeries.getPatient().getPatientId());
+//			logger.info("Get Patient Id in imageSeriesLst " + imageSeries.getPatient().getPatientId());
 			imgSerWithPatientLst.add(imageSeries);
 		}
 		return imgSerWithPatientLst;
