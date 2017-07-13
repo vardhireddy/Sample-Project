@@ -548,28 +548,24 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id, HttpServletRequest request) {
-		logger.info("[Image Series] Get img series for DC id " + id);
-		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
+		logger.info("Get img series for DC id " + id);
 		List<DataSet> dsLst = new ArrayList<DataSet>();
 		if (null != id) {
-			// dsLst = dataSetRepository.findByIdAndOrgId(id,
-			// "61939267-d195-499f-bfd8-7d92875c7035");
 			dsLst = request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
 					: dataSetRepository.findByIdAndOrgId(id, request.getAttribute("orgId").toString());
 			if (null != dsLst && dsLst.size() > 0) {
 				@SuppressWarnings("unchecked")
 				List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
+				List<Long> imgSerIdLst = new ArrayList<Long>();
 				if (null != imgSeries && imgSeries.size() > 0) {
-					// TODO:Use findByIdIn to avoid the loop
 					for (int i = 0; i < imgSeries.size(); i++) {
-						Long imgSerId = Long.valueOf(imgSeries.get(i).toString());
-//						logger.info("*** Now get the img set by id = " + imgSerId);
-						imgSerLst.addAll(imageSeriesRepository.findById(Long.valueOf(imgSeries.get(i).toString())));
+						imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
 					}
+					return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
 				}
 			}
 		}
-		return imgSerLst;
+		return new ArrayList<ImageSeries>();
 	}
 
 	/*

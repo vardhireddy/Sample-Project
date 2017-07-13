@@ -23,4 +23,5 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<ImageSeries> findByIdAndOrgId(@Param("id") Long id, @Param("orgId") String orgId);
     List<ImageSeries> findBySeriesInstanceUidIn(List<String> seriesInstanceUid);
     List<ImageSeries> findByStudyDbIdAndOrgId(@Param("studyDbId") Long studyDbId, @Param("orgId") String orgId);
+    List<ImageSeries> findByIdIn(List<Long> id);
  }
