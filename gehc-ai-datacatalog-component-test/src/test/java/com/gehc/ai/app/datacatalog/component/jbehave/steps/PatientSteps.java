@@ -42,17 +42,19 @@ public class PatientSteps {
     private final StudyRepository studyRepository;
     private final PatientRepository patientRepository;
     private final ImageSeriesRepository imageSeriesRepository;
+    private final CommonSteps commonSteps;
     private ResultActions retrieveResult;
     private String PATIENTS = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"},{\"id\":2,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}]";
     private String STUDY = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientDbId\":1,\"studyInstanceUid\":\"123\",\"studyDate\":\"\",\"studyTime\":\"\",\"studyId\":\"123\",\"studyDescription\":\"Test\",\"referringPhysician\":\"John Doe\",\"studyUrl\":\"http://test\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"Test\",\"properties\":{}}]";
     private String PATIENT = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}]";
 
     @Autowired
-    public PatientSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository) {
+    public PatientSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,CommonSteps commonSteps) {
         this.mockMvc = mockMvc;
         this.studyRepository = studyRepository;
         this.patientRepository = patientRepository;
         this.imageSeriesRepository = imageSeriesRepository;
+        this.commonSteps = commonSteps;
     }
 
     @Given("Retrieve study by patient Provided")
@@ -118,7 +120,7 @@ public class PatientSteps {
     @Then("verify image series by patient id")
     public void verifyImageSeriesByPatientId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
     @Given("Get a Patient - DataSetUp Provided")
@@ -207,32 +209,11 @@ public class PatientSteps {
 
     private void dataSetUpImageSeriesByPatientId() {
         List<Patient> patLst = getPatients();
-        List<ImageSeries> imgSerLst = getImageSeries();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(patientRepository.findByPatientId(anyString())).thenReturn(patLst);
         when(imageSeriesRepository.findByPatientDbId(anyLong())).thenReturn(imgSerLst);
     }
 
-    private List<ImageSeries> getImageSeries() {
-        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
-        ImageSeries imageSeries = new ImageSeries();
-        imageSeries.setId(1L);
-        imageSeries.setDescription("test");
-        imageSeries.setAnatomy("Lung");
-        imageSeries.setModality("CT");
-        imageSeries.setDataFormat("dataFormat");
-        imageSeries.setUri("tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10");
-        imageSeries.setSeriesInstanceUid("1");
-        imageSeries.setInstitution("UCSF");
-        imageSeries.setEquipment("tem");
-        imageSeries.setInstanceCount(1);
-        imageSeries.setUploadBy("BDD");
-        imageSeries.setPatientDbId(1L);
-        Properties prop = new Properties();
-        prop.setProperty("test", "bdd");
-        imageSeries.setProperties(prop);
-        imgSerLst.add(imageSeries);
-        return imgSerLst;
-    }
 
     private void dataStudyByPatient() {
         List<Study> studyList = getStudy();
@@ -265,11 +246,6 @@ public class PatientSteps {
     private Date getDate() {
         String str = "2017-03-31";
         return Date.valueOf(str);
-    }
-
-    private String expectedImageSeries() {
-        String imageSeries = "{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}";
-        return imageSeries;
     }
 
     public void getSavePatient() {
