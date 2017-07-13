@@ -767,11 +767,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	@Override
-	@RequestMapping(value = "/datacatalog/patient/{patientDbid}/study", method = RequestMethod.GET)
-	public List<Study> getStudiesByPatientDbid(@PathVariable String patientDbid, HttpServletRequest request) {
+	@RequestMapping(value = "/datacatalog/patient/{ids}/study", method = RequestMethod.GET)
+	public List<Study> getStudiesByPatientDbid(@PathVariable String ids, HttpServletRequest request) {
 		logger.info("*** In REST getStudiesByPatientDbid, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? new ArrayList<Study>()
-				: studyRepository.findByPatientDbIdAndOrgId(Long.valueOf(patientDbid),
+				: studyRepository.findByPatientDbIdAndOrgId(Long.valueOf(ids),
 						request.getAttribute("orgId").toString());
 	}
 
