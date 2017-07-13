@@ -40,6 +40,7 @@ public class ImageSetSteps {
     private final DataSetRepository dataSetRepository;
     private final ImageSeriesRepository imageSeriesRepository;
     private final StudyRepository studyRepository;
+    private final CommonSteps commonSteps;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -47,12 +48,13 @@ public class ImageSetSteps {
     private RowMapper rm;
 
     @Autowired
-    public ImageSetSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository) {
+    public ImageSetSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
         this.imageSeriesRepository = imageSeriesRepository;
         this.studyRepository = studyRepository;
+        this.commonSteps =commonSteps;
 
 
     }
@@ -75,7 +77,7 @@ public class ImageSetSteps {
     @Then("verify image series by image series id")
     public void verifyImageSeriesById() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
     @Given("Retrieve image series by series instance uid - DataSetUp Provided")
@@ -97,18 +99,18 @@ public class ImageSetSteps {
     @Then("verify image series by series instance uid")
     public void verifyImageSeriesBySeriesInstanceId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
     @Given("Store an image set data - DataSetUp Provided")
     public void givenStoreAnImageSetData() throws Exception {
-        List<ImageSeries> imageSeries = getImageSeries();
+        List<ImageSeries> imageSeries = commonSteps.getImageSeries();
         when(imageSeriesRepository.save(any(ImageSeries.class))).thenReturn(imageSeries.get(0));
     }
 
     @When("Store an image set data")
     public void StoreAnImageSetData() throws Exception {
-        List<ImageSeries> imageSeries = getImageSeries();
+        List<ImageSeries> imageSeries = commonSteps.getImageSeries();
         retrieveResult = mockMvc.perform(
                 post("/api/v1/datacatalog/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -122,7 +124,7 @@ public class ImageSetSteps {
     public void verifyStoreAnImageSetData() throws Exception {
         retrieveResult.andExpect(status().isOk());
 
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
 
@@ -145,7 +147,7 @@ public class ImageSetSteps {
     @Then("verify Image set based on filter criteria")
     public void verifyImagesetImageBasedOnFilterCriteria() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
@@ -154,44 +156,19 @@ public class ImageSetSteps {
     }
 
     private void dataSetUpImageSeriesById() {
-        List<ImageSeries> imgSerLst = getImageSeries();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(imageSeriesRepository.findByIdAndOrgId(anyLong(), anyString())).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImageSeriesBySeriesInstanceId() {
-        List<ImageSeries> imgSerLst = getImageSeries();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImagesetByStudy() {
-        List<ImageSeries> imgSerLst = getImageSeries();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(imageSeriesRepository.findByStudyDbIdAndOrgId(anyLong(), anyString())).thenReturn(imgSerLst);
     }
 
-    private List<ImageSeries> getImageSeries() {
-        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
-        ImageSeries imageSeries = new ImageSeries();
-        imageSeries.setId(1L);
-        imageSeries.setDescription("test");
-        imageSeries.setAnatomy("Lung");
-        imageSeries.setModality("CT");
-        imageSeries.setDataFormat("dataFormat");
-        imageSeries.setUri("tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10");
-        imageSeries.setSeriesInstanceUid("1");
-        imageSeries.setInstitution("UCSF");
-        imageSeries.setEquipment("tem");
-        imageSeries.setInstanceCount(1);
-        imageSeries.setUploadBy("BDD");
-        imageSeries.setPatientDbId(1L);
-        Properties prop = new Properties();
-        prop.setProperty("test", "bdd");
-        imageSeries.setProperties(prop);
-        imgSerLst.add(imageSeries);
-        return imgSerLst;
-    }
 
-    private String expectedImageSeries() {
-        String imageSeries = "{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}";
-        return imageSeries;
-    }
 }
