@@ -43,6 +43,7 @@ public class DataCollectionSteps {
     private final DataSetRepository dataSetRepository;
     private final ImageSeriesRepository imageSeriesRepository;
     private final StudyRepository studyRepository;
+    private final CommonSteps commonSteps;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -50,12 +51,13 @@ public class DataCollectionSteps {
     private RowMapper rm;
 
     @Autowired
-    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository) {
+    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
         this.imageSeriesRepository = imageSeriesRepository;
         this.studyRepository = studyRepository;
+        this.commonSteps = commonSteps;
 
 
     }
@@ -199,9 +201,7 @@ public class DataCollectionSteps {
         DataSet dataSet = new DataSet();
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
-        ImageSet imageSet = new ImageSet();
-        imageSet.setAge("90");
-        imageSet.setId("1");
+        ImageSeries imageSet = commonSteps.getImageSeries().get(0);
         dataSet.setImageSets(imageSet);
         dataSets.add(dataSet);
         return dataSets;
