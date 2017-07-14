@@ -2,6 +2,7 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
@@ -40,6 +41,7 @@ public class ImageSetSteps {
     private final DataSetRepository dataSetRepository;
     private final ImageSeriesRepository imageSeriesRepository;
     private final StudyRepository studyRepository;
+    private final CommonSteps commonSteps;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -47,12 +49,13 @@ public class ImageSetSteps {
     private RowMapper rm;
 
     @Autowired
-    public ImageSetSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository) {
+    public ImageSetSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
         this.imageSeriesRepository = imageSeriesRepository;
         this.studyRepository = studyRepository;
+        this.commonSteps =commonSteps;
 
 
     }
@@ -75,7 +78,7 @@ public class ImageSetSteps {
     @Then("verify image series by image series id")
     public void verifyImageSeriesById() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
     @Given("Retrieve image series by series instance uid - DataSetUp Provided")
@@ -97,18 +100,18 @@ public class ImageSetSteps {
     @Then("verify image series by series instance uid")
     public void verifyImageSeriesBySeriesInstanceId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
     @Given("Store an image set data - DataSetUp Provided")
     public void givenStoreAnImageSetData() throws Exception {
-        List<ImageSeries> imageSeries = getImageSeries();
+        List<ImageSeries> imageSeries = commonSteps.getImageSeries();
         when(imageSeriesRepository.save(any(ImageSeries.class))).thenReturn(imageSeries.get(0));
     }
 
     @When("Store an image set data")
     public void StoreAnImageSetData() throws Exception {
-        List<ImageSeries> imageSeries = getImageSeries();
+        List<ImageSeries> imageSeries = commonSteps.getImageSeries();
         retrieveResult = mockMvc.perform(
                 post("/api/v1/datacatalog/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -122,30 +125,100 @@ public class ImageSetSteps {
     public void verifyStoreAnImageSetData() throws Exception {
         retrieveResult.andExpect(status().isOk());
 
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
 
-    @Given("Get Image set based on filter criteria - DataSetUp Provided")
+    @Given("Get Image set based on filter criteria with SUID - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteria() throws Exception {
-        //add needed mocks
+        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(commonSteps.getImageSeries());
     }
 
 
-    @When("Get Image set based on filter criteria")
+    @When("Get Image set based on filter criteria with SUID")
     public void getImagesetImageBasedOnFilterCriteria() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-set?orgId=61939267-d195-499f-bfd8-7d92875c7035&modality=CT&annotations=point&anatomy=Lung")
+                get("/api/v1/datacatalog/image-set?series-instance-uid=1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
         );
 
     }
 
-    @Then("verify Image set based on filter criteria")
+    @Then("verify Image set based on filter with SUID")
     public void verifyImagesetImageBasedOnFilterCriteria() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with ORG ID and Modality - DataSetUp Provided")
+    public void givenImagesetImageBasedOnFilterCriteriaOrgId() throws Exception {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+//        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+//        List <Annotation> annList = new ArrayList<Annotation>();
+//        annList.add(commonSteps.getAnnotation());
+//        when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annList);
+    }
+
+
+    @When("Get Image set based on filter criteria with ORG ID and Modality")
+    public void getImagesetImageBasedOnFilterCriteriaOrgId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=61939267-d195-499f-bfd8-7d92875c7035&modality=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+    }
+
+    @Then("verify Image set based on filter  with ORG ID and Modality")
+    public void verifyImagesetImageBasedOnFilterCriteriaOrgId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with ORG ID , Modality and Anatomy - DataSetUp Provided")
+    public void givenImagesetImageBasedOnFilterCriteriaOrgIdModAnatomy() throws Exception {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+    }
+
+
+    @When("Get Image set based on filter criteria with ORG ID , Modality and Anatomy")
+    public void getImagesetImageBasedOnFilterCriteriaOrgIdModAnatomy() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+    }
+
+    @Then("verify Image set based on filter  with ORG ID , Modality and Anatomy")
+    public void verifyImagesetImageBasedOnFilterCriteriaOrgIdModAnatomy() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+        List <Annotation> annList = new ArrayList<Annotation>();
+        annList.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByImageSetInAndTypeIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(annList);
+    }
+
+    @When("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation")
+    public void whenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotation() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung&annotations=point")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    @Then("verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation")
+    public void thenVerifyImageSetBasedOnFilterWithORGIDModalityAnatomyAndAnnotation() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
@@ -153,45 +226,31 @@ public class ImageSetSteps {
         return mapper.writeValueAsString(imageSeries);
     }
 
+    private void dataSetUpByFilter() {
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),
+                anyListOf(String.class), anyListOf(String.class))).thenReturn(imgSerLst);
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annotations);
+
+    }
+
     private void dataSetUpImageSeriesById() {
-        List<ImageSeries> imgSerLst = getImageSeries();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(imageSeriesRepository.findByIdAndOrgId(anyLong(), anyString())).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImageSeriesBySeriesInstanceId() {
-        List<ImageSeries> imgSerLst = getImageSeries();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImagesetByStudy() {
-        List<ImageSeries> imgSerLst = getImageSeries();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(imageSeriesRepository.findByStudyDbIdAndOrgId(anyLong(), anyString())).thenReturn(imgSerLst);
     }
 
-    private List<ImageSeries> getImageSeries() {
-        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
-        ImageSeries imageSeries = new ImageSeries();
-        imageSeries.setId(1L);
-        imageSeries.setDescription("test");
-        imageSeries.setAnatomy("Lung");
-        imageSeries.setModality("CT");
-        imageSeries.setDataFormat("dataFormat");
-        imageSeries.setUri("tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10");
-        imageSeries.setSeriesInstanceUid("1");
-        imageSeries.setInstitution("UCSF");
-        imageSeries.setEquipment("tem");
-        imageSeries.setInstanceCount(1);
-        imageSeries.setUploadBy("BDD");
-        imageSeries.setPatientDbId(1L);
-        Properties prop = new Properties();
-        prop.setProperty("test", "bdd");
-        imageSeries.setProperties(prop);
-        imgSerLst.add(imageSeries);
-        return imgSerLst;
-    }
 
-    private String expectedImageSeries() {
-        String imageSeries = "{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}";
-        return imageSeries;
-    }
 }

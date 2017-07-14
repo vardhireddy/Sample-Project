@@ -16,3 +16,23 @@ Feature: Imageset DataCatalog
   Given Store an image set data - DataSetUp Provided
   When Store an image set data
   Then verify Store an image set data
+
+  Scenario: Get Image set based on filter criteria with SUID
+  Given Get Image set based on filter criteria with SUID - DataSetUp Provided
+  When Get Image set based on filter criteria with SUID
+  Then verify Image set based on filter with SUID
+
+  Scenario: Get Image set based on filter criteria with ORG ID and Modality
+  Given Get Image set based on filter criteria with ORG ID and Modality - DataSetUp Provided
+  When Get Image set based on filter criteria with ORG ID and Modality
+  Then verify Image set based on filter  with ORG ID and Modality
+
+  Scenario: Get Image set based on filter criteria with ORG ID , Modality and Anatomy
+  Given Get Image set based on filter criteria with ORG ID , Modality and Anatomy - DataSetUp Provided
+  When Get Image set based on filter criteria with ORG ID , Modality and Anatomy
+  Then verify Image set based on filter  with ORG ID , Modality and Anatomy
+
+  Scenario: Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation
+  Given Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation - DataSetUp Provided
+  When Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation
+  Then verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation
