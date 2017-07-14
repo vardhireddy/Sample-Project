@@ -2,6 +2,7 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
@@ -130,14 +131,15 @@ public class ImageSetSteps {
 
     @Given("Get Image set based on filter criteria - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteria() throws Exception {
-        //add needed mocks
+        commonSteps.getImageSeries();
+
     }
 
 
     @When("Get Image set based on filter criteria")
     public void getImagesetImageBasedOnFilterCriteria() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-set?orgId=61939267-d195-499f-bfd8-7d92875c7035&modality=CT&annotations=point&anatomy=Lung")
+                get("/api/v1/datacatalog/image-set?series-instance-uid=1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
@@ -153,6 +155,17 @@ public class ImageSetSteps {
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(imageSeries);
+    }
+
+    private void dataSetUpByFilter() {
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),
+                anyListOf(String.class), anyListOf(String.class))).thenReturn(imgSerLst);
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annotations);
+
     }
 
     private void dataSetUpImageSeriesById() {

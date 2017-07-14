@@ -1,6 +1,9 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
@@ -20,12 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+
+import static org.mockito.Matchers.any;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +45,8 @@ public class StudySteps {
     private final ImageSeriesRepository imageSeriesRepository;
     private final CommonSteps commonSteps;
     private ResultActions retrieveResult;
+    private String STUDY = "{\"id\":1,\"schemaVersion\":\"123\",\"patientDbId\":1,\"studyInstanceUid\":\"123\",\"studyDate\":\"\",\"studyTime\":\"\",\"studyId\":\"123\",\"studyDescription\":\"Test\",\"referringPhysician\":\"John Doe\",\"studyUrl\":\"http://test\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"Test\",\"properties\":{}}";
+    private String STUDIES  = "{\"id\":1,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"},{\"id\":2,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}";
 
     @Autowired
     public StudySteps(MockMvc mockMvc, StudyRepository studyRepository, ImageSeriesRepository imageSeriesRepository,CommonSteps commonSteps) {
@@ -71,11 +79,12 @@ public class StudySteps {
     }
 
     @Given("Get all Studies - DataSetUp Provided")
-    public void givenGetMultipleStudiesDataSetUpProvided() {
+    public void givenGetAllStudiesDataSetUpProvided() {
         dataStudyByOrgId();
     }
+
     @When("Get all Studies")
-    public void whenGetMultipleStudies() throws Exception {
+    public void whenGetAllStudies() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/study")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -83,9 +92,54 @@ public class StudySteps {
         );
     }
     @Then("verify Get all Studies")
+    public void thenVerifyGetAllStudies() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("["+STUDY+"]")));
+    }
+
+    @Given("Save study - DataSetUp Provided")
+    public void givenSaveStudyDataSetUpProvided() {
+        when(studyRepository.save(any(Study.class))).thenReturn(getStudy().get(0));
+    }
+
+    @When("Save study")
+    public void whenSaveStudy() throws Exception {
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/datacatalog/study")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(studyToJSON(getStudy().get(0)))
+                        .param("org-id", "123")
+        );
+    }
+    @Then("verify Save study")
+    public void thenVerifySaveStudy() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(STUDY)));
+    }
+
+    @Given("Get Multiple Studies - DataSetUp Provided")
+    public void givenGetMultipleStudiesDataSetUpProvided() {
+        dataStudyByStudyIds();
+    }
+
+    @When("Get Multiple Studies")
+    public void whenGetMultipleStudies() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/study/1,2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+    }
+    @Then("verify Get Multiple Studies")
     public void thenVerifyGetMultipleStudies() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(" ")));
+        retrieveResult.andExpect(content().string(containsString("["+STUDIES+"]")));
+
+    }
+
+    private String studyToJSON(Study study) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(study);
     }
 
     private void dataSetUpImagesetByStudy() {
@@ -98,6 +152,18 @@ public class StudySteps {
     private void dataStudyByStudyId() {
         List<Study> studyList = getStudy();
         when(studyRepository.findByIdIn(anyListOf(Long.class))).thenReturn(studyList);
+    }
+
+    private void dataStudyByStudyIds() {
+        List<Study> studyList = getStudy();
+        Study study = new Study();
+        study.setId(2L);
+        study.setOrgId("124");
+        study.setPatientDbId(1L);
+        study.setProperties(new Properties());
+        study.setReferringPhysician("Early Emma");
+        studyList.add(study);
+        when(studyRepository.findByIdInAndOrgId(anyListOf(Long.class), anyString())).thenReturn(studyList);
     }
 
     private void dataStudyByOrgId() {

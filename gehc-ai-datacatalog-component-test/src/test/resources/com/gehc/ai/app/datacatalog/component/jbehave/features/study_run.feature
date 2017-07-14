@@ -12,6 +12,11 @@ Feature: Study DataCatalog
   When Get all Studies
   Then verify Get all Studies
 
+  Scenario: Save study
+  Given Save study - DataSetUp Provided
+  When Save study
+  Then verify Save study
+
 #  Scenario: Get Multiple Studies
 #  Given Get Multiple Studies - DataSetUp Provided
 #  When Get Multiple Studies

@@ -1,5 +1,6 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +46,19 @@ public class CommonSteps {
     public String expectedImageSeries() {
         String imageSeries = "{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}";
         return imageSeries;
+    }
+
+    public Annotation getAnnotation(){
+        Annotation annotation = new Annotation();
+        annotation.setId(1L);
+        annotation.setAnnotationDate(getDate());
+        annotation.setAnnotatorId("123");
+        annotation.setImageSet("imageSet");
+        annotation.setItem("item");
+        annotation.setSchemaVersion("123");
+        annotation.setType("type");
+        annotation.setSchemaVersion("1");
+        return annotation;
     }
 
 }

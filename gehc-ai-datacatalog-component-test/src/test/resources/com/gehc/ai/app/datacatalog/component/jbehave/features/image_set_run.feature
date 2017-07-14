@@ -16,3 +16,8 @@ Feature: Imageset DataCatalog
   Given Store an image set data - DataSetUp Provided
   When Store an image set data
   Then verify Store an image set data
+
+#  Scenario: Get Image set based on filter criteria
+#  Given Get Image set based on filter criteria - DataSetUp Provided
+#  When Get Image set based on filter criteria
+#  Then verify Image set based on filter criteria
