@@ -133,7 +133,7 @@ public class StudySteps {
     @Then("verify Get Multiple Studies")
     public void thenVerifyGetMultipleStudies() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("["+STUDIES+"]")));
+        retrieveResult.andExpect(content().string(containsString("["+STUDY+"]")));
 
     }
 
@@ -156,13 +156,13 @@ public class StudySteps {
 
     private void dataStudyByStudyIds() {
         List<Study> studyList = getStudy();
-        Study study = new Study();
-        study.setId(2L);
-        study.setOrgId("124");
-        study.setPatientDbId(1L);
-        study.setProperties(new Properties());
-        study.setReferringPhysician("Early Emma");
-        studyList.add(study);
+//        Study study = new Study();
+//        study.setId(2L);
+//        study.setOrgId("124");
+//        study.setPatientDbId(1L);
+//        study.setProperties(new Properties());
+//        study.setReferringPhysician("Early Emma");
+//        studyList.add(study);
         when(studyRepository.findByIdInAndOrgId(anyListOf(Long.class), anyString())).thenReturn(studyList);
     }
 

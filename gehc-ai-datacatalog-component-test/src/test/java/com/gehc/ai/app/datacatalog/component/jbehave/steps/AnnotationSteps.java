@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -46,6 +46,7 @@ public class AnnotationSteps {
     private final AnnotationRepository annotationRepository;
     private final CommonSteps commonSteps;
     private ResultActions retrieveResult;
+    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"1\",\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSet\":\" \\\"item\\\": {\\n        \\\"object_id\\\": \\\"216\\\",\\n        \\\"object_name\\\": \\\"nodule\\\",\\n        \\\"coord_sys\\\": \\\"IMAGE\\\",\\n        \\\"data\\\": [\\n            138,\\n            291,\\n            57\\n        ],\\n        \\\"properties\\\": {\\n            \\\"patient_outcome\\\": \\\"1\\\"\\n        }\\n    }\",\"item\":\"item\"}]";
 
     @Autowired
     public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps) {
@@ -98,7 +99,7 @@ public class AnnotationSteps {
     @Then("Verify Get annotation set data by Imageset Id")
     public void verifyAnnotationSetByImageSetId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"schemaVersion\":\"1\",\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSet\":\"imageSet\",\"item\":\"item\"}]")));
+        retrieveResult.andExpect(content().string(containsString(ANNOTATIONS)));
     }
 
     @Given("Get annotation set data - DataSetUp Provided")
@@ -128,18 +129,13 @@ public class AnnotationSteps {
     public void givenAnnotationSetById() throws Exception {
         List<Annotation> annotations = new ArrayList<Annotation>();
         annotations.add(commonSteps.getAnnotation());
-        Annotation annotation = new Annotation();
-        annotation.setId(2L);
-        annotation.setAnnotatorId("1234");
-        annotation.setImageSet("imageSet2");
-        annotations.add(annotation);
-        when(annotationRepository.findByIdIn(anyList())).thenReturn(annotations);
+        when(annotationRepository.findByIdIn(anyListOf(Long.class))).thenReturn(annotations);
     }
 
     @When("Get annotation set data for Ids")
     public void getAnnotationSetById() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/annotation/1,2")
+                get("/api/v1/annotation/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("org-id", "12")
         );
@@ -149,7 +145,52 @@ public class AnnotationSteps {
     @Then("Verify Get annotation set data for Ids")
     public void verifyAnnotationSetById() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[]")));
+        retrieveResult.andExpect(content().string(containsString(ANNOTATIONS)));
+    }
+
+    @Given("Delete annotation set data for Ids - DataSetUp Provided")
+    public void givenDeleteAnnotationSetById() throws Exception {
+        Annotation annotation = new Annotation();
+        doNothing().when(annotationRepository).delete(annotation);
+
+    }
+
+    @When("Delete annotation set data for Ids")
+    public void deleteAnnotationSetById() throws Exception {
+        retrieveResult = mockMvc.perform(
+                delete("/api/v1/annotation/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+
+    }
+
+    @Then("Verify Delete annotation set data for Ids")
+    public void verifyDeleteAnnotationSetById() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("SUCCESS")));
+    }
+
+    @Given("Delete annotation set data for Ids with out org id - DataSetUp Provided")
+    public void givenDeleteAnnotationSetByIdWithOutOrgid() throws Exception {
+        Annotation annotation = new Annotation();
+        doNothing().when(annotationRepository).delete(annotation);
+    }
+
+    @When("Delete annotation set data for Ids with out org id")
+    public void deleteAnnotationSetByIdWithOutOrgid() throws Exception {
+        retrieveResult = mockMvc.perform(
+                delete("/api/v1/annotation/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "")
+        );
+
+    }
+
+    @Then("Verify Delete annotation set data for Ids with out org id")
+    public void verifyDeleteAnnotationSetByIdWithOutOrgid() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
 
     private String AnnotationToJSON(Annotation annotation) throws JsonProcessingException {
