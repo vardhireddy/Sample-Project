@@ -36,15 +36,6 @@ public interface IDataCatalogRest {
     String healthCheck();
 
     /**
-     * @param id id of target data
-     * @param type type of target data
-     * @param request, to get an org id based on authentication token
-     * @return target data that matches id and type
-     */
-    Map getExperimentTargetData( String id, String type, HttpServletRequest request );
-
-
-    /**
      * @param queryMap list of studies satisfying search criteria
      * @return
      */
@@ -91,7 +82,7 @@ public interface IDataCatalogRest {
      * @param request, to get an org id based on authentication token
      * @return
      */
-    List<Annotation> getAnnotationsByImgSet(String imageSet, HttpServletRequest request );
+    List<Annotation> getAnnotationsByImgSet(String imageSet );
 
     /**
      * Save an Annotation

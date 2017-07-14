@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,12 +43,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 //import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
@@ -58,7 +55,6 @@ import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
-import com.gehc.ai.app.datacatalog.entity.TargetData;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
@@ -90,11 +86,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Autowired
 	private IDataCatalogService dataCatalogService;
-
-	@Autowired
-	private ResponseGenerator responseGenerator;
-	@Autowired
-	private RestTemplate restTemplate;
 	@Value("${uom.user.me.url}")
 	private String uomMeUrl;
 	@Autowired
@@ -144,70 +135,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return ApplicationConstants.SUCCESS;
 	}
 
-	@Value("${experiment.targetData.gtMaskLocation}")
-	private String gtMaskLocation;
-
-	@Value("${experiment.targetData.imgLocation}")
-	private String imgLocation;
-
-	@Value("${experiment.targetData.locationType}")
-	private String locationType;
-//TODO: To change the dataCatalog to datacatalog and update experiment service
-	/**
-	 * @deprecated
-	 * @param id
-	 * @param type
-	 * @param request
-	 * @return hashmap
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	@Deprecated
-	@RequestMapping(value = "/dataCatalog/data-collection-target", method = RequestMethod.GET)
-	public Map getExperimentTargetData(@QueryParam("id") String id, @QueryParam("type") String type,
-			HttpServletRequest request) {
-		logger.info("!!! *** In REST getExperimentTargetData, orgId = " + request.getAttribute("orgId"));
-		logger.info("Entering method getExperimentTargetData --> id: " + id);
-		Map tdmap = new HashMap();
-		List<TargetData> l = new ArrayList<TargetData>();
-		try {
-			if (null != request.getAttribute("orgId")) {
-				l = dataCatalogService.getExperimentTargetData(id, request.getAttribute("orgId").toString());
-			} else {
-				l = dataCatalogService.getExperimentTargetData(id, null);
-			}
-			logger.info("getExperimentTargetData service call return a list of size --> : " + l.size());
-
-			if (!l.isEmpty()) {
-				LinkedHashMap fileMap = new LinkedHashMap();
-				for (int i = 0; i < l.size(); i++) {
-					TargetData td = l.get(i);
-					HashMap hm = new HashMap();
-					// String imgFullPath = td.img;
-					if (null != td.gtMask && !td.gtMask.isEmpty()) {
-						hm.put("gtMask", td.gtMask.startsWith(gtMaskLocation)
-								? td.gtMask.substring(gtMaskLocation.length()) : td.gtMask);
-					}
-					hm.put("img", td.img.startsWith(imgLocation) ? td.img.substring(imgLocation.length()) : td.img);
-					fileMap.put(td.patientId, hm);
-				}
-				tdmap.put("files", fileMap);
-				tdmap.put("locationType", locationType);
-				tdmap.put("gtMaskLocation", gtMaskLocation);
-				tdmap.put("imgLocation", imgLocation);
-				logger.info(
-						"getExperimentTargetData --> received data with annotations and converted them to targetData structure and this is the data hashmap --> : "
-								+ tdmap.toString());
-
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		logger.info("getExperimentTargetData --> Converted targetData : " + tdmap.toString());
-		return tdmap;
-	}
-
+	//TODO: To change the dataCatalog to datacatalog and update experiment service
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/dataCatalog/annotation-by-datacollectionid", method = RequestMethod.GET)
@@ -255,7 +183,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				: studyRepository.findByOrgId(request.getAttribute("orgId").toString());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/datacatalog/study/{ids}", method = RequestMethod.GET)
 	public List<Study> getStudiesById(@PathVariable String ids, HttpServletRequest request) {
@@ -293,31 +220,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Override
 	@RequestMapping(value = "/annotation", method = RequestMethod.GET)
-	public List<Annotation> getAnnotationsByImgSet(@QueryParam("imagesetid") String imagesetid,
-			HttpServletRequest request) {
-		logger.info("*** In REST getAnnotationsByImgSet, orgId = " + request.getAttribute("orgId"));
-		// Commented out org id as get annotation by id is not part of
-		// interceptor as C2M is using it
+	public List<Annotation> getAnnotationsByImgSet(@QueryParam("imagesetid") String imagesetid) {
+		//Note: this is being used in C2M as well
 		if (null != imagesetid && !imagesetid.isEmpty()) {
 			return annotationRepository.findByImageSet(imagesetid);
 		} else {
 			return new ArrayList<Annotation>();
 		}
-		/*
-		 * if ( null != imagesetid && !imagesetid.isEmpty() && null !=
-		 * request.getAttribute( "orgId" )) { return
-		 * annotationRepository.findByImageSetAndOrgId(imagesetid,
-		 * request.getAttribute( "orgId" ).toString()); }else { return
-		 * annotationRepository.findByImageSetAndOrgId(imagesetid, null); }
-		 */
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see IDataCatalogRest#saveAnnotation(com.gehc.ai.app.
-	 * dc.entity.Annotation)
-	 */
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -391,37 +302,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see IDataCatalogRest#updateDataCollection(com.gehc.ai
-	 * .app.dc.entity.DataCollection)
-	 */
-	/*
-	 * @Override
-	 * 
-	 * @RequestMapping(value = "/datacatalog", method = RequestMethod.PUT)
-	 * public ApiResponse updateDataCollection(@RequestBody DataCollection
-	 * dataCollection, HttpServletRequest request) {
-	 * logger.info("+++ !!! In REST updateDataCollection, orgId = " +
-	 * request.getAttribute("orgId")); ApiResponse apiResponse = null; try {
-	 * logger.info(" *** In updateDataCollection rest"); if (null !=
-	 * request.getAttribute("orgId")) { apiResponse = new
-	 * ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-	 * ApplicationConstants.SUCCESS,
-	 * dataCatalogService.updateDataCollection(dataCollection,
-	 * request.getAttribute("orgId").toString())); } else { apiResponse = new
-	 * ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-	 * ApplicationConstants.SUCCESS,
-	 * dataCatalogService.updateDataCollection(dataCollection, null)); } } catch
-	 * (Exception e) {
-	 * logger.error("Exception occured while updating the data collection ", e);
-	 * apiResponse = new ApiResponse(ApplicationConstants.FAILURE,
-	 * ApplicationConstants.INTERNAL_SERVER_ERROR_CODE,
-	 * "Failed to update the data collection ", dataCollection.getId()); }
-	 * return apiResponse; }
-	 */
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see IDataCatalogRest#getAnnotationsById(java.lang. Long)
 	 */
 	@Override
@@ -457,13 +337,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity("Operation failed while retrieving the annotation prop").build());
 		}
-		if (annotationProperties != null) {
-			responseBuilder = Response.ok(annotationProperties);
-			return (List<AnnotationProperties>) responseBuilder.build().getEntity();
-		} else {
-			responseBuilder = Response.status(Status.NOT_FOUND);
-			return (List<AnnotationProperties>) responseBuilder.build();
-		}
+		responseBuilder = Response.ok(annotationProperties);
+		return (List<AnnotationProperties>) responseBuilder.build().getEntity();
 	}
 
 	@Override
