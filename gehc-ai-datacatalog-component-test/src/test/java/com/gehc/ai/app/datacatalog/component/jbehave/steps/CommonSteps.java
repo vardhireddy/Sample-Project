@@ -53,7 +53,19 @@ public class CommonSteps {
         annotation.setId(1L);
         annotation.setAnnotationDate(getDate());
         annotation.setAnnotatorId("123");
-        annotation.setImageSet("imageSet");
+        annotation.setImageSet(" \"item\": {\n" +
+                "        \"object_id\": \"216\",\n" +
+                "        \"object_name\": \"nodule\",\n" +
+                "        \"coord_sys\": \"IMAGE\",\n" +
+                "        \"data\": [\n" +
+                "            138,\n" +
+                "            291,\n" +
+                "            57\n" +
+                "        ],\n" +
+                "        \"properties\": {\n" +
+                "            \"patient_outcome\": \"1\"\n" +
+                "        }\n" +
+                "    }");
         annotation.setItem("item");
         annotation.setSchemaVersion("123");
         annotation.setType("type");
