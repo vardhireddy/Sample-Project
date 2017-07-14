@@ -165,7 +165,7 @@ public interface IDataCatalogRest {
      * @param request, to get an org id based on authentication token
      * @return list of Image Series
      */
-    List<ImageSeries> getImgSeriesByDSId( Long id, HttpServletRequest request );
+    List<ImageSeries> getImgSeriesByDSId( Long id );
     
     /**
      * Get Data Set by it's id

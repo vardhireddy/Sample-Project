@@ -17,6 +17,7 @@ public interface DataSetRepository extends JpaRepository<DataSet, Long> {
 	 List<DataSet> findByIdAndType(@Param("id") Long id, @Param("type") String type);
 	 List<DataSet> findByTypeAndOrgId(@Param("type") String type, @Param("orgId") String orgId);
 	 List<DataSet> findByIdAndTypeAndOrgId(@Param("id") Long id, @Param("type") String type, @Param("orgId") String orgId);
+	 List<DataSet> findById(@Param("id") Long id);
 	 @Override
 	 <S extends DataSet> S save(S entity);
 }

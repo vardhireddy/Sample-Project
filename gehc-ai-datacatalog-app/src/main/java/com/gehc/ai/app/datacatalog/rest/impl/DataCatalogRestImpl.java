@@ -547,12 +547,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
-	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id, HttpServletRequest request) {
+	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
+		//Note: Coolidge is using this as well
 		logger.info("Get img series for DC id " + id);
 		List<DataSet> dsLst = new ArrayList<DataSet>();
 		if (null != id) {
-			dsLst = request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
-					: dataSetRepository.findByIdAndOrgId(id, request.getAttribute("orgId").toString());
+			dsLst = dataSetRepository.findById(id);
 			if (null != dsLst && dsLst.size() > 0) {
 				@SuppressWarnings("unchecked")
 				List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
