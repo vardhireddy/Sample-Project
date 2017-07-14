@@ -46,7 +46,7 @@ public class AnnotationSteps {
     private final AnnotationRepository annotationRepository;
     private final CommonSteps commonSteps;
     private ResultActions retrieveResult;
-    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"1\",\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSet\":\" \\\"item\\\": {\\n        \\\"object_id\\\": \\\"216\\\",\\n        \\\"object_name\\\": \\\"nodule\\\",\\n        \\\"coord_sys\\\": \\\"IMAGE\\\",\\n        \\\"data\\\": [\\n            138,\\n            291,\\n            57\\n        ],\\n        \\\"properties\\\": {\\n            \\\"patient_outcome\\\": \\\"1\\\"\\n        }\\n    }\",\"item\":\"item\"}]";
+    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"1\",\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSet\":\"1\",\"item\":\"item\"}]";
 
     @Autowired
     public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps) {

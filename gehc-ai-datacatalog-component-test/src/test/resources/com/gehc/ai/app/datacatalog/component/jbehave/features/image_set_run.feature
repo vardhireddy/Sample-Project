@@ -22,7 +22,17 @@ Feature: Imageset DataCatalog
   When Get Image set based on filter criteria with SUID
   Then verify Image set based on filter with SUID
 
-#  Scenario: Get Image set based on filter criteria with ORG ID and other
-#  Given Get Image set based on filter criteria with ORG ID and other - DataSetUp Provided
-#  When Get Image set based on filter criteria with ORG ID and other
-#  Then verify Image set based on filter  with ORG ID and other
+  Scenario: Get Image set based on filter criteria with ORG ID and Modality
+  Given Get Image set based on filter criteria with ORG ID and Modality - DataSetUp Provided
+  When Get Image set based on filter criteria with ORG ID and Modality
+  Then verify Image set based on filter  with ORG ID and Modality
+
+  Scenario: Get Image set based on filter criteria with ORG ID , Modality and Anatomy
+  Given Get Image set based on filter criteria with ORG ID , Modality and Anatomy - DataSetUp Provided
+  When Get Image set based on filter criteria with ORG ID , Modality and Anatomy
+  Then verify Image set based on filter  with ORG ID , Modality and Anatomy
+
+  Scenario: Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation
+  Given Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation - DataSetUp Provided
+  When Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation
+  Then verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation
