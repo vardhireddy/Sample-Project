@@ -593,10 +593,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		logger.info("Get DC for type " + type);
 		if (null != type) {
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
-					: dataSetRepository.findByTypeAndOrgId(type, request.getAttribute("orgId").toString());
+					: dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type, request.getAttribute("orgId").toString());
 		} else {
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
-					: dataSetRepository.findByOrgIdOrderByCreatedDate(request.getAttribute("orgId").toString());
+					: dataSetRepository.findByOrgIdOrderByCreatedDateDesc(request.getAttribute("orgId").toString());
 		}
 	}
 
