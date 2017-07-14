@@ -17,7 +17,12 @@ Feature: Imageset DataCatalog
   When Store an image set data
   Then verify Store an image set data
 
-#  Scenario: Get Image set based on filter criteria
-#  Given Get Image set based on filter criteria - DataSetUp Provided
-#  When Get Image set based on filter criteria
-#  Then verify Image set based on filter criteria
+  Scenario: Get Image set based on filter criteria with SUID
+  Given Get Image set based on filter criteria with SUID - DataSetUp Provided
+  When Get Image set based on filter criteria with SUID
+  Then verify Image set based on filter with SUID
+
+#  Scenario: Get Image set based on filter criteria with ORG ID and other
+#  Given Get Image set based on filter criteria with ORG ID and other - DataSetUp Provided
+#  When Get Image set based on filter criteria with ORG ID and other
+#  Then verify Image set based on filter  with ORG ID and other

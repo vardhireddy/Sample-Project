@@ -210,7 +210,7 @@ public class DataCollectionSteps {
 
     private void dataCollectionSetUpByType() {
         List<DataSet> dataSets = getDataSets();
-        when(dataSetRepository.findByTypeAndOrgId(anyString(), anyString())).thenReturn(dataSets);
+        when(dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(anyString(), anyString())).thenReturn(dataSets);
     }
 
     private void dataCollectionSetUpForId() {
@@ -220,12 +220,12 @@ public class DataCollectionSteps {
 
     private void dataCollectionSetUpForOrgId() {
         List<DataSet> dataSets = getDataSets();
-        when(dataSetRepository.findByOrgId(anyString())).thenReturn(dataSets);
+        when(dataSetRepository.findByOrgIdOrderByCreatedDateDesc(anyString())).thenReturn(dataSets);
     }
 
     private void dataCollectionSetUpForType() {
         List<DataSet> dataSets = getDataSets();
-        when(dataSetRepository.findByTypeAndOrgId(anyString(), anyString())).thenReturn(dataSets);
+        when(dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(anyString(), anyString())).thenReturn(dataSets);
     }
 
     private void dataCollectionSetUpForImageSet() {

@@ -129,29 +129,51 @@ public class ImageSetSteps {
     }
 
 
-    @Given("Get Image set based on filter criteria - DataSetUp Provided")
+    @Given("Get Image set based on filter criteria with SUID - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteria() throws Exception {
-        commonSteps.getImageSeries();
-
+        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(commonSteps.getImageSeries());
     }
 
 
-    @When("Get Image set based on filter criteria")
+    @When("Get Image set based on filter criteria with SUID")
     public void getImagesetImageBasedOnFilterCriteria() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?series-instance-uid=1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
         );
 
     }
 
-    @Then("verify Image set based on filter criteria")
+    @Then("verify Image set based on filter with SUID")
     public void verifyImagesetImageBasedOnFilterCriteria() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
+    @Given("Get Image set based on filter criteria with ORG ID and other - DataSetUp Provided")
+    public void givenImagesetImageBasedOnFilterCriteriaOrgId() throws Exception {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+        List <Annotation> annList = new ArrayList<Annotation>();
+        annList.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annList);
+    }
+
+
+    @When("Get Image set based on filter criteria with ORG ID and other")
+    public void getImagesetImageBasedOnFilterCriteriaOrgId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=61939267-d195-499f-bfd8-7d92875c7035&modality=CT&annotations=point&anatomy=Lung")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+    }
+
+    @Then("verify Image set based on filter  with ORG ID and other")
+    public void verifyImagesetImageBasedOnFilterCriteriaOrgId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(imageSeries);
