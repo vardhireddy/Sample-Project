@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,10 +54,8 @@ import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataCollection;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.ImageSet;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.entity.TargetData;
@@ -211,7 +208,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return tdmap;
 	}
 
-/*	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/dataCatalog/annotation-by-datacollectionid", method = RequestMethod.GET)
 	public List getAnnotationByDataColId(@QueryParam("id") String id,
@@ -239,7 +236,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		responseBuilder = Response.status(Status.NOT_FOUND);
 		return (List) responseBuilder.build();
 
-	}*/
+	}
 
 	@Override
 	@RequestMapping(value = "/datacatalog/patient/{ids}", method = RequestMethod.GET)
