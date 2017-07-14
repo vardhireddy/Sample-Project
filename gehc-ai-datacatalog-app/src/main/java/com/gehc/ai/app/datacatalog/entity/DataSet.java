@@ -32,7 +32,7 @@ public class DataSet implements Serializable {
 	private String description;
 	//@Column ( name = "image_sets" )
 	//private String[] imageSets;
-	@Column ( name = "created_date" )
+	@Column(name = "created_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private String createdDate;
 	//private int imageSetsSize;
     private String type;
