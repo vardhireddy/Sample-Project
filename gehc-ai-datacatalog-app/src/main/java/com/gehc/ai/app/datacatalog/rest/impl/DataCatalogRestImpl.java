@@ -596,7 +596,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					: dataSetRepository.findByTypeAndOrgId(type, request.getAttribute("orgId").toString());
 		} else {
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
-					: dataSetRepository.findByOrgId(request.getAttribute("orgId").toString());
+					: dataSetRepository.findByOrgIdOrderByCreatedDate(request.getAttribute("orgId").toString());
 		}
 	}
 

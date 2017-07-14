@@ -13,7 +13,7 @@ public interface DataSetRepository extends JpaRepository<DataSet, Long> {
 	//List<DataSet> findByIdInAndOrgId(List<Long> ids, String orgId);
 	//List<DataSet> findByIdAndOrgId(Long id, String orgId);
 	 List<DataSet> findByIdAndOrgId(@Param("id") Long id, @Param("orgId") String orgId);
-	 List<DataSet> findByOrgId(@Param("orgId") String orgId);
+	 List<DataSet> findByOrgIdOrderByCreatedDate(@Param("orgId") String orgId);
 	 List<DataSet> findByIdAndType(@Param("id") Long id, @Param("type") String type);
 	 List<DataSet> findByTypeAndOrgId(@Param("type") String type, @Param("orgId") String orgId);
 	 List<DataSet> findByIdAndTypeAndOrgId(@Param("id") Long id, @Param("type") String type, @Param("orgId") String orgId);
