@@ -26,6 +26,8 @@ import java.util.List;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -57,11 +59,11 @@ public class AnnotationSteps {
 
     @Given("Store an annotation set data - DataSetUp Provided")
     public void givenStoreAnAnnotationSetDataDataSetUpProvided() {
-        when(annotationRepository.save(any(Annotation.class))).thenReturn(getAnnotation());
+        when(annotationRepository.save(any(Annotation.class))).thenReturn(commonSteps.getAnnotation());
     }
     @When("Store an annotation set data")
     public void whenStoreAnAnnotationSetData() throws Exception {
-        Annotation annotation = getAnnotation();
+        Annotation annotation = commonSteps.getAnnotation();
 
         retrieveResult = mockMvc.perform(
                 post("/api/v1/annotation")
@@ -76,18 +78,78 @@ public class AnnotationSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
+    @Given("Get annotation set data by Imageset Id - DataSetUp Provided")
+    public void givenAnnotationSetByImageSetId() throws Exception {
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByImageSet(anyString())).thenReturn(annotations);
+    }
 
-    private Annotation getAnnotation(){
+    @When("Get annotation set data by Imageset Id")
+    public void getAnnotationSetByImageSetId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/annotation?imagesetid=100")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+
+    }
+
+    @Then("Verify Get annotation set data by Imageset Id")
+    public void verifyAnnotationSetByImageSetId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"schemaVersion\":\"1\",\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSet\":\"imageSet\",\"item\":\"item\"}]")));
+    }
+
+    @Given("Get annotation set data - DataSetUp Provided")
+    public void givenAnnotationSet() throws Exception {
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByImageSet(anyString())).thenReturn(annotations);
+    }
+
+    @When("Get annotation set data")
+    public void getAnnotationSet() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/annotation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+
+    }
+
+    @Then("Verify Get annotation set data")
+    public void verifyAnnotationSet() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
+
+    @Given("Get annotation set data for Ids - DataSetUp Provided")
+    public void givenAnnotationSetById() throws Exception {
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(commonSteps.getAnnotation());
         Annotation annotation = new Annotation();
-        annotation.setId(1L);
-        annotation.setAnnotationDate(commonSteps.getDate());
-        annotation.setAnnotatorId("123");
-        annotation.setImageSet("imageSet");
-        annotation.setItem("item");
-        annotation.setSchemaVersion("123");
-        annotation.setType("type");
-        annotation.setSchemaVersion("1");
-       return annotation;
+        annotation.setId(2L);
+        annotation.setAnnotatorId("1234");
+        annotation.setImageSet("imageSet2");
+        annotations.add(annotation);
+        when(annotationRepository.findByIdIn(anyList())).thenReturn(annotations);
+    }
+
+    @When("Get annotation set data for Ids")
+    public void getAnnotationSetById() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/annotation/1,2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+
+    }
+
+    @Then("Verify Get annotation set data for Ids")
+    public void verifyAnnotationSetById() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
     private String AnnotationToJSON(Annotation annotation) throws JsonProcessingException {

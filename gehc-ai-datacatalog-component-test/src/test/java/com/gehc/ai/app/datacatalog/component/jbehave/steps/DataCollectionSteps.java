@@ -55,7 +55,7 @@ public class DataCollectionSteps {
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
         this.imageSeriesRepository = imageSeriesRepository;
-        this.studyRepository =studyRepository;
+        this.studyRepository = studyRepository;
 
 
     }
@@ -179,14 +179,10 @@ public class DataCollectionSteps {
     }
 
 
-
-
-
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(dataSet);
     }
-
 
 
     private List<DataSet> getDataSets() {
@@ -210,8 +206,6 @@ public class DataCollectionSteps {
         dataSets.add(dataSet);
         return dataSets;
     }
-
-
 
 
     private void dataCollectionSetUpByType() {

@@ -30,10 +30,6 @@ Feature: DataCollection DataCatalog
 
 
 
-#  Scenario: Get Image set based on filter criteria
-#    Given Get Image set based on filter criteria - DataSetUp Provided
-#    When Get Image set based on filter criteria
-#    Then verify Image set based on filter criteria
 
 #  Scenario: Retrieve ImageSet with ID
 #    When Get data collection image-set details by its id
