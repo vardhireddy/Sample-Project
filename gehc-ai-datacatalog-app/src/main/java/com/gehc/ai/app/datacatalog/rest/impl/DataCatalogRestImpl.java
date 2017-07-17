@@ -703,6 +703,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();) {
 							AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
 							Annotation annotation = (Annotation) annotationItr.next();
+							annImgSetDataCol.setDcId(id);
 							annImgSetDataCol.setAnnotationDate(annotation.getAnnotationDate().toString());
 							annImgSetDataCol.setAnnotationId(annotation.getAnnotatorId());
 							annImgSetDataCol.setAnnotationType(annotation.getType());
