@@ -216,5 +216,5 @@ public interface IDataCatalogRest {
      */
     List getAnnotationByDataColId(String id,String annotationType);
     
-    List getAnnotationByDCIdType(String id,String annotationType);
+    List getRawTargetData(String id,String annotationType);
 }

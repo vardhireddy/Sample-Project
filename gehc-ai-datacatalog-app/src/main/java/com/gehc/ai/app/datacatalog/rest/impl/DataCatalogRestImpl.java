@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
@@ -132,14 +131,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 		return validParams;
 	}
-	
+
 	@Override
 	@RequestMapping(value = "/datacatalog/healthcheck", method = RequestMethod.GET)
 	public String healthCheck() {
 		return ApplicationConstants.SUCCESS;
 	}
 
-	//TODO: To change the dataCatalog to datacatalog and update experiment service
+	// TODO: To change the dataCatalog to datacatalog and update experiment
+	// service
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/dataCatalog/annotation-by-datacollectionid", method = RequestMethod.GET)
@@ -225,7 +225,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/annotation", method = RequestMethod.GET)
 	public List<Annotation> getAnnotationsByImgSet(@QueryParam("imagesetid") String imagesetid) {
-		//Note: this is being used in C2M as well
+		// Note: this is being used in C2M as well
 		if (null != imagesetid && !imagesetid.isEmpty()) {
 			return annotationRepository.findByImageSet(imagesetid);
 		} else {
@@ -424,7 +424,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
-		//Note: Coolidge is using this as well
+		// Note: Coolidge is using this as well
 		logger.info("Get img series for DC id " + id);
 		List<DataSet> dsLst = new ArrayList<DataSet>();
 		if (null != id) {
@@ -469,7 +469,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		logger.info("Get DC for type " + type);
 		if (null != type) {
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
-					: dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type, request.getAttribute("orgId").toString());
+					: dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type,
+							request.getAttribute("orgId").toString());
 		} else {
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
 					: dataSetRepository.findByOrgIdOrderByCreatedDateDesc(request.getAttribute("orgId").toString());
@@ -531,7 +532,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 								for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr
 										.hasNext();) {
 									ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-//									logger.info("Get imageSeries id " + imageSeries.getId());
+									// logger.info("Get imageSeries id " +
+									// imageSeries.getId());
 									imgSeriesIdLst.add((imageSeries.getId()).toString());
 								}
 								if (typeLst.contains(ABSENT)) {
@@ -542,7 +544,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 										for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
 												.iterator(); imgSeriesItr.hasNext();) {
 											ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-//											logger.info("Get imageSeries id " + imageSeries.getId());
+											// logger.info("Get imageSeries id "
+											// + imageSeries.getId());
 											if (!uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
 												imgSetWithOutAnn.add(imageSeries);
 											}
@@ -557,7 +560,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 										for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
 												.iterator(); imgSeriesItr.hasNext();) {
 											ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-//											logger.info("Get imageSeries id " + imageSeries.getId());
+											// logger.info("Get imageSeries id "
+											// + imageSeries.getId());
 											if (uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
 												imgSetWithAnnotation.add(imageSeries);
 											}
@@ -615,16 +619,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
 		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
-			for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
-				ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-				if(null != imageSeries && null != imageSeries.getPatientDbId()){
-					List<Patient> patientLst = patientRepository.findById(imageSeries.getPatientDbId());
-					if(null != patientLst && patientLst.size()>0){
-						imageSeries.setPatient(patientLst.get(0));
-					}
+		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
+			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+			if (null != imageSeries && null != imageSeries.getPatientDbId()) {
+				List<Patient> patientLst = patientRepository.findById(imageSeries.getPatientDbId());
+				if (null != patientLst && patientLst.size() > 0) {
+					imageSeries.setPatient(patientLst.get(0));
 				}
-				imgSerWithPatientLst.add(imageSeries);
 			}
+			imgSerWithPatientLst.add(imageSeries);
+		}
 		return imgSerWithPatientLst;
 	}
 
@@ -658,12 +662,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return request.getAttribute("orgId") == null ? new ArrayList<Patient>()
 				: patientRepository.findByOrgId(request.getAttribute("orgId").toString());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
-	public List getAnnotationByDCIdType(@QueryParam("id") String id,
-			@QueryParam("annotationType") String annotationType) {
+	public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
 		logger.info("*** Entering method getAnnotationByDCIdType --> id: " + id + " Type: " + annotationType);
 
 		if ((id == null) || (id.length() == 0)) {
@@ -672,59 +675,63 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		ResponseBuilder responseBuilder;
 		List<AnnotationImgSetDataCol> annImgSetDCLst = null;
-		 List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
-		 if(null != dsLst && dsLst.size()>0){
-				logger.info(" dsLst.size() = " + dsLst.size());
-			 if(null != dsLst.get(0).getImageSets()){
-				 List<String> types = new ArrayList<String>();
-				 types.add(annotationType);
-				 List<Long> imgSerIdsLst = new ArrayList<Long>();
-				 for (Iterator<String> imgSerIdItr = ((List<String>) dsLst.get(0).getImageSets()).iterator(); imgSerIdItr.hasNext();) {
-					 imgSerIdsLst.add(Long.valueOf(imgSerIdItr.next()));
+		List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
+		if (null != dsLst && dsLst.size() > 0) {
+			logger.info(" dsLst.size() = " + dsLst.size());
+			if (null != dsLst.get(0).getImageSets()) {
+				List<String> types = new ArrayList<String>();
+				types.add(annotationType);
+				List<Long> imgSerIdsLst = new ArrayList<Long>();
+				for (Iterator<String> imgSerIdItr = ((List<String>) dsLst.get(0).getImageSets()).iterator(); imgSerIdItr
+						.hasNext();) {
+					imgSerIdsLst.add(Long.valueOf(imgSerIdItr.next()));
 				}
-				 List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdsLst);
-				 
-				 logger.info(" imgSeriesLst.size() = " + imgSeriesLst.size());
-				 List<Annotation> annotationLst = annotationRepository.findByImageSetInAndTypeIn((List<String>) dsLst.get(0).getImageSets(), types);
-				 logger.info(" annotationLst.size() = " + annotationLst.size());
-				 if(null != imgSeriesLst && imgSeriesLst.size()>0 && null != annotationLst && annotationLst.size()>0){
-					 annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
-					 for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();) {
-						 AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
-						 Annotation annotation = (Annotation) annotationItr.next();
-						 annImgSetDataCol.setAnnotationDate(annotation.getAnnotationDate().toString());
-						 annImgSetDataCol.setAnnotationId(annotation.getAnnotatorId());
-						 annImgSetDataCol.setAnnotationType(annotation.getType());
-						 annImgSetDataCol.setAnnotatorId(annotation.getAnnotatorId());
-						 ObjectMapper mapper = new ObjectMapper();
-						 TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
-				            HashMap<String, Object> o = null;
+				List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdsLst);
+				if (null != imgSeriesLst && imgSeriesLst.size() > 0) {
+					logger.info(" imgSeriesLst.size() = " + imgSeriesLst.size());
+					Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
+					for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
+						ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+						imgSeriesMap.put(imageSeries.getId(), imageSeries);
+					}
+
+					List<Annotation> annotationLst = annotationRepository
+							.findByImageSetInAndTypeIn((List<String>) dsLst.get(0).getImageSets(), types);
+					logger.info(" annotationLst.size() = " + annotationLst.size());
+					if (null != annotationLst && annotationLst.size() > 0) {
+						annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
+						for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();) {
+							AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
+							Annotation annotation = (Annotation) annotationItr.next();
+							annImgSetDataCol.setAnnotationDate(annotation.getAnnotationDate().toString());
+							annImgSetDataCol.setAnnotationId(annotation.getAnnotatorId());
+							annImgSetDataCol.setAnnotationType(annotation.getType());
+							annImgSetDataCol.setAnnotatorId(annotation.getAnnotatorId());
+							ObjectMapper mapper = new ObjectMapper();
+							TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+							};
+							HashMap<String, Object> o = null;
 							try {
 								String jsonInString = mapper.writeValueAsString(annotation.getItem());
 								o = mapper.readValue(jsonInString, typeRef);
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 								logger.error("Exception during getting raw target data ", e);
 							}
-						 annImgSetDataCol.setAnnotationItem(o);
-						 for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
-							 ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-							 if(annotation.getImageSet().equalsIgnoreCase(imageSeries.getId().toString())){
-								 annImgSetDataCol.setImId(imageSeries.getId().toString());
-								 annImgSetDataCol.setPatientDbid(imageSeries.getPatientDbId().toString());
-								 annImgSetDataCol.setUri(imageSeries.getUri());
-								 break;
-							 }
-							}
-						 annImgSetDCLst.add(annImgSetDataCol);
-						}	 
-				 }
-			 }
-		 }
-		
+							annImgSetDataCol.setAnnotationItem(o);
+							annImgSetDataCol.setImId(annotation.getImageSet());
+							ImageSeries imageSeries = imgSeriesMap.get(Long.valueOf(annotation.getImageSet()));
+							annImgSetDataCol.setPatientDbid(imageSeries.getPatientDbId().toString());
+							annImgSetDataCol.setUri(imageSeries.getUri());
+							annImgSetDCLst.add(annImgSetDataCol);
+						}
+					}
+				}
+			}
+		}
+
 		if (annImgSetDCLst != null) {
-			 logger.info(" annImgSetDCLst.size() = " + annImgSetDCLst.size());
+			logger.info(" annImgSetDCLst.size() = " + annImgSetDCLst.size());
 			responseBuilder = Response.ok(annImgSetDCLst);
 			return (List) responseBuilder.build().getEntity();
 		}
