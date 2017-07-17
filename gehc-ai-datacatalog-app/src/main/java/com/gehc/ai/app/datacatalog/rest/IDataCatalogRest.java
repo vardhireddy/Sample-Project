@@ -215,4 +215,6 @@ public interface IDataCatalogRest {
      * @return
      */
     List getAnnotationByDataColId(String id,String annotationType);
+    
+    List getAnnotationByDCIdType(String id,String annotationType);
 }
