@@ -5,7 +5,6 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;

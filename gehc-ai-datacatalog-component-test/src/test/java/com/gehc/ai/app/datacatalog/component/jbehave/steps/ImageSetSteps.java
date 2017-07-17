@@ -21,12 +21,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.*;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -219,6 +216,28 @@ public class ImageSetSteps {
     public void thenVerifyImageSetBasedOnFilterWithORGIDModalityAnatomyAndAnnotation() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with ORG ID - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithORGIDDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdIn(anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+
+    @When("Get Image set based on filter criteria with ORG ID")
+    public void whenGetImageSetBasedOnFilterCriteriaWithORGID() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=61939267")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    @Then("verify Image set based on filter  with ORG ID")
+    public void thenVerifyImageSetBasedOnFilterWithORGID() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
     }
 
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {

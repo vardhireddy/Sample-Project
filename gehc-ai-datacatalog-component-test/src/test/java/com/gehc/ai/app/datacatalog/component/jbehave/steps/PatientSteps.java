@@ -2,7 +2,6 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
@@ -15,9 +14,9 @@ import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import javax.ws.rs.core.MediaType;
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.springframework.test.web.servlet.ResultActions;
 
 /**
  * Created by sowjanyanaidu on 7/13/17.
@@ -119,6 +116,27 @@ public class PatientSteps {
 
     @Then("verify image series by patient id")
     public void verifyImageSeriesByPatientId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Retrieve image series by patient ids - DataSetUp Provided")
+    public void givenImageSeriesByPatientIds() throws Exception {
+        dataSetUpImageSeriesByPatientId();
+    }
+
+    @When("Get image series by patient ids")
+    public void getImageSeriesByPatientIds() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/patient/123,456/image-set")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+
+    }
+
+    @Then("verify image series by patient ids")
+    public void verifyImageSeriesByPatientIds() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }

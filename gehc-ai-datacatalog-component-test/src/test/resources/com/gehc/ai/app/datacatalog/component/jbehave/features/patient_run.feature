@@ -17,6 +17,11 @@ Feature: Patient DataCatalog
   When Get image series by patient id
   Then verify image series by patient id
 
+  Scenario: Retrieve image series by patient ids
+  Given Retrieve image series by patient ids - DataSetUp Provided
+  When Get image series by patient ids
+  Then verify image series by patient ids
+
   Scenario: Get a Patient
   Given Get a Patient - DataSetUp Provided
   When Get a Patient
