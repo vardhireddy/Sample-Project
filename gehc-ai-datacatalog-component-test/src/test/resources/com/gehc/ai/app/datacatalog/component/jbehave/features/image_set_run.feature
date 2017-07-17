@@ -36,3 +36,8 @@ Feature: Imageset DataCatalog
   Given Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation - DataSetUp Provided
   When Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation
   Then verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation
+
+  Scenario: Get Image set based on filter criteria with ORG ID
+  Given Get Image set based on filter criteria with ORG ID - DataSetUp Provided
+  When Get Image set based on filter criteria with ORG ID
+  Then verify Image set based on filter  with ORG ID

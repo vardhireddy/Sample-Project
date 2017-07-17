@@ -3,10 +3,8 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
@@ -17,18 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.ws.rs.core.MediaType;
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-
-import static org.mockito.Matchers.any;
 import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

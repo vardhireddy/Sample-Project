@@ -28,6 +28,12 @@ public class BeforeAndAfterSteps {
     @MockBean
     StudyRepository studyRepository;
 
+    @MockBean
+    AnnotationPropRepository annotationPropRepository;
+
+    @MockBean
+    COSNotificationRepository cosNotificationRepository;
+
     @BeforeScenario(uponType = ScenarioType.ANY)
     public void initStorageBeforeScenario() {
     }
@@ -39,6 +45,8 @@ public class BeforeAndAfterSteps {
         reset(imageSeriesRepository);
         reset(patientRepository);
         reset(studyRepository);
+        reset(annotationPropRepository);
+        reset(cosNotificationRepository);
 
     }
 
