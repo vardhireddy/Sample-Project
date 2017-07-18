@@ -26,12 +26,8 @@
         <powermock.version>1.6.6</powermock.version>
         <aws-cognito-lib.version>1.0.20170227211433</aws-cognito-lib.version>
         <!-- Sonar -->
-        <sonar.exclusions>**/App.java</sonar.exclusions>
-        <sonar.coverage.exclusions>**/App.java</sonar.coverage.exclusions>
-        <sonar.exclusions>**/interceptor/DataCatalogInterceptor.java</sonar.exclusions>
-        <sonar.coverage.exclusions>**/interceptor/DataCatalogInterceptor.java</sonar.coverage.exclusions>
-        <sonar.exclusions>**/filters/JsonConverter.java</sonar.exclusions>
-        <sonar.coverage.exclusions>**/filters/JsonConverter.java</sonar.coverage.exclusions>
+        <sonar.exclusions>**/filters/JsonConverter.java,**/interceptor/DataCatalogInterceptor.java,**/constants/ApplicationConstants.java</sonar.exclusions>
+        <sonar.coverage.exclusions>**/filters/JsonConverter.java,**/interceptor/DataCatalogInterceptor.java,**/constants/ApplicationConstants.java</sonar.coverage.exclusions>
         <rest.assured.version>2.3.3</rest.assured.version>
     </properties>
    
