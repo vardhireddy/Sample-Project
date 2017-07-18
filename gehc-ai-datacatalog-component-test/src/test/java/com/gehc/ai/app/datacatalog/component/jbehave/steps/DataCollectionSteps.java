@@ -184,6 +184,38 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
 
+    @Given("DataCatalog Raw Target Data - DataSetUp Provided")
+    public void givenDataCatalogRawTargetDataDataSetUpProvided() {
+        DataSet dataSet = getSaveDataSet();
+        List<DataSet> dataSets = getDataSetsWithImageSet();
+        //dataSets.add(dataSet);
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
+
+
+        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
+        Annotation ann = commonSteps.getAnnotation();
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(ann);
+        when(annotationRepository
+                .findByImageSetInAndTypeIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(annotations);
+
+    }
+    @When("get DataCatalog Raw Target Data")
+    public void whenGetDataCatalogRawTargetData() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+    }
+    @Then("verify DataCatalog Raw Target Data")
+    public void thenVerifyDataCatalogRawTargetData() throws Exception {
+        retrieveResult.andExpect(status().isNotFound());
+        //retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
+
+    }
+
 
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -205,9 +237,13 @@ public class DataCollectionSteps {
         DataSet dataSet = new DataSet();
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
-        ImageSeries imageSet = commonSteps.getImageSeries().get(0);
-        dataSet.setImageSets(imageSet);
+        //ImageSeries imageSet = commonSteps.getImageSeries().get(0);
+        dataSet.setImageSets(commonSteps.getImageSeries());
         dataSets.add(dataSet);
+        DataSet dataSet1 = new DataSet();
+        dataSet1.setId(2L);
+        dataSet1.setImageSets(commonSteps.getImageSeries());
+        dataSets.add(dataSet1);
         return dataSets;
     }
 
