@@ -1,6 +1,9 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import org.jbehave.core.annotations.Given;
@@ -40,25 +43,40 @@ public class CosNotificationSteps {
 
     @Given("Store Cos Notification in DataCatalog - DataSetUp Provided")
     public void givenStoreCosNotificationInDataCatalogDataSetUpProvided() {
-        CosNotification cosNotification = new CosNotification();
-        cosNotification.setId(1L);
-        cosNotification.setMessage("I am a Test");
+        CosNotification cosNotification = getCosNotification();
         when(cosNotificationRepository.save(any(CosNotification.class))).thenReturn(cosNotification);
     }
+
+    private CosNotification getCosNotification() {
+        CosNotification cosNotification = new CosNotification();
+        cosNotification.setId(1L);
+        cosNotification.setMessage("{\"message\":\"cosNotiication\"}");
+        cosNotification.setOrgId("123");
+        return cosNotification;
+    }
+
     @When("Store Cos Notification in DataCatalog")
     public void whenStoreCosNotificationInDataCatalog() throws Exception {
+        CosNotification cosNotification = getCosNotification();
         retrieveResult = mockMvc.perform(
                 post("/api/v1/datacatalog/cos-notification")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .content(defnToCosNJSON(cosNotification))
+                        .param("org-id", "12")
+
         );
 
     }
     @Then("Verify Store Cos Notification in DataCatalog")
     public void thenVerifyStoreCosNotificationInDataCatalog() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("{\"status\":\"SUCCESS\",\"code\":\"OK\",\"message\":\"SUCCESS\",\"id\":\"1\"}")));
+        retrieveResult.andExpect(content().string(""));
 
+    }
+
+    private String defnToCosNJSON(CosNotification cosNotification) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(cosNotification);
     }
 
 
