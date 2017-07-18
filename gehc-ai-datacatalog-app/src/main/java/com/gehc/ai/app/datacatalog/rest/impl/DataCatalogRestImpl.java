@@ -129,7 +129,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	@Override
-	@RequestMapping(value = "/datacatalog/healthcheck", method = RequestMethod.GET)
+	@RequestMapping(value = "/dataCatalog/healthCheck", method = RequestMethod.GET)
 	public String healthCheck() {
 		return ApplicationConstants.SUCCESS;
 	}
