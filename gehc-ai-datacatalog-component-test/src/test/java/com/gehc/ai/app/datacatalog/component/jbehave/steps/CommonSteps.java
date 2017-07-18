@@ -42,6 +42,28 @@ public class CommonSteps {
         return imgSerLst;
     }
 
+    public List<ImageSeries> getImageSeriestwo() {
+        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
+        ImageSeries imageSeries = new ImageSeries();
+        imageSeries.setId(2L);
+        imageSeries.setDescription("test");
+        imageSeries.setAnatomy("Lung");
+        imageSeries.setModality("CT");
+        imageSeries.setDataFormat("dataFormat");
+        imageSeries.setUri("tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10");
+        imageSeries.setSeriesInstanceUid("1");
+        imageSeries.setInstitution("CSF");
+        imageSeries.setEquipment("tem");
+        imageSeries.setInstanceCount(1);
+        imageSeries.setUploadBy("BDD");
+        imageSeries.setPatientDbId(1L);
+        Properties prop = new Properties();
+        prop.setProperty("test", "bdd");
+        imageSeries.setProperties(prop);
+        imgSerLst.add(imageSeries);
+        return imgSerLst;
+    }
+
     public String expectedImageSeries() {
         String imageSeries = "{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}";
         return imageSeries;

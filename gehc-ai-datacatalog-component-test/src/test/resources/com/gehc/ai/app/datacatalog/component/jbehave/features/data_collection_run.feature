@@ -31,14 +31,12 @@ Feature: DataCollection DataCatalog
   When Get data collection image-set details by its id when no imageset
   Then verify data collection image-set details by its id when no imageset
 
-#  Scenario: DataCatalog Raw Target Data with empty data set Status not found
-#  Given DataCatalog Raw Target Data - DataSetUp Provided
-#  When get DataCatalog Raw Target Data
-#  Then verify DataCatalog Raw Target Data
+  Scenario: DataCatalog Raw Target Data with empty data set
+  Given DataCatalog Raw Target Data - DataSetUp Provided
+  When get DataCatalog Raw Target Data
+  Then verify DataCatalog Raw Target Data
 
-
-
-
-#  Scenario: Retrieve ImageSet with ID
-#    When Get data collection image-set details by its id
-#    Then verify data collection image-set details by its id
+  Scenario: Retrieve Image Set with ID
+  Given Retrieve Image Set with ID DataSetUp Provided
+  When Get data collection image-set details by its id
+  Then verify data collection image-set details by its id

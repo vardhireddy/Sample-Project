@@ -186,15 +186,16 @@ public class DataCollectionSteps {
 
     @Given("DataCatalog Raw Target Data - DataSetUp Provided")
     public void givenDataCatalogRawTargetDataDataSetUpProvided() {
-        DataSet dataSet = getSaveDataSet();
         List<DataSet> dataSets = getDataSetsWithImageSet();
-        //dataSets.add(dataSet);
         when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
         //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
 
 
         when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
         Annotation ann = commonSteps.getAnnotation();
+        HashMap item = new HashMap();
+        item.put("test","test");
+        ann.setItem(item);
         List<Annotation> annotations = new ArrayList<Annotation>();
         annotations.add(ann);
         when(annotationRepository
@@ -211,9 +212,28 @@ public class DataCollectionSteps {
     }
     @Then("verify DataCatalog Raw Target Data")
     public void thenVerifyDataCatalogRawTargetData() throws Exception {
-        retrieveResult.andExpect(status().isNotFound());
-        //retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[{\"dcId\":\"1\",\"imId\":\"1\",\"annotationId\":\"1\",\"patientDbid\":\"1\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"annotationType\":\"type\",\"annotationItem\":{\"test\":\"test\"},\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\"}]")));
 
+    }
+
+    @Given("Retrieve Image Set with ID DataSetUp Provided")
+    public void givenRetrieveImageSetWithIDDataSetUpProvided() {
+        dataCollectionSetUpForImageSetwithData();
+    }
+
+    @When("Get data collection image-set details by its id")
+    public void whenGetDataCollectionImagesetDetailsByItsId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/123/image-set")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("org-id", "12")
+        );
+    }
+    @Then("verify data collection image-set details by its id")
+    public void thenVerifyDataCollectionImagesetDetailsByItsId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]")));
     }
 
 
@@ -238,12 +258,10 @@ public class DataCollectionSteps {
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
         //ImageSeries imageSet = commonSteps.getImageSeries().get(0);
-        dataSet.setImageSets(commonSteps.getImageSeries());
+        List testList = new ArrayList();
+        testList.add("1");
+        dataSet.setImageSets(testList);
         dataSets.add(dataSet);
-        DataSet dataSet1 = new DataSet();
-        dataSet1.setId(2L);
-        dataSet1.setImageSets(commonSteps.getImageSeries());
-        dataSets.add(dataSet1);
         return dataSets;
     }
 
@@ -279,6 +297,19 @@ public class DataCollectionSteps {
         dataSets.add(dataSet);
         when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
         when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(imageSeriesList);
+    }
+
+    private void dataCollectionSetUpForImageSetwithData() {
+        List<DataSet> dataSets = new ArrayList<DataSet>();
+        DataSet dataSet = new DataSet();
+        dataSet.setId(1L);
+        dataSet.setCreatedBy("test");
+        List testList = new ArrayList();
+        testList.add("1");
+        dataSet.setImageSets(testList);
+        dataSets.add(dataSet);
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeries());
     }
 
     private DataSet getSaveDataSet() {
