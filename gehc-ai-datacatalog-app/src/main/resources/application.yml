@@ -21,15 +21,6 @@ uom.user.me.url: ${uom_api_gateway_url:https://6zpi3igymc.execute-api.us-east-1.
 dev:
   mode: false
   orgId: null
-flyway:
-  enabled: ${flyway_enabled:false}
-  schemas: lfdb
-  baselineOnMigrate: true
-  validateOnMigrate: false
-  url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST}
-  user: ${spring_datatsource_username:dbadmin123}
-  password: ${spring_datasource_password:d165376b867}
-
 ---
 ##Local
 ## Use -Dspring.profiles.active=local as part of the JVM arguments when running locally
