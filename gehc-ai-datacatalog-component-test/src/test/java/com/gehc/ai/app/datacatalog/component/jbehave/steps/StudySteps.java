@@ -144,13 +144,12 @@ public class StudySteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/study/1,2")
                         .contentType(MediaType.APPLICATION_JSON)
-                .requestAttr("orgId","")
+                        .param("org-id", "")
         );
     }
     @Then("verify Get Multiple Studies  with orgid null")
     public void thenVerifyGetMultipleStudiesWithOrgidNull() throws Exception {
-        retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("["+STUDY+"]")));
+        retrieveResult.andExpect(content().string((containsString("{\"status\":\"FAILURE\""))));
     }
 
     private String studyToJSON(Study study) throws JsonProcessingException {
