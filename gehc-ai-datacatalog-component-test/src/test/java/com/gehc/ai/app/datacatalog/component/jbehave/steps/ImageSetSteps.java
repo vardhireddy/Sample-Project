@@ -237,6 +237,49 @@ public class ImageSetSteps {
     public void thenVerifyImageSetBasedOnFilterWithORGID() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with ORG ID and Anatomy - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithORGIDAndAnatomyDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+
+    @When("Get Image set based on filter criteria with ORG ID and Anatomy")
+    public void whenGetImageSetBasedOnFilterCriteriaWithORGIDAndAnatomy() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=61939267&anatomy=Lung")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    @Then("verify Image set based on filter  with ORG ID and Anatomy")
+    public void thenVerifyImageSetBasedOnFilterWithORGIDAndAnatomy() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationABSENTDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+        List <Annotation> annList = new ArrayList<Annotation>();
+        annList.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annList);
+    }
+    @When("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT")
+    public void whenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationABSENT() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung&annotations=absent")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation ABSENT")
+    public void thenVerifyImageSetBasedOnFilterWithORGIDModalityAnatomyAndAnnotationABSENT() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[]")));
 
     }
 

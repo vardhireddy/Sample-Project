@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.Properties;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -128,6 +130,27 @@ public class StudySteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("["+STUDY+"]")));
 
+    }
+
+    @Given("Get Multiple Studies with orgid null- DataSetUp Provided")
+    public void givenGetMultipleStudiesWithOrgidNullDataSetUpProvided() {
+        dataStudyByStudyIds();
+        HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
+        when(mockedRequest.getAttribute("orgId")).thenReturn(null);
+
+    }
+    @When("Get Multiple Studies with orgid null")
+    public void whenGetMultipleStudiesWithOrgidNull() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/study/1,2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                .requestAttr("orgId","")
+        );
+    }
+    @Then("verify Get Multiple Studies  with orgid null")
+    public void thenVerifyGetMultipleStudiesWithOrgidNull() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("["+STUDY+"]")));
     }
 
     private String studyToJSON(Study study) throws JsonProcessingException {

@@ -28,6 +28,7 @@
         <!-- Sonar -->
         <sonar.exclusions>**/App.java</sonar.exclusions>
         <sonar.coverage.exclusions>**/App.java</sonar.coverage.exclusions>
+        <sonar.exclusions>**/DataCatalogInterceptor.java</sonar.exclusions>
         <rest.assured.version>2.3.3</rest.assured.version>
     </properties>
    
