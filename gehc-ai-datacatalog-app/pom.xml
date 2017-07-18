@@ -29,6 +29,7 @@
         <sonar.exclusions>**/App.java</sonar.exclusions>
         <sonar.coverage.exclusions>**/App.java</sonar.coverage.exclusions>
         <sonar.exclusions>**/DataCatalogInterceptor.java</sonar.exclusions>
+        <sonar.exclusions>**/JsonConverter.java</sonar.exclusions>
         <rest.assured.version>2.3.3</rest.assured.version>
     </properties>
    
@@ -95,10 +96,10 @@
 			<version>${rest.assured.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.flywaydb</groupId>-->
+			<!--<artifactId>flyway-core</artifactId>-->
+		<!--</dependency>-->
   </dependencies>
 
     <build>
