@@ -2,7 +2,6 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.repository.*;
 import org.jbehave.core.annotations.Given;
@@ -118,9 +117,14 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
 
-    @When("Get data collection image-set details by its id")
+   @Given("Retrieve Image Set with ID DataSetUp Provided when no imageset")
+   public void givenGetImageSet() throws Exception {
+       dataCollectionSetUpForImageSet();
+   }
+
+    @When("Get data collection image-set details by its id when no imageset")
     public void getdataSetByType() throws Exception {
-        dataCollectionSetUpForImageSet();
+
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/123/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -129,10 +133,10 @@ public class DataCollectionSteps {
 
     }
 
-    @Then("verify data collection image-set details by its id")
+    @Then("verify data collection image-set details by its id when no imageset")
     public void verifyGetDatSetByType() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
+        retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
     @Given("Save DataSet - DataSetUp Provided")
@@ -229,39 +233,16 @@ public class DataCollectionSteps {
     }
 
     private void dataCollectionSetUpForImageSet() {
-//        List<DataSet> dataSets = new ArrayList<DataSet>();
-//        DataSet dataSet = new DataSet();
-//        dataSet.setId(1L);
-//        dataSet.setCreatedBy("test");
-//        ImageSet imageSet =new ImageSet();
-//        imageSet.setAge("90");
-//        imageSet.setAnatomy("Chest");
-//        imageSet.setDataFormat("Test");
-//        imageSet.setDescription("Test");
-//        imageSet.setEquipment("Test");
-//        imageSet.setGender( "Test");
-//        imageSet.setId("Test");
-//        imageSet.setInstanceCount(1);
-//        imageSet.setInstitution("Test");
-//        imageSet.setModality("Test");
-//        imageSet.setOrgId("123");
-//        imageSet.setPatientDbId(anyLong());
-//        dataSet.setImageSets(imageSet);
-//        ImageSet imageSet1 =new ImageSet();
-//        imageSet1.setAge("90");
-//        imageSet1.setAnatomy("Chest");
-//        imageSet1.setDataFormat("Test");
-        //dataSet.setImageSets(imageSet1);
-        List<DataSet> dataSets = getDataSetsWithImageSet();
+        List<DataSet> dataSets = new ArrayList<DataSet>();
+        DataSet dataSet = new DataSet();
+        dataSet.setId(1L);
+        dataSet.setCreatedBy("test");
 
-//        dataSets.add(dataSet);
-        when(dataSetRepository.findByIdAndOrgId(anyLong(), anyString())).thenReturn(dataSets);
-        List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
-        ImageSeries imageSeries = new ImageSeries();
-        imageSeries.setId(1L);
-        imageSeries.setDescription("TEST");
-        imageSeriesList.add(imageSeries);
-        when(imageSeriesRepository.findById(1L)).thenReturn(imageSeriesList);
+        List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
+        dataSet.setImageSets(imageSeriesList);
+        dataSets.add(dataSet);
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(imageSeriesList);
     }
 
     private DataSet getSaveDataSet() {

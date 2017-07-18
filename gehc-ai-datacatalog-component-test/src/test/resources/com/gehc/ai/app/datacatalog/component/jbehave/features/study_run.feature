@@ -21,3 +21,8 @@ Feature: Study DataCatalog
   Given Get Multiple Studies - DataSetUp Provided
   When Get Multiple Studies
   Then verify Get Multiple Studies
+
+#  Scenario: Get Multiple Studies with orgid null
+#    Given Get Multiple Studies with orgid null- DataSetUp Provided
+#    When Get Multiple Studies with orgid null
+#    Then verify Get Multiple Studies  with orgid null
