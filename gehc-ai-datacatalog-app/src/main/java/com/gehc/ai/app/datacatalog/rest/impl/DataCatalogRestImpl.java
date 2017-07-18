@@ -67,7 +67,6 @@ import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
 /**
  * @author 212071558
@@ -87,8 +86,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String SERIES_INS_UID = "series-instance-uid";
 	public static final String ABSENT = "absent";
 
-	@Autowired
-	private IDataCatalogService dataCatalogService;
 	@Value("${uom.user.me.url}")
 	private String uomMeUrl;
 	@Autowired
@@ -136,38 +133,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/healthcheck", method = RequestMethod.GET)
 	public String healthCheck() {
 		return ApplicationConstants.SUCCESS;
-	}
-
-	// TODO: To change the dataCatalog to datacatalog and update experiment
-	// service
-	@SuppressWarnings("unchecked")
-	@Override
-	@RequestMapping(value = "/dataCatalog/annotation-by-datacollectionid", method = RequestMethod.GET)
-	public List getAnnotationByDataColId(@QueryParam("id") String id,
-			@QueryParam("annotationType") String annotationType) {
-		logger.info("*** Entering method getAnnotationByDataColId --> id: " + id);
-
-		// TODO:Check if this API is being used or not
-		if ((id == null) || (id.length() == 0)) {
-			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity("Datacollection id is required to get annotation for a data collection").build());
-		}
-
-		ResponseBuilder responseBuilder;
-		List<AnnotationImgSetDataCol> l;
-		try {
-			l = dataCatalogService.getAnnotationByDataColId(id, annotationType);
-		} catch (Exception e) {
-			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity("Operation failed while retrieving annotation for data collection").build());
-		}
-		if (l != null) {
-			responseBuilder = Response.ok(l);
-			return (List) responseBuilder.build().getEntity();
-		}
-		responseBuilder = Response.status(Status.NOT_FOUND);
-		return (List) responseBuilder.build();
-
 	}
 
 	@Override
@@ -705,7 +670,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							Annotation annotation = (Annotation) annotationItr.next();
 							annImgSetDataCol.setDcId(id);
 							annImgSetDataCol.setAnnotationDate(annotation.getAnnotationDate().toString());
-							annImgSetDataCol.setAnnotationId(annotation.getAnnotatorId());
+							annImgSetDataCol.setAnnotationId(annotation.getId().toString());
 							annImgSetDataCol.setAnnotationType(annotation.getType());
 							annImgSetDataCol.setAnnotatorId(annotation.getAnnotatorId());
 							ObjectMapper mapper = new ObjectMapper();
