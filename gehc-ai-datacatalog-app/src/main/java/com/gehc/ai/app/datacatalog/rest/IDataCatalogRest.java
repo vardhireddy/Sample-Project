@@ -214,7 +214,5 @@ public interface IDataCatalogRest {
      * @param annotationType
      * @return
      */
-    List getAnnotationByDataColId(String id,String annotationType);
-    
     List getRawTargetData(String id,String annotationType);
 }
