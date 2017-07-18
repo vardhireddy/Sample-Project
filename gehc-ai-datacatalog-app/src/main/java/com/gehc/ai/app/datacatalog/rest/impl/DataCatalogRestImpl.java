@@ -48,7 +48,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
-//import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
