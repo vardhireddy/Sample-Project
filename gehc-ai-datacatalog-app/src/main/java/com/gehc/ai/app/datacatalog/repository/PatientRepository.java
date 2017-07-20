@@ -14,11 +14,10 @@ package com.gehc.ai.app.datacatalog.repository;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
 import com.gehc.ai.app.datacatalog.entity.Patient;
 
 /**
@@ -26,21 +25,9 @@ import com.gehc.ai.app.datacatalog.entity.Patient;
  */
 @RepositoryRestResource(collectionResourceRel = "patient", path = "patient")
 public interface PatientRepository extends JpaRepository<Patient, Long> {
-    List<Patient> findByPatientName(@Param("name") String name);
-
     List<Patient> findByPatientId(@Param("id") String id);
-
-    List<Patient> findByGender(@Param("gender") String g);
-
-    List<Patient> findByAge(@Param("age") String id);
-
     List<Patient> findByOrgId(@Param("orgId") String orgId);
-
-    List<Patient> findByIdIn(List<Long> ids);
-
     List<Patient> findByIdInAndOrgId(List<Long> ids, String orgId);
-
-    Page<Patient> findAllByOrderByIdDesc(Pageable pageable);
     List<Patient> findById(@Param("id") Long id);
     List<Patient> findByPatientIdAndOrgId(@Param("id") String id, @Param("orgId") String orgId);
 }
