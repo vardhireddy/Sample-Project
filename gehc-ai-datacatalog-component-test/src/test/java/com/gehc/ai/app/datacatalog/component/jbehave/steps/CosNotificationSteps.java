@@ -6,6 +6,8 @@ import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -14,10 +16,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,13 +37,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CosNotificationSteps {
     private final MockMvc mockMvc;
     private final COSNotificationRepository cosNotificationRepository;
+    private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
 
     @Autowired
-    public CosNotificationSteps(MockMvc mockMvc, COSNotificationRepository cosNotificationRepository) {
+    public CosNotificationSteps(MockMvc mockMvc, COSNotificationRepository cosNotificationRepository, DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
         this.cosNotificationRepository = cosNotificationRepository;
+        this.dataCatalogInterceptor = dataCatalogInterceptor;
+    }
 
+    @BeforeScenario
+    public void setUp() throws Exception {
+        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
     }
 
     @Given("Store Cos Notification in DataCatalog - DataSetUp Provided")
@@ -62,7 +73,7 @@ public class CosNotificationSteps {
                 post("/api/v1/datacatalog/cos-notification")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(defnToCosNJSON(cosNotification))
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
 
         );
 
