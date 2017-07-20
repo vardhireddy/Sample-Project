@@ -172,29 +172,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/patient", method = RequestMethod.POST)
-	public Patient postPatient(@RequestBody Patient p) {
-		if (null != p) {
-			if (null == p.getId()) {
-				if (null != p.getPatientId() && null != p.getOrgId()) {
-					logger.info("p.getPatientId() = "+p.getPatientId());
-					logger.info("p.getOrgId() = "+p.getOrgId());
-					List<Patient> patientLst = patientRepository.findByPatientIdAndOrgId(p.getPatientId(),
-							p.getOrgId());
-					if(patientLst != null && patientLst.size()>0){
-						return patientLst.get(0);
-					}else{ //Patient doesn't exist so save it
-						p.setUploadDate(new Date(System.currentTimeMillis()));
-						return patientRepository.save(p);
-					}
-				} else {//Missing information so do not save and return the object as is
-					return p;
-				}
-			} else { //Update patient info
-				p.setUploadDate(new Date(System.currentTimeMillis()));
-				return patientRepository.save(p);
+	public Patient postPatient(@RequestBody Patient p) throws Exception {
+		if (null != p && null != p.getPatientId() && null != p.getOrgId() && null == p.getId()) {
+			List<Patient> patientLst = patientRepository.findByPatientIdAndOrgId(p.getPatientId(), p.getOrgId());
+			if (patientLst != null && patientLst.size() > 0) {
+				return patientLst.get(0);
 			}
+		} else if (null == p || null == p.getPatientId() || null == p.getOrgId()) {
+			throw new Exception("Missing patient info");
 		}
-		return p;
+		p.setUploadDate(new Date(System.currentTimeMillis()));
+		return patientRepository.save(p);
 	}
 
 	@Override

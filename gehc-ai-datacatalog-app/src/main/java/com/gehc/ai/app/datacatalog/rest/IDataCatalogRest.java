@@ -47,7 +47,7 @@ public interface IDataCatalogRest {
      * @param p patient
      * @return patient added
      */
-    Patient postPatient( Patient p );
+    Patient postPatient( Patient p ) throws Exception;
 
     /**
      * save study to database
