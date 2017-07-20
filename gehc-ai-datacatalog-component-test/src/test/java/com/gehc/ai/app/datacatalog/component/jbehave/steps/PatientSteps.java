@@ -65,7 +65,7 @@ public class PatientSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/patient/123/study")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
 
