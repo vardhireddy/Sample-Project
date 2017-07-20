@@ -7,7 +7,9 @@ import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 import org.hibernate.service.spi.ServiceException;
+import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import java.util.ArrayList;
@@ -23,6 +27,7 @@ import java.util.List;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -44,19 +49,26 @@ public class AnnotationPropertiesSteps {
     private final AnnotationRepository annotationRepository;
     private final CommonSteps commonSteps;
     private final AnnotationPropRepository annotationPropRepository;
+    private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
     private String AnnotationProp = "[{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"123\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"},{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"123\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"}]";
 
     @Autowired
-    public AnnotationPropertiesSteps(MockMvc mockMvc, AnnotationPropRepository annotationPropRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps) {
+    public AnnotationPropertiesSteps(MockMvc mockMvc, AnnotationPropRepository annotationPropRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
         this.annotationPropRepository = annotationPropRepository;
         this.patientRepository = patientRepository;
         this.imageSeriesRepository = imageSeriesRepository;
         this.annotationRepository = annotationRepository;
         this.commonSteps = commonSteps;
+        this.dataCatalogInterceptor = dataCatalogInterceptor;
     }
 
+    @BeforeScenario
+    public void setUp() throws Exception {
+        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
+    }
+    
     @Given("Store an Annotation Properties set data - DataSetUp Provided")
     public void givenStoreAnAnnotationPropertiesSetDataDataSetUpProvided() {
        AnnotationProperties annotationProperties =  setAnnotationProp();
@@ -70,7 +82,7 @@ public class AnnotationPropertiesSteps {
                 post("/api/v1/annotation-properties")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(AnnotationPropertiesToJSON(annotationProperties))
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
     
@@ -95,7 +107,7 @@ public class AnnotationPropertiesSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation-properties?orgId=12")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
 

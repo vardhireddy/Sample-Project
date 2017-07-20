@@ -8,6 +8,8 @@ import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -40,18 +44,25 @@ public class PatientSteps {
     private final PatientRepository patientRepository;
     private final ImageSeriesRepository imageSeriesRepository;
     private final CommonSteps commonSteps;
+    private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
     private String PATIENTS = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"},{\"id\":2,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}]";
     private String STUDY = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientDbId\":1,\"studyInstanceUid\":\"123\",\"studyDate\":\"\",\"studyTime\":\"\",\"studyId\":\"123\",\"studyDescription\":\"Test\",\"referringPhysician\":\"John Doe\",\"studyUrl\":\"http://test\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"Test\",\"properties\":{}}]";
     private String PATIENT = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}]";
 
     @Autowired
-    public PatientSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,CommonSteps commonSteps) {
+    public PatientSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
         this.studyRepository = studyRepository;
         this.patientRepository = patientRepository;
         this.imageSeriesRepository = imageSeriesRepository;
         this.commonSteps = commonSteps;
+        this.dataCatalogInterceptor = dataCatalogInterceptor;
+    }
+
+    @BeforeScenario
+    public void setUp() throws Exception {
+        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
     }
 
     @Given("Retrieve study by patient Provided")
@@ -88,7 +99,7 @@ public class PatientSteps {
                 post("/api/v1/datacatalog/patient")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(patientToJSON(patients.get(0)))
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -109,7 +120,7 @@ public class PatientSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/patient/123/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -130,7 +141,7 @@ public class PatientSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/patient/123,456/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -151,7 +162,7 @@ public class PatientSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/patient/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
 
@@ -173,7 +184,7 @@ public class PatientSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/patient/1,2")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
 
@@ -193,7 +204,7 @@ public class PatientSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/patient?patientId=123")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
 
@@ -214,7 +225,7 @@ public class PatientSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/patient")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
 

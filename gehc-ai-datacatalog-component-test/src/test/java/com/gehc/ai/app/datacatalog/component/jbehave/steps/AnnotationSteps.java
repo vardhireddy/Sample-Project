@@ -7,6 +7,8 @@ import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,19 +42,26 @@ public class AnnotationSteps {
     private final ImageSeriesRepository imageSeriesRepository;
     private final AnnotationRepository annotationRepository;
     private final CommonSteps commonSteps;
+    private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
     private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"1\",\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSet\":\"1\",\"item\":\"item\"}]";
 
     @Autowired
-    public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps) {
+    public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
         this.studyRepository = studyRepository;
         this.patientRepository = patientRepository;
         this.imageSeriesRepository = imageSeriesRepository;
         this.annotationRepository = annotationRepository;
         this.commonSteps = commonSteps;
+        this.dataCatalogInterceptor = dataCatalogInterceptor;
     }
 
+    @BeforeScenario
+    public void setUp() throws Exception {
+        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
+    }
+    
     @Given("Store an annotation set data - DataSetUp Provided")
     public void givenStoreAnAnnotationSetDataDataSetUpProvided() {
         when(annotationRepository.save(any(Annotation.class))).thenReturn(commonSteps.getAnnotation());
@@ -63,7 +74,7 @@ public class AnnotationSteps {
                 post("/api/v1/annotation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(AnnotationToJSON(annotation))
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
 
@@ -84,7 +95,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation?imagesetid=100")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -107,7 +118,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -130,7 +141,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -153,7 +164,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 delete("/api/v1/annotation/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -175,7 +186,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 delete("/api/v1/annotation/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "")
+                        .requestAttr("orgId", "")
         );
 
     }

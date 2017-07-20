@@ -8,6 +8,8 @@ import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,7 @@ public class ImageSetSteps {
     private final ImageSeriesRepository imageSeriesRepository;
     private final StudyRepository studyRepository;
     private final CommonSteps commonSteps;
+    private final DataCatalogInterceptor dataCatalogInterceptor;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -46,15 +51,20 @@ public class ImageSetSteps {
     private RowMapper rm;
 
     @Autowired
-    public ImageSetSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps) {
+    public ImageSetSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
         this.imageSeriesRepository = imageSeriesRepository;
         this.studyRepository = studyRepository;
         this.commonSteps =commonSteps;
+        this.dataCatalogInterceptor = dataCatalogInterceptor;
 
+    }
 
+    @BeforeScenario
+    public void setUp() throws Exception {
+        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
     }
 
     @Given("Retrieve image series by id - DataSetUp Provided")
@@ -67,7 +77,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set/123")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -89,7 +99,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?series-instance-uid=1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -137,6 +147,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?series-instance-uid=1")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -163,6 +174,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267-d195-499f-bfd8-7d92875c7035&modality=CT")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -185,6 +197,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -209,6 +222,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung&annotations=point")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
         );
     }
 
@@ -230,6 +244,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
         );
     }
 
@@ -251,6 +266,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&anatomy=Lung")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
         );
     }
 
@@ -274,6 +290,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung&annotations=absent")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation ABSENT")

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.repository.*;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -43,6 +47,7 @@ public class DataCollectionSteps {
     private final ImageSeriesRepository imageSeriesRepository;
     private final StudyRepository studyRepository;
     private final CommonSteps commonSteps;
+    private final DataCatalogInterceptor dataCatalogInterceptor;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -50,17 +55,20 @@ public class DataCollectionSteps {
     private RowMapper rm;
 
     @Autowired
-    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps) {
+    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
         this.imageSeriesRepository = imageSeriesRepository;
         this.studyRepository = studyRepository;
         this.commonSteps = commonSteps;
-
-
+        this.dataCatalogInterceptor = dataCatalogInterceptor;
     }
 
+    @BeforeScenario
+    public void setUp() throws Exception {
+        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
+    }
 
     @Given("datacatalog health check")
     public void datacatalogHealthCheck() throws Exception {
@@ -84,7 +92,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/1234567")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -106,7 +114,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -128,7 +136,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/123/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -152,7 +160,7 @@ public class DataCollectionSteps {
                 post("/api/v1/datacatalog/data-collection")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(defnToJSON(dataSet))
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -173,7 +181,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection?type=Annotation")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
 
     }
@@ -207,7 +215,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify DataCatalog Raw Target Data")
@@ -227,7 +235,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/123/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("org-id", "12")
+                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify data collection image-set details by its id")
