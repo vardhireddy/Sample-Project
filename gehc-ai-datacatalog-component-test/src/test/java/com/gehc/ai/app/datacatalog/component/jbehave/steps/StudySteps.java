@@ -164,10 +164,10 @@ public class StudySteps {
 
 
 
-    private void dataStudyByStudyId() {
-        List<Study> studyList = getStudy();
-        when(studyRepository.findByIdIn(anyListOf(Long.class))).thenReturn(studyList);
-    }
+//    private void dataStudyByStudyId() {
+//        List<Study> studyList = getStudy();
+//        when(studyRepository.findByIdIn(anyListOf(Long.class))).thenReturn(studyList);
+//    }
 
     private void dataStudyByStudyIds() {
         List<Study> studyList = getStudy();
