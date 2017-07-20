@@ -34,7 +34,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     List<Patient> findByAge(@Param("age") String id);
 
-    List<Patient> findByOrgId(@Param("orgid") String id);
+    List<Patient> findByOrgId(@Param("orgId") String orgId);
 
     List<Patient> findByIdIn(List<Long> ids);
 
@@ -42,5 +42,5 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     Page<Patient> findAllByOrderByIdDesc(Pageable pageable);
     List<Patient> findById(@Param("id") Long id);
-    List<Patient> findDistinctByOrgId(@Param("orgid") String id);
+    List<Patient> findByPatientIdAndOrgId(@Param("id") String id, @Param("orgId") String orgId);
 }
