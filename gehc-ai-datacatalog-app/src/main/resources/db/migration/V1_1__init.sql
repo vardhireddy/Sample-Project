@@ -9,7 +9,7 @@ CREATE TABLE if not exists `annotation` (
   `image_set` varchar(50) NOT NULL,
   `item` json DEFAULT NULL,
   PRIMARY KEY (`id`)
-)
+);
 
 CREATE TABLE if not exists `annotation_properties` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -20,14 +20,14 @@ CREATE TABLE if not exists `annotation_properties` (
   `created_by` varchar(200) DEFAULT NULL,
   `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-)
+);
 
 CREATE TABLE if not exists `cos_notification` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `message` json DEFAULT NULL,
   `org_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-)
+);
 
 CREATE TABLE if not exists `data_set` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -41,7 +41,7 @@ CREATE TABLE if not exists `data_set` (
   `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
   `properties` json DEFAULT NULL,
   PRIMARY KEY (`id`)
-)
+);
 
 CREATE TABLE if not exists `image_set` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -64,7 +64,7 @@ CREATE TABLE if not exists `image_set` (
   `patient_dbid` int(11) DEFAULT NULL,
   `study_dbid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) 
+);
 
 CREATE TABLE if not exists `patient` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -79,7 +79,7 @@ CREATE TABLE if not exists `patient` (
   `upload_by` varchar(255) DEFAULT NULL,
   `properties` json DEFAULT NULL,
   PRIMARY KEY (`id`)
-)
+);
 
 CREATE TABLE if not exists `study` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -97,4 +97,4 @@ CREATE TABLE if not exists `study` (
   `upload_by` varchar(255) DEFAULT NULL,
   `properties` json DEFAULT NULL,
   PRIMARY KEY (`id`)
-)
+);
