@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -49,7 +50,8 @@ public class PatientSteps {
     private String PATIENTS = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"},{\"id\":2,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}]";
     private String STUDY = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientDbId\":1,\"studyInstanceUid\":\"123\",\"studyDate\":\"\",\"studyTime\":\"\",\"studyId\":\"123\",\"studyDescription\":\"Test\",\"referringPhysician\":\"John Doe\",\"studyUrl\":\"http://test\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"Test\",\"properties\":{}}]";
     private String PATIENT = "[{\"id\":1,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}]";
-
+    private String PATIENTS_NULL_ID = "{\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}";
+    private Throwable throwable = null;
     @Autowired
     public PatientSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
@@ -235,6 +237,64 @@ public class PatientSteps {
         retrieveResult.andExpect(content().string(containsString(PATIENTS)));
 
     }
+    @Given("Save Patient with Null Patient id - DataSetUp Provided")
+    public void givenSavePatientWithNullPtId() throws Exception {
+        setAllPatients();
+
+    }
+
+    @When("save Patient with Null Patient id")
+    public void savePatientWithNullPtId() throws Exception {
+        List<Patient> patients = getPatientsWithNullPtID();
+        try{
+        mockMvc.perform(
+                post("/api/v1/datacatalog/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patientToJSON(patients.get(0)))
+                        .requestAttr("orgId", "12")
+        );}
+        catch(Exception e){
+             throwable = e;
+        }
+
+    }
+
+    @Then("verify Saving Patient with Null Patient id")
+    public void verifySaveDatSetWithNullPtId() throws Exception {
+        assert(throwable.toString().contains("Missing patient info"));
+    }
+
+    @Given("Save Patient with Null ID - DataSetUp Provided")
+    public void givenSavePatientWithNullIDDataSetUpProvided() {
+        List<Patient> patients = new ArrayList<Patient>();
+        patients.add(getPatientWithIdNull());
+       when(patientRepository.findByPatientIdAndOrgId(anyString(),anyString())).thenReturn(patients);
+    }
+    @When("save Patient with Null ID")
+    public void whenSavePatientWithNullID() throws Exception {
+        Patient patient = getPatientWithIdNull();
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/datacatalog/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patientToJSON(patient))
+                        .requestAttr("orgId", "12")
+        );
+
+    }
+    
+    @Then("verify Saving Patient with Null ID")
+    public void thenVerifySavingPatientWithNullID() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(PATIENTS_NULL_ID)));
+    }
+
+    private Patient getPatientWithIdNull() {
+        List<Patient> patients = getPatients();
+        Patient patient =  patients.get(0);
+        patient.setId(null);
+        return patient;
+    }
+
 
     private void dataSetUpImageSeriesByPatientId() {
         List<Patient> patLst = getPatients();
@@ -331,6 +391,25 @@ public class PatientSteps {
         patient.setBirthDate("09-09-1950");
         patient.setGender("M");
         patient.setPatientId("123");
+        patient.setPatientName("Late Lucy");
+        patient.setProperties("any");
+        patient.setSchemaVersion("123");
+        patient.setUploadBy("BDD");
+        patient.setUploadDate(getDate());
+        patLst.add(patient);
+        return patLst;
+    }
+
+    private List<Patient> getPatientsWithNullPtID() {
+        List<Patient> patLst = new ArrayList<Patient>();
+        Patient patient = new Patient();
+        patient.setAge("90");
+        patient.setId(null);
+        patient.setOrgId(null);
+        patient.setAge("90");
+        patient.setBirthDate("09-09-1950");
+        patient.setGender("M");
+        patient.setPatientId(null);
         patient.setPatientName("Late Lucy");
         patient.setProperties("any");
         patient.setSchemaVersion("123");

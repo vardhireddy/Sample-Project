@@ -68,13 +68,13 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {      
         if(null != req){
-		   String orgId = req.getParameter("org-id");
-		   logger.info("DC prehandle, org-id in request: " + orgId);
-		   if (!StringUtils.isEmpty(orgId)) {
-			   logger.info("DC prehandle, where org-id is passed: " + orgId);
-				req.setAttribute("orgId", orgId);
-				return true;
-		   }
+//		   String orgId = req.getParameter("org-id");
+//		   logger.info("DC prehandle, org-id in request: " + orgId);
+//		   if (!StringUtils.isEmpty(orgId)) {
+//			   logger.info("DC prehandle, where org-id is passed: " + orgId);
+//				req.setAttribute("orgId", orgId);
+//				return true;
+//		   }
 		   boolean foundAuthToken = false;
            logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod());
            logger.info( " ### In preHandle method, req.getServletPath() = " + req.getServletPath());
