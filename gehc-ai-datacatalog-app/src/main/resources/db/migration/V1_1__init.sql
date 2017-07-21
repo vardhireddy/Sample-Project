@@ -98,3 +98,22 @@ CREATE TABLE if not exists `study` (
   `properties` json DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
+
+CREATE TABLE if not exists `experiment_defn` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `schema_version` varchar(5) DEFAULT NULL,
+  `title` varchar(100) NOT NULL,
+  `goal` varchar(100) DEFAULT NULL,
+  `hypothesis` varchar(200) DEFAULT NULL,
+  `notes` varchar(250) DEFAULT NULL,
+  `architecture` varchar(50) DEFAULT NULL,
+  `orchestration` json NOT NULL,
+  `data_collection_id` varchar(50) DEFAULT NULL,
+  `data_template_type` varchar(100) DEFAULT NULL,
+  `creator_id` varchar(128) DEFAULT NULL,
+  `creator_name` varchar(100) DEFAULT NULL,
+  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `pattern` varchar(100) DEFAULT NULL,
+  `org_id` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
