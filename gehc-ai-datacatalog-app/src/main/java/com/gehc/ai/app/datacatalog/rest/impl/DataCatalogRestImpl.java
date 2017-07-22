@@ -131,6 +131,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
+    @RequestMapping(value = "/datacatalog/healthcheck", method = RequestMethod.GET)
+    public String healthcheck() {
+        return ApplicationConstants.SUCCESS;
+    }
+    //TODOD:To fix the CFT why sometimes it uses the health check as all lower case and sometimes as camel case
+    //We will keep only one health check api
+    @Override
     @RequestMapping(value = "/dataCatalog/healthCheck", method = RequestMethod.GET)
     public String healthCheck() {
         return ApplicationConstants.SUCCESS;
