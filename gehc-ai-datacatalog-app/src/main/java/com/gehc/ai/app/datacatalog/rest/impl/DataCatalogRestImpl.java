@@ -639,12 +639,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 : patientRepository.findByOrgId(request.getAttribute("orgId").toString());
     }
 
-    @SuppressWarnings("unchecked")
+   /* @SuppressWarnings("unchecked")
     @Override
     @RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
     public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
         logger.info("*** Entering method getAnnotationByDCIdType --> id: " + id + " Type: " + annotationType);
-
+//Note: works fine with old DC which has image sets as Array of Strings
         if ((id == null) || (id.length() == 0)) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("Datacollection id is required to get annotation for a data collection").build());
@@ -673,6 +673,83 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
                     List<Annotation> annotationLst = annotationRepository
                             .findByImageSetInAndTypeIn((List<String>) dsLst.get(0).getImageSets(), types);
+                    logger.info(" annotationLst.size() = " + annotationLst.size());
+                    if (null != annotationLst && annotationLst.size() > 0) {
+                        annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
+                        for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext(); ) {
+                            AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
+                            Annotation annotation = (Annotation) annotationItr.next();
+                            annImgSetDataCol.setDcId(id);
+                            annImgSetDataCol.setAnnotationDate(annotation.getAnnotationDate().toString());
+                            annImgSetDataCol.setAnnotationId(annotation.getId().toString());
+                            annImgSetDataCol.setAnnotationType(annotation.getType());
+                            annImgSetDataCol.setAnnotatorId(annotation.getAnnotatorId());
+                            ObjectMapper mapper = new ObjectMapper();
+                            TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+                            };
+                            HashMap<String, Object> o = null;
+                            try {
+                                String jsonInString = mapper.writeValueAsString(annotation.getItem());
+                                o = mapper.readValue(jsonInString, typeRef);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                logger.error("Exception during getting raw target data ", e);
+                            }
+                            annImgSetDataCol.setAnnotationItem(o);
+                            annImgSetDataCol.setImId(annotation.getImageSet());
+                            ImageSeries imageSeries = imgSeriesMap.get(Long.valueOf(annotation.getImageSet()));
+                            annImgSetDataCol.setPatientDbid(imageSeries.getPatientDbId().toString());
+                            annImgSetDataCol.setUri(imageSeries.getUri());
+                            annImgSetDCLst.add(annImgSetDataCol);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (annImgSetDCLst != null) {
+            logger.info(" annImgSetDCLst.size() = " + annImgSetDCLst.size());
+            responseBuilder = Response.ok(annImgSetDCLst);
+            return (List) responseBuilder.build().getEntity();
+        }
+        responseBuilder = Response.status(Status.NOT_FOUND);
+        return (List) responseBuilder.build();
+
+    }*/
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    @RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
+    public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
+        logger.info(" Entering method getRawTargetData --> id: " + id + " Type: " + annotationType);
+        //Note: works fine with new DC which has image sets as Array of Longs
+        if ((id == null) || (id.length() == 0)) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Datacollection id is required to get annotation for a data collection").build());
+        }
+        ResponseBuilder responseBuilder;
+        List<AnnotationImgSetDataCol> annImgSetDCLst = null;
+        List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
+        if (null != dsLst && dsLst.size() > 0) {
+            logger.info("* dsLst.size() = " + dsLst.size());
+            if (null != dsLst.get(0).getImageSets()) {
+                List<String> types = new ArrayList<String>();
+                types.add(annotationType);
+                List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn((List<Long>) dsLst.get(0).getImageSets());
+                if (null != imgSeriesLst && imgSeriesLst.size() > 0) {
+                    logger.info(" imgSeriesLst.size() = " + imgSeriesLst.size());
+                    Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
+                    for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
+                        ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+                        imgSeriesMap.put(imageSeries.getId(), imageSeries);
+                    }
+                    List<String> imgSerIdStrLst = new ArrayList<String>();
+                    for (Iterator<Long> imgSerIdItr = ((List<Long>) dsLst.get(0).getImageSets()).iterator(); imgSerIdItr
+                            .hasNext(); ) {
+                    	imgSerIdStrLst.add(imgSerIdItr.next().toString());
+                    }
+                    List<Annotation> annotationLst = annotationRepository
+                            .findByImageSetInAndTypeIn(imgSerIdStrLst, types);
                     logger.info(" annotationLst.size() = " + annotationLst.size());
                     if (null != annotationLst && annotationLst.size() > 0) {
                         annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
