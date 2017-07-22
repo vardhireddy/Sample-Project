@@ -215,4 +215,8 @@ public interface IDataCatalogRest {
      * @return
      */
     List getRawTargetData(String id,String annotationType);
+    /**
+     * @return String Success
+     */
+    String healthcheck();
 }

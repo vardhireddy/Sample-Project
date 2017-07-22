@@ -117,3 +117,30 @@ CREATE TABLE if not exists `experiment_defn` (
   `org_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
+
+CREATE TABLE if not exists `experiment_run` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `schema_version` varchar(5) DEFAULT NULL,
+  `experiment_defn_id` int(11) NOT NULL,
+  `target_data` json NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `artifacts` json DEFAULT NULL,
+  `creator_id` varchar(128) DEFAULT NULL,
+  `creator_name` varchar(100) DEFAULT NULL,
+  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_by` varchar(100) DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  `org_id` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE if not exists `inference` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `schema_version` varchar(50) DEFAULT NULL,
+  `org_id` varchar(255) NOT NULL,
+  `inference_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `data_collection_id` varchar(50) DEFAULT NULL,
+  `image_set` varchar(50) NOT NULL,
+  `artifacts` json DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
