@@ -610,9 +610,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)
-    public List<ImageSeries> getImgSeriesById(@PathVariable Long id, HttpServletRequest request) {
-        return request.getAttribute("orgId") == null ? new ArrayList<ImageSeries>()
-                : imageSeriesRepository.findByIdAndOrgId(id, request.getAttribute("orgId").toString());
+    public List<ImageSeries> getImgSeriesById(@PathVariable Long id) {
+    	return imageSeriesRepository.findById(id);
     }
 
     @Override
