@@ -77,7 +77,7 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set/123")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        //.requestAttr("orgId", "12")
         );
 
     }
@@ -318,7 +318,7 @@ public class ImageSetSteps {
 
     private void dataSetUpImageSeriesById() {
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
-        when(imageSeriesRepository.findByIdAndOrgId(anyLong(), anyString())).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImageSeriesBySeriesInstanceId() {
