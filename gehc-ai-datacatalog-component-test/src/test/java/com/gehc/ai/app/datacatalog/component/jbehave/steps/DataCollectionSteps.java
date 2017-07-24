@@ -267,7 +267,7 @@ public class DataCollectionSteps {
         dataSet.setCreatedBy("test");
         //ImageSeries imageSet = commonSteps.getImageSeries().get(0);
         List testList = new ArrayList();
-        testList.add("1");
+        testList.add(1L);
         dataSet.setImageSets(testList);
         dataSets.add(dataSet);
         return dataSets;
