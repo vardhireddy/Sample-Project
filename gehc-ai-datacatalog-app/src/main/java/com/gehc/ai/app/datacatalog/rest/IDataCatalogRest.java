@@ -180,11 +180,10 @@ public interface IDataCatalogRest {
      * Get Image Series by Series Instance UUId
      * 
      * @param id
-     * @param request TODO
      * @param request, to get an org id based on authentication token
      * @return list of Image Series
      */
-    List<ImageSeries> getImgSeriesById( Long id, HttpServletRequest request);
+    List<ImageSeries> getImgSeriesById( Long id);
     
     /**
      * Get Image Series by Series Instance UUId
