@@ -197,6 +197,30 @@ public class AnnotationSteps {
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
 
+    @Given("Store an annotation set data for throwing exception - DataSetUp Provided")
+    public void givenStoreAnAnnotationSetDataForThrowingExceptionDataSetUpProvided() {
+
+        when(annotationRepository.save(any(Annotation.class))).thenThrow(Exception.class);
+    }
+
+    @When("Store an annotation set data throws exception")
+    public void whenStoreAnAnnotationSetDataThrowsException() throws Exception {
+        Annotation annotation = commonSteps.getAnnotation();
+
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/annotation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(AnnotationToJSON(annotation))
+                        .requestAttr("orgId", "12")
+        );
+    }
+
+    @Then("Verify Store an annotation set data throws exception")
+    public void thenVerifyStoreAnAnnotationSetDataThrowsException() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("{\"status\":\"FAILURE\",\"code\":\"500\",\"message\":\"FAILURE\",\"id\":null}")));
+
+    }
+
     private String AnnotationToJSON(Annotation annotation) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(annotation);
