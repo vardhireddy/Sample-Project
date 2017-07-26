@@ -31,3 +31,8 @@ Feature: Annotation DataCatalog
   Given Delete annotation set data for Ids with out org id - DataSetUp Provided
   When Delete annotation set data for Ids with out org id
   Then Verify Delete annotation set data for Ids with out org id
+
+  Scenario: Throw Exception while Storing an annotation set data
+  Given Store an annotation set data for throwing exception - DataSetUp Provided
+  When Store an annotation set data throws exception
+  Then Verify Store an annotation set data throws exception

@@ -52,7 +52,7 @@ public class AnnotationPropertiesSteps {
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
     private String AnnotationProp = "[{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"123\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"},{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"123\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"}]";
-
+    private Throwable throwable = null;
     @Autowired
     public AnnotationPropertiesSteps(MockMvc mockMvc, AnnotationPropRepository annotationPropRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
@@ -115,10 +115,32 @@ public class AnnotationPropertiesSteps {
     public void thenVerifyGetAnnotationPropertiesSetData() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString(AnnotationProp)));
-
     }
 
+    @Given("Get Annotation Properties set data Throws Service Exception - DataSetUp Provided")
+    public void givenGetAnnotationPropertiesSetDataThrowsServiceExceptionDataSetUpProvided() {
+        when(annotationPropRepository.findByOrgId(anyString())).thenThrow(Exception.class);
+    }
 
+    @When("Get Annotation Properties set data - Throws Service Exception")
+    public void whenGetAnnotationPropertiesSetDataThrowsServiceException() throws Exception {
+        try{
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/annotation-properties?orgId=12")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );}
+        catch(Exception e){
+            throwable = e;
+        }
+    }
+
+    @Then("Verify Get Annotation Properties set data Throws Service Exception")
+    public void thenVerifyGetAnnotationPropertiesSetDataThrowsServiceException() throws Exception {
+        retrieveResult.andExpect(status().is(200));
+        System.out.println("THROWABLE"+throwable.toString());
+        assert(throwable.toString().contains("Operation failed while retrieving the annotation prop"));
+    }
     private String AnnotationPropertiesToJSON(AnnotationProperties annotationProperties) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(annotationProperties);

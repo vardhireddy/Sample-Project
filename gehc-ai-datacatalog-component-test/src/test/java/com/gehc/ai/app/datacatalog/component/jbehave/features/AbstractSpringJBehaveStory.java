@@ -48,7 +48,6 @@ public abstract class AbstractSpringJBehaveStory extends JUnitStory {
 
     public AbstractSpringJBehaveStory() {
         Embedder embedder = new Embedder();
-        embedder.embedderControls().doIgnoreFailureInStories(true);
         embedder.useMetaFilters(Arrays.asList("-skip"));
         useEmbedder(embedder);
     }
