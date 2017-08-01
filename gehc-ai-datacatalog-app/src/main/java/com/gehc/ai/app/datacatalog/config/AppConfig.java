@@ -11,8 +11,7 @@
  */
 package com.gehc.ai.app.datacatalog.config;
 
-import javax.sql.DataSource;
-
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import javax.sql.DataSource;
 
 /**
  * @author 212071558
@@ -54,6 +53,7 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection");   
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection/{id}");    
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/patient/{ids}");
+        registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/patient/{ids}/study");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/patient");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/study");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/study/{ids}");
