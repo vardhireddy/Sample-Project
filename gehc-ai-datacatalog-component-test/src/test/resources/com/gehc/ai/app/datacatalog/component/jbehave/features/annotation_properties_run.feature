@@ -12,7 +12,17 @@ Feature: Annotation Properties DataCatalog
   When Get Annotation Properties set data
   Then Verify Get Annotation Properties set data
 
-#  Scenario: Get Annotation Properties set data - Throws Service Exception
-#  Given Get Annotation Properties set data Throws Service Exception - DataSetUp Provided
-#  When Get Annotation Properties set data - Throws Service Exception
-#  Then Verify Get Annotation Properties set data Throws Service Exception
+  Scenario: Get Annotation Properties set data - Throws Service Exception
+  Given Get Annotation Properties set data Throws Service Exception - DataSetUp Provided
+  When Get Annotation Properties set data - Throws Service Exception
+  Then Verify Get Annotation Properties set data Throws Service Exception
+
+  Scenario: Get Annotation Properties set data - Throws Exception
+  Given Get Annotation Properties set data Throws Exception - DataSetUp Provided
+  When Get Annotation Properties set data - Throws Exception
+  Then Verify Get Annotation Properties set data Throws Exception
+
+  Scenario: Post Annotation Properties set data - Throws Exception
+  Given Post Annotation Properties set data Throws Exception - DataSetUp Provided
+  When Post Annotation Properties set data - Throws Exception
+  Then Verify Post Annotation Properties set data Throws Exception

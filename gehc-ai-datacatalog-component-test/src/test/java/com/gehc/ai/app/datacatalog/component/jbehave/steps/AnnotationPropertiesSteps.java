@@ -119,16 +119,15 @@ public class AnnotationPropertiesSteps {
 
     @Given("Get Annotation Properties set data Throws Service Exception - DataSetUp Provided")
     public void givenGetAnnotationPropertiesSetDataThrowsServiceExceptionDataSetUpProvided() {
-        when(annotationPropRepository.findByOrgId(anyString())).thenThrow(Exception.class);
+        when(annotationPropRepository.findByOrgId(null)).thenThrow(ServiceException.class);
     }
 
     @When("Get Annotation Properties set data - Throws Service Exception")
-    public void whenGetAnnotationPropertiesSetDataThrowsServiceException() throws Exception {
+    public void whenGetAnnotationPropertiesSetDataThrowsServiceException() {
         try{
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation-properties?orgId=12")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );}
         catch(Exception e){
             throwable = e;
@@ -138,9 +137,59 @@ public class AnnotationPropertiesSteps {
     @Then("Verify Get Annotation Properties set data Throws Service Exception")
     public void thenVerifyGetAnnotationPropertiesSetDataThrowsServiceException() throws Exception {
         retrieveResult.andExpect(status().is(200));
-        System.out.println("THROWABLE"+throwable.toString());
-        assert(throwable.toString().contains("Operation failed while retrieving the annotation prop"));
+        assert(throwable.toString().contains("Request processing failed"));
+
     }
+
+    @Given("Get Annotation Properties set data Throws Exception - DataSetUp Provided")
+    public void givenGetAnnotationPropertiesSetDataThrowsExceptionDataSetUpProvided() {
+        when(annotationPropRepository.findByOrgId(null)).thenThrow(Exception.class);
+    }
+
+    @When("Get Annotation Properties set data - Throws Exception")
+    public void whenGetAnnotationPropertiesSetDataThrowsException() {
+        try{
+            retrieveResult = mockMvc.perform(
+                    get("/api/v1/annotation-properties?orgId=12")
+                            .contentType(MediaType.APPLICATION_JSON)
+            );}
+        catch(Exception e){
+            throwable = e;
+        }
+    }
+
+    @Then("Verify Get Annotation Properties set data Throws Exception")
+    public void thenVerifyGetAnnotationPropertiesSetDataThrowsException() throws Exception {
+        retrieveResult.andExpect(status().is(200));
+        assert (throwable.toString().contains("Request processing failed"));
+    }
+
+    @Given("Post Annotation Properties set data Throws Exception - DataSetUp Provided")
+    public void givenPostAnnotationPropertiesSetDataThrowsExceptionDataSetUpProvided() {
+        AnnotationProperties annotationProperties =  setAnnotationProp();
+        when(annotationPropRepository.save(any(AnnotationProperties.class))).thenThrow(Exception.class);
+
+    }
+    @When("Post Annotation Properties set data - Throws Exception")
+    public void whenPostAnnotationPropertiesSetDataThrowsException() {
+        AnnotationProperties annotationProperties =  setAnnotationProp();
+        try{
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/annotation-properties")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(AnnotationPropertiesToJSON(annotationProperties))
+                        .requestAttr("orgId", "12")
+        );}
+        catch(Exception e){
+            throwable = e;
+        }
+    }
+    @Then("Verify Post Annotation Properties set data Throws Exception")
+    public void thenVerifyPostAnnotationPropertiesSetDataThrowsException() throws Exception {
+        retrieveResult.andExpect(status().is(200));
+        retrieveResult.andExpect(content().string(containsString("FAILURE")));
+    }
+
     private String AnnotationPropertiesToJSON(AnnotationProperties annotationProperties) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(annotationProperties);

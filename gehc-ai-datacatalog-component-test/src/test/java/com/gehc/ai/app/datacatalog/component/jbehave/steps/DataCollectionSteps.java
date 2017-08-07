@@ -244,6 +244,26 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]")));
     }
 
+    @Given("Post DataCatalog with Org ID null DataSetUp Provided")
+    public void givenRetrieveDataCatalogWithOrgIDNullDataSetUpProvided() {
+        DataSet dataSet = getSaveDataSet();
+        when(dataSetRepository.save(any(DataSet.class))).thenReturn(dataSet);
+    }
+    @When("Post data collection by Org Id null")
+    public void whenGetDataCollectionByOrgIdNull() throws Exception {
+        when(dataCatalogInterceptor.getOrgIdBasedOnSessionToken(anyString())).thenReturn(null);
+        DataSet dataSet = getSaveDataSet();
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/datacatalog/data-collection")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(defnToJSON(dataSet)));
+
+    }
+    @Then("verify data collection by Org Id null")
+    public void thenVerifyDataCollectionByOrgIdNull() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("")));
+    }
+
 
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
