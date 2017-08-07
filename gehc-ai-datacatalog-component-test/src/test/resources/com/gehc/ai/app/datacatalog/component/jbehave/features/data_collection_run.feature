@@ -41,3 +41,8 @@ Feature: DataCollection DataCatalog
   When Get data collection image-set details by its id
   Then verify data collection image-set details by its id
 
+  Scenario: Post DataSet by Org ID null
+  Given Post DataCatalog with Org ID null DataSetUp Provided
+  When Post data collection by Org Id null
+  Then verify data collection by Org Id null
+

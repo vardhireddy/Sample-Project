@@ -186,7 +186,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 delete("/api/v1/annotation/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "")
+
         );
 
     }
@@ -219,6 +219,24 @@ public class AnnotationSteps {
     public void thenVerifyStoreAnAnnotationSetDataThrowsException() throws Exception {
         retrieveResult.andExpect(content().string(containsString("{\"status\":\"FAILURE\",\"code\":\"500\",\"message\":\"FAILURE\",\"id\":null}")));
 
+    }
+
+    @Given("Delete annotation set data for Ids throws exception - DataSetUp Provided")
+    public void givenDeleteAnnotationSetDataForIdsThrowsExceptionDataSetUpProvided() {
+        Annotation annotation = new Annotation();
+        doNothing().when(annotationRepository).delete(annotation);
+    }
+    @When("Delete annotation set data for Ids throws exception")
+    public void whenDeleteAnnotationSetDataForIdsThrowsException() throws Exception {
+        retrieveResult = mockMvc.perform(
+                delete("/api/v1/annotation/ ")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("Verify Delete annotation set data for Ids throws exception")
+    public void thenVerifyDeleteAnnotationSetDataForIdsThrowsException() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("Id does not exist")));
     }
 
     private String AnnotationToJSON(Annotation annotation) throws JsonProcessingException {

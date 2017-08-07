@@ -36,3 +36,8 @@ Feature: Annotation DataCatalog
   Given Store an annotation set data for throwing exception - DataSetUp Provided
   When Store an annotation set data throws exception
   Then Verify Store an annotation set data throws exception
+
+  Scenario: Throw Exception while Delete annotation set data for Ids
+  Given Delete annotation set data for Ids throws exception - DataSetUp Provided
+  When Delete annotation set data for Ids throws exception
+  Then Verify Delete annotation set data for Ids throws exception
