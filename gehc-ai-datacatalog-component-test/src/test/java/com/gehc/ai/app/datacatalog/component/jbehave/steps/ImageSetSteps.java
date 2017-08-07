@@ -49,6 +49,7 @@ public class ImageSetSteps {
     private AnnotationRepository annotationRepository;
     private PreparedStatementSetter ps;
     private RowMapper rm;
+    private Throwable throwable = null;
 
     @Autowired
     public ImageSetSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
@@ -298,6 +299,31 @@ public class ImageSetSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("[]")));
 
+    }
+
+    @Given("Get Image set based on filter criteria with ORG ID and Modality throws Exception - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsExceptionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityIn(anyListOf(String.class),anyListOf(String.class))).thenThrow(Exception.class);
+    }
+    @When("Get Image set based on filter criteria with ORG ID and Modality throws Exception")
+    public void whenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsException(){
+        try {
+            retrieveResult = mockMvc.perform(
+                    get("/api/v1/datacatalog/image-set?org-id=61939267-d195-499f-bfd8-7d92875c7035&modality=CT")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .requestAttr("orgId", "12")
+            );
+        }
+        catch(Exception e){
+            throwable= e;
+        };
+
+    }
+    @Then("verify Image set based on filter  with ORG ID and Modality throws Exception")
+    public void thenVerifyImageSetBasedOnFilterWithORGIDAndModalityThrowsException() throws Exception {
+        retrieveResult.andExpect(status().is(200));
+        retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
