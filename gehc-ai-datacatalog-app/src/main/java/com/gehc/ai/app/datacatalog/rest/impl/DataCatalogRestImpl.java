@@ -135,6 +135,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public String healthcheck() {
         return ApplicationConstants.SUCCESS;
     }
+
     //TODOD:To fix the CFT why sometimes it uses the health check as all lower case and sometimes as camel case
     //We will keep only one health check api
     @Override
@@ -243,31 +244,26 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         try {
             if (null != ids && ids.length() > 0) {
                 String[] idStrings = ids.split(",");
-                if (null != idStrings && idStrings.length > 0) {
-                    for (int i = 0; i < idStrings.length; i++) {
-                        ann.setId(Long.valueOf(idStrings[i]));
-                        if (null != request.getAttribute("orgId")) {
-                            ann.setOrgId(request.getAttribute("orgId").toString());
-                            annotationRepository.delete(ann);
-                            apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                                    ApplicationConstants.SUCCESS, ids);
-                        } else {
-                            // annotationRepository.delete( Long.valueOf(
-                            // idStrings[i] ) );
-                            // apiResponse = new
-                            // ApiResponse(ApplicationConstants.FAILURE,
-                            // ApplicationConstants.BAD_REQUEST_CODE, "Org Id is
-                            // ", null);
-                            // commented above as org id will not be avaiable
-                            // for get annotation by ids as C2M is using it
-                            annotationRepository.delete(ann);
-                            apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                                    ApplicationConstants.SUCCESS, ids);
-                        }
+                for (int i = 0; i < idStrings.length; i++) {
+                    ann.setId(Long.valueOf(idStrings[i]));
+                    if (null != request.getAttribute("orgId")) {
+                        ann.setOrgId(request.getAttribute("orgId").toString());
+                        annotationRepository.delete(ann);
+                        apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
+                                ApplicationConstants.SUCCESS, ids);
+                    } else {
+                        // annotationRepository.delete( Long.valueOf(
+                        // idStrings[i] ) );
+                        // apiResponse = new
+                        // ApiResponse(ApplicationConstants.FAILURE,
+                        // ApplicationConstants.BAD_REQUEST_CODE, "Org Id is
+                        // ", null);
+                        // commented above as org id will not be avaiable
+                        // for get annotation by ids as C2M is using it
+                        annotationRepository.delete(ann);
+                        apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
+                                ApplicationConstants.SUCCESS, ids);
                     }
-                } else {
-                    apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE,
-                            "Org Id does not exist", ids);
                 }
             }
 
@@ -287,11 +283,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/annotation/{ids}", method = RequestMethod.GET)
     public List<Annotation> getAnnotationsById(@PathVariable String ids, HttpServletRequest request) {
-            List<Long> idsLst = new ArrayList<Long>();
-            String[] idStrings = ids.split(",");
-            for (int i = 0; i < idStrings.length; i++)
-                idsLst.add(Long.valueOf(idStrings[i]));
-            return annotationRepository.findByIdIn(idsLst);
+        List<Long> idsLst = new ArrayList<Long>();
+        String[] idStrings = ids.split(",");
+        for (int i = 0; i < idStrings.length; i++)
+            idsLst.add(Long.valueOf(idStrings[i]));
+        return annotationRepository.findByIdIn(idsLst);
     }
 
     @SuppressWarnings("unchecked")
@@ -607,7 +603,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesById(@PathVariable Long id) {
-    	return imageSeriesRepository.findById(id);
+        return imageSeriesRepository.findById(id);
     }
 
     @Override
@@ -711,7 +707,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return (List) responseBuilder.build();
 
     }*/
-    
+
     @SuppressWarnings("unchecked")
     @Override
     @RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
@@ -741,12 +737,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     List<String> imgSerIdStrLst = new ArrayList<String>();
                     for (Iterator<Long> imgSerIdItr = ((List<Long>) dsLst.get(0).getImageSets()).iterator(); imgSerIdItr
                             .hasNext(); ) {
-                    	imgSerIdStrLst.add(imgSerIdItr.next().toString());
+                        imgSerIdStrLst.add(imgSerIdItr.next().toString());
                     }
                     List<Annotation> annotationLst = annotationRepository
                             .findByImageSetInAndTypeIn(imgSerIdStrLst, types);
-                    logger.info(" annotationLst.size() = " + annotationLst.size());
                     if (null != annotationLst && annotationLst.size() > 0) {
+                        logger.info(" annotationLst.size() = " + annotationLst.size());
                         annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
                         for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext(); ) {
                             AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
