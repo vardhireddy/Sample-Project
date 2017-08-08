@@ -55,9 +55,9 @@ Feature: DataCollection DataCatalog
   When get DataCatalog Raw Target Data with id null
   Then verify DataCatalog Raw Target Data with id null
 
-#  Scenario: DataCatalog Raw Target Data for empty DataSet
-#  Given DataCatalog Raw Target Data for empty DataSet - DataSetUp Provided
-#  When get DataCatalog Raw Target Data for empty DataSet
-#  Then verify DataCatalog Raw Target Data for empty DataSet
+  Scenario: DataCatalog Raw Target Data for empty DataSet
+  Given DataCatalog Raw Target Data for empty DataSet - DataSetUp Provided
+  When get DataCatalog Raw Target Data for empty DataSet
+  Then verify DataCatalog Raw Target Data for empty DataSet
 
 

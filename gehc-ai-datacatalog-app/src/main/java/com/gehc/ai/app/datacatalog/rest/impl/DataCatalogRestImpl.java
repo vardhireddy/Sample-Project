@@ -287,15 +287,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/annotation/{ids}", method = RequestMethod.GET)
     public List<Annotation> getAnnotationsById(@PathVariable String ids, HttpServletRequest request) {
-        if (null != ids && ids.length() > 0) {
             List<Long> idsLst = new ArrayList<Long>();
             String[] idStrings = ids.split(",");
             for (int i = 0; i < idStrings.length; i++)
                 idsLst.add(Long.valueOf(idStrings[i]));
             return annotationRepository.findByIdIn(idsLst);
-        } else {
-            return new ArrayList<Annotation>();
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -788,8 +784,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             responseBuilder = Response.ok(annImgSetDCLst);
             return (List) responseBuilder.build().getEntity();
         }
-        responseBuilder = Response.status(Status.NOT_FOUND);
-        return (List) responseBuilder.build();
+
+        return (List) new ArrayList<AnnotationImgSetDataCol>();
 
     }
 }
