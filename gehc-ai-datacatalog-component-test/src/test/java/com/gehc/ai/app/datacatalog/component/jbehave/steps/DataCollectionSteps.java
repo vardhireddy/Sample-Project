@@ -303,16 +303,21 @@ public class DataCollectionSteps {
 
     @Given("DataCatalog Raw Target Data for empty DataSet - DataSetUp Provided")
     public void givenDataCatalogRawTargetDataForEmptyDataSetDataSetUpProvided() {
-        when(dataSetRepository.findById(anyLong())).thenReturn(null);
+        when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
     }
 
     @When("get DataCatalog Raw Target Data for empty DataSet")
     public void whenGetDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
+       // try{
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .requestAttr("orgId", "12")
         );
+//    }
+//        catch (Exception e ){
+//            throwable = e;
+//        }
     }
     @Then("verify DataCatalog Raw Target Data for empty DataSet")
     public void thenVerifyDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
