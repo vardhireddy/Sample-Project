@@ -30,10 +30,10 @@ Feature: DataCollection DataCatalog
   When save DataSet
   Then verify Saving DataSet
 
-#  Scenario: Retrieve Image Set with ID when no imageset
-#  Given Retrieve Image Set with ID DataSetUp Provided when no imageset
-#  When Get data collection image-set details by its id when no imageset
-#  Then verify data collection image-set details by its id when no imageset
+  Scenario: Retrieve Image Set with ID when no imageset
+  Given Retrieve Image Set with ID DataSetUp Provided when no imageset
+  When Get data collection image-set details by its id when no imageset
+  Then verify data collection image-set details by its id when no imageset
 
   Scenario: DataCatalog Raw Target Data
   Given DataCatalog Raw Target Data - DataSetUp Provided

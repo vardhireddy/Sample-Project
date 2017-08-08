@@ -57,3 +57,8 @@ Feature: Imageset DataCatalog
   When Get Image set based on filter criteria with ORG ID and Modality throws Exception
   Then verify Image set based on filter  with ORG ID and Modality throws Exception
 
+  Scenario: Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT with no matching ImageSeries
+  Given Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT with no matching ImageSeries - DataSetUp Provided
+  When Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT with no matching ImageSeries
+  Then verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation ABSENT returns empty ImageSeries
+
