@@ -41,3 +41,8 @@ Feature: Annotation DataCatalog
   Given Delete annotation set data for Ids throws exception - DataSetUp Provided
   When Delete annotation set data for Ids throws exception
   Then Verify Delete annotation set data for Ids throws exception
+
+#  Scenario: Get annotation set data for Ids null
+#  Given Get annotation set data for Ids null - DataSetUp Provided
+#  When Get annotation set data for Ids null
+#  Then Verify Get annotation set data for Ids null

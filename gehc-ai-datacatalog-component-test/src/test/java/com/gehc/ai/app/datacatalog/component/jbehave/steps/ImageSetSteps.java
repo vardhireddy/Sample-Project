@@ -277,13 +277,37 @@ public class ImageSetSteps {
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
 
     }
+    @Given("Get Image set based on filter criteria with ORG ID and Modality throws Exception - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsExceptionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityIn(anyListOf(String.class),anyListOf(String.class))).thenThrow(Exception.class);
+    }
+
+    @When("Get Image set based on filter criteria with ORG ID and Modality throws Exception")
+    public void whenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsException(){
+        try {
+            retrieveResult = mockMvc.perform(
+                    get("/api/v1/datacatalog/image-set?org-id=61939267-d195-499f-bfd8-7d92875c7035&modality=CT")
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
+        }
+        catch(Exception e){
+            throwable= e;
+        };
+
+    }
+    @Then("verify Image set based on filter  with ORG ID and Modality throws Exception")
+    public void thenVerifyImageSetBasedOnFilterWithORGIDAndModalityThrowsException() throws Exception {
+        retrieveResult.andExpect(status().is(200));
+        assert (throwable.toString().contains("Request processing failed"));
+    }
 
     @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationABSENTDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
         when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
-        annList.add(commonSteps.getAnnotation());
+        annList.add(commonSteps.getAnnotationWithOutValidId());
         when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annList);
     }
     @When("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT")
@@ -297,34 +321,13 @@ public class ImageSetSteps {
     @Then("verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation ABSENT")
     public void thenVerifyImageSetBasedOnFilterWithORGIDModalityAnatomyAndAnnotationABSENT() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[]")));
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]")));
 
     }
 
-    @Given("Get Image set based on filter criteria with ORG ID and Modality throws Exception - DataSetUp Provided")
-    public void givenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsExceptionDataSetUpProvided() {
-        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(imageSeriesRepository.findByOrgIdInAndModalityIn(anyListOf(String.class),anyListOf(String.class))).thenThrow(Exception.class);
-    }
-    @When("Get Image set based on filter criteria with ORG ID and Modality throws Exception")
-    public void whenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsException(){
-        try {
-            retrieveResult = mockMvc.perform(
-                    get("/api/v1/datacatalog/image-set?org-id=61939267-d195-499f-bfd8-7d92875c7035&modality=CT")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .requestAttr("orgId", "12")
-            );
-        }
-        catch(Exception e){
-            throwable= e;
-        };
 
-    }
-    @Then("verify Image set based on filter  with ORG ID and Modality throws Exception")
-    public void thenVerifyImageSetBasedOnFilterWithORGIDAndModalityThrowsException() throws Exception {
-        retrieveResult.andExpect(status().is(200));
-        retrieveResult.andExpect(content().string(containsString("[]")));
-    }
+
+
 
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

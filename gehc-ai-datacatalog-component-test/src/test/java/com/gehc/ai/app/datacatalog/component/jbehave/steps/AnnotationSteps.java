@@ -239,6 +239,27 @@ public class AnnotationSteps {
         retrieveResult.andExpect(content().string(containsString("Id does not exist")));
     }
 
+    @Given("Get annotation set data for Ids null - DataSetUp Provided")
+    public void givenGetAnnotationSetDataForIdsNullDataSetUpProvided() {
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByIdIn(anyListOf(Long.class))).thenReturn(annotations);
+
+    }
+    @When("Get annotation set data for Ids null")
+    public void whenGetAnnotationSetDataForIdsNull() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/annotation/,")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("Verify Get annotation set data for Ids null")
+    public void thenVerifyGetAnnotationSetDataForIdsNull() throws Exception {
+//        retrieveResult.andExpect(status().isOk());
+//        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
+
     private String AnnotationToJSON(Annotation annotation) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(annotation);

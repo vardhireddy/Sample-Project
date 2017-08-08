@@ -82,6 +82,18 @@ public class CommonSteps {
         return annotation;
     }
 
+    public Annotation getAnnotationWithOutValidId(){
+        Annotation annotation = new Annotation();
+        annotation.setId(1L);
+        annotation.setAnnotationDate(getDate());
+        annotation.setAnnotatorId("123");
+        annotation.setImageSet("123");
+        annotation.setItem("item");
+        annotation.setSchemaVersion("123");
+        annotation.setType("type");
+        annotation.setSchemaVersion("1");
+        return annotation;
+    }
 
 
 }
