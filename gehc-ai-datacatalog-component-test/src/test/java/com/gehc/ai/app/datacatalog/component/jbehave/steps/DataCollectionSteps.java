@@ -308,20 +308,16 @@ public class DataCollectionSteps {
 
     @When("get DataCatalog Raw Target Data for empty DataSet")
     public void whenGetDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
-       // try{
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .requestAttr("orgId", "12")
         );
-//    }
-//        catch (Exception e ){
-//            throwable = e;
-//        }
     }
+
     @Then("verify DataCatalog Raw Target Data for empty DataSet")
     public void thenVerifyDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
-        retrieveResult.andExpect(status().isNotFound());
+        //retrieveResult.andExpect(status().isNotFound());
         retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
