@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.text.ParseException;
@@ -53,6 +54,7 @@ public class DataCollectionSteps {
     private AnnotationRepository annotationRepository;
     private PreparedStatementSetter ps;
     private RowMapper rm;
+    private Throwable throwable = null;
 
     @Autowired
     public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
@@ -264,6 +266,59 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("")));
     }
 
+    @Given("datacatalog health check with lowercase")
+    public void givenDatacatalogHealthCheckWithLowercase() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/healthcheck")
+        );
+    }
+
+    @Then("verify success for with lowercase")
+    public void thenVerifySuccessForWithLowercase() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+    }
+
+    @Given("DataCatalog Raw Target Data with id null - DataSetUp Provided")
+    public void givenDataCatalogRawTargetDataWithIdNullDataSetUpProvided() {
+        dataCollectionSetUpForImageSetwithData();
+    }
+
+    @When("get DataCatalog Raw Target Data with id null")
+    public void whenGetDataCatalogRawTargetDataWithIdNull() {
+       try{
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/raw-target-data?annotationType=test&id=")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );}
+        catch(Exception e)
+        {
+            throwable = e;
+        }
+    }
+    @Then("verify DataCatalog Raw Target Data with id null")
+    public void thenVerifyDataCatalogRawTargetDataWithIdNull() throws Exception {
+        assert(throwable.toString().contains("Request processing failed"));
+    }
+
+    @Given("DataCatalog Raw Target Data for empty DataSet - DataSetUp Provided")
+    public void givenDataCatalogRawTargetDataForEmptyDataSetDataSetUpProvided() {
+        when(dataSetRepository.findById(anyLong())).thenReturn(null);
+    }
+
+    @When("get DataCatalog Raw Target Data for empty DataSet")
+    public void whenGetDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify DataCatalog Raw Target Data for empty DataSet")
+    public void thenVerifyDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
+        retrieveResult.andExpect(status().isNotFound());
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
 
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

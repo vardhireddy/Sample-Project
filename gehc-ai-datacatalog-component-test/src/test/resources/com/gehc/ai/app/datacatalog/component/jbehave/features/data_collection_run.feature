@@ -6,6 +6,10 @@ Feature: DataCollection DataCatalog
   Given datacatalog health check
   Then  verify success
 
+  Scenario: Verify Health Check Page with lowercase for  experiment from the learning factory app
+  Given datacatalog health check with lowercase
+  Then  verify success for with lowercase
+
   Scenario: Retrieve DataSet with ID
   Given Retrieve DataCatalog with ID DataSetUp Provided
   When Get data collection details by its id
@@ -45,4 +49,15 @@ Feature: DataCollection DataCatalog
   Given Post DataCatalog with Org ID null DataSetUp Provided
   When Post data collection by Org Id null
   Then verify data collection by Org Id null
+
+  Scenario: DataCatalog Raw Target Data with id null
+  Given DataCatalog Raw Target Data with id null - DataSetUp Provided
+  When get DataCatalog Raw Target Data with id null
+  Then verify DataCatalog Raw Target Data with id null
+
+#  Scenario: DataCatalog Raw Target Data for empty DataSet
+#  Given DataCatalog Raw Target Data for empty DataSet - DataSetUp Provided
+#  When get DataCatalog Raw Target Data for empty DataSet
+#  Then verify DataCatalog Raw Target Data for empty DataSet
+
 
