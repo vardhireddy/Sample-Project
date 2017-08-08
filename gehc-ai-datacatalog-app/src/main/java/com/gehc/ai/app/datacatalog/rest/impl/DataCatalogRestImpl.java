@@ -180,7 +180,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public Patient postPatient(@RequestBody Patient p) throws Exception {
         if (null != p && null != p.getPatientId() && null != p.getOrgId() && null == p.getId()) {
             List<Patient> patientLst = patientRepository.findByPatientIdAndOrgId(p.getPatientId(), p.getOrgId());
-            if (patientLst != null && patientLst.size() > 0) {
+            if (patientLst != null && !patientLst.isEmpty()) {
                 return patientLst.get(0);
             }
         } else if (null == p || null == p.getPatientId() || null == p.getOrgId()) {
@@ -375,7 +375,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         // TODO:Use ManyToOne mapping between Image Series and Patient
         if (null != ids && ids.length() > 0) {
             List<Patient> patLst = patientRepository.findByPatientId(ids);
-            if (null != patLst && patLst.size() > 0) {
+            if (null != patLst && !patLst.isEmpty()) {
                 logger.info("*** Patient DB id " + ((Patient) (patLst.get(0))).getId());
                 imgSerLst = imageSeriesRepository.findByPatientDbId(((Patient) (patLst.get(0))).getId());
             }
@@ -397,11 +397,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         List<DataSet> dsLst = new ArrayList<DataSet>();
         if (null != id) {
             dsLst = dataSetRepository.findById(id);
-            if (null != dsLst && dsLst.size() > 0) {
+            if (null != dsLst && !dsLst.isEmpty()) {
                 @SuppressWarnings("unchecked")
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = new ArrayList<Long>();
-                if (null != imgSeries && imgSeries.size() > 0) {
+                if (null != imgSeries && !imgSeries.isEmpty()) {
                     for (int i = 0; i < imgSeries.size(); i++) {
                         imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
                     }
@@ -539,10 +539,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             }
                         }
 
-                        if (null != imgSetWithAnnotation && imgSetWithAnnotation.size() > 0) {
+                        if (null != imgSetWithAnnotation && !imgSetWithAnnotation.isEmpty()) {
                             // Data with Annotation
                             return getPatientForImgSeriesLst(imgSetWithAnnotation);
-                        } else if (null != imgSetWithOutAnn && imgSetWithOutAnn.size() > 0) {
+                        } else if (null != imgSetWithOutAnn && !imgSetWithOutAnn.isEmpty()) {
                             // Data with no Annotation
                             return getPatientForImgSeriesLst(imgSetWithOutAnn);
                         } else if (!validParams.containsKey(ANNOTATIONS)) { // DC
@@ -553,6 +553,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         }
                     }
                 }
+            } catch (RuntimeException e) {
+                throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity("Operation failed while filtering image set data").build());
             } catch (Exception e) {
                 throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
                         .entity("Operation failed while filtering image set data").build());
@@ -591,7 +594,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
             if (null != imageSeries && null != imageSeries.getPatientDbId()) {
                 List<Patient> patientLst = patientRepository.findById(imageSeries.getPatientDbId());
-                if (null != patientLst && patientLst.size() > 0) {
+                if (null != patientLst && !patientLst.isEmpty()) {
                     imageSeries.setPatient(patientLst.get(0));
                 }
             }
@@ -721,13 +724,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> annImgSetDCLst = null;
         List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
-        if (null != dsLst && dsLst.size() > 0) {
+        if (null != dsLst && !dsLst.isEmpty()) {
             logger.info("* dsLst.size() = " + dsLst.size());
             if (null != dsLst.get(0).getImageSets()) {
                 List<String> types = new ArrayList<String>();
                 types.add(annotationType);
                 List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn((List<Long>) dsLst.get(0).getImageSets());
-                if (null != imgSeriesLst && imgSeriesLst.size() > 0) {
+                if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
                     logger.info(" imgSeriesLst.size() = " + imgSeriesLst.size());
                     Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
                     for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
@@ -741,7 +744,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     }
                     List<Annotation> annotationLst = annotationRepository
                             .findByImageSetInAndTypeIn(imgSerIdStrLst, types);
-                    if (null != annotationLst && annotationLst.size() > 0) {
+                    if (null != annotationLst && !annotationLst.isEmpty()) {
                         logger.info(" annotationLst.size() = " + annotationLst.size());
                         annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
                         for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext(); ) {

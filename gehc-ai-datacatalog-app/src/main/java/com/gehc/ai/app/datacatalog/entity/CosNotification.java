@@ -12,7 +12,12 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
