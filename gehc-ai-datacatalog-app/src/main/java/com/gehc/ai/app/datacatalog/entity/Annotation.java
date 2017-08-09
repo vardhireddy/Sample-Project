@@ -73,7 +73,7 @@ public class Annotation implements Serializable {
      * Flexible JSON object to store annotated items
      */
     @Convert(converter = JsonConverter.class)
-    private Object item;
+    private Object item; // NOSONAR
     /**
      * @return the id
      */
@@ -174,7 +174,7 @@ public class Annotation implements Serializable {
     /**
      * @return the item
      */
-    public Object getItem() {
+    public Object getItem() { // NOSONAR
         return item;
     }
     /**
@@ -182,5 +182,5 @@ public class Annotation implements Serializable {
      */
     public void setItem( Object item ) {
         this.item = item;
-    }
+    } // NOSONAR
 }
