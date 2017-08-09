@@ -24,6 +24,7 @@ import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 
 /**
  * @author 212071558
@@ -47,7 +48,7 @@ public interface IDataCatalogRest {
      * @param p patient
      * @return patient added
      */
-    Patient postPatient( Patient p ) throws Exception;
+    Patient postPatient( Patient p ) throws DataCatalogException;
 
     /**
      * save study to database
