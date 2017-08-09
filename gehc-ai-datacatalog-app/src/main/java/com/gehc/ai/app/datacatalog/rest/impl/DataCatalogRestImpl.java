@@ -490,7 +490,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         List<ImageSeries> imageSeriesLst;
         List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID));
 
-        imageSeriesLst = getImageSeriesList(validParams, orgIdLst);
+        imageSeriesLst = getImageSeriesListWithValidParamsAndOrgId(validParams, orgIdLst);
 
         // Get the data with annotation filter
         if (validParams.containsKey(ANNOTATIONS)) {
@@ -536,7 +536,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return new ArrayList<ImageSeries>();
     }
 
-    private List<ImageSeries> getImageSeriesList(Map<String, String> validParams, List<String> orgIdLst) {
+    private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, String> validParams, List<String> orgIdLst) {
         List<ImageSeries> imageSeriesLst;
         if (validParams.containsKey(MODALITY)) {
             List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY));
