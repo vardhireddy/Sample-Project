@@ -471,87 +471,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         return imageSeriesRepository
                                 .findBySeriesInstanceUidIn(getListOfStringsFromParams(validParams.get(SERIES_INS_UID)));
                     } else if (validParams.containsKey(ORG_ID)) {
-                        List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID));
-
-                        if (validParams.containsKey(MODALITY)) {
-                            List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY));
-                            if (validParams.containsKey(ANATOMY)) {
-                                List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY));
-                                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst,
-                                        anatomyLst, modalityLst);
-                            } else {
-                                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst,
-                                        modalityLst);
-                            }
-                        } else if (validParams.containsKey(ANATOMY)) {
-                            List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY));
-                            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
-                        } else {
-                            imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
-                        }
-
-                        // Get the data with annotation filter
-                        if (validParams.containsKey(ANNOTATIONS)) {
-                            List<String> typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS));
-                            if (null != typeLst && !typeLst.isEmpty()) {
-                                List<Annotation> annotationLst = new ArrayList<Annotation>();
-                                // List of image series id based on criteria
-                                // other than annotation
-                                List<String> imgSeriesIdLst = new ArrayList<String>();
-                                for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr
-                                        .hasNext(); ) {
-                                    ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                                    // logger.info("Get imageSeries id " +
-                                    // imageSeries.getId());
-                                    imgSeriesIdLst.add((imageSeries.getId()).toString());
-                                }
-                                if (typeLst.contains(ABSENT)) {
-                                    annotationLst = annotationRepository.findByImageSetIn(imgSeriesIdLst);
-                                    Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
-                                    logger.info("# Get uniqueImgSetIds size() " + uniqueImgSetIds.size());
-                                    if (null != uniqueImgSetIds && !uniqueImgSetIds.isEmpty()) {
-                                        for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
-                                                .iterator(); imgSeriesItr.hasNext(); ) {
-                                            ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                                            // logger.info("Get imageSeries id "
-                                            // + imageSeries.getId());
-                                            if (!uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
-                                                imgSetWithOutAnn.add(imageSeries);
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    annotationLst = annotationRepository.findByImageSetInAndTypeIn(imgSeriesIdLst,
-                                            typeLst);
-                                    Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
-                                    logger.info("Get uniqueImgSetIds.size() " + uniqueImgSetIds.size());
-                                    if (null != uniqueImgSetIds && !uniqueImgSetIds.isEmpty()) {
-                                        for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
-                                                .iterator(); imgSeriesItr.hasNext(); ) {
-                                            ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                                            // logger.info("Get imageSeries id "
-                                            // + imageSeries.getId());
-                                            if (uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
-                                                imgSetWithAnnotation.add(imageSeries);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (null != imgSetWithAnnotation && !imgSetWithAnnotation.isEmpty()) {
-                            // Data with Annotation
-                            return getPatientForImgSeriesLst(imgSetWithAnnotation);
-                        } else if (null != imgSetWithOutAnn && !imgSetWithOutAnn.isEmpty()) {
-                            // Data with no Annotation
-                            return getPatientForImgSeriesLst(imgSetWithOutAnn);
-                        } else if (!validParams.containsKey(ANNOTATIONS)) { // DC
-                            // without
-                            // Annotation
-                            // criteria
-                            return getPatientForImgSeriesLst(imageSeriesLst);
-                        }
+                        imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
+                        if (!imageSeriesLst.isEmpty()) return imageSeriesLst;
                     }
                 }
             } catch (RuntimeException e) {
@@ -563,6 +484,117 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             }
             return new ArrayList<ImageSeries>();
         }
+    }
+
+    private List<ImageSeries> getImageSeriesList(Map<String, String> validParams, List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn) {
+        List<ImageSeries> imageSeriesLst;
+        List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID));
+
+        imageSeriesLst = getImageSeriesList(validParams, orgIdLst);
+
+        // Get the data with annotation filter
+        if (validParams.containsKey(ANNOTATIONS)) {
+            List<String> typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS));
+            if (null != typeLst && !typeLst.isEmpty()) {
+                List<Annotation> annotationLst = new ArrayList<Annotation>();
+                // List of image series id based on criteria
+                // other than annotation
+                List<String> imgSeriesIdLst = new ArrayList<String>();
+                for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr
+                        .hasNext(); ) {
+                    ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+                    // logger.info("Get imageSeries id " +
+                    // imageSeries.getId());
+                    imgSeriesIdLst.add((imageSeries.getId()).toString());
+                }
+                if (typeLst.contains(ABSENT)) {
+                    imgSetWithOutAnn = getImageSeriesWithOutAnnotations(imgSetWithOutAnn, imageSeriesLst, imgSeriesIdLst);
+                } else {
+                    imgSetWithAnnotation = getImageSeriesWithAnnotations(imgSetWithAnnotation, imageSeriesLst, typeLst, imgSeriesIdLst);
+                }
+            }
+        }
+
+        List<ImageSeries> patientImageSeriesLst = getPatientForImageSeriesWithOrWithOutAnn(validParams, imgSetWithAnnotation, imgSetWithOutAnn, imageSeriesLst);
+        if (patientImageSeriesLst != null) return patientImageSeriesLst;
+        return new ArrayList<ImageSeries>();
+    }
+
+    private List<ImageSeries> getPatientForImageSeriesWithOrWithOutAnn(Map<String, String> validParams, List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn, List<ImageSeries> imageSeriesLst) {
+        if (null != imgSetWithAnnotation && !imgSetWithAnnotation.isEmpty()) {
+            // Data with Annotation
+            return getPatientForImgSeriesLst(imgSetWithAnnotation);
+        } else if (null != imgSetWithOutAnn && !imgSetWithOutAnn.isEmpty()) {
+            // Data with no Annotation
+            return getPatientForImgSeriesLst(imgSetWithOutAnn);
+        } else if (!validParams.containsKey(ANNOTATIONS)) { // DC
+            // without
+            // Annotation
+            // criteria
+            return getPatientForImgSeriesLst(imageSeriesLst);
+        }
+        return new ArrayList<ImageSeries>();
+    }
+
+    private List<ImageSeries> getImageSeriesList(Map<String, String> validParams, List<String> orgIdLst) {
+        List<ImageSeries> imageSeriesLst;
+        if (validParams.containsKey(MODALITY)) {
+            List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY));
+            if (validParams.containsKey(ANATOMY)) {
+                List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY));
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst,
+                        anatomyLst, modalityLst);
+            } else {
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst,
+                        modalityLst);
+            }
+        } else if (validParams.containsKey(ANATOMY)) {
+            List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY));
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
+        } else {
+            imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
+        }
+        return imageSeriesLst;
+    }
+
+    private List<ImageSeries> getImageSeriesWithAnnotations(List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imageSeriesLst, List<String> typeLst, List<String> imgSeriesIdLst) {
+        List<Annotation> annotationLst;
+        annotationLst = annotationRepository.findByImageSetInAndTypeIn(imgSeriesIdLst,
+                typeLst);
+        Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
+        logger.info("Get uniqueImgSetIds.size() " + uniqueImgSetIds.size());
+        if (null != uniqueImgSetIds && !uniqueImgSetIds.isEmpty()) {
+            for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
+                    .iterator(); imgSeriesItr.hasNext(); ) {
+                ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+                // logger.info("Get imageSeries id "
+                // + imageSeries.getId());
+                if (uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
+                    imgSetWithAnnotation.add(imageSeries);
+                }
+            }
+        }
+        return imgSetWithAnnotation;
+    }
+
+    private List<ImageSeries> getImageSeriesWithOutAnnotations(List<ImageSeries> imgSetWithOutAnn, List<ImageSeries> imageSeriesLst, List<String> imgSeriesIdLst) {
+        List<Annotation> annotationLst;
+
+        annotationLst = annotationRepository.findByImageSetIn(imgSeriesIdLst);
+        Set<String> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
+        logger.info("# Get uniqueImgSetIds size() " + uniqueImgSetIds.size());
+        if (null != uniqueImgSetIds && !uniqueImgSetIds.isEmpty()) {
+            for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst
+                    .iterator(); imgSeriesItr.hasNext(); ) {
+                ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+                // logger.info("Get imageSeries id "
+                // + imageSeries.getId());
+                if (!uniqueImgSetIds.contains((imageSeries.getId()).toString())) {
+                    imgSetWithOutAnn.add(imageSeries);
+                }
+            }
+        }
+        return imgSetWithOutAnn;
     }
 
     private List<String> getListOfStringsFromParams(String values) {
