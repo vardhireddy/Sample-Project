@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,14 +178,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/patient", method = RequestMethod.POST)
-    public Patient postPatient(@RequestBody Patient p) throws Exception {
+    public Patient postPatient(@RequestBody Patient p) throws DataCatalogException {
         if (null != p && null != p.getPatientId() && null != p.getOrgId() && null == p.getId()) {
             List<Patient> patientLst = patientRepository.findByPatientIdAndOrgId(p.getPatientId(), p.getOrgId());
             if (patientLst != null && !patientLst.isEmpty()) {
                 return patientLst.get(0);
             }
         } else if (null == p || null == p.getPatientId() || null == p.getOrgId()) {
-            throw new Exception("Missing patient info");
+            throw new DataCatalogException("Missing patient info");
         }
         p.setUploadDate(new Date(System.currentTimeMillis()));
         return patientRepository.save(p);
