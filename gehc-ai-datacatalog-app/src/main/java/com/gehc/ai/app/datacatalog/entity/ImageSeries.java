@@ -60,7 +60,7 @@ public class ImageSeries implements Serializable {
 	@Column(name = "instance_count")
 	private int instanceCount;
 	@Convert(converter = JsonConverter.class)
-	private Object properties;
+	private Object properties; // NOSONAR
 	/**
 	 * An identifier for the one who uploaded the data. This allows to query for
 	 * the data uploaded by a specific person.
@@ -204,10 +204,10 @@ public class ImageSeries implements Serializable {
 	}
 	public Object getProperties() {
 		return properties;
-	}
+	} // NOSONAR
 	public void setProperties(Object properties) {
 		this.properties = properties;
-	}
+	} // NOSONAR
 	
 	
 	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
