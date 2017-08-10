@@ -15,6 +15,7 @@ package com.gehc.ai.app.datacatalog.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -36,4 +37,8 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<ImageSeries> findBySeriesInstanceUidIn(List<String> seriesInstanceUid);
     List<ImageSeries> findByStudyDbIdAndOrgId(@Param("studyDbId") Long studyDbId, @Param("orgId") String orgId);
     List<ImageSeries> findByIdIn(List<Long> id);
+    @Query("SELECT modality, count(*) FROM ImageSeries where orgId=:orgId group by modality")
+    List<ImageSeries> countModality(@Param("orgId") String orgId);
+    @Query("SELECT anatomy, count(*) FROM ImageSeries where orgId=:orgId group by anatomy")
+    List<ImageSeries> countAnatomy(@Param("orgId") String orgId);
  }
