@@ -100,14 +100,6 @@ public class ImageSeries implements Serializable {
 	}
 	private String acqTime;
 	
-	private int count;
-
-	public int getCount() {
-		return count;
-	}
-	public void setCount(int count) {
-		this.count = count;
-	}
 	public Patient getPatient() {
 		return patient;
 	}
