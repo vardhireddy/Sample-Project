@@ -66,15 +66,15 @@ public class DataSet implements Serializable {
 	public void setProperties(Map<String,String> properties) {
 		this.properties = properties;
 	}
-	public List getImageSets() {
+	public Object getImageSets() { // NOSONAR
 		return imageSets;
 	}
-	public void setImageSets(List imageSets) { // NOSONAR
+	public void setImageSets(Object imageSets) { // NOSONAR
 		this.imageSets = imageSets;
 	}
 	@Convert(converter = JsonConverter.class)
     @Column ( name = "image_sets" )
-    private List imageSets;
+    private Object imageSets; // NOSONAR
     
 	public Long getId() {
 		return id;
