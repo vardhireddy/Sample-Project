@@ -58,23 +58,23 @@ public class DataSet implements Serializable {
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
-    private Map<String,String> properties;
+    private Object properties; // NOSONAR
     
-    public Map<String,String> getProperties() {
+    public Object getProperties() {
 		return properties;
-	}
-	public void setProperties(Map<String,String> properties) {
+	} // NOSONAR
+	public void setProperties(Object properties) {
 		this.properties = properties;
-	}
-	public Object getImageSets() { // NOSONAR
+	} // NOSONAR
+	public List<Long> getImageSets() {
 		return imageSets;
 	}
-	public void setImageSets(Object imageSets) { // NOSONAR
+	public void setImageSets(List<Long>  imageSets) {
 		this.imageSets = imageSets;
 	}
 	@Convert(converter = JsonConverter.class)
     @Column ( name = "image_sets" )
-    private Object imageSets; // NOSONAR
+    private List<Long>  imageSets;
     
 	public Long getId() {
 		return id;

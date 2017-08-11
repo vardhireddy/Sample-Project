@@ -376,7 +376,7 @@ public class DataCollectionSteps {
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
 
-        List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
+        List<Long> imageSeriesList =  new ArrayList<Long>();
         dataSet.setImageSets(imageSeriesList);
         dataSets.add(dataSet);
         when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
