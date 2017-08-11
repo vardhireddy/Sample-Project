@@ -321,6 +321,37 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
+    @Given("Retrieve DataSet for Filters by OrgId DataSetUp Provided")
+    public void givenRetrieveDataSetForFiltersByOrgIdDataSetUpProvided() {
+        List<Object[]> countM = new ArrayList<Object[]>();
+        List<Object[]> countA = new ArrayList<Object[]>();
+        Object[]  modality = new Object[] {
+                "DX",121L};
+
+        Object[]  modality1 = new Object[] {
+                "CR",8082L};
+        countM.add(0,modality);
+        countM.add(1,modality1);
+
+        Object[]  anatomy = new Object[] {
+                "CHEST",8203L};
+        countA.add(0,anatomy);
+
+        when(imageSeriesRepository.countAnatomy(anyString())).thenReturn(countA);
+        when(imageSeriesRepository.countModality(anyString())).thenReturn(countM);
+    }
+    @When("Get DataSet for Filters by OrgId")
+    public void whenGetDataSetForFiltersByOrgId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/query?orgId=4fac7976-e58b-472a-960b-42d7e3689f20")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify DataSet for Filters by OrgId")
+    public void thenVerifyDataSetForFiltersByOrgId() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"modality\":{\"DX\":121,\"CR\":8082}}")));
+    }
+
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(dataSet);
