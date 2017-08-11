@@ -28,4 +28,5 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
 	List<Study> findByPatientDbIdAndOrgId(@Param("patient_dbid") Long id, @Param("orgId") String orgId);
 	List<Study> findByIdInAndOrgId(List<Long> ids, String orgId);
 	List<Study> findByOrgId(@Param("orgid") String id);
+	List<Study> findByOrgIdAndStudyInstanceUid(@Param("orgid") String id, @Param("studyinstanceuid") String studyInstanceUid);
 }

@@ -195,8 +195,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/study", method = RequestMethod.POST)
-	public Study postStudy(@RequestBody Study s) {
-		s.setUploadDate(new Date(System.currentTimeMillis()));
+	public Study postStudy(@RequestBody Study s) throws DataCatalogException {
+		if (null != s && null != s.getStudyInstanceUid() && null != s.getOrgId() && null == s.getId()) {
+			List<Study> studyLst= studyRepository.findByOrgIdAndStudyInstanceUid(s.getOrgId(), s.getStudyInstanceUid());
+			if (studyLst != null && !studyLst.isEmpty()) {
+				return studyLst.get(0);
+			}
+		}else if (null == s || null == s.getStudyInstanceUid() || null == s.getOrgId()) {
+			throw new DataCatalogException("Missing study info");
+		}
 		return studyRepository.save(s);
 	}
 
