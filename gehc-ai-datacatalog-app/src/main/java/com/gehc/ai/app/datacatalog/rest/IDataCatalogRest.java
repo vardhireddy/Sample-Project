@@ -219,4 +219,10 @@ public interface IDataCatalogRest {
      * @return String Success
      */
     String healthcheck();
+      
+    /**
+     * @param orgId
+     * @return map of all the filters
+     */
+    Map<String, Object> filters(String orgId);
 }
