@@ -753,11 +753,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		logger.info("Get filters for orgId = " + orgId);
 		Map<String, Object> filters = new HashMap<String, Object>();
 		List<Object[]> modalityCount = imageSeriesRepository.countModality(orgId);
-		if (null != modalityCount && modalityCount.size() > 0) {
+		if (null != modalityCount && !modalityCount.isEmpty()) {
 			filters.putAll(getFiltersCount(modalityCount, "modality"));
 		}
 		List<Object[]> anatomyCount = imageSeriesRepository.countAnatomy(orgId);
-		if (null != anatomyCount && anatomyCount.size() > 0) {
+		if (null != anatomyCount && !anatomyCount.isEmpty()) {
 			filters.putAll(getFiltersCount(anatomyCount, "anatomy"));
 		}
 		logger.info("filters = " + filters.toString());
