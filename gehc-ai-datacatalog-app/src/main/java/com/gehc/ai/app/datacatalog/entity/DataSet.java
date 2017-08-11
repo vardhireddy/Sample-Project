@@ -13,6 +13,8 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -56,23 +58,23 @@ public class DataSet implements Serializable {
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
-    private Object properties; // NOSONAR
+    private Map<String,String> properties;
     
-    public Object getProperties() {
+    public Map<String,String> getProperties() {
 		return properties;
-	} // NOSONAR
-	public void setProperties(Object properties) {
+	}
+	public void setProperties(Map<String,String> properties) {
 		this.properties = properties;
-	} // NOSONAR
-	public Object getImageSets() {
+	}
+	public List getImageSets() {
 		return imageSets;
-	} // NOSONAR
-	public void setImageSets(Object imageSets) { // NOSONAR
+	}
+	public void setImageSets(List imageSets) { // NOSONAR
 		this.imageSets = imageSets;
 	}
 	@Convert(converter = JsonConverter.class)
     @Column ( name = "image_sets" )
-    private Object imageSets; // NOSONAR
+    private List imageSets;
     
 	public Long getId() {
 		return id;

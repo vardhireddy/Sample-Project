@@ -14,6 +14,7 @@ package com.gehc.ai.app.datacatalog.entity;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -60,7 +61,7 @@ public class ImageSeries implements Serializable {
 	@Column(name = "instance_count")
 	private int instanceCount;
 	@Convert(converter = JsonConverter.class)
-	private Object properties; // NOSONAR
+	private Map<String,String> properties;
 	/**
 	 * An identifier for the one who uploaded the data. This allows to query for
 	 * the data uploaded by a specific person.
@@ -202,17 +203,17 @@ public class ImageSeries implements Serializable {
 	public void setUploadDate(Date uploadDate) {
 		this.uploadDate = new Date(uploadDate.getTime());
 	}
-	public Object getProperties() {
+	public Map<String,String> getProperties() {
 		return properties;
-	} // NOSONAR
-	public void setProperties(Object properties) {
+	}
+	public void setProperties(Map<String,String> properties) {
 		this.properties = properties;
-	} // NOSONAR
+	}
 	
 	
 	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
 			String uri, String seriesInstanceUid, String description, String institution, String equipment,
-			int instanceCount, Object properties, String uploadBy, Date uploadDate, Long patientDbId, Long studyDbId,
+			int instanceCount, Map<String,String> properties, String uploadBy, Date uploadDate, Long patientDbId, Long studyDbId,
 			Patient patient, String acqDate, String acqTime) {
 		super();
 		this.id = id;
