@@ -56,7 +56,7 @@ public interface IDataCatalogRest {
      * @param s study
      * @return study added
      */
-    Study postStudy( Study s );
+    Study postStudy( Study s ) throws DataCatalogException;
 
     /**
      * @param ids
