@@ -188,7 +188,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		} else if (null == p || null == p.getPatientId() || null == p.getOrgId()) {
 			throw new DataCatalogException("Missing patient info");
 		}
-		p.setUploadDate(new Date(System.currentTimeMillis()));
 		return patientRepository.save(p);
 	}
 
