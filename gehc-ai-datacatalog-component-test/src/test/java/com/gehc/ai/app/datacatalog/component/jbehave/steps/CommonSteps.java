@@ -5,9 +5,7 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by sowjanyanaidu on 7/13/17.
@@ -41,8 +39,8 @@ public class CommonSteps {
         imageSeries.setUploadBy("BDD");
         imageSeries.setUploadDate(getDate());
         imageSeries.setPatientDbId(1L);
-        Properties prop = new Properties();
-        prop.setProperty("test", "bdd");
+        Map prop = new HashMap<String,String>();
+        prop.put("test", "bdd");
         imageSeries.setProperties(prop);
         imgSerLst.add(imageSeries);
         return imgSerLst;
@@ -63,8 +61,8 @@ public class CommonSteps {
         imageSeries.setInstanceCount(1);
         imageSeries.setUploadBy("BDD");
         imageSeries.setPatientDbId(1L);
-        Properties prop = new Properties();
-        prop.setProperty("test", "bdd");
+        Map prop = new HashMap<String,String>();
+        prop.put("test", "bdd");
         imageSeries.setProperties(prop);
         imgSerLst.add(imageSeries);
         return imgSerLst;
@@ -81,7 +79,7 @@ public class CommonSteps {
         annotation.setAnnotationDate(getDate());
         annotation.setAnnotatorId("123");
         annotation.setImageSet("1");
-        annotation.setItem("item");
+       annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
         annotation.setType("type");
         annotation.setSchemaVersion("1");
@@ -94,7 +92,8 @@ public class CommonSteps {
         annotation.setAnnotationDate(getDate());
         annotation.setAnnotatorId("123");
         annotation.setImageSet("123");
-        annotation.setItem("item");
+
+       annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
         annotation.setType("type");
         annotation.setSchemaVersion("1");
