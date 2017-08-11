@@ -60,4 +60,9 @@ Feature: DataCollection DataCatalog
   When get DataCatalog Raw Target Data for empty DataSet
   Then verify DataCatalog Raw Target Data for empty DataSet
 
+  Scenario: Retrieve DataSet for Filters by OrgId
+  Given Retrieve DataSet for Filters by OrgId DataSetUp Provided
+  When Get DataSet for Filters by OrgId
+  Then verify DataSet for Filters by OrgId
+
 
