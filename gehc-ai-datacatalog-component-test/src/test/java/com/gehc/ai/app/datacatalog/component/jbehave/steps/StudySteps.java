@@ -47,8 +47,9 @@ public class StudySteps {
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
     private String STUDY = "{\"id\":1,\"schemaVersion\":\"123\",\"patientDbId\":1,\"studyInstanceUid\":\"123\",\"studyDate\":\"\",\"studyTime\":\"\",\"studyId\":\"123\",\"studyDescription\":\"Test\",\"referringPhysician\":\"John Doe\",\"studyUrl\":\"http://test\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"Test\",\"properties\":{}}";
+    private String NEW_STUDY = "{\"id\":1,\"schemaVersion\":\"123\",\"patientDbId\":1,\"studyInstanceUid\":\"123\",\"studyDate\":\"\",\"studyTime\":\"\",\"studyId\":null,\"studyDescription\":\"Test\",\"referringPhysician\":\"John Doe\",\"studyUrl\":\"http://test\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"Test\",\"properties\":{}}";
     private String STUDIES  = "{\"id\":1,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"},{\"id\":2,\"schemaVersion\":\"123\",\"patientName\":\"Late Lucy\",\"patientId\":\"123\",\"birthDate\":\"09-09-1950\",\"gender\":\"M\",\"age\":\"90\",\"orgId\":\"123\",\"uploadDate\":\"2017-03-31\",\"uploadBy\":\"BDD\",\"properties\":\"any\"}";
-
+    private Throwable throwable = null;
     @Autowired
     public StudySteps(MockMvc mockMvc, StudyRepository studyRepository, ImageSeriesRepository imageSeriesRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
@@ -106,6 +107,7 @@ public class StudySteps {
 
     @Given("Save study - DataSetUp Provided")
     public void givenSaveStudyDataSetUpProvided() {
+        when(studyRepository.findByOrgIdAndStudyInstanceUid(anyString(),anyString())).thenReturn(null);
         when(studyRepository.save(any(Study.class))).thenReturn(getStudy().get(0));
     }
 
@@ -114,7 +116,7 @@ public class StudySteps {
         retrieveResult = mockMvc.perform(
                 post("/api/v1/datacatalog/study")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(studyToJSON(getStudy().get(0)))
+                        .content(studyToJSON(getStudyWithOutStudyId().get(0)))
                         .requestAttr("orgId", "12")
         );
     }
@@ -162,6 +164,53 @@ public class StudySteps {
     @Then("verify Get Multiple Studies  with orgid null")
     public void thenVerifyGetMultipleStudiesWithOrgidNull() throws Exception {
         retrieveResult.andExpect(content().string((containsString("{\"status\":\"FAILURE\""))));
+    }
+
+    @Given("Save existing study - DataSetUp Provided")
+    public void givenSaveExistingStudyDataSetUpProvided() {
+        List<Study> studyList = getStudy();
+        when(studyRepository.findByOrgIdAndStudyInstanceUid(anyString(),anyString())).thenReturn(studyList);
+        when(studyRepository.save(any(Study.class))).thenReturn(getStudy().get(0));
+    }
+    @When("Save existing study")
+    public void whenSaveExistingStudy() throws Exception {
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/datacatalog/study")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(studyToJSON(getStudyWithOutStudyId().get(0)))
+
+        );
+    }
+    @Then("verify Save study should return existing study if it already exists")
+    public void thenVerifySaveStudyShouldReturnExistingStudyIfItAlreadyExists() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(STUDY)));
+    }
+
+    @Given("Save Study with Null Study id - DataSetUp Provided")
+    public void givenSaveStudyWithNullStudyIdDataSetUpProvided() {
+        List<Study> studyList = getStudy();
+        when(studyRepository.findByOrgIdAndStudyInstanceUid(anyString(),anyString())).thenReturn(studyList);
+        when(studyRepository.save(any(Study.class))).thenReturn(getStudy().get(0));
+    }
+
+    @When("save Study with Null Study id")
+    public void whenSaveStudyWithNullStudyId() throws Exception {
+        try{
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/datacatalog/study")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(studyToJSON(getNullStudy()))
+
+        );}
+        catch(Exception e){
+            throwable = e;
+        }
+    }
+    @Then("verify Saving Study with Null Study id")
+    public void thenVerifySavingStudyWithNullStudyId() throws Exception {
+        assert(throwable.toString().contains("Missing study info"));
+
     }
 
     private String studyToJSON(Study study) throws JsonProcessingException {
@@ -219,6 +268,49 @@ public class StudySteps {
         study.setUploadBy("Test");
         studyLst.add(study);
         return studyLst;
+    }
+
+    private List<Study> getStudyWithOutStudyId() {
+        List<Study> studyLst = new ArrayList<Study>();
+        Study study = new Study();
+        study.setOrgId("123");
+        study.setPatientDbId(1L);
+        study.setProperties(new Properties());
+        study.setReferringPhysician("John Doe");
+        study.setSchemaVersion("123");
+        study.setStudyDate("");
+        study.setStudyDescription("Test");
+        study.setStudyInstanceUid("123");
+        study.setStudyTime("");
+        study.setStudyUrl("http://test");
+        study.setUploadBy("BDD");
+        Date date = getDate();
+        study.setUploadDate(date);
+        study.setUploadBy("Test");
+        studyLst.add(study);
+        return studyLst;
+    }
+
+    private Study getNullStudy(){
+        Study study = new Study();
+        study.setId(null);
+        study.setOrgId(null);
+        study.setPatientDbId(1L);
+        study.setProperties(new Properties());
+        study.setReferringPhysician("John Doe");
+        study.setSchemaVersion("123");
+        study.setStudyDate("");
+        study.setStudyDescription("Test");
+        study.setStudyInstanceUid("123");
+        study.setStudyId("123");
+        study.setStudyTime("");
+        study.setStudyUrl("http://test");
+        study.setUploadBy("BDD");
+        Date date = getDate();
+        study.setUploadDate(date);
+        study.setUploadBy("Test");
+        study.setStudyInstanceUid(null);
+        return study;
     }
 
     private Date getDate() {
