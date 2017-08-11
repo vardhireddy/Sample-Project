@@ -25,8 +25,8 @@ import com.gehc.ai.app.datacatalog.entity.Study;
  */
 @RepositoryRestResource(collectionResourceRel = "study", path = "study")
 public interface StudyRepository extends JpaRepository<Study, Long> {
-	List<Study> findByPatientDbIdAndOrgId(@Param("patient_dbid") Long id, @Param("orgId") String orgId);
+	List<Study> findByPatientDbIdAndOrgId(@Param("patientDbId") Long patientDbId, @Param("orgId") String orgId);
 	List<Study> findByIdInAndOrgId(List<Long> ids, String orgId);
-	List<Study> findByOrgId(@Param("orgid") String id);
-	List<Study> findByOrgIdAndStudyInstanceUid(@Param("orgid") String id, @Param("studyinstanceuid") String studyInstanceUid);
+	List<Study> findByOrgId(@Param("orgId") String orgId);
+	List<Study> findByOrgIdAndStudyInstanceUid(@Param("orgId") String orgId, @Param("studyInstanceUid") String studyInstanceUid);
 }
