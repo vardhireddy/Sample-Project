@@ -47,6 +47,11 @@ Feature: Patient DataCatalog
   When save Patient with Null ID
   Then verify Saving Patient with Null ID
 
+  Scenario: Save Patient
+  Given Save Existing Patient - DataSetUp Provided
+  When save Existing Patient
+  Then verify Saving Existing Patient
+
 #  Scenario: Patient Search by PatientId
 #    Given Get Patient Search by PatientId - DataSetUp Provided
 #    When Get Patient Search by PatientId

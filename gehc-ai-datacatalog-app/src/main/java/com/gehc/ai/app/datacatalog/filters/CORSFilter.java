@@ -58,7 +58,7 @@ public class CORSFilter implements Filter {
     }
 
     @Override
-    public void destroy() {
+    public void destroy() { // NOSONAR
         logger.info( "Destroying the CORSFilter" );
     } // NOSONAR
 

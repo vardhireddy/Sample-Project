@@ -288,6 +288,31 @@ public class PatientSteps {
         retrieveResult.andExpect(content().string(containsString(PATIENTS_NULL_ID)));
     }
 
+    @Given("Save Existing Patient - DataSetUp Provided")
+    public void givenSaveExistingPatient() throws Exception {
+        List<Patient> patLst = getPatients();
+        when(patientRepository.findByPatientIdAndOrgId(anyString(),anyString())).thenReturn(null);
+        when(patientRepository.save(patLst)).thenReturn(patLst);
+    }
+
+    @When("save  Existing Patient")
+    public void saveExistingPatient() throws Exception {
+        List<Patient> patients = getPatients();
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/datacatalog/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patientToJSON(patients.get(0)))
+                        .requestAttr("orgId", "12")
+        );
+
+    }
+
+    @Then("verify Saving Existing Patient")
+    public void verifySaveExistingDatSet() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+    }
+
+
     private Patient getPatientWithIdNull() {
         List<Patient> patients = getPatients();
         Patient patient =  patients.get(0);
