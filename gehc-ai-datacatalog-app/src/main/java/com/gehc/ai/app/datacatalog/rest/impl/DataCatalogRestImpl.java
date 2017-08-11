@@ -400,7 +400,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             dsLst = dataSetRepository.findById(id);
             if (null != dsLst && !dsLst.isEmpty()) {
                 @SuppressWarnings("unchecked")
-                List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
+                List<Long> imgSeries = (ArrayList<Long>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = new ArrayList<Long>();
                 if (null != imgSeries && !imgSeries.isEmpty()) {
                     for (int i = 0; i < imgSeries.size(); i++) {
