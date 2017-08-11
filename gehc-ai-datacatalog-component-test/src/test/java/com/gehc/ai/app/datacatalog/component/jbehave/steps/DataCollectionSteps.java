@@ -405,7 +405,7 @@ public class DataCollectionSteps {
         String dateInString = getDate();
         dataSet.setCreatedDate(dateInString);
         dataSet.setName("Test");
-        dataSet.setProperties(new Properties());
+        dataSet.setProperties(new HashMap<String,String>());
         dataSet.setOrgId("123");
         dataSet.setSchemaVersion("123");
         dataSet.setType("Annotation");
