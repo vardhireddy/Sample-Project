@@ -60,7 +60,7 @@ public class CORSFilter implements Filter {
     @Override
     public void destroy() {
         logger.info( "Destroying the CORSFilter" );
-    }
+    } // NOSONAR
 
     private void setHeaderIfNotPresent( HttpServletResponse response, String key, String value ) {
         logger.debug( "Checking for header [{}]:[{}]", key, value );

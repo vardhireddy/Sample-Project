@@ -62,3 +62,7 @@ Feature: Imageset DataCatalog
   When Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT with no matching ImageSeries
   Then verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation ABSENT returns empty ImageSeries
 
+  Scenario: Get Image set based on filter criteria with SUID  Thorws runtime exception
+  Given Get Image set based on filter criteria with SUID Thorws runtime exception - DataSetUp Provided
+  When Get Image set based on filter criteria with SUID Thorws runtime exception
+  Then verify Image set based on filter with SUID Thorws runtime exception

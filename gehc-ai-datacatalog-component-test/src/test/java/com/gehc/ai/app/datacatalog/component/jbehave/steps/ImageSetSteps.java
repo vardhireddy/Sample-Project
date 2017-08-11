@@ -159,6 +159,31 @@ public class ImageSetSteps {
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
+    @Given("Get Image set based on filter criteria with SUID Thorws runtime exception - DataSetUp Provided")
+    public void givenImagesetImageBasedOnFilterCriteriaException() throws Exception {
+        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenThrow(RuntimeException.class);
+    }
+
+
+    @When("Get Image set based on filter criteria with SUID Thorws runtime exception")
+    public void getImagesetImageBasedOnFilterCriteriaException() throws Exception {
+        try{
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?series-instance-uid=1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );}
+        catch(Exception e){
+            throwable = e;
+        }
+
+    }
+
+    @Then("verify Image set based on filter with SUID Thorws runtime exception")
+    public void verifyImagesetImageBasedOnFilterCriteriaException() throws Exception {
+        assert (throwable.toString().contains("Request processing failed"));
+    }
+
     @Given("Get Image set based on filter criteria with ORG ID and Modality - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteriaOrgId() throws Exception {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
