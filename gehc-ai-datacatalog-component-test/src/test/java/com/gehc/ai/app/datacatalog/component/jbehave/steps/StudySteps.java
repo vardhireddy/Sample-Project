@@ -126,6 +126,27 @@ public class StudySteps {
         retrieveResult.andExpect(content().string(containsString(STUDY)));
     }
 
+    @Given("Save new study - DataSetUp Provided")
+    public void givenSaveNewStudyDataSetUpProvided() {
+        when(studyRepository.findByOrgIdAndStudyInstanceUid(anyString(),anyString())).thenReturn(new ArrayList());
+        when(studyRepository.save(any(Study.class))).thenReturn(getStudy().get(0));
+    }
+
+    @When("Save new study")
+    public void whenSaveNewStudy() throws Exception {
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/datacatalog/study")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(studyToJSON(getStudyWithOutStudyId().get(0)))
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Save new study")
+    public void thenVerifySaveNewStudy() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(STUDY)));
+    }
+
     @Given("Get Multiple Studies - DataSetUp Provided")
     public void givenGetMultipleStudiesDataSetUpProvided() {
         dataStudyByStudyIds();

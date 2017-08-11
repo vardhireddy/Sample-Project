@@ -32,6 +32,11 @@ Feature: Study DataCatalog
   When save Study with Null Study id
   Then verify Saving Study with Null Study id
 
+  Scenario: Save new study
+    Given Save new study - DataSetUp Provided
+    When Save new study
+    Then verify Save new study
+
 #  Scenario: Get Multiple Studies with orgid null
 #  Given Get Multiple Studies with orgid null- DataSetUp Provided
 #  When Get Multiple Studies with orgid null
