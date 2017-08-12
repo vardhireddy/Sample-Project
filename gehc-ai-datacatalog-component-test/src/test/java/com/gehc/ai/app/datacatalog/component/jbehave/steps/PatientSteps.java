@@ -312,6 +312,48 @@ public class PatientSteps {
         retrieveResult.andExpect(status().isOk());
     }
 
+    @Given("Retrieve image series by patient when patient ids list returned null- DataSetUp Provided")
+    public void givenImageSeriesByPatientIdsWhenNullPatientIdsInDB() throws Exception {
+        dataSetUpImageSeriesByPatientIdWithNullPatientList();
+    }
+
+    @When("Get image series by patient ids when patient ids list returned null")
+    public void getImageSeriesByPatientIdsWhenNullPatientIdsInDB() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/patient/123,456/image-set")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+
+    }
+
+    @Then("verify image series by patient ids when patient ids list returned null")
+    public void verifyImageSeriesByPatientIdsWhenNullPatientIdsInDB() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
+
+    @Given("Retrieve image series by patient when patient ids list returned empty- DataSetUp Provided")
+    public void givenImageSeriesByPatientIdsWhenEmptyPatientIdsInDB() throws Exception {
+        dataSetUpImageSeriesByPatientIdWithNullPatientList();
+    }
+
+    @When("Get image series by patient ids when patient ids list returned empty")
+    public void getImageSeriesByPatientIdsWhenEmptyPatientIdsInDB() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/patient/123,456/image-set")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+
+    }
+
+    @Then("verify image series by patient ids when patient ids list returned empty")
+    public void verifyImageSeriesByPatientIdsWhenEmptyPatientIdsInDB() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
+
 
     private Patient getPatientWithIdNull() {
         List<Patient> patients = getPatients();
@@ -328,6 +370,19 @@ public class PatientSteps {
         when(imageSeriesRepository.findByPatientDbId(anyLong())).thenReturn(imgSerLst);
     }
 
+    private void dataSetUpImageSeriesByPatientIdWithNullPatientList() {
+        List<Patient> patLst = getPatients();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
+        when(patientRepository.findByPatientId(anyString())).thenReturn(null);
+        when(imageSeriesRepository.findByPatientDbId(anyLong())).thenReturn(imgSerLst);
+    }
+
+    private void dataSetUpImageSeriesByPatientIdWithEmptyPatientList() {
+        List<Patient> patLst = getPatients();
+        List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
+        when(patientRepository.findByPatientId(anyString())).thenReturn(new ArrayList());
+        when(imageSeriesRepository.findByPatientDbId(anyLong())).thenReturn(imgSerLst);
+    }
 
     private void dataStudyByPatient() {
         List<Study> studyList = getStudy();

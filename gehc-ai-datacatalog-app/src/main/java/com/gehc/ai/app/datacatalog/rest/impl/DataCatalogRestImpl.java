@@ -728,7 +728,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							try {
 								String jsonInString = mapper.writeValueAsString(annotation.getItem());
 								o = mapper.readValue(jsonInString, typeRef);
-							} catch (IOException e) {
+							} catch (IOException e) { // NOSONAR
 								e.printStackTrace();
 								logger.error("Exception during getting raw target data ", e);
 							}
