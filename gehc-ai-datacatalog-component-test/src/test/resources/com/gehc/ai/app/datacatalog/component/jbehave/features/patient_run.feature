@@ -52,6 +52,16 @@ Feature: Patient DataCatalog
   When save Existing Patient
   Then verify Saving Existing Patient
 
+  Scenario: Retrieve image series by patient id
+  Given Retrieve image series by patient when patient ids list returned null- DataSetUp Provided
+  When Get image series by patient ids when patient ids list returned null
+  Then verify image series by patient ids when patient ids list returned null
+
+  Scenario: Retrieve image series by patient id
+    Given Retrieve image series by patient when patient ids list returned empty- DataSetUp Provided
+    When Get image series by patient ids when patient ids list returned empty
+    Then verify image series by patient ids when patient ids list returned empty
+
 #  Scenario: Patient Search by PatientId
 #    Given Get Patient Search by PatientId - DataSetUp Provided
 #    When Get Patient Search by PatientId
