@@ -323,22 +323,15 @@ public class DataCollectionSteps {
 
     @Given("Retrieve DataSet for Filters by OrgId DataSetUp Provided")
     public void givenRetrieveDataSetForFiltersByOrgIdDataSetUpProvided() {
-        List<Object[]> countM = new ArrayList<Object[]>();
-        List<Object[]> countA = new ArrayList<Object[]>();
-        Object[]  modality = new Object[] {
-                "DX",121L};
-
-        Object[]  modality1 = new Object[] {
-                "CR",8082L};
-        countM.add(0,modality);
-        countM.add(1,modality1);
-
-        Object[]  anatomy = new Object[] {
-                "CHEST",8203L};
-        countA.add(0,anatomy);
-
+        //Modality
+        List<Object[]> countM =  getQueryList("modality");
+        //anatomy
+        List<Object[]> countA = getQueryList("anatomy");
+        //annotations
+        List<Object[]> countAnn = getQueryList("annotations");
         when(imageSeriesRepository.countAnatomy(anyString())).thenReturn(countA);
         when(imageSeriesRepository.countModality(anyString())).thenReturn(countM);
+        when(annotationRepository.countAnnotationType(anyString())).thenReturn(countAnn);
     }
     @When("Get DataSet for Filters by OrgId")
     public void whenGetDataSetForFiltersByOrgId() throws Exception {
@@ -349,6 +342,54 @@ public class DataCollectionSteps {
     }
     @Then("verify DataSet for Filters by OrgId")
     public void thenVerifyDataSetForFiltersByOrgId() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"annotations\":{\"test\":1},\"modality\":{\"DX\":121,\"CR\":8082}}")));
+    }
+
+    @Given("Retrieve DataSet for Filters by OrgId when Annotation count is null DataSetUp Provided")
+    public void givenRetrieveDataSetForFiltersByOrgIdWhenAnnotationCountIsNullDataSetUpProvided() {
+        //Modality
+        List<Object[]> countM =  getQueryList("modality");
+        //anatomy
+        List<Object[]> countA = getQueryList("anatomy");
+        when(imageSeriesRepository.countAnatomy(anyString())).thenReturn(countA);
+        when(imageSeriesRepository.countModality(anyString())).thenReturn(countM);
+        when(annotationRepository.countAnnotationType(anyString())).thenReturn(null);
+    }
+
+    @When("Get DataSet for Filters by OrgId when Annotation count is null")
+    public void whenGetDataSetForFiltersByOrgIdWhenAnnotationCountIsNull() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/query?orgId=4fac7976-e58b-472a-960b-42d7e3689f20")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify DataSet for Filters by OrgId when Annotation count is null")
+    public void thenVerifyDataSetForFiltersByOrgIdWhenAnnotationCountIsNull() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"modality\":{\"DX\":121,\"CR\":8082}}")));
+
+    }
+
+    @Given("Retrieve DataSet for Filters by OrgId when Annotation count is empty DataSetUp Provided")
+    public void givenRetrieveDataSetForFiltersByOrgIdWhenAnnotationCountIsEmptyDataSetUpProvided() {
+        //Modality
+        List<Object[]> countM =  getQueryList("modality");
+        //anatomy
+        List<Object[]> countA = getQueryList("anatomy");
+
+        when(imageSeriesRepository.countAnatomy(anyString())).thenReturn(countA);
+        when(imageSeriesRepository.countModality(anyString())).thenReturn(countM);
+        when(annotationRepository.countAnnotationType(anyString())).thenReturn(new ArrayList());
+    }
+
+    @When("Get DataSet for Filters by OrgId when Annotation count is empty")
+    public void whenGetDataSetForFiltersByOrgIdWhenAnnotationCountIsEmpty() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/query?orgId=4fac7976-e58b-472a-960b-42d7e3689f20")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify DataSet for Filters by OrgId when Annotation count is empty")
+    public void thenVerifyDataSetForFiltersByOrgIdWhenAnnotationCountIsEmpty() throws Exception {
         retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"modality\":{\"DX\":121,\"CR\":8082}}")));
     }
 
@@ -446,6 +487,30 @@ public class DataCollectionSteps {
     private String getDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         return "22-01-2017 10:20:56";
+    }
+
+    private List<Object[]> getQueryList(String input) {
+        List<Object[]> countM = new ArrayList<Object[]>();
+
+       if (input.equals("modality")) {
+
+           Object[] modality = new Object[]{
+                   "DX", 121L};
+           Object[] modality1 = new Object[]{
+                   "CR", 8082L};
+           countM.add(0, modality);
+           countM.add(1, modality1);
+       } else if(input.equals("anatomy")) {
+           //anatomy
+           Object[] anatomy = new Object[]{
+                   "CHEST", 8203L};
+           countM.add(0, anatomy);
+       } else if(input.equals("annotations")){
+           Object[]  annotations = new Object[] {
+                   "test",1L};
+           countM.add(0,annotations);
+        }
+        return countM;
     }
 }
 
