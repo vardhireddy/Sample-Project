@@ -767,7 +767,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if (null != anatomyCount && !anatomyCount.isEmpty()) {
 			filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
 		}
-		logger.info("filters = " + filters.toString());
+		List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);
+		if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
+			filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
+		}
 		return filters;
 	}
 	
