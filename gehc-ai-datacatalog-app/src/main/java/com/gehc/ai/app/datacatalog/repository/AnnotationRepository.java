@@ -14,6 +14,7 @@ package com.gehc.ai.app.datacatalog.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -39,4 +40,6 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     @Override
     <S extends Annotation> S save(S entity);
   //  <S extends Annotation> S delete(S entity);
+    @Query("SELECT type as name, count(*) as count FROM Annotation where orgId=:orgId group by type")
+    List<Object[]> countAnnotationType(@Param("orgId") String orgId);
 }
