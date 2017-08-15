@@ -770,9 +770,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
 		}
 		List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);
-		 Object[]  annotationAbsent = new Object[] {
+		 /*Object[]  annotationAbsent = new Object[] {
 	                "absent",12L};
-		 annotationTypeCount.add(annotationAbsent);
+		 annotationTypeCount.add(annotationAbsent);*/
 		
 		if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
 			filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
