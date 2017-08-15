@@ -202,7 +202,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			if (studyLst != null && !studyLst.isEmpty()) {
 				return studyLst.get(0);
 			}
-		}else if (null == s || null == s.getStudyInstanceUid() || null == s.getOrgId()) {
+		}else if (null == s || null == s.getOrgId()) {
 			throw new DataCatalogException("Missing study info");
 		}
 		s.setUploadDate(new Date(System.currentTimeMillis()));
