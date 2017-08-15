@@ -188,6 +188,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		} else if (null == p || null == p.getPatientId() || null == p.getOrgId()) {
 			throw new DataCatalogException("Missing patient info");
 		}
+		p.setUploadDate(new Date(System.currentTimeMillis()));
 		return patientRepository.save(p);
 	}
 
@@ -204,6 +205,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}else if (null == s || null == s.getStudyInstanceUid() || null == s.getOrgId()) {
 			throw new DataCatalogException("Missing study info");
 		}
+		s.setUploadDate(new Date(System.currentTimeMillis()));
 		return studyRepository.save(s);
 	}
 
@@ -768,6 +770,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
 		}
 		List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);
+		 Object[]  annotationAbsent = new Object[] {
+	                "absent",12L};
+		 annotationTypeCount.add(annotationAbsent);
+		
 		if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
 			filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
 		}
