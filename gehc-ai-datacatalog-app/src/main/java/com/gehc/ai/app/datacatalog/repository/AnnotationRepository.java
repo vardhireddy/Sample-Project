@@ -26,7 +26,7 @@ import com.gehc.ai.app.datacatalog.entity.Annotation;
  */
 @RepositoryRestResource(collectionResourceRel = "annotation", path = "annotation")
 public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
-    List<Annotation> findByTypeIn(List<String> type);
+	List<Annotation> findByTypeIn(List<String> type);
     List<Annotation> findByIdIn(List<Long> ids);
     List<Annotation> findByImageSet(@Param("imageSet") String imageSet);
     List<Annotation> findByImageSetIn(List<String> imageSet);
@@ -40,6 +40,6 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     @Override
     <S extends Annotation> S save(S entity);
   //  <S extends Annotation> S delete(S entity);
-    @Query("SELECT type as name, count(*) as count FROM Annotation where orgId=:orgId group by type")
+    @Query("SELECT type as name, count(distinct imageSet) as count FROM Annotation where orgId=:orgId group by type")
     List<Object[]> countAnnotationType(@Param("orgId") String orgId);
 }
