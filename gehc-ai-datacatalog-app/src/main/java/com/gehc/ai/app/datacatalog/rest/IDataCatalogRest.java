@@ -16,6 +16,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
@@ -76,14 +78,16 @@ public interface IDataCatalogRest {
      * @param ids
      * @param request, to get an org id based on authentication token
      */
-    ApiResponse deleteAnnotation( String ids, HttpServletRequest request );
+    ApiResponse deleteAnnotation( String ids );
 
     /**
      * @param imageSet
      * @param request, to get an org id based on authentication token
      * @return
      */
-    List<Annotation> getAnnotationsByImgSet(String imageSet );
+    List<Annotation> getAnnotationsByImgSet(Long imageSet );
+    
+  //  List<Annotation> getAnnotationsByImgSet(ImageSeries imageSet);
 
     /**
      * Save an Annotation
@@ -225,4 +229,6 @@ public interface IDataCatalogRest {
      * @return map of all the filters
      */
     Map<String, Object> filters(String orgId);
+    
+    List imgSetWithNoAnn(String orgId);
 }

@@ -188,3 +188,5 @@ CHANGE COLUMN `schemaVersion` `schema_version` varchar(50);
 Alter table lfdb.image_set modify id BIGINT(20) AUTO_INCREMENT;
 
 alter table image_set AUTO_INCREMENT=1635500015265;
+
+alter table annotation modify image_set bigint(20);

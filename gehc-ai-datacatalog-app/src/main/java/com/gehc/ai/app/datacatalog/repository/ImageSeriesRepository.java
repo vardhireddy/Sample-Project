@@ -23,6 +23,11 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
 @RepositoryRestResource(collectionResourceRel = "image_set", path = "image_set")
 public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> {
+	public static final String IMG_WITH_NO_ANNOTATION = "SELECT count(1) as count FROM ImageSeries im where orgId=:orgId "
+			+ "and not exists (SELECT imageSet FROM Annotation an where an.imageSet = im.id and an.orgId = im.orgId )";
+	
+	public static final String IMG_WITH_NO_ANN_COUNT = "select count(im.id) from ImageSeries im LEFT OUTER JOIN im.annotation an where im.orgId=:orgId and an.imageSet IS NULL";
+	
     @Override
     <S extends ImageSeries> S save(S entity);
     List<ImageSeries> findByOrgId(@Param("orgId") String orgId);  
@@ -41,4 +46,6 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<Object[]> countModality(@Param("orgId") String orgId);
     @Query("SELECT anatomy as name, count(*) as count FROM ImageSeries where orgId=:orgId group by anatomy")
     List<Object[]> countAnatomy(@Param("orgId") String orgId);
+    @Query(IMG_WITH_NO_ANN_COUNT)
+    List<Long> countImgWithNoAnn(@Param("orgId") String orgId);
  }
