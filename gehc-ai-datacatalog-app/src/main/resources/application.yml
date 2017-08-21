@@ -38,7 +38,3 @@ spring:
     url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
     username: root
     password: root
-dev:
-  mode: true
-  orgId: 61939267-d195-499f-bfd8-7d92875c7035
- 

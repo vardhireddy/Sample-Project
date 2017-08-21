@@ -20,9 +20,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
@@ -67,9 +70,27 @@ public class Annotation implements Serializable {
     private Date annotationDate;
     @Column(name="type")
     private String type;
+    
     @Column(name="image_set")
-    private String imageSet;  
-    /**
+	private Long imageSetId;
+    
+    public Long getImageSetId() {
+		return imageSetId;
+	}
+	public void setImageSetId(Long imageSetId) {
+		this.imageSetId = imageSetId;
+	}
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name="image_set", insertable = false, updatable = false) 
+    private ImageSeries imageSet;  
+    public ImageSeries getImageSet() {
+		return imageSet;
+	}
+	public void setImageSet(ImageSeries imageSet) {
+		this.imageSet = imageSet;
+	}
+	/**
      * Flexible JSON object to store annotated items
      */
     @Convert(converter = JsonConverter.class)
@@ -159,18 +180,8 @@ public class Annotation implements Serializable {
     public void setType( String type ) {
         this.type = type;
     }
-    /**
-     * @return the imageSet
-     */
-    public String getImageSet() {
-        return imageSet;
-    }
-    /**
-     * @param imageSet the imageSet to set
-     */
-    public void setImageSet( String imageSet ) {
-        this.imageSet = imageSet;
-    }
+
+
     /**
      * @return the item
      */
