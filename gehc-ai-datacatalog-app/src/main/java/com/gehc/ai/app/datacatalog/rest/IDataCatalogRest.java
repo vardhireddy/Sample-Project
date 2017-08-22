@@ -87,8 +87,6 @@ public interface IDataCatalogRest {
      */
     List<Annotation> getAnnotationsByImgSet(Long imageSet );
     
-  //  List<Annotation> getAnnotationsByImgSet(ImageSeries imageSet);
-
     /**
      * Save an Annotation
      * @param annotation
@@ -230,5 +228,9 @@ public interface IDataCatalogRest {
      */
     Map<String, Object> filters(String orgId);
     
+    /**
+     * @param orgId
+     * @return count of image set which has no annotations
+     */
     List imgSetWithNoAnn(String orgId);
 }

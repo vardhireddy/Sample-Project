@@ -219,19 +219,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			return new ArrayList<Annotation>();
 		}
 	}
-
-//	@Override
-//	@RequestMapping(value = "/annotation/image-set", method = RequestMethod.POST)
-//	public List<Annotation> getAnnotationsByImgSet(@RequestBody ImageSeries imageSet) {
-//		logger.info("In getAnnotationsByImgSet");
-//		// Note: this is being used in C2M as well
-//		if (null != imageSet ) {
-//			logger.info("------In getAnnotationsByImgSet");
-//			return annotationRepository.findByImageSet(imageSet);
-//		} else {
-//			return new ArrayList<Annotation>();
-//		}
-//	}
 	
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -704,22 +691,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
 						imgSeriesMap.put(imageSeries.getId(), imageSeries);
 					}
-//					List<String> imgSerIdStrLst = new ArrayList<String>();
-//					for (Iterator<Long> imgSerIdItr = ((List<Long>) dsLst.get(0).getImageSets()).iterator(); imgSerIdItr
-//							.hasNext();) {
-//						imgSerIdStrLst.add(imgSerIdItr.next().toString());
-//					}
-//					List<Annotation> annotationLst = annotationRepository.findByImageSetInAndTypeIn(imgSerIdStrLst,
-//							types);
-					List<ImageSeries> imgSerIdStrLst = new ArrayList<ImageSeries>();
-					for (Iterator<Long> imgSerIdItr = ((List<Long>) dsLst.get(0).getImageSets()).iterator(); imgSerIdItr
-							.hasNext();) {
-						ImageSeries imgSer = new ImageSeries();
-						imgSer.setId(imgSerIdItr.next());
-						imgSerIdStrLst.add(imgSer);
-					}
-					List<Annotation> annotationLst = annotationRepository.findByImageSetInAndTypeIn(imgSerIdStrLst,
-							types);
+					List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn((List<Long>) dsLst.get(0).getImageSets(),
+							types); 
 					if (null != annotationLst && !annotationLst.isEmpty()) {
 						logger.info(" annotationLst.size() = " + annotationLst.size());
 						annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();

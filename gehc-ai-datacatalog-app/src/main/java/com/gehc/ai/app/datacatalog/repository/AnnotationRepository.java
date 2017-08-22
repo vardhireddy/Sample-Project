@@ -30,23 +30,11 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
 	List<Annotation> findByTypeIn(List<String> type);
     List<Annotation> findByIdIn(List<Long> ids);
     List<Annotation> findByImageSetId(@Param("imageSetId") Long imageSet);
-   // List<Annotation> findByImageSet(ImageSeries imageSet);
-    //Following is used in filter api which is going to  change
-   // List<Annotation> findByImageSetIn(List<String> imageSet);
     List<Annotation> findByImageSetIdIn(List<Long> imageSet);
-  //  List<Annotation> findByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
     List<Annotation> findByImageSetIdInAndTypeIn(List<Long> imageSets, List<String> types);
     List<Annotation> findByImageSetInAndTypeIn(List<ImageSeries> imageSets, List<String> types);
-    //Below 4 are not in use
-   // List<Annotation> findByImageSetAndOrgId(@Param("imageSet") String imageSet, @Param("orgId") String orgId);
-    List<Annotation> findByIdInAndOrgId(List<Long> ids, String orgId);
-    List<String> findDistinctImageSetByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
-    List<String> findDistinctImageSetByImageSetIn(List<String> imageSets);
-    //@Query(value="delete from Annotation a where a.id = :id")
-    void deleteById(@Param("id") Long id);
     @Override
     <S extends Annotation> S save(S entity);
-  //  <S extends Annotation> S delete(S entity);
     @Query("SELECT type as name, count(distinct imageSet) as count FROM Annotation where orgId=:orgId group by type")
     List<Object[]> countAnnotationType(@Param("orgId") String orgId);
     void delete(Annotation deleted);
