@@ -209,7 +209,7 @@ public class DataCollectionSteps {
         List<Annotation> annotations = new ArrayList<Annotation>();
         annotations.add(ann);
         when(annotationRepository
-                .findByImageSetInAndTypeIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(annotations);
+                .findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annotations);
 
     }
     @When("get DataCatalog Raw Target Data")

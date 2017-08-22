@@ -44,7 +44,7 @@ public class AnnotationSteps {
     private final CommonSteps commonSteps;
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
-    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"1\",\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSet\":\"1\",\"item\":{}}]";
+    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"1\",\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"item\":{}}]";
 
     @Autowired
     public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
@@ -87,7 +87,7 @@ public class AnnotationSteps {
     public void givenAnnotationSetByImageSetId() throws Exception {
         List<Annotation> annotations = new ArrayList<Annotation>();
         annotations.add(commonSteps.getAnnotation());
-        when(annotationRepository.findByImageSet(anyString())).thenReturn(annotations);
+        when(annotationRepository.findByImageSetId(anyLong())).thenReturn(annotations);
     }
 
     @When("Get annotation set data by Imageset Id")
@@ -110,7 +110,7 @@ public class AnnotationSteps {
     public void givenAnnotationSet() throws Exception {
         List<Annotation> annotations = new ArrayList<Annotation>();
         annotations.add(commonSteps.getAnnotation());
-        when(annotationRepository.findByImageSet(anyString())).thenReturn(annotations);
+        when(annotationRepository.findByImageSetId(anyLong())).thenReturn(annotations);
     }
 
     @When("Get annotation set data")
