@@ -240,7 +240,7 @@ public class ImageSetSteps {
         when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotation());
-        when(annotationRepository.findByImageSetInAndTypeIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(annList);
+        when(annotationRepository.findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annList);
     }
 
     @When("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation")
@@ -333,7 +333,7 @@ public class ImageSetSteps {
         when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotationWithOutValidId());
-        when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annList);
+        when(annotationRepository.findByImageSetIdIn(anyListOf(Long.class))).thenReturn(annList);
     }
     @When("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT")
     public void whenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationABSENT() throws Exception {
@@ -356,7 +356,7 @@ public class ImageSetSteps {
         when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotation());
-        when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annList);
+        when(annotationRepository.findByImageSetIdIn(anyListOf(Long.class))).thenReturn(annList);
     }
     @When("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT with no matching ImageSeries")
     public void whenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationABSENTWithNoMatchingImageSeries() throws Exception {
@@ -384,7 +384,7 @@ public class ImageSetSteps {
                 anyListOf(String.class), anyListOf(String.class))).thenReturn(imgSerLst);
         List<Annotation> annotations = new ArrayList<Annotation>();
         annotations.add(commonSteps.getAnnotation());
-        when(annotationRepository.findByImageSetIn(anyListOf(String.class))).thenReturn(annotations);
+        when(annotationRepository.findByImageSetIdIn(anyListOf(Long.class))).thenReturn(annotations);
 
     }
 

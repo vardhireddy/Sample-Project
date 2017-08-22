@@ -23,6 +23,26 @@ public class CommonSteps {
         return Date.valueOf(str);
     }
 
+    public ImageSeries getOneimageSeries(){
+        ImageSeries imageSeries = new ImageSeries();
+        imageSeries.setDescription("test");
+        imageSeries.setAnatomy("Lung");
+        imageSeries.setModality("CT");
+        imageSeries.setDataFormat("dataFormat");
+        imageSeries.setUri("tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10");
+        imageSeries.setSeriesInstanceUid("1");
+        imageSeries.setInstitution("UCSF");
+        imageSeries.setEquipment("tem");
+        imageSeries.setInstanceCount(1);
+        imageSeries.setUploadBy("BDD");
+        imageSeries.setUploadDate(getDate());
+        imageSeries.setPatientDbId(1L);
+        Map prop = new HashMap<String,String>();
+        prop.put("test", "bdd");
+        imageSeries.setProperties(prop);
+        return imageSeries;
+    }
+
     public List<ImageSeries> getImageSeries() {
         List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
         ImageSeries imageSeries = new ImageSeries();
@@ -78,7 +98,9 @@ public class CommonSteps {
         annotation.setId(1L);
         annotation.setAnnotationDate(getDate());
         annotation.setAnnotatorId("123");
-        annotation.setImageSet("1");
+        ImageSeries imageSeries =  getOneimageSeries();
+        imageSeries.setId(1L);
+        annotation.setImageSet(imageSeries);
        annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
         annotation.setType("type");
@@ -91,7 +113,9 @@ public class CommonSteps {
         annotation.setId(1L);
         annotation.setAnnotationDate(getDate());
         annotation.setAnnotatorId("123");
-        annotation.setImageSet("123");
+        ImageSeries imageSeries =  getOneimageSeries();
+        imageSeries.setId(4L);
+        annotation.setImageSet(imageSeries);
 
        annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
