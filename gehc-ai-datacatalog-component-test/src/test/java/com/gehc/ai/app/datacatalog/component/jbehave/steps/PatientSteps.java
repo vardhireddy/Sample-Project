@@ -120,7 +120,7 @@ public class PatientSteps {
     @When("Get image series by patient id")
     public void getImageSeriesByPatientId() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/patient/123/image-set")
+                get("/api/v1/datacatalog/patient/123/image-set?orgId=61939267")
                         .contentType(MediaType.APPLICATION_JSON)
                         .requestAttr("orgId", "12")
         );
@@ -141,7 +141,7 @@ public class PatientSteps {
     @When("Get image series by patient ids")
     public void getImageSeriesByPatientIds() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/patient/123,456/image-set")
+                get("/api/v1/datacatalog/patient/123,456/image-set?orgId=61939267")
                         .contentType(MediaType.APPLICATION_JSON)
                         .requestAttr("orgId", "12")
         );
@@ -320,9 +320,8 @@ public class PatientSteps {
     @When("Get image series by patient ids when patient ids list returned null")
     public void getImageSeriesByPatientIdsWhenNullPatientIdsInDB() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/patient/123,456/image-set")
+                get("/api/v1/datacatalog/patient/123,456/image-set?orgId=61939267")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
 
     }
@@ -341,9 +340,8 @@ public class PatientSteps {
     @When("Get image series by patient ids when patient ids list returned empty")
     public void getImageSeriesByPatientIdsWhenEmptyPatientIdsInDB() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/patient/123,456/image-set")
+                get("/api/v1/datacatalog/patient/123,456/image-set?orgId=61939267")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
 
     }
@@ -367,21 +365,21 @@ public class PatientSteps {
         List<Patient> patLst = getPatients();
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(patientRepository.findByPatientId(anyString())).thenReturn(patLst);
-        when(imageSeriesRepository.findByPatientDbId(anyLong())).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findByPatientDbIdAndOrgId(anyLong(),anyString())).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImageSeriesByPatientIdWithNullPatientList() {
         List<Patient> patLst = getPatients();
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(patientRepository.findByPatientId(anyString())).thenReturn(null);
-        when(imageSeriesRepository.findByPatientDbId(anyLong())).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findByPatientDbIdAndOrgId(anyLong(),anyString())).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImageSeriesByPatientIdWithEmptyPatientList() {
         List<Patient> patLst = getPatients();
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
         when(patientRepository.findByPatientId(anyString())).thenReturn(new ArrayList());
-        when(imageSeriesRepository.findByPatientDbId(anyLong())).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findByPatientDbIdAndOrgId(anyLong(),anyString())).thenReturn(imgSerLst);
     }
 
     private void dataStudyByPatient() {
