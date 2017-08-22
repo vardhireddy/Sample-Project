@@ -371,15 +371,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@Override
 	@RequestMapping(value = "/datacatalog/patient/{ids}/image-set", method = RequestMethod.GET)
-	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String ids) {
-		logger.info("[Image Series] Get img series for patient id " + ids);
+	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String ids,@QueryParam("orgId") String orgId) {
+		logger.info("[Image Series] Get img series for patient id " + ids + " org id " + orgId);
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
 		// TODO:Use ManyToOne mapping between Image Series and Patient
 		if (null != ids && ids.length() > 0) {
 			List<Patient> patLst = patientRepository.findByPatientId(ids);
-			if (null != patLst && !patLst.isEmpty()) {
-				logger.info("*** Patient DB id " + ((Patient) (patLst.get(0))).getId());
-				imgSerLst = imageSeriesRepository.findByPatientDbId(((Patient) (patLst.get(0))).getId());
+			if (null != patLst && !patLst.isEmpty() && null != orgId && !orgId.isEmpty()) {
+				imgSerLst = imageSeriesRepository.findByPatientDbIdAndOrgId(((Patient) (patLst.get(0))).getId(), orgId);
 			}
 		}
 		return imgSerLst;

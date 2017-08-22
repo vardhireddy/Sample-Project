@@ -31,7 +31,7 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     @Override
     <S extends ImageSeries> S save(S entity);
     List<ImageSeries> findByOrgId(@Param("orgId") String orgId);  
-    List<ImageSeries> findByPatientDbId(@Param("patientDbId") Long patientDbId);
+    List<ImageSeries> findByPatientDbIdAndOrgId(@Param("patientDbId") Long patientDbId, @Param("orgId") String orgId);
     List<ImageSeries> findById(@Param("id") Long id);
     List<ImageSeries> findByOrgIdInAndModalityIn(List<String> orgId, List<String> modality);
     List<ImageSeries> findByOrgIdIn(List<String> orgId);

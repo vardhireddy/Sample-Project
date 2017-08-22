@@ -140,9 +140,10 @@ public interface IDataCatalogRest {
     /**
      * Get Image Series by Patient id
      * @param patientId
+     * @param org_id TODO
      * @return list of Image Series
      */
-    List<ImageSeries> getImgSeriesByPatientId( String patientId );
+    List<ImageSeries> getImgSeriesByPatientId( String patientId, String orgId );
     
     /**
      * Get Image Series by Data Set Id
