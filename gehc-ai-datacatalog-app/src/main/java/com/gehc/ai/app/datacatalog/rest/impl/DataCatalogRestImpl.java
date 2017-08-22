@@ -259,8 +259,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						logger.info(" -----Delete annotation " + Long.valueOf(idStrings[i]) );
 						//Get annotation object as somehow it was crying for org_id is null
 						List<Annotation> annLst = getAnnotationsById(idStrings[i], null);
-						logger.info(" annLst.size() " + annLst.size() );
-						if(null != annLst && !annLst.isEmpty()){
+						if(!annLst.isEmpty()){
+							logger.info(" annLst.size() " + annLst.size() );
 							annotationRepository.delete(annLst.get(0));
 						}else{
 							annotationRepository.delete(ann);
