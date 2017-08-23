@@ -87,6 +87,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String ANNOTATIONS = "annotations";
 	public static final String SERIES_INS_UID = "series-instance-uid";
 	public static final String ABSENT = "absent";
+	public static final String ANNOTATIONS_ABSENT ="annotation-absent";
 
 	@Value("${uom.user.me.url}")
 	private String uomMeUrl;
@@ -467,9 +468,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 			try {
 				if (null != validParams) {
-					if (validParams.containsKey(SERIES_INS_UID)) {
+					if (validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
 						return imageSeriesRepository
-								.findBySeriesInstanceUidIn(getListOfStringsFromParams(validParams.get(SERIES_INS_UID)));
+								.findBySeriesInstanceUidInAndOrgIdIn(getListOfStringsFromParams(validParams.get(SERIES_INS_UID)), getListOfStringsFromParams(validParams.get(ORG_ID)));
 					} else if (validParams.containsKey(ORG_ID)) {
 						imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
 						if (!imageSeriesLst.isEmpty())
@@ -737,25 +738,32 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 	
 	@Override
-	@RequestMapping(value = "/datacatalog/query", method = RequestMethod.GET)
-	public Map<String, Object> filters(@QueryParam("orgId") String orgId) {
-		logger.info("Get filters for orgId = " + orgId);
-		Map<String, Object> filters = new HashMap<String, Object>();
-		List<Object[]> modalityCount = imageSeriesRepository.countModality(orgId);
-		if (null != modalityCount && !modalityCount.isEmpty()) {
-			filters.putAll(getFiltersCount(modalityCount, MODALITY));
-		}
-		List<Object[]> anatomyCount = imageSeriesRepository.countAnatomy(orgId);
-		if (null != anatomyCount && !anatomyCount.isEmpty()) {
-			filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
-		}
-		List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);
-		 /*Object[]  annotationAbsent = new Object[] {
-	                "absent",12L};
-		 annotationTypeCount.add(annotationAbsent);*/
+	@RequestMapping(value = "/datacatalog/data-summary", method = RequestMethod.GET)
+	public Map<String, Object> dataSummary(@QueryParam("groupby") String groupby, HttpServletRequest request) {
+		logger.info("*** In REST getStudiesByPatientDbid, orgId = " + request.getAttribute("orgId"));
+		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
+		logger.info("Get filters for orgId = " + orgId + " group by " + groupby);
 		
-		if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
-			filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
+		Map<String, Object> filters = new HashMap<String, Object>();
+		if(null != groupby && !groupby.isEmpty() && groupby.equalsIgnoreCase(ANNOTATIONS_ABSENT)){
+			filters.put(ANNOTATIONS_ABSENT, imgSetWithNoAnn(orgId).get(0));
+		}else{
+			List<Object[]> modalityCount = imageSeriesRepository.countModality(orgId);
+			if (null != modalityCount && !modalityCount.isEmpty()) {
+				filters.putAll(getFiltersCount(modalityCount, MODALITY));
+			}
+			List<Object[]> anatomyCount = imageSeriesRepository.countAnatomy(orgId);
+			if (null != anatomyCount && !anatomyCount.isEmpty()) {
+				filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
+			}
+			List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);
+			 /*Object[]  annotationAbsent = new Object[] {
+		                "absent",12L};
+			 annotationTypeCount.add(annotationAbsent);*/
+			
+			if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
+				filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
+			}
 		}
 		return filters;
 	}
@@ -771,8 +779,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 	
 	@Override
-	@RequestMapping(value = "/datacatalog/img-set-with-no-ann", method = RequestMethod.GET)
-	public List imgSetWithNoAnn(String orgId) {
+	@RequestMapping(value = "/datacatalog/image-set/no-annotations", method = RequestMethod.GET)
+	public List imgSetWithNoAnn(@QueryParam("orgId") String orgId) {
 		List<Long> countImgWithNoAnn = imageSeriesRepository.countImgWithNoAnn(orgId);
 		logger.info("imgSetWithNoAnn count = " + countImgWithNoAnn.get(0));
 		return countImgWithNoAnn;
