@@ -224,10 +224,11 @@ public interface IDataCatalogRest {
     String healthcheck();
       
     /**
-     * @param orgId
+     * @param groupBy
+     * @param request TODO
      * @return map of all the filters
      */
-    Map<String, Object> filters(String orgId);
+    Map<String, Object> dataSummary(String groupby, HttpServletRequest request);
     
     /**
      * @param orgId

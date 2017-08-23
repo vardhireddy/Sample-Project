@@ -39,7 +39,7 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<ImageSeries> findByOrgIdInAndSeriesInstanceUid(List<String> orgId, List<String> seriesInstanceUid);
     List<ImageSeries> findByOrgIdInAndAnatomyInAndModalityIn(List<String> orgId, List<String> anatomy, List<String> modality);
     List<ImageSeries> findByIdAndOrgId(@Param("id") Long id, @Param("orgId") String orgId);
-    List<ImageSeries> findBySeriesInstanceUidIn(List<String> seriesInstanceUid);
+    List<ImageSeries> findBySeriesInstanceUidInAndOrgIdIn(List<String> seriesInstanceUid, List<String> orgId);
     List<ImageSeries> findByStudyDbIdAndOrgId(@Param("studyDbId") Long studyDbId, @Param("orgId") String orgId);
     List<ImageSeries> findByIdIn(List<Long> id);
     @Query("SELECT modality as name, count(*) as count FROM ImageSeries where orgId=:orgId group by modality")
