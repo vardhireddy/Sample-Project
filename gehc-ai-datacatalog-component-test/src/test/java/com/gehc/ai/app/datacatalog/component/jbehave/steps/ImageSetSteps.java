@@ -71,6 +71,7 @@ public class ImageSetSteps {
     @Given("Retrieve image series by id - DataSetUp Provided")
     public void givenImageSeriesById() throws Exception {
         dataSetUpImageSeriesById();
+        
     }
 
     @When("Get image series by image series id")
@@ -98,9 +99,10 @@ public class ImageSetSteps {
     @When("Get image series by series instance uid")
     public void getImageSeriesBySeriesInstanceId() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-set?series-instance-uid=1")
+                get("/api/v1/datacatalog/image-set?series-instance-uid=1&org-id=12")
                         .contentType(MediaType.APPLICATION_JSON)
                         .requestAttr("orgId", "12")
+
         );
 
     }
@@ -139,14 +141,14 @@ public class ImageSetSteps {
 
     @Given("Get Image set based on filter criteria with SUID - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteria() throws Exception {
-        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(commonSteps.getImageSeries());
+        when(imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(commonSteps.getImageSeries());
     }
 
 
     @When("Get Image set based on filter criteria with SUID")
     public void getImagesetImageBasedOnFilterCriteria() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-set?series-instance-uid=1")
+                get("/api/v1/datacatalog/image-set?series-instance-uid=1&org-id=12")
                         .contentType(MediaType.APPLICATION_JSON)
                         .requestAttr("orgId", "12")
         );
@@ -161,7 +163,7 @@ public class ImageSetSteps {
 
     @Given("Get Image set based on filter criteria with SUID Thorws runtime exception - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteriaException() throws Exception {
-        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenThrow(RuntimeException.class);
+        when(imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(anyListOf(String.class),anyListOf(String.class))).thenThrow(RuntimeException.class);
     }
 
 
@@ -169,7 +171,7 @@ public class ImageSetSteps {
     public void getImagesetImageBasedOnFilterCriteriaException() throws Exception {
         try{
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-set?series-instance-uid=1")
+                get("/api/v1/datacatalog/image-set?series-instance-uid=1&org-id=12")
                         .contentType(MediaType.APPLICATION_JSON)
                         .requestAttr("orgId", "12")
         );}
@@ -372,6 +374,26 @@ public class ImageSetSteps {
         retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
+    @Given("Get Image set based on filter criteria with No Annotation - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithNoAnnotationDataSetUpProvided() {
+        List noAnn = new ArrayList<Long>();
+        noAnn.add(0,1L);
+        when(imageSeriesRepository.countImgWithNoAnn(anyString())).thenReturn(noAnn);
+    }
+    @When("Get Image set based on filter criteria with No Annotation")
+    public void whenGetImageSetBasedOnFilterCriteriaWithNoAnnotation() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set/no-annotations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with No Annotation")
+    public void thenVerifyImageSetBasedOnFilterWithNoAnnotation() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[1]")));
+    }
+
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(imageSeries);
@@ -379,7 +401,7 @@ public class ImageSetSteps {
 
     private void dataSetUpByFilter() {
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
-        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSerLst);
         when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),
                 anyListOf(String.class), anyListOf(String.class))).thenReturn(imgSerLst);
         List<Annotation> annotations = new ArrayList<Annotation>();
@@ -395,7 +417,7 @@ public class ImageSetSteps {
 
     private void dataSetUpImageSeriesBySeriesInstanceId() {
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
-        when(imageSeriesRepository.findBySeriesInstanceUidIn(anyListOf(String.class))).thenReturn(imgSerLst);
+        when(imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImagesetByStudy() {

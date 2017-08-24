@@ -66,3 +66,8 @@ Feature: Imageset DataCatalog
   Given Get Image set based on filter criteria with SUID Thorws runtime exception - DataSetUp Provided
   When Get Image set based on filter criteria with SUID Thorws runtime exception
   Then verify Image set based on filter with SUID Thorws runtime exception
+
+  Scenario: Get Image set based on filter criteria with No Annotation
+  Given Get Image set based on filter criteria with No Annotation - DataSetUp Provided
+  When Get Image set based on filter criteria with No Annotation
+  Then verify Image set based on filter  with No Annotation

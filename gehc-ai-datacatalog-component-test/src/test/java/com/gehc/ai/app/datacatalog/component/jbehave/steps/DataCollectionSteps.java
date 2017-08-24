@@ -336,7 +336,7 @@ public class DataCollectionSteps {
     @When("Get DataSet for Filters by OrgId")
     public void whenGetDataSetForFiltersByOrgId() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/query?orgId=4fac7976-e58b-472a-960b-42d7e3689f20")
+                get("/api/v1/datacatalog/data-summary?groupBy=ANNOTATIONS")
                         .contentType(MediaType.APPLICATION_JSON)
         );
     }
@@ -359,8 +359,9 @@ public class DataCollectionSteps {
     @When("Get DataSet for Filters by OrgId when Annotation count is null")
     public void whenGetDataSetForFiltersByOrgIdWhenAnnotationCountIsNull() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/query?orgId=4fac7976-e58b-472a-960b-42d7e3689f20")
+                get("/api/v1/datacatalog/data-summary?groupBy=ANNOTATIONS")
                         .contentType(MediaType.APPLICATION_JSON)
+                .requestAttr("orgId","123")
         );
     }
     @Then("verify DataSet for Filters by OrgId when Annotation count is null")
@@ -384,7 +385,7 @@ public class DataCollectionSteps {
     @When("Get DataSet for Filters by OrgId when Annotation count is empty")
     public void whenGetDataSetForFiltersByOrgIdWhenAnnotationCountIsEmpty() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/query?orgId=4fac7976-e58b-472a-960b-42d7e3689f20")
+                get("/api/v1/datacatalog/data-summary?groupBy=ANNOTATIONS")
                         .contentType(MediaType.APPLICATION_JSON)
         );
     }
