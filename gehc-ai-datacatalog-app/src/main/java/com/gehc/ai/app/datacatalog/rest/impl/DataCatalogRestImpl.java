@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -373,10 +374,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/patient/{ids}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String ids,@QueryParam("orgId") String orgId) {
-		logger.info("[Image Series] Get img series for patient id " + ids + " org id " + orgId);
+		logger.info("*** Get img series for patient id " + ids + " org id " + orgId);
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
 		// TODO:Use ManyToOne mapping between Image Series and Patient
 		if (null != ids && ids.length() > 0 && null != orgId && !orgId.isEmpty()) {
+			logger.info("Now getiing patient db id based on patient id " + ids + " org id " + orgId);
 			List<Patient> patLst = patientRepository.findByPatientIdAndOrgId(ids, orgId);
 			if (null != patLst && !patLst.isEmpty()) {
 				logger.info("[Image Series] Got patient DB id ");
