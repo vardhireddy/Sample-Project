@@ -45,7 +45,9 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     public void addInterceptors(InterceptorRegistry registry){
     	//Excluding the below as Countor2Mask is going to use below API
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation/*").excludePathPatterns("/api/v1/annotation/{ids}");
-    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation");
+    	//Commenting below as C2M is using it. 
+    	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/annotation");
+    	//TODO:We need to find the way how to protect the APIs which have been removed from interceptor as either SNS-mamaner or C2M or Coolidge are using them
     	//Added for new APIs after refactoring
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/study/{studyId}/image-set");
     	//Removed from in terceptor as being used by coolidge
