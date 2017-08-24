@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -743,13 +742,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-summary", method = RequestMethod.GET)
 	public Map<String, Object> dataSummary(@QueryParam("groupby") String groupby, HttpServletRequest request) {
-		logger.info("*** In REST getStudiesByPatientDbid, orgId = " + request.getAttribute("orgId"));
+		logger.info("*** In dataSummary, orgId = " + request.getAttribute("orgId"));
 		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
-		logger.info("Get filters for orgId = " + orgId + " group by " + groupby);
-		
+		logger.info("Get dataSummary for orgId = " + orgId + " group by " + groupby);	
 		Map<String, Object> filters = new HashMap<String, Object>();
 		if(null != groupby && !groupby.isEmpty() && groupby.equalsIgnoreCase(ANNOTATIONS_ABSENT)){
-			filters.put(ANNOTATIONS_ABSENT, imgSetWithNoAnn(orgId).get(0));
+			filters.put(ANNOTATIONS_ABSENT, imageSeriesRepository.countImgWithNoAnn(orgId).get(0));
 		}else{
 			List<Object[]> modalityCount = imageSeriesRepository.countModality(orgId);
 			if (null != modalityCount && !modalityCount.isEmpty()) {
@@ -760,9 +758,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
 			}
 			List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);
-			 /*Object[]  annotationAbsent = new Object[] {
-		                "absent",12L};
-			 annotationTypeCount.add(annotationAbsent);*/
 			
 			if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
 				filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
@@ -779,13 +774,5 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			});
 			filters.put(filter, filterMap);
 			return filters;
-	}
-	
-	@Override
-	@RequestMapping(value = "/datacatalog/image-set/no-annotations", method = RequestMethod.GET)
-	public List imgSetWithNoAnn(@QueryParam("orgId") String orgId) {
-		List<Long> countImgWithNoAnn = imageSeriesRepository.countImgWithNoAnn(orgId);
-		logger.info("imgSetWithNoAnn count = " + countImgWithNoAnn.get(0));
-		return countImgWithNoAnn;
 	}
 }
