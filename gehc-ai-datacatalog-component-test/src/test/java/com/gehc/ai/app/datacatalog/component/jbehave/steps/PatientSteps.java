@@ -364,21 +364,21 @@ public class PatientSteps {
     private void dataSetUpImageSeriesByPatientId() {
         List<Patient> patLst = getPatients();
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
-        when(patientRepository.findByPatientId(anyString())).thenReturn(patLst);
+        when(patientRepository.findByPatientIdAndOrgId(anyString(),anyString())).thenReturn(patLst);
         when(imageSeriesRepository.findByPatientDbIdAndOrgId(anyLong(),anyString())).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImageSeriesByPatientIdWithNullPatientList() {
         List<Patient> patLst = getPatients();
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
-        when(patientRepository.findByPatientId(anyString())).thenReturn(null);
+        when(patientRepository.findByPatientIdAndOrgId(anyString(),anyString())).thenReturn(null);
         when(imageSeriesRepository.findByPatientDbIdAndOrgId(anyLong(),anyString())).thenReturn(imgSerLst);
     }
 
     private void dataSetUpImageSeriesByPatientIdWithEmptyPatientList() {
         List<Patient> patLst = getPatients();
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
-        when(patientRepository.findByPatientId(anyString())).thenReturn(new ArrayList());
+        when(patientRepository.findByPatientIdAndOrgId(anyString(),anyString())).thenReturn(new ArrayList());
         when(imageSeriesRepository.findByPatientDbIdAndOrgId(anyLong(),anyString())).thenReturn(imgSerLst);
     }
 
@@ -437,7 +437,7 @@ public class PatientSteps {
 
     private void setPatientId() {
         List<Patient> patients = getPatients();
-        when(patientRepository.findByPatientId(anyString())).thenReturn(patients);
+        when(patientRepository.findByPatientIdAndOrgId(anyString(),anyString())).thenReturn(patients);
     }
 
     private List<Patient> getMultiplePatients() {
