@@ -16,8 +16,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.RequestBody;
-
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
@@ -225,14 +223,8 @@ public interface IDataCatalogRest {
       
     /**
      * @param groupBy
-     * @param request TODO
+     * @param request
      * @return map of all the filters
      */
     Map<String, Object> dataSummary(String groupby, HttpServletRequest request);
-    
-    /**
-     * @param orgId
-     * @return count of image set which has no annotations
-     */
-    List imgSetWithNoAnn(String orgId);
 }
