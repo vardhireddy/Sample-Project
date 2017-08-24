@@ -71,6 +71,7 @@ public class ImageSetSteps {
     @Given("Retrieve image series by id - DataSetUp Provided")
     public void givenImageSeriesById() throws Exception {
         dataSetUpImageSeriesById();
+        
     }
 
     @When("Get image series by image series id")
