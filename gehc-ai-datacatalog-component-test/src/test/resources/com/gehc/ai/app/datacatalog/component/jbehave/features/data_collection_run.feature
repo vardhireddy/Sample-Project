@@ -75,3 +75,8 @@ Feature: DataCollection DataCatalog
   When Get DataSet for Filters by OrgId when Annotation count is empty
   Then verify DataSet for Filters by OrgId when Annotation count is empty
 
+  Scenario: Retrieve DataSet group by ANNOTATIONS_ABSENT
+  Given Retrieve DataSet  group by ANNOTATIONS_ABSENT DataSetUp Provided
+  When Get DataSet  group by ANNOTATIONS_ABSENT
+  Then verify DataSet  group by ANNOTATIONS_ABSENT
+
