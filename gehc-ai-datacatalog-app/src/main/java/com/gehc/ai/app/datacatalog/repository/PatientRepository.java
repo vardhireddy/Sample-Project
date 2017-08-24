@@ -25,7 +25,6 @@ import com.gehc.ai.app.datacatalog.entity.Patient;
  */
 @RepositoryRestResource(collectionResourceRel = "patient", path = "patient")
 public interface PatientRepository extends JpaRepository<Patient, Long> {
-    List<Patient> findByPatientId(@Param("id") String id);
     List<Patient> findByOrgId(@Param("orgId") String orgId);
     List<Patient> findByIdInAndOrgId(List<Long> ids, String orgId);
     List<Patient> findById(@Param("id") Long id);

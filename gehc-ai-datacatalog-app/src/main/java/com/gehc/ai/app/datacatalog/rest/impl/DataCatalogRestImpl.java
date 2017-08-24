@@ -376,9 +376,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		logger.info("[Image Series] Get img series for patient id " + ids + " org id " + orgId);
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
 		// TODO:Use ManyToOne mapping between Image Series and Patient
-		if (null != ids && ids.length() > 0) {
-			List<Patient> patLst = patientRepository.findByPatientId(ids);
-			if (null != patLst && !patLst.isEmpty() && null != orgId && !orgId.isEmpty()) {
+		if (null != ids && ids.length() > 0 && null != orgId && !orgId.isEmpty()) {
+			List<Patient> patLst = patientRepository.findByPatientIdAndOrgId(ids, orgId);
+			if (null != patLst && !patLst.isEmpty()) {
+				logger.info("[Image Series] Got patient DB id ");
 				imgSerLst = imageSeriesRepository.findByPatientDbIdAndOrgId(((Patient) (patLst.get(0))).getId(), orgId);
 			}
 		}
