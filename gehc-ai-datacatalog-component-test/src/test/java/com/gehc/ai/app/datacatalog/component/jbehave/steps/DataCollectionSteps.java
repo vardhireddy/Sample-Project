@@ -336,7 +336,7 @@ public class DataCollectionSteps {
     @When("Get DataSet for Filters by OrgId")
     public void whenGetDataSetForFiltersByOrgId() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/data-summary?groupBy=ANNOTATIONS")
+                get("/api/v1/datacatalog/data-summary")
                         .contentType(MediaType.APPLICATION_JSON)
         );
     }
@@ -359,7 +359,7 @@ public class DataCollectionSteps {
     @When("Get DataSet for Filters by OrgId when Annotation count is null")
     public void whenGetDataSetForFiltersByOrgIdWhenAnnotationCountIsNull() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/data-summary?groupBy=ANNOTATIONS")
+                get("/api/v1/datacatalog/data-summary")
                         .contentType(MediaType.APPLICATION_JSON)
                 .requestAttr("orgId","123")
         );
@@ -385,7 +385,7 @@ public class DataCollectionSteps {
     @When("Get DataSet for Filters by OrgId when Annotation count is empty")
     public void whenGetDataSetForFiltersByOrgIdWhenAnnotationCountIsEmpty() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/data-summary?groupBy=ANNOTATIONS")
+                get("/api/v1/datacatalog/data-summary")
                         .contentType(MediaType.APPLICATION_JSON)
         );
     }
@@ -394,6 +394,25 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"modality\":{\"DX\":121,\"CR\":8082}}")));
     }
 
+    @Given("Retrieve DataSet  group by ANNOTATIONS_ABSENT DataSetUp Provided")
+    public void givenRetrieveDataSetgroupbyANNOTATIONS_ABSENTDataSetUpProvided() {
+        List noAnn = new ArrayList<Long>();
+        noAnn.add(0,1L);
+        when(imageSeriesRepository.countImgWithNoAnn(anyString())).thenReturn(noAnn);
+    }
+
+    @When("Get DataSet  group by ANNOTATIONS_ABSENT")
+    public void whenGetDataSetgroupbyANNOTATIONS_ABSENT() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-summary?groupby=annotation-absent")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify DataSet  group by ANNOTATIONS_ABSENT")
+    public void thenVerifyDataSetgroupbyANNOTATIONS_ABSENT()  throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("{\"annotation-absent\":1}")));
+    }
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(dataSet);
