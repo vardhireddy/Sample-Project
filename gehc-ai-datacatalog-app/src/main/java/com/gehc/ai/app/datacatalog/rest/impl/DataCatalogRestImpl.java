@@ -788,4 +788,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
 		return this.customFilterService.geClassDataSummary(orgId);
 	}
+
+	@Override
+	@RequestMapping(value = "/datacatalog/data-summary-count", method = RequestMethod.GET)
+	public int dataSummaryCount(Map<String, Object> params) {
+		logger.info("*** Get dataFilterCount, params.size() = " + params.size() );
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
+		}
+		return 0;
+	}
 }
