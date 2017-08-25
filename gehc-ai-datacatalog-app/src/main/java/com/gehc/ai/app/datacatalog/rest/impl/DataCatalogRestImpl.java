@@ -791,11 +791,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Override
 	@RequestMapping(value = "/datacatalog/data-summary-count", method = RequestMethod.GET)
-	public int dataSummaryCount(Map<String, Object> params) {
+	public int dataSummaryCount(@RequestParam Map<String, Object> params) {
 		logger.info("*** Get dataFilterCount, params.size() = " + params.size() );
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
-		}
+
+		
+		this.customFilterService.getImageSetCount(params);
 		return 0;
 	}
 }

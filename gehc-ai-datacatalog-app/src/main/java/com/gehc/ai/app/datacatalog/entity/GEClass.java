@@ -1,0 +1,43 @@
+package com.gehc.ai.app.datacatalog.entity;
+
+public class GEClass {
+	String name;
+	String value;
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	/**
+	 * @return the value
+	 */
+	public String getValue() {
+		return value;
+	}
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
+	/**
+	 * @return the patient_outcome
+	 */
+	public String getPatient_outcome() {
+		return patient_outcome;
+	}
+	/**
+	 * @param patient_outcome the patient_outcome to set
+	 */
+	public void setPatient_outcome(String patient_outcome) {
+		this.patient_outcome = patient_outcome;
+	}
+	String patient_outcome;
+}
