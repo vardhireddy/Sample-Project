@@ -148,7 +148,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/dataCatalog/healthCheck", method = RequestMethod.GET)
 	public String healthCheck() {
-		//this.customFilterService.getSelectedColumns(null);
+		this.customFilterService.getSelectedColumns(null);
 		return ApplicationConstants.SUCCESS;
 	}
 
@@ -779,5 +779,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			});
 			filters.put(filter, filterMap);
 			return filters;
+	}
+
+	@Override
+	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
+	public Map<Object, Object> geClassDataSummary(HttpServletRequest request) {
+		//TODO: add interceptor to get org id
+		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
+		return this.customFilterService.geClassDataSummary(orgId);
 	}
 }

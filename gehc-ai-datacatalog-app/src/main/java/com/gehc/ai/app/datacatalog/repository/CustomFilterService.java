@@ -40,7 +40,7 @@ public class CustomFilterService {
 			 + " SELECT  8 AS idx UNION "
 			 + " SELECT  9 AS idx UNION "
 			 + " SELECT  10 AS idx UNION "
-			 + " SELECT  11 ) AS indices WHERE JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
+			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
 			 + " ORDER BY id, idx) AS LABEL_JSON GROUP BY single_class";
 	
 	public static final String SIMPLE_JSON_QUERY = "SELECT CAST(JSON_EXTRACT(item, '$.properties.ge_class') AS CHAR(500)) FROM annotation";
@@ -81,9 +81,10 @@ public class CustomFilterService {
 		@SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
 		
-		Map<BigInteger, String> filterMap = new HashMap<BigInteger, String>();
+		Map<String, String> filterMap = new HashMap<String, String>();
         objList.stream().forEach((record) -> {
             logger.info(record[0].toString() + ",......." + record[1].toString());
+            filterMap.put(record[1].toString(), record[0].toString());
             GE_CLASS_LIST.add(record[1]);
         });
 		
@@ -97,5 +98,20 @@ public class CustomFilterService {
         logger.info("query is " + buf);
         
 		logger.info("result size " + objList.size());
+	}
+	
+	public Map<Object, Object> geClassDataSummary(String orgId) {
+		logger.info(" In service geClassDataSummary, orgId = " + orgId);
+		Query q = em.createNativeQuery(GE_CLASS_COUNTS);
+		q.setParameter("orgId", orgId);
+		@SuppressWarnings("unchecked")
+		List<Object[]> objList = q.getResultList();
+		
+		Map<Object, Object> filterMap = new HashMap<Object, Object>();
+        objList.stream().forEach((record) -> {
+            logger.info(record[0].toString() + ",......." + record[1].toString());
+            filterMap.put(record[1], record[0]);
+        });
+		return filterMap;
 	}
 }
