@@ -61,6 +61,7 @@ import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.CustomFilterService;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 //import COSNotificationRepository;
@@ -106,6 +107,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Autowired
 	private ImageSeriesRepository imageSeriesRepository;
 
+	@Autowired
+	private CustomFilterService customFilterService;
+	
 	private Set<Long> getUniqueImgSetIds(List<Annotation> annotationLst) {
 		Set<Long> uniqueImgSetIds = new HashSet<Long>();
 		if (null != annotationLst && !annotationLst.isEmpty()) {
@@ -144,6 +148,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/dataCatalog/healthCheck", method = RequestMethod.GET)
 	public String healthCheck() {
+		//this.customFilterService.getSelectedColumns(null);
 		return ApplicationConstants.SUCCESS;
 	}
 
