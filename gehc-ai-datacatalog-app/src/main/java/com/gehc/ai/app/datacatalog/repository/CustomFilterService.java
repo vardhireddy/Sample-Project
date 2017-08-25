@@ -1,6 +1,7 @@
 package com.gehc.ai.app.datacatalog.repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -43,8 +44,18 @@ public class CustomFilterService {
 			 + " ORDER BY id, idx) AS LABEL_JSON GROUP BY single_class";
 	
 	public static final String SIMPLE_JSON_QUERY = "SELECT CAST(JSON_EXTRACT(item, '$.properties.ge_class') AS CHAR(500)) FROM annotation";
+	
+	static final String GE_CLASS_QUERY = "select distinct im.id, p.patient_id, im.modality, im.anatomy from image_set im "
+			+ "inner join annotation an "
+			+ "on an.image_set=im.id "
+			+ "inner join patient p "
+			+ "on p.id = im.patient_dbid ";
+
+	static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
+	
 	private static Logger logger = LoggerFactory.getLogger(CustomFilterService.class);
 
+	
 	@Autowired
 	EntityManager em;
 	
@@ -60,7 +71,7 @@ public class CustomFilterService {
 			Tuple t = tupleResult.get(k);
 			logger.info(t.get(1).toString());
 		}
-		logger.info("returns =========" + tupleResult.size());
+		logger.info("returns tuple =========" + tupleResult.size());
 		
 
 //		Query q = em.createNativeQuery(SIMPLE_JSON_QUERY);
@@ -73,10 +84,18 @@ public class CustomFilterService {
 		Map<BigInteger, String> filterMap = new HashMap<BigInteger, String>();
         objList.stream().forEach((record) -> {
             logger.info(record[0].toString() + ",......." + record[1].toString());
+            GE_CLASS_LIST.add(record[1]);
         });
 		
+        StringBuilder buf = new StringBuilder();
+        buf.append(GE_CLASS_QUERY);
+        for (int k = 0; k < GE_CLASS_LIST.size(); k++) {
+        	buf.append(k==0? "where " : "or ");
+        	buf.append("JSON_CONTAINS(an.item, '" + GE_CLASS_LIST.get(k) + "', '$.properties.ge_class') ");
+        }
+        
+        logger.info("query is " + buf);
+        
 		logger.info("result size " + objList.size());
-
-		
 	}
 }
