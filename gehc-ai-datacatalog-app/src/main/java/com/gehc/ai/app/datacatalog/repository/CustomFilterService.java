@@ -1,6 +1,8 @@
 package com.gehc.ai.app.datacatalog.repository;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries_;
 
@@ -110,4 +118,62 @@ public class CustomFilterService {
         });
 		return filterMap;
 	}
+
+	public void getImageSetCount(Map<String, Object> params) {
+			logger.info("=========entity manager=========" + em);
+			ObjectMapper mapper = new ObjectMapper();
+
+			
+			GEClass [] geClasses = {};
+			
+			for (Map.Entry<String, Object> entry : params.entrySet()) {
+				logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
+				if ("geClass".equals(entry.getKey())) {
+					
+					try {
+						geClasses = mapper.readValue(entry.getValue().toString(), GEClass [].class);
+						logger.info("json parsing result: " + Arrays.toString(geClasses));
+					} catch (JsonParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (JsonMappingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			Query q = em.createNativeQuery(GE_CLASS_COUNTS);
+			q.setParameter("orgId", "4fac7976-e58b-472a-960b-42d7e3689f20");
+
+			@SuppressWarnings("unchecked")
+			List<Object[]> objList = q.getResultList();
+			
+			Map<String, String> filterMap = new HashMap<String, String>();
+	        objList.stream().forEach((record) -> {
+	            logger.info(record[0].toString() + ",......." + record[1].toString());
+	            filterMap.put(record[1].toString(), record[0].toString());
+	        });
+			
+	        StringBuilder buf = new StringBuilder();
+	        buf.append(GE_CLASS_QUERY);
+	        mapper.setSerializationInclusion(Include.NON_NULL);
+
+	        for (int k = 0; k < geClasses.length; k++) {
+	        	buf.append(k==0? "where " : "or ");
+	        	try {
+					buf.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        }
+	        
+	        logger.info("query is " + buf);
+	        
+			logger.info("result size " + objList.size());
+		}
 }
