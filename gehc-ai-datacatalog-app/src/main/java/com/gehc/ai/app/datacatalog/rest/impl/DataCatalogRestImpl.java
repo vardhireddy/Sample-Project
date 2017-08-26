@@ -148,7 +148,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/dataCatalog/healthCheck", method = RequestMethod.GET)
 	public String healthCheck() {
-		this.customFilterService.getSelectedColumns(null);
+		//this.customFilterService.getSelectedColumns(null);
 		return ApplicationConstants.SUCCESS;
 	}
 
@@ -792,9 +792,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-summary-count", method = RequestMethod.GET)
 	public int dataSummaryCount(@RequestParam Map<String, Object> params) {
-		logger.info("*** Get dataFilterCount, params.size() = " + params.size() );
-
-		
 		this.customFilterService.getImageSetCount(params);
 		return 0;
 	}
