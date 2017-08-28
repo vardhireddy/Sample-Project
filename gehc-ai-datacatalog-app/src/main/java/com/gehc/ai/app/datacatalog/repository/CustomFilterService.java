@@ -1,8 +1,6 @@
 package com.gehc.ai.app.datacatalog.repository;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +29,6 @@ import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries_;
 import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 
 @Service
@@ -49,7 +46,7 @@ public class CustomFilterService {
 			 + " SELECT  8 AS idx UNION "
 			 + " SELECT  9 AS idx UNION "
 			 + " SELECT  10 AS idx UNION "
-			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
+			 + " SELECT  11 ) AS indices WHERE org_id = :orgId :modality :anatomy :annotationType and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
 			 + " ORDER BY id, idx) AS LABEL_JSON GROUP BY single_class";
 	
 	public static final String SIMPLE_JSON_QUERY = "SELECT CAST(JSON_EXTRACT(item, '$.properties.ge_class') AS CHAR(500)) FROM annotation";
@@ -110,10 +107,31 @@ public class CustomFilterService {
 		logger.info("result size " + objList.size());
 	}
 	
-	public Map<Object, Object> geClassDataSummary(String orgId) {
-		logger.info(" * In service geClassDataSummary, orgId = " + orgId);
+	private String getOrQueryString(String column, String values) {
+		StringBuilder q = new StringBuilder();
+		q.append("and (");
+		String [] candidates = values.split(",");
+		for (int k = 0; k < candidates.length; k++) {
+			q.append(column + " = " + candidates[k]);
+			if (k < candidates.length - 1)
+				q.append(" or ");
+		}
+		q.append(")");
+		return q.toString();
+	}
+	public Map<Object, Object> geClassDataSummary(Map<String, String> filters) {
+		logger.info(" * In service geClassDataSummary, orgId = " + filters.get("org-id"));
 		Query q = em.createNativeQuery(GE_CLASS_COUNTS);
-		q.setParameter("orgId", orgId);
+		q.setParameter("orgId", filters.get("org-id").toString());
+		String [] columns = {"modality", "anatomy", "type"};
+		for (int k = 0; k < columns.length; k++) {
+			if (filters.get(columns[k]) != null) {
+				q.setParameter(columns[k], getOrQueryString(columns[k], filters.get(columns[k])));
+			} else {
+				q.setParameter(columns[k], "");
+			}
+		}
+		
 		@SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
 		

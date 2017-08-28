@@ -786,10 +786,24 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
-	public Map<Object, Object> geClassDataSummary(HttpServletRequest request) {
+	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, Object> params) {
 		//TODO: add interceptor to get org id
-		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
-		return this.customFilterService.geClassDataSummary(orgId);
+		Map<String, String> filters = new HashMap<String, String>();
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
+			if (ORG_ID.equals(entry.getKey())) {
+				filters.put(entry.getKey(), entry.getValue().toString());
+			}
+			if (MODALITY.equals(entry.getKey())) {
+					filters.put(entry.getKey(), entry.getValue().toString());
+			}if (ANATOMY.equals(entry.getKey())) {
+				filters.put(entry.getKey(), entry.getValue().toString());
+			}
+		}
+		if (!filters.containsKey(ORG_ID)) {
+			filters.put(ORG_ID, "4fac7976-e58b-472a-960b-42d7e3689f20");
+		}
+		return this.customFilterService.geClassDataSummary(filters);
 	}
 
 	@Override
@@ -807,12 +821,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
 			if (ORG_ID.equals(entry.getKey())) {
 				filters.put(entry.getKey(), entry.getValue().toString());
-		}
+			}
 			if (MODALITY.equals(entry.getKey())) {
 					filters.put(entry.getKey(), entry.getValue().toString());
 			}if (ANATOMY.equals(entry.getKey())) {
 				filters.put(entry.getKey(), entry.getValue().toString());
-		}
+			}
 		}
 		List<ImageSeries> is = getImgSeries(filters);
 		List<ImageSeries> result = customFilterService.dataDetails(params, is);
