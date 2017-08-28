@@ -1,9 +1,12 @@
 package com.gehc.ai.app.datacatalog.repository;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries_;
+import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.mysql.fabric.xmlrpc.base.Array;
 
 
@@ -50,7 +54,8 @@ public class CustomFilterService {
 	
 	public static final String SIMPLE_JSON_QUERY = "SELECT CAST(JSON_EXTRACT(item, '$.properties.ge_class') AS CHAR(500)) FROM annotation";
 	
-	static final String GE_CLASS_QUERY = "select distinct im.id, p.patient_id, im.modality, im.anatomy from image_set im "
+	static final String GE_CLASS_QUERY = "select distinct im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count, "
+			+ "im.upload_date from image_set im "
 			+ "inner join annotation an "
 			+ "on an.image_set=im.id "
 			+ "inner join patient p "
@@ -197,7 +202,7 @@ public class CustomFilterService {
 			logger.info("result size " + objList.size());
 		}
 	
-	public void dataDetails(Map<String, Object> params, List<ImageSeries> imgSeriesLst) {
+	public List<ImageSeries> dataDetails(Map<String, Object> params, List<ImageSeries> imgSeriesLst) {
 		logger.info(" dataDetails ");
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -221,8 +226,20 @@ public class CustomFilterService {
 				}
 			}
 		}
-		
-		
+
+		//Get image set
+		List<Long> imgSeriesIdLst = new ArrayList<Long>();
+		for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
+			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+			imgSeriesIdLst.add(imageSeries.getId());
+		}
+		StringBuilder imageSeriesIds = new StringBuilder();
+		imageSeriesIds.append(" image_set in (");
+		for (Iterator<Long> imgSeriesIdItr = imgSeriesIdLst.iterator(); imgSeriesIdItr.hasNext();) {
+			imageSeriesIds.append(imgSeriesIdItr.next() + (imgSeriesIdItr.hasNext() ? "," : ""));
+		}
+		imageSeriesIds.append(")");
+
         StringBuilder buf = new StringBuilder();
         buf.append(GE_CLASS_QUERY);
         mapper.setSerializationInclusion(Include.NON_NULL);
@@ -251,7 +268,7 @@ public class CustomFilterService {
 
 
         for (int k = 0; k < geClasses.length; k++) {
-        	buf.append(k==0? "where " : "or ");
+        	buf.append(k==0? "where (" : "or ");
         	try {
 				buf.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
 			} catch (JsonProcessingException e) {
@@ -259,6 +276,9 @@ public class CustomFilterService {
 				e.printStackTrace();
 			}
         }
+        buf.append(")");
+        
+        buf.append(" and " + imageSeriesIds);
         
         logger.info("dataDetails query is " + buf);
         Query q = em.createNativeQuery(buf.toString());
@@ -266,12 +286,32 @@ public class CustomFilterService {
         @SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
 		
-		Map<String, String> filterMap = new HashMap<String, String>();
-        objList.stream().forEach((record) -> {
-           // logger.info(record[0].toString() + ",---" + record[1].toString() + ",......." + record[2].toString()+ ",......." + record[3].toString());
-            filterMap.put(record[1].toString(), record[0].toString());
-        });
+//		Map<String, String> filterMap = new HashMap<String, String>();
+//        objList.stream().forEach((record) -> {
+//           // logger.info(record[0].toString() + ",---" + record[1].toString() + ",......." + record[2].toString()+ ",......." + record[3].toString());
+//            filterMap.put(record[1].toString(), record[0].toString());
+//        });
         
+		List<ImageSeries> result = new ArrayList<ImageSeries>();
+		
+		objList.stream().forEach((record) -> {
+           // logger.info(record[0].toString() + ",---" + record[1].toString() + ",......." + record[2].toString()+ ",......." + record[3].toString());
+			//im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count
+			ImageSeries imgSeries = new ImageSeries();
+			imgSeries.setId(Long.valueOf(record[0].toString()));
+			imgSeries.setOrgId(record[1].toString());
+			Patient p = new Patient();
+			p.setPatientId(record[2].toString());
+			imgSeries.setPatient(p);
+			imgSeries.setModality(record[3].toString());
+			imgSeries.setAnatomy(record[4].toString());
+			imgSeries.setInstanceCount(Integer.valueOf(record[5].toString()));
+//			Timestamp ts = record[6];
+//			imgSeries.setUploadDate(new Date(Long.valueOf(record[6].toString())));
+			result.add(imgSeries);
+		});
 		logger.info("result size " + objList.size());
+		
+		return result;
 	}
 }

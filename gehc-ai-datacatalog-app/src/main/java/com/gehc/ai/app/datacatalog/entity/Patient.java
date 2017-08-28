@@ -22,6 +22,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
@@ -134,6 +135,7 @@ public class Patient implements Serializable {
      */
     //@Column(name="upload_date")
     //@JsonFormat(pattern="yyyyMMdd")
+    @JsonIgnore
     @Column(name="upload_date", columnDefinition="DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Date uploadDate;
     public Date getUploadDate() {

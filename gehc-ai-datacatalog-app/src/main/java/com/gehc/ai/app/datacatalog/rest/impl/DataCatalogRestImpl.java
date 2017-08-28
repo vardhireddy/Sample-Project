@@ -802,7 +802,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-details", method = RequestMethod.GET)
 	public List<ImageSeries> dataDetails(@RequestParam Map<String, Object> params) {
-		//this.customFilterService.dataDetails(params);
 		Map<String, String> filters = new HashMap<String, String>();
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
@@ -815,6 +814,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				filters.put(entry.getKey(), entry.getValue().toString());
 		}
 		}
-		return getImgSeries(filters);
+		List<ImageSeries> is = getImgSeries(filters);
+		List<ImageSeries> result = customFilterService.dataDetails(params, is);
+		return result;
 	}
 }
