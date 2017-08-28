@@ -231,4 +231,6 @@ public interface IDataCatalogRest {
     Map<Object, Object> geClassDataSummary(HttpServletRequest request);
     
     int dataSummaryCount(Map<String, Object> params);
+    
+    List<ImageSeries> dataDetails(Map<String, Object> params );
 }
