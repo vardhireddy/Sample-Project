@@ -138,20 +138,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 		return validParams;
 	}
-	
-//	Map<String, String> constructValidParams(Map<String, String> params, List<String> allowedParams) {
-//		Map<String, String> validParams = new HashMap<>();
-//		for (String key : allowedParams) {
-//			if (params.containsKey(key)) {
-//				String value = params.get(key);
-//				if (!value.isEmpty()) {
-//					validParams.put(key, value);
-//				}
-//			}
-//		}
-//
-//		return validParams;
-//	}
 
 	@Override
 	@RequestMapping(value = "/datacatalog/healthcheck", method = RequestMethod.GET)
@@ -812,25 +798,5 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public int dataSummaryCount(@RequestParam Map<String, Object> params) {
 		this.customFilterService.getImageSetCount(params);
 		return 0;
-	}
-
-	@Override
-	@RequestMapping(value = "/datacatalog/data-details", method = RequestMethod.GET)
-	public List<ImageSeries> dataDetails(@RequestParam Map<String, Object> params) {
-		Map<String, Object> filters = new HashMap<String, Object>();
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
-			if (ORG_ID.equals(entry.getKey())) {
-				filters.put(entry.getKey(), entry.getValue());
-		}
-			if (MODALITY.equals(entry.getKey())) {
-					filters.put(entry.getKey(), entry.getValue());
-			}if (ANATOMY.equals(entry.getKey())) {
-				filters.put(entry.getKey(), entry.getValue());
-		}
-		}
-		List<ImageSeries> is = getImgSeries(filters);
-		List<ImageSeries> result = customFilterService.dataDetails(params, is);
-		return result;
 	}
 }
