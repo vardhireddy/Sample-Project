@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries_;
+import com.mysql.fabric.xmlrpc.base.Array;
 
 
 @Service
@@ -129,7 +130,7 @@ public class CustomFilterService {
 	}
 
 	public void getImageSetCount(Map<String, Object> params) {
-			logger.info("=========entity manager=========" + em);
+			logger.info(" getImageSetCount ");
 			ObjectMapper mapper = new ObjectMapper();
 
 			
@@ -137,7 +138,7 @@ public class CustomFilterService {
 			
 			for (Map.Entry<String, Object> entry : params.entrySet()) {
 				logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
-				if ("geClass".equals(entry.getKey())) {
+				if ("ge_class".equals(entry.getKey())) {
 					
 					try {
 						geClasses = mapper.readValue(entry.getValue().toString(), GEClass [].class);
@@ -155,17 +156,17 @@ public class CustomFilterService {
 				}
 			}
 			
-			Query q = em.createNativeQuery(GE_CLASS_COUNTS);
-			q.setParameter("orgId", "4fac7976-e58b-472a-960b-42d7e3689f20");
+		//	Query q = em.createNativeQuery(GE_CLASS_COUNTS);
+		//	q.setParameter("orgId", "4fac7976-e58b-472a-960b-42d7e3689f20");
 
-			@SuppressWarnings("unchecked")
-			List<Object[]> objList = q.getResultList();
+//			@SuppressWarnings("unchecked")
+//			List<Object[]> objList = q.getResultList();
 			
-			Map<String, String> filterMap = new HashMap<String, String>();
-	        objList.stream().forEach((record) -> {
-	            logger.info(record[0].toString() + ",......." + record[1].toString());
-	            filterMap.put(record[1].toString(), record[0].toString());
-	        });
+//			Map<String, String> filterMap = new HashMap<String, String>();
+//	        objList.stream().forEach((record) -> {
+//	            logger.info(record[0].toString() + ",......." + record[1].toString());
+//	            filterMap.put(record[1].toString(), record[0].toString());
+//	        });
 			
 	        StringBuilder buf = new StringBuilder();
 	        buf.append(GE_CLASS_QUERY);
@@ -181,8 +182,120 @@ public class CustomFilterService {
 				}
 	        }
 	        
-	        logger.info("query is " + buf);
+	        logger.info("------ query is " + buf);
+	        Query q = em.createNativeQuery(buf.toString());
+			//	q.setParameter("orgId", "4fac7976-e58b-472a-960b-42d7e3689f20");
+	        @SuppressWarnings("unchecked")
+			List<Object[]> objList = q.getResultList();
+			
+			Map<String, String> filterMap = new HashMap<String, String>();
+	        objList.stream().forEach((record) -> {
+	           // logger.info(record[0].toString() + ",---" + record[1].toString() + ",......." + record[2].toString()+ ",......." + record[3].toString());
+	            filterMap.put(record[1].toString(), record[0].toString());
+	        });
 	        
 			logger.info("result size " + objList.size());
 		}
+	
+	public void dataDetails(Map<String, Object> params) {
+		logger.info(" dataDetails ");
+		ObjectMapper mapper = new ObjectMapper();
+
+		
+		GEClass [] geClasses = {};for (Map.Entry<String, Object> entry : params.entrySet()) {
+			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
+			if ("ge_class".equals(entry.getKey())) {
+				
+				try {
+					geClasses = mapper.readValue(entry.getValue().toString(), GEClass [].class);
+					logger.info("json parsing result: " + Arrays.toString(geClasses));
+				} catch (JsonParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
+        StringBuilder buf = new StringBuilder();
+        buf.append(GE_CLASS_QUERY);
+        mapper.setSerializationInclusion(Include.NON_NULL);
+		
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
+			if ("modality".equals(entry.getKey())) {
+				logger.info("- modlaity is " + entry.getValue().toString());
+				
+				//buf.append("modality in ");
+				//buf.append(entry.getValue().toString());
+			}
+		}
+		
+	//	Query q = em.createNativeQuery(GE_CLASS_COUNTS);
+	//	q.setParameter("orgId", "4fac7976-e58b-472a-960b-42d7e3689f20");
+
+//		@SuppressWarnings("unchecked")
+//		List<Object[]> objList = q.getResultList();
+		
+//		Map<String, String> filterMap = new HashMap<String, String>();
+//        objList.stream().forEach((record) -> {
+//            logger.info(record[0].toString() + ",......." + record[1].toString());
+//            filterMap.put(record[1].toString(), record[0].toString());
+//        });
+
+
+        for (int k = 0; k < geClasses.length; k++) {
+        	buf.append(k==0? "where " : "or ");
+        	try {
+				buf.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        
+        logger.info("dataDetails query is " + buf);
+        Query q = em.createNativeQuery(buf.toString());
+		//	q.setParameter("orgId", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        @SuppressWarnings("unchecked")
+		List<Object[]> objList = q.getResultList();
+		
+		Map<String, String> filterMap = new HashMap<String, String>();
+        objList.stream().forEach((record) -> {
+           // logger.info(record[0].toString() + ",---" + record[1].toString() + ",......." + record[2].toString()+ ",......." + record[3].toString());
+            filterMap.put(record[1].toString(), record[0].toString());
+        });
+        
+		logger.info("result size " + objList.size());
+	}
+	
+	private List<String> getListOfStringsFromParams(String values) {
+		List<String> valueLst = new ArrayList<String>();
+		if (null != values && !values.isEmpty()) {
+			String[] valueStrings = values.split(",");
+			if (null != valueStrings && valueStrings.length > 0) {
+				for (int i = 0; i < valueStrings.length; i++)
+					valueLst.add(valueStrings[i].toLowerCase());
+			}
+		}
+		return valueLst;
+	}
+
+	private List<Long> getListOfLongsFromParams(String values) {
+		List<Long> valueLst = new ArrayList<Long>();
+		if (null != values && !values.isEmpty()) {
+			String[] valueStrings = values.split(",");
+			if (null != valueStrings && valueStrings.length > 0) {
+				for (int i = 0; i < valueStrings.length; i++)
+					valueLst.add(Long.valueOf(valueStrings[i]));
+			}
+		}
+		return valueLst;
+	}
 }

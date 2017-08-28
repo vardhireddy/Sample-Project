@@ -45,7 +45,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
@@ -54,6 +56,7 @@ import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
@@ -794,5 +797,24 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public int dataSummaryCount(@RequestParam Map<String, Object> params) {
 		this.customFilterService.getImageSetCount(params);
 		return 0;
+	}
+
+	@Override
+	@RequestMapping(value = "/datacatalog/data-details", method = RequestMethod.GET)
+	public List<ImageSeries> dataDetails(@RequestParam Map<String, Object> params) {
+		//this.customFilterService.dataDetails(params);
+		Map<String, String> filters = new HashMap<String, String>();
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
+			if (ORG_ID.equals(entry.getKey())) {
+				filters.put(entry.getKey(), entry.getValue().toString());
+		}
+			if (MODALITY.equals(entry.getKey())) {
+					filters.put(entry.getKey(), entry.getValue().toString());
+			}if (ANATOMY.equals(entry.getKey())) {
+				filters.put(entry.getKey(), entry.getValue().toString());
+		}
+		}
+		return getImgSeries(filters);
 	}
 }
