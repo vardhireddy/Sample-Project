@@ -125,11 +125,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return uniqueImgSetIds;
 	}
 
-	Map<String, String> constructValidParams(Map<String, String> params, List<String> allowedParams) {
-		Map<String, String> validParams = new HashMap<>();
+	Map<String, Object> constructValidParams(Map<String, Object> params, List<String> allowedParams) {
+		Map<String, Object> validParams = new HashMap<>();
 		for (String key : allowedParams) {
 			if (params.containsKey(key)) {
-				String value = params.get(key);
+				String value = params.get(key).toString();
 				if (!value.isEmpty()) {
 					validParams.put(key, value);
 				}
@@ -138,6 +138,20 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 		return validParams;
 	}
+	
+//	Map<String, String> constructValidParams(Map<String, String> params, List<String> allowedParams) {
+//		Map<String, String> validParams = new HashMap<>();
+//		for (String key : allowedParams) {
+//			if (params.containsKey(key)) {
+//				String value = params.get(key);
+//				if (!value.isEmpty()) {
+//					validParams.put(key, value);
+//				}
+//			}
+//		}
+//
+//		return validParams;
+//	}
 
 	@Override
 	@RequestMapping(value = "/datacatalog/healthcheck", method = RequestMethod.GET)
@@ -465,9 +479,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/datacatalog/image-set", method = RequestMethod.GET)
-	public List<ImageSeries> getImgSeries(@RequestParam Map<String, String> params) {
+	public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
 		{
-			Map<String, String> validParams = constructValidParams(params,
+			Map<String, Object> validParams = constructValidParams(params,
 					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID));
 			// List of img set based on filter criteria other than annotation
 			List<ImageSeries> imageSeriesLst;// = new ArrayList<ImageSeries>();
@@ -480,11 +494,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				if (null != validParams) {
 					if (validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
 						return imageSeriesRepository
-								.findBySeriesInstanceUidInAndOrgIdIn(getListOfStringsFromParams(validParams.get(SERIES_INS_UID)), getListOfStringsFromParams(validParams.get(ORG_ID)));
+								.findBySeriesInstanceUidInAndOrgIdIn(getListOfStringsFromParams(validParams.get(SERIES_INS_UID).toString()), getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
 					} else if (validParams.containsKey(ORG_ID)) {
 						imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
-						if (!imageSeriesLst.isEmpty())
-							return imageSeriesLst;
+						if (!imageSeriesLst.isEmpty()){
+							return customFilterService.dataDetails(params, imageSeriesLst);
+						}
 					}
 				}
 			} catch (RuntimeException e) {
@@ -498,16 +513,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 	}
 
-	private List<ImageSeries> getImageSeriesList(Map<String, String> validParams,
+	private List<ImageSeries> getImageSeriesList(Map<String, Object> validParams,
 			List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn) {
 		List<ImageSeries> imageSeriesLst;
-		List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID));
+		List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID).toString());
 		List<ImageSeries> patientImageSeriesLst = new ArrayList<ImageSeries>();
 		imageSeriesLst = getImageSeriesListWithValidParamsAndOrgId(validParams, orgIdLst);
 
 		// Get the data with annotation filter
 		if (validParams.containsKey(ANNOTATIONS)) {
-			List<String> typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS));
+			List<String> typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS).toString());
 			if (!typeLst.isEmpty()) {
 				// List of image series id based on criteria
 				// other than annotation
@@ -532,7 +547,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return patientImageSeriesLst;
 	}
 
-	private List<ImageSeries> getPatientForImageSeriesWithOrWithOutAnn(Map<String, String> validParams,
+	private List<ImageSeries> getPatientForImageSeriesWithOrWithOutAnn(Map<String, Object> validParams,
 			List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn,
 			List<ImageSeries> imageSeriesLst) {
 		if (null != imgSetWithAnnotation && !imgSetWithAnnotation.isEmpty()) {
@@ -550,20 +565,20 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return new ArrayList<ImageSeries>();
 	}
 
-	private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, String> validParams,
+	private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, Object> validParams,
 			List<String> orgIdLst) {
 		List<ImageSeries> imageSeriesLst;
 		if (validParams.containsKey(MODALITY)) {
-			List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY));
+			List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY).toString());
 			if (validParams.containsKey(ANATOMY)) {
-				List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY));
+				List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
 				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst, anatomyLst,
 						modalityLst);
 			} else {
 				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst, modalityLst);
 			}
 		} else if (validParams.containsKey(ANATOMY)) {
-			List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY));
+			List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
 			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
 		} else {
 			imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
@@ -802,16 +817,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-details", method = RequestMethod.GET)
 	public List<ImageSeries> dataDetails(@RequestParam Map<String, Object> params) {
-		Map<String, String> filters = new HashMap<String, String>();
+		Map<String, Object> filters = new HashMap<String, Object>();
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
 			if (ORG_ID.equals(entry.getKey())) {
-				filters.put(entry.getKey(), entry.getValue().toString());
+				filters.put(entry.getKey(), entry.getValue());
 		}
 			if (MODALITY.equals(entry.getKey())) {
-					filters.put(entry.getKey(), entry.getValue().toString());
+					filters.put(entry.getKey(), entry.getValue());
 			}if (ANATOMY.equals(entry.getKey())) {
-				filters.put(entry.getKey(), entry.getValue().toString());
+				filters.put(entry.getKey(), entry.getValue());
 		}
 		}
 		List<ImageSeries> is = getImgSeries(filters);

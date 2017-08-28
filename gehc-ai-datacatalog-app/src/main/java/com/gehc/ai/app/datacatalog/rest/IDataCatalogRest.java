@@ -176,7 +176,7 @@ public interface IDataCatalogRest {
      * @param request, to get an org id based on authentication token
      * @return List<ImageSeries>
      */
-    List<ImageSeries> getImgSeries(Map<String, String> params );
+    List<ImageSeries> getImgSeries(Map<String, Object> params );
     
     /**
      * Get Image Series by Series Instance UUId
