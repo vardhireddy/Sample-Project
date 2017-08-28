@@ -45,9 +45,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
@@ -56,7 +54,6 @@ import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
@@ -92,6 +89,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String SERIES_INS_UID = "series-instance-uid";
 	public static final String ABSENT = "absent";
 	public static final String ANNOTATIONS_ABSENT ="annotation-absent";
+	public static final String GE_CLASS ="ge-class";
 
 	@Value("${uom.user.me.url}")
 	private String uomMeUrl;
@@ -468,7 +466,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
 		{
 			Map<String, Object> validParams = constructValidParams(params,
-					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID));
+					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, GE_CLASS));
 			// List of img set based on filter criteria other than annotation
 			List<ImageSeries> imageSeriesLst;// = new ArrayList<ImageSeries>();
 			// List of img set with annotation
@@ -484,7 +482,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					} else if (validParams.containsKey(ORG_ID)) {
 						imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
 						if (!imageSeriesLst.isEmpty()){
-							return customFilterService.dataDetails(params, imageSeriesLst);
+							if(validParams.containsKey(GE_CLASS)){
+								return customFilterService.dataDetails(params, imageSeriesLst);
+							}else{
+								return imageSeriesLst;
+							}
 						}
 					}
 				}
