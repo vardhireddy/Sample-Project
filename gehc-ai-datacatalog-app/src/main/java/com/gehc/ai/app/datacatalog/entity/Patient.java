@@ -135,12 +135,13 @@ public class Patient implements Serializable {
      */
     //@Column(name="upload_date")
     //@JsonFormat(pattern="yyyyMMdd")
-    @JsonIgnore
     @Column(name="upload_date", columnDefinition="DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Date uploadDate;
     public Date getUploadDate() {
         return new Date(uploadDate.getTime());
     }
+    
+    @JsonIgnore
     public void setUploadDate(Date uploadDate) {
         this.uploadDate = new Date(uploadDate.getTime());
     }

@@ -54,8 +54,8 @@ public class CustomFilterService {
 	
 	public static final String SIMPLE_JSON_QUERY = "SELECT CAST(JSON_EXTRACT(item, '$.properties.ge_class') AS CHAR(500)) FROM annotation";
 	
-	static final String GE_CLASS_QUERY = "select distinct im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count, "
-			+ "im.upload_date from image_set im "
+	static final String GE_CLASS_QUERY = "select distinct im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count "
+			+ " from image_set im "
 			+ "inner join annotation an "
 			+ "on an.image_set=im.id "
 			+ "inner join patient p "
@@ -209,7 +209,7 @@ public class CustomFilterService {
 		
 		GEClass [] geClasses = {};for (Map.Entry<String, Object> entry : params.entrySet()) {
 			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
-			if ("ge_class".equals(entry.getKey())) {
+			if ("ge-class".equals(entry.getKey())) {
 				
 				try {
 					geClasses = mapper.readValue(entry.getValue().toString(), GEClass [].class);
