@@ -790,8 +790,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
 	public Map<Object, Object> geClassDataSummary(HttpServletRequest request) {
-		//TODO: add interceptor to get org id
-		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
+		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
 		return this.customFilterService.geClassDataSummary(orgId);
 	}
 
