@@ -197,7 +197,7 @@ public class CustomFilterService {
 			logger.info("result size " + objList.size());
 		}
 	
-	public void dataDetails(Map<String, Object> params) {
+	public void dataDetails(Map<String, Object> params, List<ImageSeries> imgSeriesLst) {
 		logger.info(" dataDetails ");
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -273,29 +273,5 @@ public class CustomFilterService {
         });
         
 		logger.info("result size " + objList.size());
-	}
-	
-	private List<String> getListOfStringsFromParams(String values) {
-		List<String> valueLst = new ArrayList<String>();
-		if (null != values && !values.isEmpty()) {
-			String[] valueStrings = values.split(",");
-			if (null != valueStrings && valueStrings.length > 0) {
-				for (int i = 0; i < valueStrings.length; i++)
-					valueLst.add(valueStrings[i].toLowerCase());
-			}
-		}
-		return valueLst;
-	}
-
-	private List<Long> getListOfLongsFromParams(String values) {
-		List<Long> valueLst = new ArrayList<Long>();
-		if (null != values && !values.isEmpty()) {
-			String[] valueStrings = values.split(",");
-			if (null != valueStrings && valueStrings.length > 0) {
-				for (int i = 0; i < valueStrings.length; i++)
-					valueLst.add(Long.valueOf(valueStrings[i]));
-			}
-		}
-		return valueLst;
 	}
 }
