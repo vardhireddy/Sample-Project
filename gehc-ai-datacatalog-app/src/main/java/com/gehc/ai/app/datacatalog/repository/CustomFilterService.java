@@ -209,7 +209,7 @@ public class CustomFilterService {
 		
 		GEClass [] geClasses = {};for (Map.Entry<String, Object> entry : params.entrySet()) {
 			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
-			if ("ge_class".equals(entry.getKey())) {
+			if ("ge-class".equals(entry.getKey())) {
 				
 				try {
 					geClasses = mapper.readValue(entry.getValue().toString(), GEClass [].class);
