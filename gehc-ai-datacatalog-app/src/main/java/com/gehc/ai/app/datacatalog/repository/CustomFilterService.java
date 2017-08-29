@@ -111,7 +111,8 @@ public class CustomFilterService {
 	}
 	
 	public Map<Object, Object> geClassDataSummary(String orgId) {
-		logger.info(" * In service geClassDataSummary, orgId = " + orgId);
+		logger.info(" --- In service geClassDataSummary, orgId = " + orgId);
+		logger.info("--- In service geClassDataSummary, GE_CLASS_COUNTS query = " + GE_CLASS_COUNTS);
 		Query q = em.createNativeQuery(GE_CLASS_COUNTS);
 		q.setParameter("orgId", orgId);
 		@SuppressWarnings("unchecked")
@@ -119,7 +120,6 @@ public class CustomFilterService {
 		
 		Map<Object, Object> filterMap = new HashMap<Object, Object>();
         objList.stream().forEach((record) -> {
-            logger.info(record[0].toString() + ",......." + record[1].toString());
             filterMap.put(record[1], record[0]);
 //            ObjectMapper mapper = new ObjectMapper();
 //				try {
