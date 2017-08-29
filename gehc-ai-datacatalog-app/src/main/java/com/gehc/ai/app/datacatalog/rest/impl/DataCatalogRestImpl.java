@@ -791,6 +791,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
 	public Map<Object, Object> geClassDataSummary(HttpServletRequest request) {
 		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
+		logger.info("*** In geClassDataSummary, orgId = " + request.getAttribute("orgId"));
 		return this.customFilterService.geClassDataSummary(orgId);
 	}
 
