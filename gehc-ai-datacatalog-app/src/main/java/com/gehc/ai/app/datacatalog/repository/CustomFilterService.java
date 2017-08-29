@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries_;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 
 
@@ -76,7 +75,7 @@ public class CustomFilterService {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<ImageSeries> root = cq.from(ImageSeries.class);
-		cq.multiselect(root.get(ImageSeries_.id), root.get(ImageSeries_.orgId));
+		//cq.multiselect(root.get(ImageSeries_.id), root.get(ImageSeries_.orgId));
 		List<Tuple> tupleResult = em.createQuery(cq).getResultList();
 		
 		for(int k = 0; k < tupleResult.size(); k++) {
@@ -129,32 +128,69 @@ public class CustomFilterService {
 		return q.toString();
 	}
 	
+	static Map<String, String> ANNOTATION_COLUMN_MAP = new HashMap<String, String>();
+	static Map<String, String> IMAGESET_COLUMN_MAP = new HashMap<String, String>();
+	static {
+		ANNOTATION_COLUMN_MAP.put("org-id", "org_id");
+		ANNOTATION_COLUMN_MAP.put("annotation-type", "type");
+		IMAGESET_COLUMN_MAP.put("anatomy", "anatomy");
+		IMAGESET_COLUMN_MAP.put("modality", "modality");
+	}
+
 	public Map<Object, Object> geClassDataSummary(Map<String, String> filters) {
 		logger.info(" * In service geClassDataSummary, orgId = " + filters.get("org-id"));
 		
 		StringBuilder buf = new StringBuilder();
-		buf.append(" inner join image_set on image_set.id = image_set where ");
 		Set<String> keys = filters.keySet();
 		
+		Map<String, String> imageSetAttributes = new HashMap<String, String>();
+		Map<String, String> annotationAttributes = new HashMap<String, String>();
 		for (Iterator<String> it = keys.iterator(); it.hasNext();) {
 			String key = it.next();
-			buf.append(getColumnQueryString(key, filters.get(key)));
-			if (it.hasNext())
-				buf.append(" or ");
+			if (IMAGESET_COLUMN_MAP.containsKey(key))
+				imageSetAttributes.put(IMAGESET_COLUMN_MAP.get(key), filters.get(key));
+			if (ANNOTATION_COLUMN_MAP.containsKey(key))
+				annotationAttributes.put(ANNOTATION_COLUMN_MAP.get(key), filters.get(key));
 		}
 		
-		String queryString = GE_CLASS_COUNTS_PREFIX + buf + GE_CLASS_COUNTS_SUFFIX;
+		if (!imageSetAttributes.isEmpty()) {
+			buf.append(" inner join image_set on image_set.id = image_set where ");
+			keys = imageSetAttributes.keySet();
+			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+				String key = it.next();
+				buf.append(getColumnQueryString(key, imageSetAttributes.get(key)));
+				if (it.hasNext())
+					buf.append(" and ");
+			}
+		}
+		
+		String prefix = GE_CLASS_COUNTS_PREFIX;
+		if (!annotationAttributes.isEmpty()) {
+			keys = annotationAttributes.keySet();
+			StringBuilder annotBuf = new StringBuilder();
+			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+				String key = it.next();
+				if (!"org_id".equals(key))
+					annotBuf.append(getColumnQueryString(key, annotationAttributes.get(key)) + " and ");
+			}
+			
+			int ind = GE_CLASS_COUNTS_PREFIX.lastIndexOf("JSON_EXTRACT(");
+			prefix = GE_CLASS_COUNTS_PREFIX.substring(0, ind) + annotBuf + GE_CLASS_COUNTS_PREFIX.substring(ind);
+			
+		}
+		String queryString = prefix + buf + GE_CLASS_COUNTS_SUFFIX;
+		
 		logger.info("query string for ge class data summary = " + queryString);
 		Query q = em.createNativeQuery(queryString);
 		
 		q.setParameter("orgId", filters.get("org-id").toString());
 		
+
 		@SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
 		
 		Map<Object, Object> filterMap = new HashMap<Object, Object>();
         objList.stream().forEach((record) -> {
-            logger.info(record[0].toString() + ",......." + record[1].toString());
             filterMap.put(record[1], record[0]);
 //            ObjectMapper mapper = new ObjectMapper();
 //				try {
@@ -166,6 +202,8 @@ public class CustomFilterService {
 			
            
         });
+        
+        logger.info("" + objList.size() + " rows returned");
 		return filterMap;
 	}
 

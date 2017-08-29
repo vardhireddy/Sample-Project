@@ -86,9 +86,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String MODALITY = "modality";
 	public static final String ANATOMY = "anatomy";
 	public static final String ANNOTATIONS = "annotations";
+	public static final String ANNOTATION_TYPE = "annotation-type";
 	public static final String SERIES_INS_UID = "series-instance-uid";
 	public static final String ABSENT = "absent";
 	public static final String ANNOTATIONS_ABSENT ="annotation-absent";
+	public static final String GE_CLASS ="ge-class";
 
 	@Value("${uom.user.me.url}")
 	private String uomMeUrl;
@@ -465,7 +467,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
 		{
 			Map<String, Object> validParams = constructValidParams(params,
-					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID));
+					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, GE_CLASS));
 			// List of img set based on filter criteria other than annotation
 			List<ImageSeries> imageSeriesLst;// = new ArrayList<ImageSeries>();
 			// List of img set with annotation
@@ -481,7 +483,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					} else if (validParams.containsKey(ORG_ID)) {
 						imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
 						if (!imageSeriesLst.isEmpty()){
-							return customFilterService.dataDetails(params, imageSeriesLst);
+							if(validParams.containsKey(GE_CLASS)){
+								return customFilterService.dataDetails(params, imageSeriesLst);
+							}else{
+								return imageSeriesLst;
+							}
 						}
 					}
 				}
@@ -784,23 +790,24 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
-	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, Object> params) {
+	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, Object> params, HttpServletRequest request) {
 		//TODO: add interceptor to get org id
+		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
+
 		Map<String, String> filters = new HashMap<String, String>();
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
 			if (ORG_ID.equals(entry.getKey())) {
 				filters.put(entry.getKey(), entry.getValue().toString());
-			}
-			if (MODALITY.equals(entry.getKey())) {
+			} else if (MODALITY.equals(entry.getKey())) {
 					filters.put(entry.getKey(), entry.getValue().toString());
-			}if (ANATOMY.equals(entry.getKey())) {
+			} else if (ANATOMY.equals(entry.getKey())) {
+				filters.put(entry.getKey(), entry.getValue().toString());
+			} else if (ANNOTATION_TYPE.equals(entry.getKey())) {
 				filters.put(entry.getKey(), entry.getValue().toString());
 			}
 		}
-		if (!filters.containsKey(ORG_ID)) {
-			filters.put(ORG_ID, "4fac7976-e58b-472a-960b-42d7e3689f20");
-		}
+		filters.put(ORG_ID, orgId);
 		
 		
 		//List<ImageSeries> is = getImgSeries(filters);
