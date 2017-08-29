@@ -86,6 +86,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String MODALITY = "modality";
 	public static final String ANATOMY = "anatomy";
 	public static final String ANNOTATIONS = "annotations";
+	public static final String ANNOTATION_TYPE = "annotation-type";
 	public static final String SERIES_INS_UID = "series-instance-uid";
 	public static final String ABSENT = "absent";
 	public static final String ANNOTATIONS_ABSENT ="annotation-absent";
@@ -789,10 +790,28 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
-	public Map<Object, Object> geClassDataSummary(HttpServletRequest request) {
-		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
-		logger.info("*** In geClassDataSummary, orgId = " + request.getAttribute("orgId"));
-		return this.customFilterService.geClassDataSummary(orgId);
+	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, Object> params, HttpServletRequest request) {
+		//TODO: add interceptor to get org id
+		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
+
+		Map<String, String> filters = new HashMap<String, String>();
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
+			if (ORG_ID.equals(entry.getKey())) {
+				filters.put(entry.getKey(), entry.getValue().toString());
+			} else if (MODALITY.equals(entry.getKey())) {
+					filters.put(entry.getKey(), entry.getValue().toString());
+			} else if (ANATOMY.equals(entry.getKey())) {
+				filters.put(entry.getKey(), entry.getValue().toString());
+			} else if (ANNOTATION_TYPE.equals(entry.getKey())) {
+				filters.put(entry.getKey(), entry.getValue().toString());
+			}
+		}
+		filters.put(ORG_ID, orgId);
+		
+		
+		//List<ImageSeries> is = getImgSeries(filters);
+		return this.customFilterService.geClassDataSummary(filters);
 	}
 
 	@Override

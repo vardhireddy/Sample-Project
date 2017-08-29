@@ -1,14 +1,13 @@
 package com.gehc.ai.app.datacatalog.repository;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -29,28 +28,30 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries_;
 import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 
 @Service
 public class CustomFilterService {
 	
-	public static final String GE_CLASS_COUNTS = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
+	public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
 			 + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
-			 + " FROM Annotation JOIN (  SELECT  0 AS idx UNION "
+			 + " FROM annotation JOIN ( SELECT  0 AS idx UNION "
 			 + " SELECT  1 AS idx UNION "
 			 + " SELECT  2 AS idx UNION "
 			 + " SELECT  3 AS idx UNION "
 			 + " SELECT  4 AS idx UNION "
 			 + " SELECT  5 AS idx UNION "
 			 + " SELECT  6 AS idx UNION "
+			 + " SELECT  7 AS idx UNION "
 			 + " SELECT  8 AS idx UNION "
 			 + " SELECT  9 AS idx UNION "
 			 + " SELECT  10 AS idx UNION "
 			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
-			 + " ORDER BY id, idx) AS LABEL_JSON GROUP BY single_class";
+			 + " ORDER BY id, idx) AS LABEL_JSON ";
+	public static final String GE_CLASS_COUNTS_SUFFIX = " GROUP BY single_class";
+	public static final String GE_CLASS_COUNTS = GE_CLASS_COUNTS_PREFIX + GE_CLASS_COUNTS_SUFFIX;
+//	public static final String GE_CLASS_COUNTS_WITH_FILTER = GE_CLASS_COUNTS_PREFIX + " :filter " + GE_CLASS_COUNTS_SUFFIX;
 	
 	public static final String SIMPLE_JSON_QUERY = "SELECT CAST(JSON_EXTRACT(item, '$.properties.ge_class') AS CHAR(500)) FROM annotation";
 	
@@ -74,7 +75,7 @@ public class CustomFilterService {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<ImageSeries> root = cq.from(ImageSeries.class);
-		cq.multiselect(root.get(ImageSeries_.id), root.get(ImageSeries_.orgId));
+		//cq.multiselect(root.get(ImageSeries_.id), root.get(ImageSeries_.orgId));
 		List<Tuple> tupleResult = em.createQuery(cq).getResultList();
 		
 		for(int k = 0; k < tupleResult.size(); k++) {
@@ -110,11 +111,81 @@ public class CustomFilterService {
 		logger.info("result size " + objList.size());
 	}
 	
-	public Map<Object, Object> geClassDataSummary(String orgId) {
-		logger.info(" --- In service geClassDataSummary, orgId = " + orgId);
-		logger.info("--- In service geClassDataSummary, GE_CLASS_COUNTS query = " + GE_CLASS_COUNTS);
-		Query q = em.createNativeQuery(GE_CLASS_COUNTS);
-		q.setParameter("orgId", orgId);
+	private static String getColumnQueryString(String column, String values) {
+		StringBuilder q = new StringBuilder();
+		q.append(" " + column.replaceAll("-", "_") + " in (");
+		String [] candidates = values.split(",");
+		for (int k = 0; k < candidates.length; k++) {
+			if (!candidates[k].startsWith("'") && !candidates[k].startsWith("\""))
+				q.append("'" + candidates[k] + "'");
+			else
+				q.append(candidates[k]);
+			
+			if (k < candidates.length - 1)
+				q.append(",");
+		}
+		q.append(")");
+		return q.toString();
+	}
+	
+	static Map<String, String> ANNOTATION_COLUMN_MAP = new HashMap<String, String>();
+	static Map<String, String> IMAGESET_COLUMN_MAP = new HashMap<String, String>();
+	static {
+		ANNOTATION_COLUMN_MAP.put("org-id", "org_id");
+		ANNOTATION_COLUMN_MAP.put("annotation-type", "type");
+		IMAGESET_COLUMN_MAP.put("anatomy", "anatomy");
+		IMAGESET_COLUMN_MAP.put("modality", "modality");
+	}
+
+	public Map<Object, Object> geClassDataSummary(Map<String, String> filters) {
+		logger.info(" * In service geClassDataSummary, orgId = " + filters.get("org-id"));
+		
+		StringBuilder buf = new StringBuilder();
+		Set<String> keys = filters.keySet();
+		
+		Map<String, String> imageSetAttributes = new HashMap<String, String>();
+		Map<String, String> annotationAttributes = new HashMap<String, String>();
+		for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+			String key = it.next();
+			if (IMAGESET_COLUMN_MAP.containsKey(key))
+				imageSetAttributes.put(IMAGESET_COLUMN_MAP.get(key), filters.get(key));
+			if (ANNOTATION_COLUMN_MAP.containsKey(key))
+				annotationAttributes.put(ANNOTATION_COLUMN_MAP.get(key), filters.get(key));
+		}
+		
+		if (!imageSetAttributes.isEmpty()) {
+			buf.append(" inner join image_set on image_set.id = image_set where ");
+			keys = imageSetAttributes.keySet();
+			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+				String key = it.next();
+				buf.append(getColumnQueryString(key, imageSetAttributes.get(key)));
+				if (it.hasNext())
+					buf.append(" and ");
+			}
+		}
+		
+		String prefix = GE_CLASS_COUNTS_PREFIX;
+		if (!annotationAttributes.isEmpty()) {
+			keys = annotationAttributes.keySet();
+			StringBuilder annotBuf = new StringBuilder();
+			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+				String key = it.next();
+				if (!"org_id".equals(key))
+					annotBuf.append(getColumnQueryString(key, annotationAttributes.get(key)) + " and ");
+			}
+			
+			int ind = GE_CLASS_COUNTS_PREFIX.lastIndexOf("JSON_EXTRACT(");
+			prefix = GE_CLASS_COUNTS_PREFIX.substring(0, ind) + annotBuf + GE_CLASS_COUNTS_PREFIX.substring(ind);
+			
+		}
+		String queryString = prefix + buf + GE_CLASS_COUNTS_SUFFIX;
+		
+		logger.info("query string for ge class data summary = " + queryString);
+		Query q = em.createNativeQuery(queryString);
+		
+		q.setParameter("orgId", filters.get("org-id").toString());
+		
+
 		@SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
 		
@@ -131,6 +202,8 @@ public class CustomFilterService {
 			
            
         });
+        
+        logger.info("" + objList.size() + " rows returned");
 		return filterMap;
 	}
 
@@ -207,7 +280,8 @@ public class CustomFilterService {
 		ObjectMapper mapper = new ObjectMapper();
 
 		
-		GEClass [] geClasses = {};for (Map.Entry<String, Object> entry : params.entrySet()) {
+		GEClass [] geClasses = {};
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
 			if ("ge-class".equals(entry.getKey())) {
 				
