@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -34,20 +35,24 @@ import com.gehc.ai.app.datacatalog.entity.Patient;
 @Service
 public class CustomFilterService {
 	
-	public static final String GE_CLASS_COUNTS = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
+	public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
 			 + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
-			 + " FROM Annotation JOIN (  SELECT  0 AS idx UNION "
+			 + " FROM annotation JOIN ( SELECT  0 AS idx UNION "
 			 + " SELECT  1 AS idx UNION "
 			 + " SELECT  2 AS idx UNION "
 			 + " SELECT  3 AS idx UNION "
 			 + " SELECT  4 AS idx UNION "
 			 + " SELECT  5 AS idx UNION "
 			 + " SELECT  6 AS idx UNION "
+			 + " SELECT  7 AS idx UNION "
 			 + " SELECT  8 AS idx UNION "
 			 + " SELECT  9 AS idx UNION "
 			 + " SELECT  10 AS idx UNION "
-			 + " SELECT  11 ) AS indices WHERE org_id = :orgId :modality :anatomy :annotationType and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
-			 + " ORDER BY id, idx) AS LABEL_JSON GROUP BY single_class";
+			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
+			 + " ORDER BY id, idx) AS LABEL_JSON ";
+	public static final String GE_CLASS_COUNTS_SUFFIX = " GROUP BY single_class";
+	public static final String GE_CLASS_COUNTS = GE_CLASS_COUNTS_PREFIX + GE_CLASS_COUNTS_SUFFIX;
+//	public static final String GE_CLASS_COUNTS_WITH_FILTER = GE_CLASS_COUNTS_PREFIX + " :filter " + GE_CLASS_COUNTS_SUFFIX;
 	
 	public static final String SIMPLE_JSON_QUERY = "SELECT CAST(JSON_EXTRACT(item, '$.properties.ge_class') AS CHAR(500)) FROM annotation";
 	
@@ -107,30 +112,42 @@ public class CustomFilterService {
 		logger.info("result size " + objList.size());
 	}
 	
-	private String getOrQueryString(String column, String values) {
+	private static String getColumnQueryString(String column, String values) {
 		StringBuilder q = new StringBuilder();
-		q.append("and (");
+		q.append(" " + column.replaceAll("-", "_") + " in (");
 		String [] candidates = values.split(",");
 		for (int k = 0; k < candidates.length; k++) {
-			q.append(column + " = " + candidates[k]);
+			if (!candidates[k].startsWith("'") && !candidates[k].startsWith("\""))
+				q.append("'" + candidates[k] + "'");
+			else
+				q.append(candidates[k]);
+			
 			if (k < candidates.length - 1)
-				q.append(" or ");
+				q.append(",");
 		}
 		q.append(")");
 		return q.toString();
 	}
+	
 	public Map<Object, Object> geClassDataSummary(Map<String, String> filters) {
 		logger.info(" * In service geClassDataSummary, orgId = " + filters.get("org-id"));
-		Query q = em.createNativeQuery(GE_CLASS_COUNTS);
-		q.setParameter("orgId", filters.get("org-id").toString());
-		String [] columns = {"modality", "anatomy", "type"};
-		for (int k = 0; k < columns.length; k++) {
-			if (filters.get(columns[k]) != null) {
-				q.setParameter(columns[k], getOrQueryString(columns[k], filters.get(columns[k])));
-			} else {
-				q.setParameter(columns[k], "");
-			}
+		
+		StringBuilder buf = new StringBuilder();
+		buf.append(" inner join image_set on image_set.id = image_set where ");
+		Set<String> keys = filters.keySet();
+		
+		for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+			String key = it.next();
+			buf.append(getColumnQueryString(key, filters.get(key)));
+			if (it.hasNext())
+				buf.append(" or ");
 		}
+		
+		String queryString = GE_CLASS_COUNTS_PREFIX + buf + GE_CLASS_COUNTS_SUFFIX;
+		logger.info("query string for ge class data summary = " + queryString);
+		Query q = em.createNativeQuery(queryString);
+		
+		q.setParameter("orgId", filters.get("org-id").toString());
 		
 		@SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
@@ -225,7 +242,8 @@ public class CustomFilterService {
 		ObjectMapper mapper = new ObjectMapper();
 
 		
-		GEClass [] geClasses = {};for (Map.Entry<String, Object> entry : params.entrySet()) {
+		GEClass [] geClasses = {};
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
 			if ("ge-class".equals(entry.getKey())) {
 				
