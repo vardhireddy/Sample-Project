@@ -86,7 +86,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String MODALITY = "modality";
 	public static final String ANATOMY = "anatomy";
 	public static final String ANNOTATIONS = "annotations";
-//	public static final String ANNOTATION_TYPE = "annotation-type";
 	public static final String SERIES_INS_UID = "series-instance-uid";
 	public static final String ABSENT = "absent";
 	public static final String ANNOTATIONS_ABSENT ="annotation-absent";
