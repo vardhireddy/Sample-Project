@@ -61,13 +61,13 @@ import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.CustomFilterService;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 //import COSNotificationRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
 /**
  * @author 212071558
@@ -107,9 +107,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	private AnnotationPropRepository annotationPropRepository;
 	@Autowired
 	private ImageSeriesRepository imageSeriesRepository;
-
+	
 	@Autowired
-	private CustomFilterService customFilterService;
+	private IDataCatalogService dataCatalogService;
 	
 	private Set<Long> getUniqueImgSetIds(List<Annotation> annotationLst) {
 		Set<Long> uniqueImgSetIds = new HashSet<Long>();
@@ -483,7 +483,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
 						if (!imageSeriesLst.isEmpty()){
 							if(validParams.containsKey(GE_CLASS)){
-								return customFilterService.dataDetails(params, imageSeriesLst);
+								//return customFilterService.dataDetails(params, imageSeriesLst);
+								return dataCatalogService.getImgSeries(params, imageSeriesLst);
 							}else{
 								return imageSeriesLst;
 							}
@@ -790,7 +791,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
 	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, Object> params, HttpServletRequest request) {
-		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
+		//TODO: Add interceptor
+		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
 
 		Map<String, String> filters = new HashMap<String, String>();
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -806,13 +808,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			}
 		}
 		filters.put(ORG_ID, orgId);
-		return this.customFilterService.geClassDataSummary(filters);
+		return dataCatalogService.geClassDataSummary(filters);
 	}
 
 	@Override
 	@RequestMapping(value = "/datacatalog/data-summary-count", method = RequestMethod.GET)
 	public int dataSummaryCount(@RequestParam Map<String, Object> params) {
-		this.customFilterService.getImageSetCount(params);
-		return 0;
+		return dataCatalogService.getImageSetCount(params);
 	}
 }
