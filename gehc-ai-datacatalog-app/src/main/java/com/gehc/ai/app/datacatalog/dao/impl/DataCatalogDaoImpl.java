@@ -39,6 +39,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 
 	private static Logger logger = LoggerFactory.getLogger(DataCatalogDaoImpl.class);
 	
+	public static final String GE_CLASS ="ge-class";
+	
 	public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
 			 + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
 			 + " FROM annotation JOIN ( SELECT  0 AS idx UNION "
@@ -267,81 +269,73 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst) {
 		logger.info(" In DAO, getImgSeries ");
 		ObjectMapper mapper = new ObjectMapper();	
-		GEClass [] geClasses = {};
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
-			if ("ge-class".equals(entry.getKey())) {
-				
-				try {
-					geClasses = mapper.readValue(entry.getValue().toString(), GEClass [].class);
-					logger.info("json parsing result: " + Arrays.toString(geClasses));
-				} catch (JsonParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
+		GEClass [] geClasses = getGEClasses(params);
 		//Get image set
-		List<Long> imgSeriesIdLst = new ArrayList<Long>();
-		for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
-			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-			imgSeriesIdLst.add(imageSeries.getId());
-		}
+		List<Long> imgSeriesIdLst = getImgSeriesIdLst(imgSeriesLst);
 		StringBuilder imageSeriesIds = new StringBuilder();
 		imageSeriesIds.append(" image_set in (");
 		for (Iterator<Long> imgSeriesIdItr = imgSeriesIdLst.iterator(); imgSeriesIdItr.hasNext();) {
 			imageSeriesIds.append(imgSeriesIdItr.next() + (imgSeriesIdItr.hasNext() ? "," : ""));
 		}
 		imageSeriesIds.append(")");
-
-        StringBuilder buf = new StringBuilder();
-        buf.append(GE_CLASS_QUERY);
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(GE_CLASS_QUERY);
         mapper.setSerializationInclusion(Include.NON_NULL);
-		
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
-			if ("modality".equals(entry.getKey())) {
-				logger.info("- modlaity is " + entry.getValue().toString());
-				
-				//buf.append("modality in ");
-				//buf.append(entry.getValue().toString());
-			}
-		}
-
         for (int k = 0; k < geClasses.length; k++) {
-        	buf.append(k==0? "where (" : "or ");
+        	queryBuilder.append(k==0? "where (" : "or ");
         	try {
-				buf.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
+				queryBuilder.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
 			} catch (JsonProcessingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
-        buf.append(")");
-        
-        buf.append(" and " + imageSeriesIds);
-        
-        logger.info("dataDetails query is " + buf);
-        Query q = em.createNativeQuery(buf.toString());
-		//	q.setParameter("orgId", "4fac7976-e58b-472a-960b-42d7e3689f20");
-        @SuppressWarnings("unchecked")
-		List<Object[]> objList = q.getResultList();
-        
+        queryBuilder.append(")");      
+        queryBuilder.append(" and " + imageSeriesIds);       
+        logger.info("dataDetails query is " + queryBuilder);
+        Query q = em.createNativeQuery(queryBuilder.toString());
+        return getImaSeriesLst(q.getResultList());
+	}
+	
+	public GEClass [] getGEClasses(Map<String, Object> params){
+		ObjectMapper mapper = new ObjectMapper();
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			//logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
+			if (GE_CLASS.equals(entry.getKey())) {
+					try {
+						return mapper.readValue(entry.getValue().toString(), GEClass [].class);
+					} catch (JsonParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (JsonMappingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+		}
+			return null;
+	}
+	
+	public List<Long> getImgSeriesIdLst(List<ImageSeries> imgSeriesLst){
+		List<Long> imgSeriesIdLst = new ArrayList<Long>();
+		for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
+			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+			imgSeriesIdLst.add(imageSeries.getId());
+		}
+		return imgSeriesIdLst;
+	}
+	
+	public List<ImageSeries> getImaSeriesLst(List<Object[]> objList){
 		List<ImageSeries> result = new ArrayList<ImageSeries>();
-		
 		objList.stream().forEach((record) -> {
-
 			ImageSeries imgSeries = new ImageSeries();
 			imgSeries.setId(Long.valueOf(record[0].toString()));
 			imgSeries.setOrgId(record[1].toString());
@@ -354,8 +348,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			result.add(imgSeries);
 		});
 		logger.info("result size " + objList.size());
-		
 		return result;
-	
 	}
 }
