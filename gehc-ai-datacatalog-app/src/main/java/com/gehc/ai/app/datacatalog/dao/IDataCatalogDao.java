@@ -15,7 +15,7 @@ public interface IDataCatalogDao {
      */
     Map<String, Object> dataSummary(String groupby, HttpServletRequest request);
     
-    Map<Object, Object> geClassDataSummary(Map<String, String> params);
+    Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId, String type);
     
     List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst);
     

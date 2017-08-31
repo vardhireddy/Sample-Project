@@ -27,8 +27,8 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public Map<Object, Object> geClassDataSummary(Map<String, String> params) {
-		return dataCatalogDao.geClassDataSummary(params);
+	public Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId, String type) {
+		return dataCatalogDao.geClassDataSummary(params, orgId, type);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public int getImageSetCount(Map<String, Object> params) {
+	public int getImageSetCount(Map<String, Object> params, String orgId, String type) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
