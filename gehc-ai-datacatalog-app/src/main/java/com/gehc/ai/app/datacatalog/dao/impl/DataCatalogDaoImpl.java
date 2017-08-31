@@ -132,75 +132,34 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		q.append(")");
 		return q.toString();
 	}
-	
-	static Map<String, String> ANNOTATION_COLUMN_MAP = new HashMap<String, String>();
-	static Map<String, String> IMAGESET_COLUMN_MAP = new HashMap<String, String>();
-	static {
-		ANNOTATION_COLUMN_MAP.put("org-id", "org_id");
-		ANNOTATION_COLUMN_MAP.put("annotation-type", "type");
-		IMAGESET_COLUMN_MAP.put("anatomy", "anatomy");
-		IMAGESET_COLUMN_MAP.put("modality", "modality");
-	}
 
 	@Override
-	public Map<Object, Object> geClassDataSummary(Map<String, String> filters) {
-		logger.info(" * In DAO geClassDataSummary, orgId = " + filters.get("org-id"));
-		
-		StringBuilder buf = new StringBuilder();
-		Set<String> keys = filters.keySet();
-		
-		Map<String, String> imageSetAttributes = new HashMap<String, String>();
-		Map<String, String> annotationAttributes = new HashMap<String, String>();
-		for (Iterator<String> it = keys.iterator(); it.hasNext();) {
-			String key = it.next();
-			if (IMAGESET_COLUMN_MAP.containsKey(key))
-				imageSetAttributes.put(IMAGESET_COLUMN_MAP.get(key), filters.get(key));
-			if (ANNOTATION_COLUMN_MAP.containsKey(key))
-				annotationAttributes.put(ANNOTATION_COLUMN_MAP.get(key), filters.get(key));
-		}
-		
-		if (!imageSetAttributes.isEmpty()) {
-			buf.append(" inner join image_set on image_set.id = image_set where ");
-			keys = imageSetAttributes.keySet();
-			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
-				String key = it.next();
-				buf.append(getColumnQueryString(key, imageSetAttributes.get(key)));
-				if (it.hasNext())
-					buf.append(" and ");
-			}
-		}
-		
-		String prefix = GE_CLASS_COUNTS_PREFIX;
-		if (!annotationAttributes.isEmpty()) {
-			keys = annotationAttributes.keySet();
-			StringBuilder annotBuf = new StringBuilder();
-			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
-				String key = it.next();
-				if (!"org_id".equals(key))
-					annotBuf.append(getColumnQueryString(key, annotationAttributes.get(key)) + " and ");
-			}
-			
-			int ind = GE_CLASS_COUNTS_PREFIX.lastIndexOf("JSON_EXTRACT(");
-			prefix = GE_CLASS_COUNTS_PREFIX.substring(0, ind) + annotBuf + GE_CLASS_COUNTS_PREFIX.substring(ind);
-			
-		}
-		String queryString = prefix + buf + GE_CLASS_COUNTS_SUFFIX;
-
-		Query q = em.createNativeQuery(queryString);
-		
-		q.setParameter("orgId", filters.get("org-id").toString());
-		q.setParameter("type", filters.get("annotations").toString());
-		logger.info("*** query string for ge class data summary = " + queryString);
-
-		@SuppressWarnings("unchecked")
-		List<Object[]> objList = q.getResultList();
-		
+	public Map<Object, Object> geClassDataSummary(Map<String, String> filters, String orgId, String type) {
+		logger.info(" In DAO geClassDataSummary, orgId = " + orgId + " type = " + type);
 		Map<Object, Object> filterMap = new HashMap<Object, Object>();
-        objList.stream().forEach((record) -> {
-            filterMap.put(record[1], record[0]);
-        });
-        
-        logger.info("" + objList.size() + " rows returned");
+		if(null != orgId && !orgId.isEmpty() && null != type && !type.isEmpty()){
+			StringBuilder queryBuilder = new StringBuilder();		
+			if (!filters.isEmpty()) {
+				queryBuilder.append(" inner join image_set on image_set.id = image_set where ");
+				for (Iterator<String> it = filters.keySet().iterator(); it.hasNext();) {
+					String key = it.next();
+					queryBuilder.append(getColumnQueryString(key, filters.get(key)));
+					if (it.hasNext())
+						queryBuilder.append(" and ");
+				}
+			}
+			String queryString = GE_CLASS_COUNTS_PREFIX + queryBuilder + GE_CLASS_COUNTS_SUFFIX;
+			Query q = em.createNativeQuery(queryString);		
+			q.setParameter("orgId", orgId);
+			q.setParameter("type", type);
+			@SuppressWarnings("unchecked")
+			List<Object[]> objList = q.getResultList();
+			if(null != objList && objList.size()>0){
+		        objList.stream().forEach((record) -> {
+		            filterMap.put(record[1], record[0]);
+		        });     
+			}
+		}
 		return filterMap;
 	}
 

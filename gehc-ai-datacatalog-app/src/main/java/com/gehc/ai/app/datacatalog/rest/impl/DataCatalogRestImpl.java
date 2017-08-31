@@ -793,9 +793,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params, HttpServletRequest request) {
 		//TODO: Add interceptor
 		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
-		if(null != orgId){
-			params.put(ORG_ID, orgId);
-			return dataCatalogService.geClassDataSummary(params);
+		if(null != orgId && null != params.get(ANNOTATIONS)){
+				String type = params.get("annotations").toString();
+				params.remove(ANNOTATIONS);
+				return dataCatalogService.geClassDataSummary(params, orgId, type);
 		}
 		return null;
 	}
@@ -803,6 +804,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-summary-count", method = RequestMethod.GET)
 	public int dataSummaryCount(@RequestParam Map<String, Object> params) {
-		return dataCatalogService.getImageSetCount(params);
+		return dataCatalogService.getImageSetCount(params, null, null);
 	}
 }
