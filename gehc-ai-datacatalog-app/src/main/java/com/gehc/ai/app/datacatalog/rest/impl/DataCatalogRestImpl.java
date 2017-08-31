@@ -790,25 +790,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
-	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, Object> params, HttpServletRequest request) {
+	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params, HttpServletRequest request) {
 		//TODO: Add interceptor
 		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
-
-		Map<String, String> filters = new HashMap<String, String>();
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue());
-			if (ORG_ID.equals(entry.getKey())) {
-				filters.put(entry.getKey(), entry.getValue().toString());
-			} else if (MODALITY.equals(entry.getKey())) {
-					filters.put(entry.getKey(), entry.getValue().toString());
-			} else if (ANATOMY.equals(entry.getKey())) {
-				filters.put(entry.getKey(), entry.getValue().toString());
-			} else if (ANNOTATIONS.equals(entry.getKey())) {
-				filters.put(entry.getKey(), entry.getValue().toString());
-			}
+		if(null != orgId){
+			params.put(ORG_ID, orgId);
+			return dataCatalogService.geClassDataSummary(params);
 		}
-		filters.put(ORG_ID, orgId);
-		return dataCatalogService.geClassDataSummary(filters);
+		return null;
 	}
 
 	@Override

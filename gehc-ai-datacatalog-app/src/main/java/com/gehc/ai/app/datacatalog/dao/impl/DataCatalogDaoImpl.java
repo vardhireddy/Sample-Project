@@ -54,7 +54,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			 + " SELECT  8 AS idx UNION "
 			 + " SELECT  9 AS idx UNION "
 			 + " SELECT  10 AS idx UNION "
-			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
+			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and type = :type and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
 			 + " ORDER BY id, idx) AS LABEL_JSON ";
 	public static final String GE_CLASS_COUNTS_SUFFIX = " GROUP BY single_class";
 	public static final String GE_CLASS_COUNTS = GE_CLASS_COUNTS_PREFIX + GE_CLASS_COUNTS_SUFFIX;
@@ -185,12 +185,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			
 		}
 		String queryString = prefix + buf + GE_CLASS_COUNTS_SUFFIX;
-		
-		logger.info("query string for ge class data summary = " + queryString);
+
 		Query q = em.createNativeQuery(queryString);
 		
 		q.setParameter("orgId", filters.get("org-id").toString());
-		
+		q.setParameter("type", filters.get("annotations").toString());
+		logger.info("*** query string for ge class data summary = " + queryString);
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
