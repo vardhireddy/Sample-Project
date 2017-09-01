@@ -140,7 +140,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
         queryBuilder.append(" and " + imageSeriesIds);       
         logger.info("dataDetails query is " + queryBuilder);
         Query q = em.createNativeQuery(queryBuilder.toString());
-        return getImaSeriesLst(q.getResultList());
+        return getImgSeriesLst(q.getResultList());
 	}
 	
 	public GEClass [] getGEClasses(Map<String, Object> params){
@@ -173,7 +173,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		return imgSeriesIdLst;
 	}
 	
-	public List<ImageSeries> getImaSeriesLst(List<Object[]> objList){
+	public List<ImageSeries> getImgSeriesLst(List<Object[]> objList){
 		List<ImageSeries> result = new ArrayList<ImageSeries>();
 		objList.stream().forEach((record) -> {
 			ImageSeries imgSeries = new ImageSeries();
