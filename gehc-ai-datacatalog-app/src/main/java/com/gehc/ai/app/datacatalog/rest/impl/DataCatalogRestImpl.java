@@ -788,11 +788,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
 	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params, HttpServletRequest request) {
-		String orgId = request.getAttribute("orgId").toString();
-		if(null != orgId && !orgId.isEmpty() && null != params.get(ANNOTATIONS)){
-				String type = params.get("annotations").toString();
-				params.remove(ANNOTATIONS);
-				return dataCatalogService.geClassDataSummary(params, orgId, type);
+		if (null != request.getAttribute("orgId")) {
+			String orgId = request.getAttribute("orgId").toString();
+			if(null != orgId && !orgId.isEmpty() && null != params.get(ANNOTATIONS)){
+					String type = params.get("annotations").toString();
+					params.remove(ANNOTATIONS);
+					return dataCatalogService.geClassDataSummary(params, orgId, type);
+			}
 		}
 		return null;
 	}
