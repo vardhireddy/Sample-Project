@@ -113,7 +113,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst) {
-		logger.info(" In DAO, getImgSeries ");
 		ObjectMapper mapper = new ObjectMapper();	
 		GEClass [] geClasses = getGEClasses(params);
 		//Get image set
@@ -138,7 +137,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
         }
         queryBuilder.append(")");      
         queryBuilder.append(" and " + imageSeriesIds);       
-        logger.info("dataDetails query is " + queryBuilder);
+        logger.info("getImgSeries query is " + queryBuilder);
         Query q = em.createNativeQuery(queryBuilder.toString());
         return getImgSeriesLst(q.getResultList());
 	}
@@ -187,7 +186,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			imgSeries.setInstanceCount(Integer.valueOf(record[5].toString()));
 			result.add(imgSeries);
 		});
-		logger.info("result size " + objList.size());
 		return result;
 	}
 }
