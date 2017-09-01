@@ -7,7 +7,18 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
 public interface IDataCatalogDao {
     
+    /**
+     * @param params
+     * @param orgId
+     * @param type
+     * @return
+     */
     Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId, String type);
     
+    /**
+     * @param params
+     * @param imgSeriesLst
+     * @return
+     */
     List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst);
 }

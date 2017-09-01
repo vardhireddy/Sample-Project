@@ -228,5 +228,10 @@ public interface IDataCatalogRest {
      */
     Map<String, Object> dataSummary(String groupby, HttpServletRequest request);
     
+    /**
+     * @param params
+     * @param request
+     * @return
+     */
     Map<Object, Object> geClassDataSummary(Map<String, String> params, HttpServletRequest request);
 }

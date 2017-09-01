@@ -473,7 +473,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			List<ImageSeries> imgSetWithAnnotation = new ArrayList<ImageSeries>();
 			// List of img set which does not have annotation
 			List<ImageSeries> imgSetWithOutAnn = new ArrayList<ImageSeries>();
-
 			try {
 				if (null != validParams) {
 					if (validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
@@ -753,7 +752,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-summary", method = RequestMethod.GET)
 	public Map<String, Object> dataSummary(@QueryParam("groupby") String groupby, HttpServletRequest request) {
-		logger.info("*** In dataSummary, orgId = " + request.getAttribute("orgId"));
 		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
 		logger.info("Get dataSummary for orgId = " + orgId + " group by " + groupby);	
 		Map<String, Object> filters = new HashMap<String, Object>();
@@ -790,9 +788,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
 	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params, HttpServletRequest request) {
-		//TODO: Add interceptor
-		String orgId = request.getAttribute("orgId") == null ? "4fac7976-e58b-472a-960b-42d7e3689f20" : request.getAttribute("orgId").toString();
-		if(null != orgId && null != params.get(ANNOTATIONS)){
+		String orgId = request.getAttribute("orgId").toString();
+		if(null != orgId && !orgId.isEmpty() && null != params.get(ANNOTATIONS)){
 				String type = params.get("annotations").toString();
 				params.remove(ANNOTATIONS);
 				return dataCatalogService.geClassDataSummary(params, orgId, type);
