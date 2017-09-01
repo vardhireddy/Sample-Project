@@ -2,20 +2,13 @@ package com.gehc.ai.app.datacatalog.dao.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,10 +50,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and type = :type and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
 			 + " ORDER BY id, idx) AS LABEL_JSON ";
 	public static final String GE_CLASS_COUNTS_SUFFIX = " GROUP BY single_class";
-	public static final String GE_CLASS_COUNTS = GE_CLASS_COUNTS_PREFIX + GE_CLASS_COUNTS_SUFFIX;
-//	public static final String GE_CLASS_COUNTS_WITH_FILTER = GE_CLASS_COUNTS_PREFIX + " :filter " + GE_CLASS_COUNTS_SUFFIX;
-	
-	public static final String SIMPLE_JSON_QUERY = "SELECT CAST(JSON_EXTRACT(item, '$.properties.ge_class') AS CHAR(500)) FROM annotation";
 	
 	static final String GE_CLASS_QUERY = "select distinct im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count "
 			+ " from image_set im "
@@ -73,49 +62,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	
 	@Autowired
 	EntityManager em;
-	
-	
-	public void getSelectedColumns(List<String> attrib) {
-		logger.info("=========entity manager=========" + em);
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
-		final Root<ImageSeries> root = cq.from(ImageSeries.class);
-		//cq.multiselect(root.get(ImageSeries_.id), root.get(ImageSeries_.orgId));
-		List<Tuple> tupleResult = em.createQuery(cq).getResultList();
-		
-		for(int k = 0; k < tupleResult.size(); k++) {
-			Tuple t = tupleResult.get(k);
-			logger.info(t.get(1).toString());
-		}
-		logger.info("returns tuple =========" + tupleResult.size());
-		
 
-//		Query q = em.createNativeQuery(SIMPLE_JSON_QUERY);
-//		List objList = q.getResultList();
-		Query q = em.createNativeQuery(GE_CLASS_COUNTS);
-
-		@SuppressWarnings("unchecked")
-		List<Object[]> objList = q.getResultList();
-		
-		Map<String, String> filterMap = new HashMap<String, String>();
-        objList.stream().forEach((record) -> {
-            logger.info(record[0].toString() + ",......." + record[1].toString());
-            filterMap.put(record[1].toString(), record[0].toString());
-            GE_CLASS_LIST.add(record[1]);
-        });
-		
-        StringBuilder buf = new StringBuilder();
-        buf.append(GE_CLASS_QUERY);
-        for (int k = 0; k < GE_CLASS_LIST.size(); k++) {
-        	buf.append(k==0? "where " : "or ");
-        	buf.append("JSON_CONTAINS(an.item, '" + GE_CLASS_LIST.get(k) + "', '$.properties.ge_class') ");
-        }
-        
-        logger.info("query is " + buf);
-        
-		logger.info("result size " + objList.size());
-	}
-	
 	private static String getColumnQueryString(String column, String values) {
 		StringBuilder q = new StringBuilder();
 		q.append(" " + column.replaceAll("-", "_") + " in (");
@@ -163,71 +110,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		return filterMap;
 	}
 
-	@Override
-	public int getImageSetCount(Map<String, Object> params) {
-			logger.info(" getImageSetCount ");
-			ObjectMapper mapper = new ObjectMapper();
-
-			
-			GEClass [] geClasses = {};
-			
-			for (Map.Entry<String, Object> entry : params.entrySet()) {
-				logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
-				if ("ge_class".equals(entry.getKey())) {
-					
-					try {
-						geClasses = mapper.readValue(entry.getValue().toString(), GEClass [].class);
-						logger.info("json parsing result: " + Arrays.toString(geClasses));
-					} catch (JsonParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (JsonMappingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-			
-	        StringBuilder buf = new StringBuilder();
-	        buf.append(GE_CLASS_QUERY);
-	        mapper.setSerializationInclusion(Include.NON_NULL);
-
-	        for (int k = 0; k < geClasses.length; k++) {
-	        	buf.append(k==0? "where " : "or ");
-	        	try {
-					buf.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
-				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	        }
-	        
-	        logger.info("------ query is " + buf);
-	        Query q = em.createNativeQuery(buf.toString());
-			//	q.setParameter("orgId", "4fac7976-e58b-472a-960b-42d7e3689f20");
-	        @SuppressWarnings("unchecked")
-			List<Object[]> objList = q.getResultList();
-			
-			Map<String, String> filterMap = new HashMap<String, String>();
-	        objList.stream().forEach((record) -> {
-	           // logger.info(record[0].toString() + ",---" + record[1].toString() + ",......." + record[2].toString()+ ",......." + record[3].toString());
-	            filterMap.put(record[1].toString(), record[0].toString());
-	        });
-	        
-			logger.info("result size " + objList.size());
-			return objList.size();
-		}
-
-	@Override
-	public Map<String, Object> dataSummary(String groupby, HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst) {
@@ -264,7 +146,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public GEClass [] getGEClasses(Map<String, Object> params){
 		ObjectMapper mapper = new ObjectMapper();
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			//logger.info("Key : " + entry.getKey() + " Value : " + entry.getValue() + ": " + entry.getClass());
 			if (GE_CLASS.equals(entry.getKey())) {
 					try {
 						return mapper.readValue(entry.getValue().toString(), GEClass [].class);

@@ -483,7 +483,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
 						if (!imageSeriesLst.isEmpty()){
 							if(validParams.containsKey(GE_CLASS)){
-								//return customFilterService.dataDetails(params, imageSeriesLst);
 								return dataCatalogService.getImgSeries(params, imageSeriesLst);
 							}else{
 								return imageSeriesLst;
@@ -799,11 +798,5 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				return dataCatalogService.geClassDataSummary(params, orgId, type);
 		}
 		return null;
-	}
-
-	@Override
-	@RequestMapping(value = "/datacatalog/data-summary-count", method = RequestMethod.GET)
-	public int dataSummaryCount(@RequestParam Map<String, Object> params) {
-		return dataCatalogService.getImageSetCount(params, null, null);
 	}
 }
