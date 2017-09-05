@@ -80,3 +80,8 @@ Feature: DataCollection DataCatalog
   When Get DataSet  group by ANNOTATIONS_ABSENT
   Then verify DataSet  group by ANNOTATIONS_ABSENT
 
+  Scenario: Retrieve DataSummary for GE-Class
+  Given Retrieve DataSummary for GE-Class
+  When Get DataSummary for GE-Class
+  Then verify DataSummary for GE-Class
+
