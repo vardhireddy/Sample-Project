@@ -425,6 +425,42 @@ public class DataCollectionSteps {
         when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
     }
 
+
+
+    @When("Get DataSummary for GE-Class")
+    public void whenGetDataSummaryGEClass() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/ge-class-data-summary?modality=CT,DX&anatomy=Chest,Lung&annotations=label")
+                        .requestAttr("orgId","123")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify DataSummary for GE-Class")
+    public void thenVerifyDataSummaryGEClass() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("{\"modality\":{\"CHEST\":8203},\"anatomy\":{\"DX\":121,\"CR\":8082},\"annotations\":{\"test\":1}}")));
+    }
+
+    @Given("Retrieve DataSummary for GE-Class without org id")
+    public void givenRetrieveDataSummaryGEClassdNoOrgIdDataSetUpProvided() {
+        Map resultSet = getMapForGEClassDataSummary();
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+    }
+
+
+
+    @When("Get DataSummary for GE-Class without org id")
+    public void whenGetDataSummaryGEClassNoOrgId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/ge-class-data-summary?modality=CT,DX&anatomy=Chest,Lung&annotations=label")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    @Then("verify DataSummary for GE-Class without org id")
+    public void thenVerifyDataSummaryGEClassNoOrgId() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("")));
+    }
+
     private Map getMapForGEClassDataSummary() {
         Map resultSet = new HashMap();
         Map resultSetM = new HashMap();
@@ -439,19 +475,6 @@ public class DataCollectionSteps {
         resultSet.put("annotations", resultSetA);
         resultSet.put("anatomy", resultSetAN);
         return resultSet;
-    }
-
-    @When("Get DataSummary for GE-Class")
-    public void whenGetDataSummaryGEClass() throws Exception {
-        retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/ge-class-data-summary?modality=CT,DX&anatomy=Chest,Lung&annotations=label")
-                        .requestAttr("orgId","123")
-                        .contentType(MediaType.APPLICATION_JSON)
-        );
-    }
-    @Then("verify DataSummary for GE-Class")
-    public void thenVerifyDataSummaryGEClass() throws Exception {
-        retrieveResult.andExpect(content().string(containsString("{\"modality\":{\"CHEST\":8203},\"anatomy\":{\"DX\":121,\"CR\":8082},\"annotations\":{\"test\":1}}")));
     }
 
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
