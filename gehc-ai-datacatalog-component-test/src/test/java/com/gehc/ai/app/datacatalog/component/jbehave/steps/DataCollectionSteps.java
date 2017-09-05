@@ -2,6 +2,7 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.repository.*;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
@@ -55,9 +56,10 @@ public class DataCollectionSteps {
     private PreparedStatementSetter ps;
     private RowMapper rm;
     private Throwable throwable = null;
+    private DataCatalogDaoImpl dataCatalogDao;
 
     @Autowired
-    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
+    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
@@ -65,6 +67,7 @@ public class DataCollectionSteps {
         this.studyRepository = studyRepository;
         this.commonSteps = commonSteps;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
+        this.dataCatalogDao =dataCatalogDao;
     }
 
     @BeforeScenario
@@ -415,6 +418,42 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("{\"annotation-absent\":1}")));
     }
+
+    @Given("Retrieve DataSummary for GE-Class")
+    public void givenRetrieveDataSummaryGEClassdDataSetUpProvided() {
+        Map resultSet = getMapForGEClassDataSummary();
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+    }
+
+    private Map getMapForGEClassDataSummary() {
+        Map resultSet = new HashMap();
+        Map resultSetM = new HashMap();
+        resultSetM.put("CHEST",8203);
+        Map resultSetA = new HashMap();
+        resultSetA.put("test",1);
+        Map resultSetAN = new HashMap();
+        resultSetAN.put("DX",121);
+        resultSetAN.put("CR",8082);
+
+        resultSet.put("modality",resultSetM);
+        resultSet.put("annotations", resultSetA);
+        resultSet.put("anatomy", resultSetAN);
+        return resultSet;
+    }
+
+    @When("Get DataSummary for GE-Class")
+    public void whenGetDataSummaryGEClass() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/ge-class-data-summary?modality=CT,DX&anatomy=Chest,Lung&annotations=label")
+                        .requestAttr("orgId","123")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify DataSummary for GE-Class")
+    public void thenVerifyDataSummaryGEClass() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("{\"modality\":{\"CHEST\":8203},\"anatomy\":{\"DX\":121,\"CR\":8082},\"annotations\":{\"test\":1}}")));
+    }
+
     private String defnToJSON(DataSet dataSet) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(dataSet);
