@@ -243,7 +243,7 @@ public class DataCollectionSteps {
     @Then("verify data collection image-set details by its id")
     public void thenVerifyDataCollectionImagesetDetailsByItsId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"uploadDate\":\"2017-03-31\",\"patientDbId\":1}]")));
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]")));
     }
 
     @Given("Post DataCatalog with Org ID null DataSetUp Provided")
@@ -338,6 +338,8 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-summary")
                         .contentType(MediaType.APPLICATION_JSON)
+                .param("modality","['CT', 'MR', 'DX']&anatomy=['Lung', 'Chest']")
+                .param("anatomy","['Lung', 'Chest']&geClass=[{\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]")
         );
     }
     @Then("verify DataSet for Filters by OrgId")
