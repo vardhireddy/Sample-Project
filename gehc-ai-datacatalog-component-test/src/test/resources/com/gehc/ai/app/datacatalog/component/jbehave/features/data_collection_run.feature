@@ -85,3 +85,8 @@ Feature: DataCollection DataCatalog
   When Get DataSummary for GE-Class
   Then verify DataSummary for GE-Class
 
+  Scenario: Retrieve DataSummary for GE-Class without org id
+  Given Retrieve DataSummary for GE-Class without org id
+  When Get DataSummary for GE-Class without org id
+  Then verify DataSummary for GE-Class without org id
+
