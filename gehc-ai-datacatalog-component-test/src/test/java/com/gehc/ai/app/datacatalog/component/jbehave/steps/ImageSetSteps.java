@@ -80,7 +80,7 @@ public class ImageSetSteps {
     @BeforeScenario
     public void setUp() throws Exception {
         when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
-        when(dataCatalogDao.getImgSeries(anyMap(),anyList(), null)).thenReturn(commonSteps.getImageSeries());
+        when(dataCatalogDao.getImgSeries(anyMap(),anyList(), anyList())).thenReturn(commonSteps.getImageSeries());
     }
 
     @Given("Retrieve image series by id - DataSetUp Provided")
@@ -257,7 +257,7 @@ public class ImageSetSteps {
         when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotation());
-        when(annotationRepository.findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annList);
+        when(annotationRepository.findByImageSetIdInAndTypeInAndOrgId(anyListOf(Long.class),anyListOf(String.class),anyList())).thenReturn(annList);
     }
 
     @When("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation")
