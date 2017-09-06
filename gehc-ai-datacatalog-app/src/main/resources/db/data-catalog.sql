@@ -190,3 +190,6 @@ Alter table lfdb.image_set modify id BIGINT(20) AUTO_INCREMENT;
 alter table image_set AUTO_INCREMENT=1635500015265;
 
 alter table annotation modify image_set bigint(20);
+
+alter table data_set 
+add filters JSON;

@@ -77,7 +77,7 @@ public class DataCatalogDaoImplTest {
     public void testGetImageSeries()  {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.getResultList()).thenReturn(new ArrayList());
-        List returnList = dataCatalogDao.getImgSeries(getParamsMap(),getImageSeries());
+        List returnList = dataCatalogDao.getImgSeries(getParamsMap(),getImageSeries(), null);
         List expectedList = new ArrayList();
         assertEquals(expectedList,returnList);
     }
@@ -87,7 +87,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.getResultList()).thenReturn(new ArrayList());
         Map geClass = new HashMap<String, Object>();
-       when(dataCatalogDao.getImgSeries(getParamsMap(), getImageSeries())).thenThrow(new JsonGenerationException("Error"));
+       when(dataCatalogDao.getImgSeries(getParamsMap(), getImageSeries(), null)).thenThrow(new JsonGenerationException("Error"));
     }
 
 

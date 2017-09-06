@@ -24,7 +24,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst) {
-		return dataCatalogDao.getImgSeries(params, imgSeriesLst);
+	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typelst) {
+		return dataCatalogDao.getImgSeries(params, imgSeriesLst, typelst);
 	}
 }

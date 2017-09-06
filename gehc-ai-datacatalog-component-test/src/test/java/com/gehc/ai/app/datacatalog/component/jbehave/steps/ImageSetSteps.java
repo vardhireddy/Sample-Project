@@ -80,7 +80,7 @@ public class ImageSetSteps {
     @BeforeScenario
     public void setUp() throws Exception {
         when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
-        when(dataCatalogDao.getImgSeries(anyMap(),anyList())).thenReturn(commonSteps.getImageSeries());
+        when(dataCatalogDao.getImgSeries(anyMap(),anyList(), null)).thenReturn(commonSteps.getImageSeries());
     }
 
     @Given("Retrieve image series by id - DataSetUp Provided")

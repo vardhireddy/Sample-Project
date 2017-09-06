@@ -75,7 +75,19 @@ public class DataSet implements Serializable {
 	@Convert(converter = JsonConverter.class)
     @Column ( name = "image_sets" )
     private Object  imageSets; // NOSONAR
+	
+    /**
+     * Flexible JSON object to store properties of data collection
+     */
+    @Convert(converter = JsonConverter.class)
+    private Object filters; // NOSONAR
     
+	public Object getFilters() { // NOSONAR
+		return filters; // NOSONAR
+	}
+	public void setFilters(Object filters) { // NOSONAR
+		this.filters = filters; // NOSONAR
+	}
 	public Long getId() {
 		return id;
 	}
