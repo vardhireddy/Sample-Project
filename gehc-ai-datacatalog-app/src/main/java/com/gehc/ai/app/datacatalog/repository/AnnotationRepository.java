@@ -38,4 +38,5 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     @Query("SELECT type as name, count(distinct imageSet) as count FROM Annotation where orgId=:orgId group by type")
     List<Object[]> countAnnotationType(@Param("orgId") String orgId);
     void delete(Annotation deleted);
+    List<Annotation> findByImageSetIdInAndTypeInAndOrgId(List<Long> imageSets, List<String> types, List<String> orgId);
 }

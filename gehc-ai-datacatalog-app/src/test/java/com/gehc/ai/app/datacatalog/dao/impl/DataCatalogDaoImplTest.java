@@ -78,7 +78,14 @@ public class DataCatalogDaoImplTest {
 
 
     @Test
+<<<<<<< HEAD
+    public void testGetImageSeries()  {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(query.getResultList()).thenReturn(new ArrayList());
+        List returnList = dataCatalogDao.getImgSeries(getParamsMap(),getImageSeries(), null);
+=======
     public void testGetImageSeries() {
+>>>>>>> upstream/master
         List expectedList = new ArrayList();
         Object[] id = new Object[]{1L};
         Patient patient = new Patient();
@@ -88,11 +95,17 @@ public class DataCatalogDaoImplTest {
                 "label", 1L};
         expectedList.add(newObj);
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+<<<<<<< HEAD
+        when(query.getResultList()).thenReturn(new ArrayList());
+        Map geClass = new HashMap<String, Object>();
+       when(dataCatalogDao.getImgSeries(getParamsMap(), getImageSeries(), null)).thenThrow(new JsonGenerationException("Error"));
+=======
         when(query.getResultList()).thenReturn(expectedList);
         List returnList = dataCatalogDao.getImgSeries(getParamsMap(), getImageSeries());
         System.out.println("TTTTTT" + expectedList + "MMMMM" + returnList);
         String expected = "id=1, schemaVersion=null, orgId=123, modality=DX, anatomy=CHEST, dataFormat=null, uri=null, seriesInstanceUid=null, description=null, institution=null, equipment=null, instanceCount=123, properties=null, uploadBy=null, uploadDate=null, patientDbId=null, studyDbId=null, patient=com.gehc.ai.app.datacatalog.entity.Patient";
         assert (returnList.toString().contains(expected));
+>>>>>>> upstream/master
     }
 
 

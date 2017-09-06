@@ -114,7 +114,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	private Set<Long> getUniqueImgSetIds(List<Annotation> annotationLst) {
 		Set<Long> uniqueImgSetIds = new HashSet<Long>();
 		if (null != annotationLst && !annotationLst.isEmpty()) {
-			logger.info("*** Annotations from list " + annotationLst.toString());
 			for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();) {
 				Annotation annotation = (Annotation) annotationItr.next();
 				uniqueImgSetIds.add(annotation.getImageSet().getId());
@@ -481,8 +480,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					} else if (validParams.containsKey(ORG_ID)) {
 						imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
 						if (!imageSeriesLst.isEmpty()){
-							if(validParams.containsKey(GE_CLASS)){
-								return dataCatalogService.getImgSeries(params, imageSeriesLst);
+							if(validParams.containsKey(GE_CLASS) && validParams.containsKey(ANNOTATIONS)){
+								//Get the annotation type bcoz an image set can have multiple anntations with different types
+								List<String> typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS).toString());
+								return dataCatalogService.getImgSeries(params, imageSeriesLst, typeLst);
 							}else{
 								return imageSeriesLst;
 							}
@@ -524,7 +525,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							imgSeriesIdLst);
 				} else {
 					imgSetWithAnnotation = getImageSeriesWithAnnotations(imgSetWithAnnotation, imageSeriesLst, typeLst,
-							imgSeriesIdLst);
+							imgSeriesIdLst, orgIdLst);
 				}
 			}
 		}
@@ -574,11 +575,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithAnnotations(List<ImageSeries> imgSetWithAnnotation,
-		List<ImageSeries> imageSeriesLst, List<String> typeLst, List<Long> imgSeriesIdLst) {
+		List<ImageSeries> imageSeriesLst, List<String> typeLst, List<Long> imgSeriesIdLst, List<String> orgIdLst) {
 		List<Annotation> annotationLst = new ArrayList<Annotation>();
-		annotationLst = annotationRepository.findByImageSetIdInAndTypeIn(imgSeriesIdLst, typeLst);
+		annotationLst = annotationRepository.findByImageSetIdInAndTypeInAndOrgId(imgSeriesIdLst, typeLst, orgIdLst);
 		Set<Long> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
-		logger.info("Get uniqueImgSetIds.size() " + uniqueImgSetIds.size());
 		if (!uniqueImgSetIds.isEmpty()) {
 			for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 				ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
@@ -595,7 +595,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		List<Annotation> annotationLst = new ArrayList<Annotation>();
 		annotationLst = annotationRepository.findByImageSetIdIn(imgSeriesIdLst);
 		Set<Long> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
-		logger.info("# Get uniqueImgSetIds size() " + uniqueImgSetIds.size());
 		if (!uniqueImgSetIds.isEmpty()) {
 			for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 				ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
@@ -631,7 +630,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return valueLst;
 	}
 
-	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
+/*	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
 		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
 		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
@@ -644,8 +643,23 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			imgSerWithPatientLst.add(imageSeries);
 		}
 		return imgSerWithPatientLst;
-	}
+	}*/
 
+	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
+		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
+		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
+			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+			if (null != imageSeries && null != imageSeries.getPatientDbId()) {
+				List<Patient> patientLst = patientRepository.findByIdAndOrgId(imageSeries.getPatientDbId(), imageSeries.getOrgId());
+				if (null != patientLst && !patientLst.isEmpty()) {
+					imageSeries.setPatient(patientLst.get(0));
+				}
+			}
+			imgSerWithPatientLst.add(imageSeries);
+		}
+		return imgSerWithPatientLst;
+	}
+	
 	@Override
 	@RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesById(@PathVariable Long id) {

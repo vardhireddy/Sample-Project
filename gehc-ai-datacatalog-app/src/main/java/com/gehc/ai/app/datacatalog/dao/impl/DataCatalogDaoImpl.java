@@ -112,17 +112,28 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst) {
+	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typeLst) {
 		ObjectMapper mapper = new ObjectMapper();	
 		GEClass [] geClasses = getGEClasses(params);
 		//Get image set
 		List<Long> imgSeriesIdLst = getImgSeriesIdLst(imgSeriesLst);
 		StringBuilder imageSeriesIds = new StringBuilder();
 		imageSeriesIds.append(" image_set in (");
-		for (Iterator<Long> imgSeriesIdItr = imgSeriesIdLst.iterator(); imgSeriesIdItr.hasNext();) {
-			imageSeriesIds.append(imgSeriesIdItr.next() + (imgSeriesIdItr.hasNext() ? "," : ""));
+		if(null != imgSeriesIdLst && !imgSeriesIdLst.isEmpty()){
+			for (Iterator<Long> imgSeriesIdItr = imgSeriesIdLst.iterator(); imgSeriesIdItr.hasNext();) {
+				imageSeriesIds.append(imgSeriesIdItr.next() + (imgSeriesIdItr.hasNext() ? "," : ""));
+			}
 		}
 		imageSeriesIds.append(")");
+		//build query for annotation types
+		StringBuilder annotationTypes = new StringBuilder();
+		annotationTypes.append(" type in ('");
+			if(null != typeLst && !typeLst.isEmpty()){
+				for (Iterator<String> typeLstItr = typeLst.iterator(); typeLstItr.hasNext();) {
+					annotationTypes.append(typeLstItr.next() + (typeLstItr.hasNext() ? "','" : ""));
+				}
+			}
+			annotationTypes.append("')");
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(GE_CLASS_QUERY);
         mapper.setSerializationInclusion(Include.NON_NULL);
@@ -136,8 +147,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			}
         }
         queryBuilder.append(")");      
-        queryBuilder.append(" and " + imageSeriesIds);       
-        logger.info("getImgSeries query is " + queryBuilder);
+        queryBuilder.append(" and " + imageSeriesIds);     
+        queryBuilder.append(" and " + annotationTypes); 
+        logger.info(" getImgSeries query is " + queryBuilder);
         Query q = em.createNativeQuery(queryBuilder.toString());
         return getImgSeriesLst(q.getResultList());
 	}

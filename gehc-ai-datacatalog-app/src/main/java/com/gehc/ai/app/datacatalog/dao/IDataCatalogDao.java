@@ -18,7 +18,8 @@ public interface IDataCatalogDao {
     /**
      * @param params
      * @param imgSeriesLst
+     * @param typeLst TODO
      * @return
      */
-    List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst);
+    List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typeLst);
 }
