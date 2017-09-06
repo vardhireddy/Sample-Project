@@ -1,13 +1,8 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.filters.CORSFilter;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,11 +11,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +18,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by sowjanyanaidu on 9/5/17.
@@ -46,7 +36,6 @@ public class DataCatalogDaoImplTest {
 
     @Test
     public void testGetImageSeriesIdLst()  {
-        DataCatalogDaoImpl dataCatalogDao = new DataCatalogDaoImpl();
         List returnList = dataCatalogDao.getImgSeriesIdLst(getImageSeries());
         List expectedList = new ArrayList();
         expectedList.add(1L);
@@ -56,7 +45,6 @@ public class DataCatalogDaoImplTest {
 
     @Test
     public void testGEClasses()  {
-        DataCatalogDaoImpl dataCatalogDao = new DataCatalogDaoImpl();
         Map geClass = getParamsMap();
         returnValue = dataCatalogDao.getGEClasses(geClass);
         List expectedList = new ArrayList();
@@ -64,6 +52,11 @@ public class DataCatalogDaoImplTest {
         expectedList.add(2L);
         GEClass[] expectedValue = new GEClass[0];
         assertEquals(expectedValue.getClass(),returnValue.getClass());
+    }
+
+    @Test
+    public void testgeClassDataSummary(){
+
     }
 
     private Map getParamsMap() {
