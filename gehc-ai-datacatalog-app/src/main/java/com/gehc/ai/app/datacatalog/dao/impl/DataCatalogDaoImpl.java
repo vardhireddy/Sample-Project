@@ -1,5 +1,5 @@
 /*
- * AnnotationImgSetDataCol.java
+ * DataCatalogDaoImpl.java
  *
  * Copyright (c) 2016 by General Electric Company. All rights reserved.
  *
@@ -9,6 +9,7 @@
  * with the terms and conditions stipulated in the agreement/contract
  * under which the software has been supplied.
  */
+
 package com.gehc.ai.app.datacatalog.dao.impl;
 
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "inner join patient p "
 			+ "on p.id = im.patient_dbid ";
 
-	public static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
+	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
 	@Autowired
 	private EntityManager em;

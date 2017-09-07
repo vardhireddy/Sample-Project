@@ -1,5 +1,5 @@
 /*
- * AnnotationImgSetDataCol.java
+ * IDataCatalogDao.java
  *
  * Copyright (c) 2016 by General Electric Company. All rights reserved.
  *

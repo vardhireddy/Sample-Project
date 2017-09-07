@@ -805,7 +805,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if (null != request.getAttribute("orgId")) {
 			String orgId = request.getAttribute("orgId").toString();
 			if(null != orgId && !orgId.isEmpty() && null != params.get(ANNOTATIONS)){
-					String type = params.get("annotations").toString();
+					String type = params.get("annotations");
 					params.remove(ANNOTATIONS);
 					return dataCatalogService.geClassDataSummary(params, orgId, type);
 			}
