@@ -108,7 +108,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				}
 			}
 			String queryString = GE_CLASS_COUNTS_PREFIX + queryBuilder + GE_CLASS_COUNTS_SUFFIX;
-			Query q = em.createNativeQuery(queryString);		
+			Query q = em.createNativeQuery(queryString);	// NOSONAR
 			q.setParameter("orgId", orgId);
 			q.setParameter("type", type);
 			@SuppressWarnings("unchecked")
@@ -164,7 +164,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
         queryBuilder.append(" and ");
 		queryBuilder.append(annotationTypes);
         logger.info(" getImgSeries query is " + queryBuilder);
-        Query q = em.createNativeQuery(queryBuilder.toString());
+        Query q = em.createNativeQuery(queryBuilder.toString()); // NOSONAR
         return getImgSeriesLst(q.getResultList());
 	}
 	
