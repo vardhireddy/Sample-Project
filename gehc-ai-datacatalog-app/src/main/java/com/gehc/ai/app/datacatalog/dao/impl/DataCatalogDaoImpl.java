@@ -100,10 +100,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			StringBuilder queryBuilder = new StringBuilder();		
 			if (!filters.isEmpty()) {
 				queryBuilder.append(" inner join image_set on image_set.id = image_set where ");
-				for (Iterator<String> it = filters.keySet().iterator(); it.hasNext();) {
-					String key = it.next();
-					queryBuilder.append(getColumnQueryString(key, filters.get(key)));
-					if (it.hasNext())
+				for (Iterator<Map.Entry<String, String>> entries = filters.entrySet().iterator();entries.hasNext();) {
+					Map.Entry<String, String> entry = entries.next();
+					queryBuilder.append(getColumnQueryString(entry.getKey(), entry.getValue()));
+					if (entries.hasNext())
 						queryBuilder.append(" and ");
 				}
 			}
