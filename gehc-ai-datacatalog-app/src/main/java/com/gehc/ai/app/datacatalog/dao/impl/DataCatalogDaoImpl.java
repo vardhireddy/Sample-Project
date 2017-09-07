@@ -186,7 +186,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					}
 			}
 		}
-			return null;
+			return new GEClass[0];
 	}
 	
 	public List<Long> getImgSeriesIdLst(List<ImageSeries> imgSeriesLst){
