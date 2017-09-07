@@ -148,7 +148,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/dataCatalog/healthCheck", method = RequestMethod.GET)
 	public String healthCheck() {
-		//this.customFilterService.getSelectedColumns(null);
 		return ApplicationConstants.SUCCESS;
 	}
 
@@ -514,7 +513,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			if (!typeLst.isEmpty()) {
 				// List of image series id based on criteria
 				// other than annotation
-				//List<String> imgSeriesIdLst = new ArrayList<String>();
 				List<Long> imgSeriesIdLst = new ArrayList<Long>();
 				for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 					ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
@@ -629,21 +627,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		return valueLst;
 	}
-
-/*	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
-		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
-		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
-			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-			if (null != imageSeries && null != imageSeries.getPatientDbId()) {
-				List<Patient> patientLst = patientRepository.findById(imageSeries.getPatientDbId());
-				if (null != patientLst && !patientLst.isEmpty()) {
-					imageSeries.setPatient(patientLst.get(0));
-				}
-			}
-			imgSerWithPatientLst.add(imageSeries);
-		}
-		return imgSerWithPatientLst;
-	}*/
 
 	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
 		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
