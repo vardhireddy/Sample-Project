@@ -1,3 +1,14 @@
+/*
+ * AnnotationImgSetDataCol.java
+ *
+ * Copyright (c) 2016 by General Electric Company. All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of
+ * General Electric Company. The software may be used and/or copied only
+ * with the written permission of General Electric Company or in accordance
+ * with the terms and conditions stipulated in the agreement/contract
+ * under which the software has been supplied.
+ */
 package com.gehc.ai.app.datacatalog.dao.impl;
 
 import java.io.IOException;
@@ -50,18 +61,18 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and type = :type and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
 			 + " ORDER BY id, idx) AS LABEL_JSON ";
 	public static final String GE_CLASS_COUNTS_SUFFIX = " GROUP BY single_class";
-	
-	static final String GE_CLASS_QUERY = "select distinct im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count "
+
+	public static final String GE_CLASS_QUERY = "select distinct im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count "
 			+ " from image_set im "
 			+ "inner join annotation an "
 			+ "on an.image_set=im.id "
 			+ "inner join patient p "
 			+ "on p.id = im.patient_dbid ";
 
-	static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
+	public static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
 	@Autowired
-	EntityManager em;
+	private EntityManager em;
 
 	private static String getColumnQueryString(String column, String values) {
 		StringBuilder q = new StringBuilder();
@@ -101,7 +112,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			q.setParameter("type", type);
 			@SuppressWarnings("unchecked")
 			List<Object[]> objList = q.getResultList();
-			if(null != objList && objList.size()>0){
+			if(null != objList && !objList.isEmpty()){
 		        objList.stream().forEach((record) -> {
 		            filterMap.put(record[1], record[0]);
 		        });     
@@ -147,8 +158,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			}
         }
         queryBuilder.append(")");      
-        queryBuilder.append(" and " + imageSeriesIds);     
-        queryBuilder.append(" and " + annotationTypes); 
+        queryBuilder.append(" and ");
+		queryBuilder.append(imageSeriesIds);
+        queryBuilder.append(" and ");
+		queryBuilder.append(annotationTypes);
         logger.info(" getImgSeries query is " + queryBuilder);
         Query q = em.createNativeQuery(queryBuilder.toString());
         return getImgSeriesLst(q.getResultList());
