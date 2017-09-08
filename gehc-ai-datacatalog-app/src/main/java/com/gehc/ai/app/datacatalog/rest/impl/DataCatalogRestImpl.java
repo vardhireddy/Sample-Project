@@ -600,6 +600,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					imgSetWithOutAnn.add(imageSeries);
 				}
 			}
+		}else{
+			return imageSeriesLst;
 		}
 		return imgSetWithOutAnn;
 	}
