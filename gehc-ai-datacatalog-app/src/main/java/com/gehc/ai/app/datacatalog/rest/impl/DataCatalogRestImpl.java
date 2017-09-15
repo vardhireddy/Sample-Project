@@ -11,16 +11,26 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
-import java.io.IOException;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.common.constants.ApplicationConstants;
+import com.gehc.ai.app.common.responsegenerator.ApiResponse;
+import com.gehc.ai.app.datacatalog.entity.*;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.repository.*;
+import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import org.hibernate.service.spi.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -31,43 +41,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.Date;
 
-import org.hibernate.service.spi.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.common.constants.ApplicationConstants;
-import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-//import COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.PatientRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+// The following imports added support coolidge infer API (temporary solution)
+
 
 /**
  * @author 212071558
@@ -90,6 +72,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String ABSENT = "absent";
 	public static final String ANNOTATIONS_ABSENT ="annotation-absent";
 	public static final String GE_CLASS ="ge-class";
+
+	@Value("${coolidge.micro.inference.url}")
+	private String coolidgeMInferenceUrl;
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Value("${uom.user.me.url}")
 	private String uomMeUrl;
@@ -796,5 +783,30 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			}
 		}
 		return null;
+	}
+
+
+	@Override
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RequestMapping(value = "/datacatalog/mInfer", method = RequestMethod.POST)
+	public Object coolidgeMInfer(@RequestBody String jsonObj) {
+		Object response = null;
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(APPLICATION_JSON);
+		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, headers);
+		try {
+			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
+			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);
+			logger.info("++++++++++++++++++++++++ Got response fromCoolidge:" + response);
+		} catch (RestClientException rx) {
+			logger.error("Error posting to Coolidge", rx);
+		} catch (URISyntaxException ux) {
+			logger.error("!!! Invalid URL while calling Coolidge inference", ux);
+		} catch(Exception e){
+			logger.error("*** Exception occured while calling Coolidge inference", e);
+		}
+
+		return response;
 	}
 }

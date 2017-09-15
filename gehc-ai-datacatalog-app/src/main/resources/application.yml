@@ -18,6 +18,8 @@ experiment:
     imgLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
     locationType: s3
 uom.user.me.url: ${uom_api_gateway_url:https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi}/v1/user/me?level.value=2
+coolidge.micro.inference.url: http://10.202.102.166:6000/mInfer
+
 dev:
   mode: false
   orgId: null
@@ -38,3 +40,4 @@ spring:
     url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
     username: root
     password: root
+coolidge.micro.inference.url: http://127.0.0.1:6001/mInfer
