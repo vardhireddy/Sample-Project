@@ -234,4 +234,11 @@ public interface IDataCatalogRest {
      * @return
      */
     Map<Object, Object> geClassDataSummary(Map<String, String> params, HttpServletRequest request);
+
+    /**
+     * Inference on Coolidge by specifying algorithm execution JSON object
+     * @param jsonObj JSON object defining the inputs for Coolidge
+     * @return a JSON object from Coolidge
+     */
+    Object coolidgeMInfer(String jsonObj);
 }
