@@ -45,10 +45,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Date;
+import java.util.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-
-// The following imports added support coolidge infer API (temporary solution)
 
 
 /**
