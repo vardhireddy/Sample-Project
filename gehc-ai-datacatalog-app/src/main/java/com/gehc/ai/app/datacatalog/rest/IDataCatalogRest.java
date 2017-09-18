@@ -238,7 +238,8 @@ public interface IDataCatalogRest {
     /**
      * Inference on Coolidge by specifying algorithm execution JSON object
      * @param jsonObj JSON object defining the inputs for Coolidge
+     * @param request incoming request object
      * @return a JSON object from Coolidge
      */
-    Object coolidgeMInfer(String jsonObj);
+    Object coolidgeMInfer(String jsonObj, HttpServletRequest request);
 }

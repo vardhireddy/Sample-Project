@@ -789,15 +789,31 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/mInfer", method = RequestMethod.POST)
-	public Object coolidgeMInfer(@RequestBody String jsonObj) {
+	public Object coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) {
 		Object response = null;
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
+		if (null != request.getAttribute("X-Role")) {
+			headers.add("X-Role", request.getAttribute("X-Role").toString());
+		}
+		if (null != request.getAttribute("X-UOM-Id")) {
+			headers.add("X-UOM-Id", request.getAttribute("X-UOM-Id").toString());
+		}
+		if (null != request.getAttribute("X-Principal")) {
+			headers.add("X-Principal", request.getAttribute("X-Principal").toString());
+		}
+		if (null != request.getAttribute("Authorization")) {
+			headers.add("Authorization", request.getAttribute("Authorization").toString());
+		}
+		if (null != request.getAttribute("X-Request-Id")) {
+			headers.add("X-Request-Id", request.getAttribute("X-Request-Id").toString());
+		}
+		logger.info("++++++++++++++++++++++++DEBUG New headers:" + headers);
 		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, headers);
 		try {
 			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
 			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);
-			logger.info("++++++++++++++++++++++++ Got response fromCoolidge:" + response);
+			logger.info("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + response);
 		} catch (RestClientException rx) {
 			logger.error("Error posting to Coolidge", rx);
 		} catch (URISyntaxException ux) {
