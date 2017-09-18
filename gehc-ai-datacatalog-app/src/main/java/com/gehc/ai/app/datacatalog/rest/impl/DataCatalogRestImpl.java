@@ -813,7 +813,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		try {
 			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
 			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);
-			logger.info("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + response);
+			logger.info("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + coolidgeMInferenceUrl + " is " + response);
 		} catch (RestClientException rx) {
 			logger.error("Error posting to Coolidge", rx);
 		} catch (URISyntaxException ux) {
