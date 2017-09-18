@@ -793,6 +793,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		Object response = null;
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
+		logger.info("++++++++++++++++++++++++DEBUG HttpServletRequest request:" + request);
+		logger.info("++++++++++++++++++++++++DEBUG New headers BEFORE:" + headers);
 		if (null != request.getAttribute("X-Role")) {
 			headers.set("X-Role", request.getAttribute("X-Role").toString());
 		}
@@ -808,7 +810,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if (null != request.getAttribute("X-Request-Id")) {
 			headers.set("X-Request-Id", request.getAttribute("X-Request-Id").toString());
 		}
-		logger.info("++++++++++++++++++++++++DEBUG New headers:" + headers);
+		logger.info("++++++++++++++++++++++++DEBUG New headers AFTER:" + headers);
 		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, headers);
 		try {
 			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
