@@ -51,9 +51,9 @@ TestingVars:
    test_integration_command: mvn -q verify -P integration
 
 DevEnvVars:
-   aws_dev_cluster_name: dev-lf-cluster-dev-lf-LFCluster-1B3JGY0O2HP9Z
-   aws_dev_service_name: dev-lf-DCService-OS9YUF0B6IGO-ECSService-P5B4JZIFK51Z
-   aws_dev_task_definition: dev-lf-DCServiceDef-1EL7R68EPKGEH-TaskDefinition-11M609ADCUWKP
+   aws_dev_cluster_name: prdge-lf-cluster-prdge-lf-LFCluster-14AHSE0IWV4FV
+   aws_dev_service_name: prdge-lf-DCService-1RA0OFNWSAABF-ECSService-LFDLJUNTT7I9
+   aws_dev_task_definition: prdge-lf-DCServiceDef-1WLQ3MO4H7BMB-TaskDefinition-1L0ELD4YDMBB3
 
 TestEnvVars:
    aws_test_cluster_name: 
