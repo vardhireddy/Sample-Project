@@ -791,25 +791,25 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/mInfer", method = RequestMethod.POST)
 	public Object coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) {
 		Object response = null;
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(APPLICATION_JSON);
-		if (null != request.getAttribute("X-Role")) {
-			headers.set("X-Role", request.getAttribute("X-Role").toString());
+		HttpHeaders outHeaders = new HttpHeaders();
+		outHeaders.setContentType(APPLICATION_JSON);
+		if (null != request.getHeader("X-Role")) {
+			outHeaders.set("X-Role", request.getHeader("X-Role"));
 		}
-		if (null != request.getAttribute("X-UOM-Id")) {
-			headers.set("X-UOM-Id", request.getAttribute("X-UOM-Id").toString());
+		if (null != request.getHeader("X-UOM-Id")) {
+			outHeaders.set("X-UOM-Id", request.getHeader("X-UOM-Id"));
 		}
-		if (null != request.getAttribute("X-Principal")) {
-			headers.set("X-Principal", request.getAttribute("X-Principal").toString());
+		if (null != request.getHeader("X-Principal")) {
+			outHeaders.set("X-Principal", request.getHeader("X-Principal"));
 		}
-		if (null != request.getAttribute("Authorization")) {
-			headers.set("Authorization", request.getAttribute("Authorization").toString());
+		if (null != request.getHeader("Authorization")) {
+			outHeaders.set("Authorization", request.getHeader("Authorization"));
 		}
-		if (null != request.getAttribute("X-Request-Id")) {
-			headers.set("X-Request-Id", request.getAttribute("X-Request-Id").toString());
+		if (null != request.getHeader("X-Request-Id")) {
+			outHeaders.set("X-Request-Id", request.getHeader("X-Request-Id"));
 		}
-		logger.info("++++++++++++++++++++++++DEBUG New headers:" + headers);
-		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, headers);
+		logger.info("++++++++++++++++++++++++DEBUG New headers AFTER:" + outHeaders);
+		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, outHeaders);
 		try {
 			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
 			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);
