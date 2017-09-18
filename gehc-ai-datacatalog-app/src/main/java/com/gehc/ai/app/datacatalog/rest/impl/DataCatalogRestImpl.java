@@ -794,19 +794,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(APPLICATION_JSON);
 		if (null != request.getAttribute("X-Role")) {
-			headers.add("X-Role", request.getAttribute("X-Role").toString());
+			headers.set("X-Role", request.getAttribute("X-Role").toString());
 		}
 		if (null != request.getAttribute("X-UOM-Id")) {
-			headers.add("X-UOM-Id", request.getAttribute("X-UOM-Id").toString());
+			headers.set("X-UOM-Id", request.getAttribute("X-UOM-Id").toString());
 		}
 		if (null != request.getAttribute("X-Principal")) {
-			headers.add("X-Principal", request.getAttribute("X-Principal").toString());
+			headers.set("X-Principal", request.getAttribute("X-Principal").toString());
 		}
 		if (null != request.getAttribute("Authorization")) {
-			headers.add("Authorization", request.getAttribute("Authorization").toString());
+			headers.set("Authorization", request.getAttribute("Authorization").toString());
 		}
 		if (null != request.getAttribute("X-Request-Id")) {
-			headers.add("X-Request-Id", request.getAttribute("X-Request-Id").toString());
+			headers.set("X-Request-Id", request.getAttribute("X-Request-Id").toString());
 		}
 		logger.info("++++++++++++++++++++++++DEBUG New headers:" + headers);
 		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, headers);
