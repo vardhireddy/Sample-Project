@@ -11,26 +11,20 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.common.constants.ApplicationConstants;
-import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.*;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.repository.*;
-import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
-import org.hibernate.service.spi.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -41,13 +35,51 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Date;
-import java.util.*;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import org.hibernate.service.spi.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.common.constants.ApplicationConstants;
+import com.gehc.ai.app.common.responsegenerator.ApiResponse;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
 
 /**
@@ -789,7 +821,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/mInfer", method = RequestMethod.POST)
-	public Object coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) {
+	public String coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) {
 		Object response = null;
 		HttpHeaders outHeaders = new HttpHeaders();
 		outHeaders.setContentType(APPLICATION_JSON);
@@ -810,18 +842,51 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		logger.info("++++++++++++++++++++++++DEBUG New headers AFTER:" + outHeaders);
 		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, outHeaders);
+		//TODO: to check with Musodiq why we need headers here as we are not using them in experiment service for inferencing 
+		// We can remove the above code if not needed
 		try {
-			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
-			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);
-			logger.info("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + coolidgeMInferenceUrl + " is " + response);
+			//URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
+			//response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);
+			if(null != coolidgeMInferenceUrl){
+			 //   HttpEntity<String> requestEntity = null;
+			  //  if(null != headers){ requestEntity = new HttpEntity<>( headers );}
+			    AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+
+				logger.info("Calling COOLIDE, url: " + coolidgeMInferenceUrl);
+				ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate
+						.exchange(coolidgeMInferenceUrl, HttpMethod.GET, entity, String.class);
+
+				futureEntity
+						.addCallback(new ListenableFutureCallback<ResponseEntity>() {
+							@Override
+							public void onSuccess(ResponseEntity result) {
+								logger.info("Response received (async callable)");
+							}
+
+							@Override
+							public void onFailure(Throwable t) {
+								logger.info("Coolidge may not be up and running. Updating the status to error");
+						}});
+
+				try {
+					// waits for the service to send the response
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				logger.info("++++++++++++++++++++++++Coolidge has been called successfully, url : " + coolidgeMInferenceUrl);
+				return ApplicationConstants.SUCCESS;
+			}
 		} catch (RestClientException rx) {
 			logger.error("Error posting to Coolidge", rx);
-		} catch (URISyntaxException ux) {
+			return ApplicationConstants.FAILURE;
+		} /*catch (URISyntaxException ux) {
 			logger.error("!!! Invalid URL while calling Coolidge inference", ux);
-		} catch(Exception e){
+		}*/ catch(Exception e){
 			logger.error("*** Exception occured while calling Coolidge inference", e);
+			return ApplicationConstants.FAILURE;
 		}
-
-		return response;
+		logger.info("Can not call COOLIDGE, URL is null");
+		return ApplicationConstants.FAILURE;
 	}
 }
