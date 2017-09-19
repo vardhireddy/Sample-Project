@@ -14,11 +14,10 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -825,6 +824,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		Object response = null;
 		HttpHeaders outHeaders = new HttpHeaders();
 		outHeaders.setContentType(APPLICATION_JSON);
+		Enumeration headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String key = (String) headerNames.nextElement();
+            String value = request.getHeader(key);
+            logger.info("++++++++ DEBUG - input header " + key + " with value " + value);
+        }
 		if (null != request.getHeader("X-Role")) {
 			outHeaders.set("X-Role", request.getHeader("X-Role"));
 		}
@@ -842,7 +847,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		logger.info("++++++++++++++++++++++++DEBUG New headers AFTER:" + outHeaders);
 		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, outHeaders);
-		//TODO: to check with Musodiq why we need headers here as we are not using them in experiment service for inferencing 
 		// We can remove the above code if not needed
 		try {
 			//URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
@@ -880,9 +884,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		} catch (RestClientException rx) {
 			logger.error("Error posting to Coolidge", rx);
 			return ApplicationConstants.FAILURE;
-		} /*catch (URISyntaxException ux) {
-			logger.error("!!! Invalid URL while calling Coolidge inference", ux);
-		}*/ catch(Exception e){
+		} catch(Exception e){
 			logger.error("*** Exception occured while calling Coolidge inference", e);
 			return ApplicationConstants.FAILURE;
 		}
