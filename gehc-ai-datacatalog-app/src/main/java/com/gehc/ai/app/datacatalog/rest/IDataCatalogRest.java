@@ -241,5 +241,5 @@ public interface IDataCatalogRest {
      * @param request incoming request object
      * @return a JSON object from Coolidge
      */
-    Object coolidgeMInfer(String jsonObj, HttpServletRequest request);
+    String coolidgeMInfer(String jsonObj, HttpServletRequest request);
 }
