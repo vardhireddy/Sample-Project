@@ -103,6 +103,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String ANNOTATIONS_ABSENT ="annotation-absent";
 	public static final String GE_CLASS ="ge-class";
 	public static final String DATA_FORMAT = "data_format";
+	public static final String INSTITUTION = "institution";
+	public static final String EQUIPMENT = "equipment";
 
 	@Value("${coolidge.micro.inference.url}")
 	private String coolidgeMInferenceUrl;
@@ -482,7 +484,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
 		{
 			Map<String, Object> validParams = constructValidParams(params,
-					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, GE_CLASS, DATA_FORMAT));
+					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, GE_CLASS, DATA_FORMAT, INSTITUTION, EQUIPMENT));
 			// List of img set based on filter criteria other than annotation
 			List<ImageSeries> imageSeriesLst;// = new ArrayList<ImageSeries>();
 			// List of img set with annotation
@@ -806,6 +808,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			List<Object[]> dataFormatCount = imageSeriesRepository.countDataFormat(orgId);
 			if (null != dataFormatCount && !dataFormatCount.isEmpty()) {
 				filters.putAll(getFiltersCount(dataFormatCount, DATA_FORMAT));
+			}
+			List<Object[]> institutionCount = imageSeriesRepository.countInstitution(orgId);
+			if (null != institutionCount && !institutionCount.isEmpty()) {
+				filters.putAll(getFiltersCount(institutionCount, INSTITUTION));
+			}
+			List<Object[]> equipmentCount = imageSeriesRepository.countEquipment(orgId);
+			if (null != equipmentCount && !equipmentCount.isEmpty()) {
+				filters.putAll(getFiltersCount(equipmentCount, EQUIPMENT));
 			}
 			List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);		
 			if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
