@@ -102,7 +102,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String ABSENT = "absent";
 	public static final String ANNOTATIONS_ABSENT ="annotation-absent";
 	public static final String GE_CLASS ="ge-class";
-	public static final String DATA_FORMAT = "data-format";
+	public static final String DATA_FORMAT = "data_format";
 
 	@Value("${coolidge.micro.inference.url}")
 	private String coolidgeMInferenceUrl;
@@ -576,14 +576,34 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY).toString());
 			if (validParams.containsKey(ANATOMY)) {
 				List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
-				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst, anatomyLst,
-						modalityLst);
-			} else {
+				if (validParams.containsKey(DATA_FORMAT)) {
+					List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
+					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatIn(orgIdLst, anatomyLst,
+							modalityLst, dataFormatLst);
+				}else{
+					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst, anatomyLst,
+							modalityLst);
+				}
+			} if (validParams.containsKey(DATA_FORMAT)) {
+				List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatIn(orgIdLst,
+						modalityLst, dataFormatLst);
+			}else {
 				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst, modalityLst);
 			}
 		} else if (validParams.containsKey(ANATOMY)) {
 			List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
-			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
+			if (validParams.containsKey(DATA_FORMAT)) {
+				List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatIn(orgIdLst, anatomyLst,
+						dataFormatLst);
+			}else{
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
+			}
+		} else if (validParams.containsKey(DATA_FORMAT)) {
+			List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
+			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatIn(orgIdLst,
+					dataFormatLst);
 		} else {
 			imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
 		}
