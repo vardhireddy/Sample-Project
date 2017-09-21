@@ -50,4 +50,8 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<Long> countImgWithNoAnn(@Param("orgId") String orgId);
     @Query("SELECT dataFormat as dataFormat, count(*) as count FROM ImageSeries where orgId=:orgId group by dataFormat")
     List<Object[]> countDataFormat(@Param("orgId") String orgId);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndModalityInAndDataFormatIn(List<String> orgId, List<String> anatomy, List<String> modality, List<String> dataFormat);
+    List<ImageSeries> findByOrgIdInAndModalityInAndDataFormatIn(List<String> orgId, List<String> modality, List<String> dataFormat);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndDataFormatIn(List<String> orgId, List<String> anatomy, List<String> dataFormat);
+    List<ImageSeries> findByOrgIdInAndDataFormatIn(List<String> orgId, List<String> dataFormat);
  }
