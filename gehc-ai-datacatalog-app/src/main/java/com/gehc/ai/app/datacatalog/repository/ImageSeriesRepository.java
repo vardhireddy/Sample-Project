@@ -54,4 +54,8 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<ImageSeries> findByOrgIdInAndModalityInAndDataFormatIn(List<String> orgId, List<String> modality, List<String> dataFormat);
     List<ImageSeries> findByOrgIdInAndAnatomyInAndDataFormatIn(List<String> orgId, List<String> anatomy, List<String> dataFormat);
     List<ImageSeries> findByOrgIdInAndDataFormatIn(List<String> orgId, List<String> dataFormat);
+    @Query("SELECT institution as institution, count(*) as count FROM ImageSeries where orgId=:orgId group by institution")
+    List<Object[]> countInstitution(@Param("orgId") String orgId);
+    @Query("SELECT equipment as equipment, count(*) as count FROM ImageSeries where orgId=:orgId group by equipment")
+    List<Object[]> countEquipment(@Param("orgId") String orgId);
  }

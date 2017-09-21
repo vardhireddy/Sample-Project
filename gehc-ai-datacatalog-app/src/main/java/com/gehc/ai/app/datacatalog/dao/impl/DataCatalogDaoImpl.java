@@ -64,7 +64,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public static final String GE_CLASS_COUNTS_SUFFIX = " GROUP BY single_class";
 
 	public static final String GE_CLASS_QUERY = "select distinct im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count "
-			+ " from image_set im "
+			+ ", im.data_format, im.institution, im.equipment from image_set im "
 			+ "inner join annotation an "
 			+ "on an.image_set=im.id "
 			+ "inner join patient p "
@@ -210,6 +210,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			imgSeries.setModality(record[3].toString());
 			imgSeries.setAnatomy(record[4].toString());
 			imgSeries.setInstanceCount(Integer.valueOf(record[5].toString()));
+			imgSeries.setDataFormat(record[6].toString());
+			imgSeries.setInstitution(record[7].toString());
+			imgSeries.setEquipment(record[8].toString());
 			result.add(imgSeries);
 		});
 		return result;
