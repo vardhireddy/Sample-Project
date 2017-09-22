@@ -58,4 +58,19 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<Object[]> countInstitution(@Param("orgId") String orgId);
     @Query("SELECT equipment as equipment, count(*) as count FROM ImageSeries where orgId=:orgId group by equipment")
     List<Object[]> countEquipment(@Param("orgId") String orgId);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionIn(List<String> orgId, List<String> anatomy, List<String> modality, List<String> dataFormat, List<String> institution);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndModalityInAndInstitutionIn(List<String> orgId, List<String> anatomy, List<String> modality, List<String> institution);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionIn(List<String> orgId, List<String> anatomy, List<String> dataFormat, List<String> institution);
+    List<ImageSeries> findByOrgIdInAndModalityInAndDataFormatInAndInstitutionIn(List<String> orgId, List<String> modality, List<String> dataFormat, List<String> institution);
+    List<ImageSeries> findByOrgIdInAndInstitutionIn(List<String> orgId, List<String> institution);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndInstitutionIn(List<String> orgId, List<String> anatomy, List<String> institution);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> anatomy, List<String> modality, List<String> dataFormat, List<String> institution, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndEquipmentIn(List<String> orgId, List<String> anatomy, List<String> modality, List<String> dataFormat, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndModalityInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> anatomy, List<String> modality, List<String> institution, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> anatomy, List<String> dataFormat, List<String> institution, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> modality, List<String> dataFormat, List<String> institution, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndModalityInAndEquipmentIn(List<String> orgId, List<String> anatomy, List<String> modality, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndModalityInAndEquipmentIn(List<String> orgId, List<String> modality, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndModalityInAndDataFormatInAndEquipmentIn(List<String> orgId, List<String> modality, List<String> dataFormat, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndEquipmentIn(List<String> orgId, List<String> equipment);
  }
