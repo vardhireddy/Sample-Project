@@ -573,7 +573,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, Object> validParams,
 			List<String> orgIdLst) {
-		List<ImageSeries> imageSeriesLst;
+		List<ImageSeries> imageSeriesLst = null;
 		if (validParams.containsKey(MODALITY)) {
 			List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY).toString());
 			if (validParams.containsKey(ANATOMY)) {
@@ -636,7 +636,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					}
 				}else{
 					if (validParams.containsKey(EQUIPMENT)) {
-						List<String> equipmentLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+						List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
 						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndEquipmentIn(orgIdLst,
 								modalityLst, dataFormatLst, equipmentLst);
 					}else{
@@ -644,13 +644,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						modalityLst, dataFormatLst);
 					}
 				}
-			}else {
+			}else if (validParams.containsKey(INSTITUTION)) {
+				List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 				if (validParams.containsKey(EQUIPMENT)) {
 					List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndEquipmentIn(orgIdLst,
-							modalityLst, equipmentLst);
+					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionInAndEquipmentIn(orgIdLst,
+							modalityLst, institutionLst, equipmentLst);
 				}else{
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst, modalityLst);
+					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionIn(orgIdLst, modalityLst, institutionLst);
 				}
 			}
 		} else if (validParams.containsKey(ANATOMY)) {
@@ -659,31 +660,69 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
 				if (validParams.containsKey(INSTITUTION)) {
 					List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionIn(orgIdLst, anatomyLst,
+					if (validParams.containsKey(EQUIPMENT)) {
+						List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
+								dataFormatLst, institutionLst, equipmentLst);
+					}else{
+						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionIn(orgIdLst, anatomyLst,
 							dataFormatLst, institutionLst);
+					}
 				}else{
 					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatIn(orgIdLst, anatomyLst,
 						dataFormatLst);
 				}
 			}else if (validParams.containsKey(INSTITUTION)) {
 				List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionIn(orgIdLst, anatomyLst,
+				if (validParams.containsKey(EQUIPMENT)) {
+					List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
+							institutionLst, equipmentLst);
+				}else{
+					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionIn(orgIdLst, anatomyLst,
 						institutionLst);
-			} else{
+				}
+			}else if (validParams.containsKey(EQUIPMENT)) {
+				List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndEquipmentIn(orgIdLst, anatomyLst,
+						equipmentLst);
+			}else{
 				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
 			}
 		} else if (validParams.containsKey(DATA_FORMAT)) {
 			List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatIn(orgIdLst,
+			if (validParams.containsKey(INSTITUTION)) {
+				List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+				if (validParams.containsKey(EQUIPMENT)) {
+					List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, 
+							dataFormatLst, institutionLst, equipmentLst);
+				}else{
+					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionIn(orgIdLst,
+						dataFormatLst, institutionLst);
+				}
+			}else if (validParams.containsKey(EQUIPMENT)) {
+				List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndEquipmentIn(orgIdLst, 
+						dataFormatLst,equipmentLst);
+			}else{
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatIn(orgIdLst, 
 					dataFormatLst);
+			}
 		} else if (validParams.containsKey(INSTITUTION)) {
-			List<String> equipmentLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndEquipmentIn(orgIdLst,
-					equipmentLst);
-		} else if (validParams.containsKey(EQUIPMENT)) {
-			List<String> institutionLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionIn(orgIdLst,
+			List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+			if (validParams.containsKey(EQUIPMENT)) {
+				List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionInAndEquipmentIn(orgIdLst, 
+						institutionLst, equipmentLst);
+			}else{
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionIn(orgIdLst,
 					institutionLst);
+			}
+		} else if (validParams.containsKey(EQUIPMENT)) {
+			List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionIn(orgIdLst,
+					equipmentLst);
 		} else {
 			imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
 		}

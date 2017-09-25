@@ -73,4 +73,12 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<ImageSeries> findByOrgIdInAndModalityInAndEquipmentIn(List<String> orgId, List<String> modality, List<String> equipment);
     List<ImageSeries> findByOrgIdInAndModalityInAndDataFormatInAndEquipmentIn(List<String> orgId, List<String> modality, List<String> dataFormat, List<String> equipment);
     List<ImageSeries> findByOrgIdInAndEquipmentIn(List<String> orgId, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndModalityInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> modality, List<String> institution, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndModalityInAndInstitutionIn(List<String> orgId, List<String> modality, List<String> institution);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> anatomy, List<String> institution, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndAnatomyInAndEquipmentIn(List<String> orgId, List<String> anatomy, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndDataFormatInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> dataFormat, List<String> institution, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndDataFormatInAndInstitutionIn(List<String> orgId, List<String> dataFormat, List<String> institution);
+    List<ImageSeries> findByOrgIdInAndDataFormatInAndEquipmentIn(List<String> orgId, List<String> dataFormat, List<String> equipment);
+    List<ImageSeries> findByOrgIdInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> institution, List<String> equipment);
  }
