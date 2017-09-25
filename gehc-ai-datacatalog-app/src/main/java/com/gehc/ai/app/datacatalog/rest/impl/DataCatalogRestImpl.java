@@ -583,7 +583,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					if (validParams.containsKey(INSTITUTION)) {
 						List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 						if (validParams.containsKey(EQUIPMENT)) {
-							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
 							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
 									modalityLst, dataFormatLst, institutionLst, equipmentLst);
 						}else{
@@ -592,7 +592,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						}
 					}else{
 						if (validParams.containsKey(EQUIPMENT)) {
-							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
 							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndEquipmentIn(orgIdLst, anatomyLst,
 									modalityLst, dataFormatLst, equipmentLst);
 						}else{
@@ -604,7 +604,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					if (validParams.containsKey(INSTITUTION)) {
 						List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 						if (validParams.containsKey(EQUIPMENT)) {
-							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
 							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
 									modalityLst, institutionLst, equipmentLst);
 						}else{
@@ -613,7 +613,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						}
 					}else{
 						if (validParams.containsKey(EQUIPMENT)) {
-							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
 							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndEquipmentIn(orgIdLst, anatomyLst,
 									modalityLst, equipmentLst);
 						}else{
@@ -627,7 +627,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				if (validParams.containsKey(INSTITUTION)) {
 					List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 					if (validParams.containsKey(EQUIPMENT)) {
-						List<String> equipmentLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+						List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
 						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst,
 								modalityLst, dataFormatLst, institutionLst, equipmentLst);
 					}else{
@@ -646,7 +646,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				}
 			}else {
 				if (validParams.containsKey(EQUIPMENT)) {
-					List<String> equipmentLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+					List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
 					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndEquipmentIn(orgIdLst,
 							modalityLst, equipmentLst);
 				}else{
