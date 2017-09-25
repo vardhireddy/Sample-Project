@@ -653,6 +653,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				}else{
 					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionIn(orgIdLst, modalityLst, institutionLst);
 				}
+			}else{
+				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst, modalityLst);
 			}
 		} else if (validParams.containsKey(ANATOMY)) {
 			List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
