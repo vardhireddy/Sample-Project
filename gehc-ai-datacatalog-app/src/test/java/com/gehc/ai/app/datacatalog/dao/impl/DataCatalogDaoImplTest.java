@@ -83,9 +83,10 @@ public class DataCatalogDaoImplTest {
         Object[] id = new Object[]{1L};
         Patient patient = new Patient();
         patient.setOrgId("123");
-        Object[] newObj = new Object[]{"1", "123", patient, "DX", "CHEST", 123};
+        Object[] newObj = new Object[]{"1", "123", patient, "DX", "CHEST", 123, "test","test","test"};
         Object[] annotations = new Object[]{
                 "label", 1L};
+
         expectedList.add(newObj);
         List typeList = new ArrayList();
         typeList.add("label");
@@ -93,7 +94,7 @@ public class DataCatalogDaoImplTest {
         when(query.getResultList()).thenReturn(expectedList);
         List returnList = dataCatalogDao.getImgSeries(getParamsMap(), getImageSeries(),typeList);
         System.out.println("TTTTTT" + expectedList + "MMMMM" + returnList);
-        String expected = "id=1, schemaVersion=null, orgId=123, modality=DX, anatomy=CHEST, dataFormat=null, uri=null, seriesInstanceUid=null, description=null, institution=null, equipment=null, instanceCount=123, properties=null, uploadBy=null, uploadDate=null, patientDbId=null, studyDbId=null, patient=com.gehc.ai.app.datacatalog.entity.Patient";
+        String expected = "id=1, schemaVersion=null, orgId=123, modality=DX, anatomy=CHEST, dataFormat=test, uri=null, seriesInstanceUid=null, description=null, institution=test, equipment=test, instanceCount=123, properties=null, uploadBy=null, uploadDate=null, patientDbId=null, studyDbId=null, patient=com.gehc.ai.app.datacatalog.entity.Patient";
         assert (returnList.toString().contains(expected));
     }
 
@@ -104,6 +105,9 @@ public class DataCatalogDaoImplTest {
         imageSeries.setDescription("test");
         imageSeries.setAnatomy("Lung");
         imageSeries.setModality("CT");
+        imageSeries.setDataFormat("test");
+        imageSeries.setInstitution("test");
+        imageSeries.setEquipment("test");
         imageSeries.setUploadBy("BDD");
         imageSeries.setPatientDbId(1L);
         ImageSeries imageSeries1 = new ImageSeries();
