@@ -14,10 +14,11 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,17 +44,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -973,16 +969,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/mInfer", method = RequestMethod.POST)
-	public String coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) {
+	public Object coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) {
 		Object response = null;
 		HttpHeaders outHeaders = new HttpHeaders();
 		outHeaders.setContentType(APPLICATION_JSON);
-		Enumeration headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String key = (String) headerNames.nextElement();
-            String value = request.getHeader(key);
-            logger.info("++++++++ DEBUG - input header " + key + " with value " + value);
-        }
 		if (null != request.getHeader("X-Role")) {
 			outHeaders.set("X-Role", request.getHeader("X-Role"));
 		}
@@ -1000,48 +990,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		logger.info("++++++++++++++++++++++++DEBUG New headers AFTER:" + outHeaders);
 		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, outHeaders);
-		// We can remove the above code if not needed
 		try {
-			//URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
-			//response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);
-			if(null != coolidgeMInferenceUrl){
-			 //   HttpEntity<String> requestEntity = null;
-			  //  if(null != headers){ requestEntity = new HttpEntity<>( headers );}
-			    AsyncRestTemplate restTemplate = new AsyncRestTemplate();
-
-				logger.info("Calling COOLIDE, url: " + coolidgeMInferenceUrl);
-				ListenableFuture<ResponseEntity<String>> futureEntity = restTemplate
-						.exchange(coolidgeMInferenceUrl, HttpMethod.GET, entity, String.class);
-
-				futureEntity
-						.addCallback(new ListenableFutureCallback<ResponseEntity>() {
-							@Override
-							public void onSuccess(ResponseEntity result) {
-								logger.info("Response received (async callable)");
-							}
-
-							@Override
-							public void onFailure(Throwable t) {
-								logger.info("Coolidge may not be up and running. Updating the status to error");
-						}});
-
-				try {
-					// waits for the service to send the response
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				logger.info("++++++++++++++++++++++++Coolidge has been called successfully, url : " + coolidgeMInferenceUrl);
-				return ApplicationConstants.SUCCESS;
-			}
+			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);
+			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);
+			logger.info("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + coolidgeMInferenceUrl + " is " + response);
 		} catch (RestClientException rx) {
 			logger.error("Error posting to Coolidge", rx);
-			return ApplicationConstants.FAILURE;
+		} catch (URISyntaxException ux) {
+			logger.error("!!! Invalid URL while calling Coolidge inference", ux);
 		} catch(Exception e){
 			logger.error("*** Exception occured while calling Coolidge inference", e);
-			return ApplicationConstants.FAILURE;
 		}
-		logger.info("Can not call COOLIDGE, URL is null");
-		return ApplicationConstants.FAILURE;
+		return response;
 	}
 }
