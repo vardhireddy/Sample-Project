@@ -566,7 +566,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		return new ArrayList<ImageSeries>();
 	}
-
+	
+	@SuppressWarnings("squid:MethodCyclomaticComplexity")
 	private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, Object> validParams,
 			List<String> orgIdLst) {
 		List<ImageSeries> imageSeriesLst = null;
