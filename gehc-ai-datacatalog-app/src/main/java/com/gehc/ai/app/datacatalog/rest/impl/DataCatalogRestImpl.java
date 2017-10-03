@@ -567,164 +567,230 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return new ArrayList<ImageSeries>();
 	}
 
-	@SuppressWarnings("squid:MethodCyclomaticComplexity")
+
 	private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, Object> validParams,
 			List<String> orgIdLst) {
 		List<ImageSeries> imageSeriesLst = null;
 		if (validParams.containsKey(MODALITY)) {
 			List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY).toString());
 			if (validParams.containsKey(ANATOMY)) {
-				List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
-				if (validParams.containsKey(DATA_FORMAT)) {
-					List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-					if (validParams.containsKey(INSTITUTION)) {
-						List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-						if (validParams.containsKey(EQUIPMENT)) {
-							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
-									modalityLst, dataFormatLst, institutionLst, equipmentLst);
-						}else{
-							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionIn(orgIdLst, anatomyLst,
-								modalityLst, dataFormatLst, institutionLst);
-						}
-					}else{
-						if (validParams.containsKey(EQUIPMENT)) {
-							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndEquipmentIn(orgIdLst, anatomyLst,
-									modalityLst, dataFormatLst, equipmentLst);
-						}else{
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatIn(orgIdLst, anatomyLst,
-							modalityLst, dataFormatLst);
-						}
-					}
-				}else{
-					if (validParams.containsKey(INSTITUTION)) {
-						List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-						if (validParams.containsKey(EQUIPMENT)) {
-							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
-									modalityLst, institutionLst, equipmentLst);
-						}else{
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionIn(orgIdLst, anatomyLst,
-								modalityLst, institutionLst);
-						}
-					}else{
-						if (validParams.containsKey(EQUIPMENT)) {
-							List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-							imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndEquipmentIn(orgIdLst, anatomyLst,
-									modalityLst, equipmentLst);
-						}else{
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst, anatomyLst,
-							modalityLst);
-						}
-					}
-				}
+				imageSeriesLst = getImageSeriesWithModalityAnatomy(validParams, orgIdLst, modalityLst);
 			} else if (validParams.containsKey(DATA_FORMAT)) {
-				List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-				if (validParams.containsKey(INSTITUTION)) {
-					List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-					if (validParams.containsKey(EQUIPMENT)) {
-						List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst,
-								modalityLst, dataFormatLst, institutionLst, equipmentLst);
-					}else{
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndInstitutionIn(orgIdLst,
-							modalityLst, dataFormatLst, institutionLst);
-					}
-				}else{
-					if (validParams.containsKey(EQUIPMENT)) {
-						List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndEquipmentIn(orgIdLst,
-								modalityLst, dataFormatLst, equipmentLst);
-					}else{
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatIn(orgIdLst,
-						modalityLst, dataFormatLst);
-					}
-				}
-			}else if (validParams.containsKey(INSTITUTION)) {
-				List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-				if (validParams.containsKey(EQUIPMENT)) {
-					List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionInAndEquipmentIn(orgIdLst,
-							modalityLst, institutionLst, equipmentLst);
-				}else{
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionIn(orgIdLst, modalityLst, institutionLst);
-				}
-			}else{
+				imageSeriesLst = getImageSeriesWithModalityDataFormat(validParams, orgIdLst, modalityLst);
+			} else if (validParams.containsKey(INSTITUTION)) {
+				imageSeriesLst = getImageSeriesWithModalityInstitution(validParams, orgIdLst, modalityLst);
+			} else{
 				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst, modalityLst);
 			}
 		} else if (validParams.containsKey(ANATOMY)) {
-			List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
-			if (validParams.containsKey(DATA_FORMAT)) {
-				List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-				if (validParams.containsKey(INSTITUTION)) {
-					List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-					if (validParams.containsKey(EQUIPMENT)) {
-						List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
-								dataFormatLst, institutionLst, equipmentLst);
-					}else{
-						imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionIn(orgIdLst, anatomyLst,
-							dataFormatLst, institutionLst);
-					}
-				}else{
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatIn(orgIdLst, anatomyLst,
-						dataFormatLst);
-				}
-			}else if (validParams.containsKey(INSTITUTION)) {
-				List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-				if (validParams.containsKey(EQUIPMENT)) {
-					List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
-							institutionLst, equipmentLst);
-				}else{
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionIn(orgIdLst, anatomyLst,
-						institutionLst);
-				}
-			}else if (validParams.containsKey(EQUIPMENT)) {
-				List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndEquipmentIn(orgIdLst, anatomyLst,
-						equipmentLst);
-			}else{
-				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
-			}
+			imageSeriesLst = getImageSeriesWithAnatomy(validParams, orgIdLst);
 		} else if (validParams.containsKey(DATA_FORMAT)) {
-			List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-			if (validParams.containsKey(INSTITUTION)) {
-				List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-				if (validParams.containsKey(EQUIPMENT)) {
-					List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, 
-							dataFormatLst, institutionLst, equipmentLst);
-				}else{
-					imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionIn(orgIdLst,
-						dataFormatLst, institutionLst);
-				}
-			}else if (validParams.containsKey(EQUIPMENT)) {
-				List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndEquipmentIn(orgIdLst, 
-						dataFormatLst,equipmentLst);
-			}else{
-				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatIn(orgIdLst, 
-					dataFormatLst);
-			}
+			imageSeriesLst = getImageSeriesWithDataFormat(validParams, orgIdLst);
 		} else if (validParams.containsKey(INSTITUTION)) {
-			List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-			if (validParams.containsKey(EQUIPMENT)) {
-				List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionInAndEquipmentIn(orgIdLst, 
-						institutionLst, equipmentLst);
-			}else{
-				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionIn(orgIdLst,
-					institutionLst);
-			}
+			imageSeriesLst = getImageSeriesWithInstitution(validParams, orgIdLst);
 		} else if (validParams.containsKey(EQUIPMENT)) {
 			List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionIn(orgIdLst,
+			imageSeriesLst = imageSeriesRepository.findByOrgIdInAndEquipmentIn(orgIdLst,
 					equipmentLst);
 		} else {
 			imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
 		}
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithInstitution(Map<String, Object> validParams, List<String> orgIdLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+		if (validParams.containsKey(EQUIPMENT)) {
+            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionInAndEquipmentIn(orgIdLst,
+                    institutionLst, equipmentLst);
+        }else{
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionIn(orgIdLst,
+                institutionLst);
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithDataFormat(Map<String, Object> validParams, List<String> orgIdLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
+		if (validParams.containsKey(INSTITUTION)) {
+            List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+            if (validParams.containsKey(EQUIPMENT)) {
+                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst,
+                        dataFormatLst, institutionLst, equipmentLst);
+            }else{
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionIn(orgIdLst,
+                    dataFormatLst, institutionLst);
+            }
+        }else if (validParams.containsKey(EQUIPMENT)) {
+            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndEquipmentIn(orgIdLst,
+                    dataFormatLst,equipmentLst);
+        }else{
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatIn(orgIdLst,
+                dataFormatLst);
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithAnatomy(Map<String, Object> validParams, List<String> orgIdLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
+		if (validParams.containsKey(DATA_FORMAT)) {
+            List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
+            if (validParams.containsKey(INSTITUTION)) {
+				imageSeriesLst = getImageSeriesWithAnatomyDataFomatInstitutionAndOrEquipment(validParams, orgIdLst, anatomyLst, dataFormatLst);
+            }else{
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatIn(orgIdLst, anatomyLst,
+                    dataFormatLst);
+            }
+        }else if (validParams.containsKey(INSTITUTION)) {
+			imageSeriesLst = getImageSeriesWithAnatomyInstitutionAndOrEquipment(validParams, orgIdLst, anatomyLst);
+        }else if (validParams.containsKey(EQUIPMENT)) {
+            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndEquipmentIn(orgIdLst, anatomyLst,
+                    equipmentLst);
+        }else{
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithAnatomyInstitutionAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+		if (validParams.containsKey(EQUIPMENT)) {
+            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
+                    institutionLst, equipmentLst);
+        }else{
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionIn(orgIdLst, anatomyLst,
+                institutionLst);
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithAnatomyDataFomatInstitutionAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst, List<String> dataFormatLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+		if (validParams.containsKey(EQUIPMENT)) {
+            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
+                    dataFormatLst, institutionLst, equipmentLst);
+        }else{
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionIn(orgIdLst, anatomyLst,
+                dataFormatLst, institutionLst);
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithModalityInstitution(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+		if (validParams.containsKey(EQUIPMENT)) {
+            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionInAndEquipmentIn(orgIdLst,
+                    modalityLst, institutionLst, equipmentLst);
+        }else{
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionIn(orgIdLst, modalityLst, institutionLst);
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithModalityDataFormat(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
+		if (validParams.containsKey(INSTITUTION)) {
+            List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+            if (validParams.containsKey(EQUIPMENT)) {
+                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst,
+                        modalityLst, dataFormatLst, institutionLst, equipmentLst);
+            }else{
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndInstitutionIn(orgIdLst,
+                    modalityLst, dataFormatLst, institutionLst);
+            }
+        }else{
+            if (validParams.containsKey(EQUIPMENT)) {
+                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndEquipmentIn(orgIdLst,
+                        modalityLst, dataFormatLst, equipmentLst);
+            }else{
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatIn(orgIdLst,
+                modalityLst, dataFormatLst);
+            }
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithModalityAnatomy(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
+		if (validParams.containsKey(DATA_FORMAT)) {
+			imageSeriesLst = getImageSeriesWithModalityAnatomyAndDataFormat(validParams, orgIdLst, modalityLst, anatomyLst);
+        }else{
+            if (validParams.containsKey(INSTITUTION)) {
+				imageSeriesLst = getImageSeriesWithModalityAnatomyAndOrInstitution(validParams, orgIdLst, modalityLst, anatomyLst);
+            }else{
+				imageSeriesLst = getImageSeriesWithModalityAnatomyAndOrEquipment(validParams, orgIdLst, modalityLst, anatomyLst);
+			}
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+		List<ImageSeries> imageSeriesLst;
+		if (validParams.containsKey(EQUIPMENT)) {
+            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndEquipmentIn(orgIdLst, anatomyLst,
+                    modalityLst, equipmentLst);
+        }else{
+        imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst, anatomyLst,
+            modalityLst);
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrInstitution(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+		if (validParams.containsKey(EQUIPMENT)) {
+            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
+                    modalityLst, institutionLst, equipmentLst);
+        }else{
+        imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionIn(orgIdLst, anatomyLst,
+                modalityLst, institutionLst);
+        }
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndDataFormat(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
+		if (validParams.containsKey(INSTITUTION)) {
+            List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
+            if (validParams.containsKey(EQUIPMENT)) {
+                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
+                        modalityLst, dataFormatLst, institutionLst, equipmentLst);
+            }else{
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionIn(orgIdLst, anatomyLst,
+                    modalityLst, dataFormatLst, institutionLst);
+            }
+        }else{
+            if (validParams.containsKey(EQUIPMENT)) {
+                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndEquipmentIn(orgIdLst, anatomyLst,
+                        modalityLst, dataFormatLst, equipmentLst);
+            }else{
+            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatIn(orgIdLst, anatomyLst,
+                modalityLst, dataFormatLst);
+            }
+        }
 		return imageSeriesLst;
 	}
 
