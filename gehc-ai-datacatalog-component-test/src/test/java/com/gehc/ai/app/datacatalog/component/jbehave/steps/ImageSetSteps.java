@@ -969,6 +969,27 @@ public class ImageSetSteps {
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
+    @Given("Get Image set based on filter criteria with Modality, Institution and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityInstitutionAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Institution and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityInstitutionAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&institution=UCSF&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Institution and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithModalityInstitutionAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(imageSeries);
