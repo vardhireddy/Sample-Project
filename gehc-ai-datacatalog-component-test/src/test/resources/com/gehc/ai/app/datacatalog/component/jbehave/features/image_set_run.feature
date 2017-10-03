@@ -73,7 +73,133 @@ Given Get Image set based on filter criteria with ORG ID ,Modality, Anatomy, GE_
 When Get Image set based on filter criteria with ORG ID ,Modality, Anatomy, GE_CLASS and Annotation
 Then verify Image set based on filter  with ORG ID ,Modality, Anatomy, GE_CLASS and Annotation
 
-#  Scenario: Get Image set based on filter criteria with No Annotation
-#  Given Get Image set based on filter criteria with No Annotation - DataSetUp Provided
-#  When Get Image set based on filter criteria with No Annotation
-#  Then verify Image set based on filter  with No Annotation
+Scenario: Get Image set based on filter criteria with Equipment
+Given Get Image set based on filter criteria with Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Equipment
+Then verify Image set based on filter  with Equipment
+
+Scenario: Get Image set based on filter criteria with Institution
+Given Get Image set based on filter criteria with Institution - DataSetUp Provided
+When Get Image set based on filter criteria with Institution
+Then verify Image set based on filter  with Institution
+
+Scenario: Get Image set based on filter criteria with DataFormat
+Given Get Image set based on filter criteria with DataFormat - DataSetUp Provided
+When Get Image set based on filter criteria with DataFormat
+Then verify Image set based on filter  with DataFormat
+
+Scenario: Get Image set based on filter criteria with Institution and Equipment
+Given Get Image set based on filter criteria with Institution and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Institution and Equipment
+Then verify Image set based on filter  with Institution and Equipment
+
+Scenario: Get Image set based on filter criteria with DataFormat and  Institution
+Given Get Image set based on filter criteria with DataFormat and Institution - DataSetUp Provided
+When Get Image set based on filter criteria with DataFormat and Institution
+Then verify Image set based on filter  with DataFormat and Institution
+
+Scenario: Get Image set based on filter criteria with DataFormat, Institution and Equipment
+Given Get Image set based on filter criteria with DataFormat, Institution and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with DataFormat, Institution and Equipment
+Then verify Image set based on filter  with DataFormat, Institution and Equipment
+
+Scenario: Get Image set based on filter criteria with DataFormat and Equipment
+Given Get Image set based on filter criteria with DataFormat and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with DataFormat and Equipment
+Then verify Image set based on filter  with DataFormat and Equipment
+
+Scenario: Get Image set based on filter criteria with Anatomy and DataFormat
+Given Get Image set based on filter criteria with Anatomy and DataFormat - DataSetUp Provided
+When Get Image set based on filter criteria with Anatomy and DataFormat
+Then verify Image set based on filter  with Anatomy and DataFormat
+
+Scenario: Get Image set based on filter criteria with Anatomy, DataFormat and Institution
+Given Get Image set based on filter criteria with Anatomy, DataFormat and Institution - DataSetUp Provided
+When Get Image set based on filter criteria with Anatomy, DataFormat and Institution
+Then verify Image set based on filter  with Anatomy, DataFormat and Institution
+
+Scenario: Get Image set based on filter criteria with Anatomy, DataFormat, Institution and Equipment
+Given Get Image set based on filter criteria with Anatomy, DataFormat, Institution and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Anatomy, DataFormat, Institution and Equipment
+Then verify Image set based on filter  with Anatomy, DataFormat, Institution and Equipment
+
+Scenario: Get Image set based on filter criteria with Anatomy, Institution
+Given Get Image set based on filter criteria with Anatomy, Institution - DataSetUp Provided
+When Get Image set based on filter criteria with Anatomy, Institution
+Then verify Image set based on filter  with Anatomy, Institution
+
+Scenario: Get Image set based on filter criteria with Anatomy, Institution and Equipment
+Given Get Image set based on filter criteria with Anatomy, Institution and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Anatomy, Institution and Equipment
+Then verify Image set based on filter  with Anatomy, Institution and Equipment
+
+Scenario: Get Image set based on filter criteria with Anatomy, Equipment
+Given Get Image set based on filter criteria with Anatomy, Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Anatomy, Equipment
+Then verify Image set based on filter  with Anatomy, Equipment
+
+Scenario: Get Image set based on filter criteria with Modality, Anatomy and DataFormat
+Given Get Image set based on filter criteria with Modality, Anatomy and DataFormat - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Anatomy and DataFormat
+Then verify Image set based on filter  with Modality, Anatomy and DataFormat
+
+Scenario: Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Institution
+Given Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Institution - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Institution
+Then verify Image set based on filter  with Modality, Anatomy, DataFormat and Institution
+
+Scenario: Get Image set based on filter criteria with Modality, Anatomy, DataFormat, Institution and Equipment
+Given Get Image set based on filter criteria with Modality, Anatomy, DataFormat, Institution and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Anatomy, DataFormat, Institution and Equipment
+Then verify Image set based on filter  with Modality, Anatomy, DataFormat, Institution and Equipment
+
+Scenario: Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Equipment
+Given Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Equipment
+Then verify Image set based on filter  with Modality, Anatomy, DataFormat and Equipment
+
+
+Scenario: Get Image set based on filter criteria with Modality, Anatomy, Institution and Equipment
+Given Get Image set based on filter criteria with Modality, Anatomy, Institution and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Anatomy, Institution and Equipment
+Then verify Image set based on filter  with Modality, Anatomy, Institution and Equipment
+
+Scenario: Get Image set based on filter criteria with Modality, Anatomy, Institution
+Given Get Image set based on filter criteria with Modality, Anatomy, Institution - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Anatomy, Institution
+Then verify Image set based on filter  with Modality, Anatomy, Institution
+
+Scenario: Get Image set based on filter criteria with Modality, Anatomy, Equipment
+Given Get Image set based on filter criteria with Modality, Anatomy, Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Anatomy, Equipment
+Then verify Image set based on filter  with Modality, Anatomy, Equipment
+
+#Scenario: Get Image set based on filter criteria with Modality, Equipment
+#Given Get Image set based on filter criteria with Modality, Equipment - DataSetUp Provided
+#When Get Image set based on filter criteria with Modality, Equipment
+#Then verify Image set based on filter  with Modality, Equipment
+
+Scenario: Get Image set based on filter criteria with Modality, Institution
+Given Get Image set based on filter criteria with Modality, Institution - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Institution
+Then verify Image set based on filter  with Modality, Institution
+
+Scenario: Get Image set based on filter criteria with Modality, DataFormat
+Given Get Image set based on filter criteria with Modality, DataFormat - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, DataFormat
+Then verify Image set based on filter  with Modality, DataFormat
+
+Scenario: Get Image set based on filter criteria with Modality, DataFormat,Institution And Equipment
+Given Get Image set based on filter criteria with Modality, DataFormat,Institution And Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, DataFormat,Institution And Equipment
+Then verify Image set based on filter  with Modality, DataFormat,Institution And Equipment
+
+Scenario: Get Image set based on filter criteria with Modality, DataFormat And Equipment
+Given Get Image set based on filter criteria with Modality, DataFormat And Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, DataFormat And Equipment
+Then verify Image set based on filter  with Modality, DataFormat And Equipment
+
+Scenario: Get Image set based on filter criteria with Modality, DataFormat And Equipment
+Given Get Image set based on filter criteria with Modality, DataFormat And Institution - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, DataFormat And Institution
+Then verify Image set based on filter  with Modality, DataFormat And Institution

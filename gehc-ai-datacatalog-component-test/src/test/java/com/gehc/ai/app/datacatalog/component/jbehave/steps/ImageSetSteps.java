@@ -363,7 +363,7 @@ public class ImageSetSteps {
     @Then("verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation ABSENT")
     public void thenVerifyImageSetBasedOnFilterWithORGIDModalityAnatomyAndAnnotationABSENT() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]")));
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]")));
 
     }
 
@@ -433,6 +433,538 @@ public class ImageSetSteps {
 
     @Then("verify Image set based on filter  with ORG ID ,Modality, Anatomy, GE_CLASS and Annotation")
     public void thenVerifyImageSetBasedOnFilterWithORGIDModalityAnatomyGE_CLASSAndAnnotation() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithEquipmentDataSetUpProvided() throws Exception {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+    }
+
+    @When("Get Image set based on filter criteria with Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+
+    @Then("verify Image set based on filter  with Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Institution - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithInstitutionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+    }
+
+    @When("Get Image set based on filter criteria with Institution")
+    public void whenGetImageSetBasedOnFilterCriteriaWithInstitution() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&institution=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Institution")
+    public void thenVerifyImageSetBasedOnFilterWithInstitution() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with DataFormat - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithDataFormatDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndDataFormatIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with DataFormat")
+    public void whenGetImageSetBasedOnFilterCriteriaWithDataFormat() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&data_format=dataFormat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with DataFormat")
+    public void thenVerifyImageSetBasedOnFilterWithDataFormat() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Institution and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithInstitutionAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndInstitutionInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Institution and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithInstitutionAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&institution=UCSF&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Institution and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithInstitutionAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with DataFormat and Institution - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithDataFormatAndInstitutionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+    }
+
+    @When("Get Image set based on filter criteria with DataFormat and Institution")
+    public void whenGetImageSetBasedOnFilterCriteriaWithDataFormatAndInstitution() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&data_format=dataFormat&institution=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with DataFormat and Institution")
+    public void thenVerifyImageSetBasedOnFilterWithDataFormatAndInstitution() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with DataFormat, Institution and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithDataFormatInstitutionAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with DataFormat, Institution and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithDataFormatInstitutionAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&data_format=dataFormat&institution=UCSF&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with DataFormat, Institution and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithDataFormatInstitutionAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with DataFormat and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithDataFormatAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndDataFormatInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with DataFormat and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithDataFormatAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&data_format=dataFormat&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with DataFormat and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithDataFormatAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Anatomy and DataFormat - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyAndDataFormatDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+    }
+    @When("Get Image set based on filter criteria with Anatomy and DataFormat")
+    public void whenGetImageSetBasedOnFilterCriteriaWithAnatomyAndDataFormat() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&data_format=dataFormat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Anatomy and DataFormat")
+    public void thenVerifyImageSetBasedOnFilterWithAnatomyAndDataFormat() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Anatomy, DataFormat and Institution - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyDataFormatAndInstitutionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Anatomy, DataFormat and Institution")
+    public void whenGetImageSetBasedOnFilterCriteriaWithAnatomyDataFormatAndInstitution() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&data_format=dataFormat&institution=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Anatomy, DataFormat and Institution")
+    public void thenVerifyImageSetBasedOnFilterWithAnatomyDataFormatAndInstitution() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Anatomy, DataFormat, Institution and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyDataFormatInstitutionAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionInAndEquipmentIn(anyListOf(String.class), anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Anatomy, DataFormat, Institution and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithAnatomyDataFormatInstitutionAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&data_format=dataFormat&institution=UCSF&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Anatomy, DataFormat, Institution and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithAnatomyDataFormatInstitutionAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Anatomy, Institution - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyInstitutionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Anatomy, Institution")
+    public void whenGetImageSetBasedOnFilterCriteriaWithAnatomyInstitution() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&institution=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Anatomy, Institution")
+    public void thenVerifyImageSetBasedOnFilterWithAnatomyInstitution() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Anatomy, Institution and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyInstitutionAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Anatomy, Institution and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithAnatomyInstitutionAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&institution=UCSF&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+
+    @Then("verify Image set based on filter  with Anatomy, Institution and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithAnatomyInstitutionAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Anatomy, Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Anatomy, Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithAnatomyEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Anatomy, Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithAnatomyEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Anatomy and DataFormat - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyAndDataFormatDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Anatomy and DataFormat")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyAndDataFormat() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest&data_format=dataFormat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Anatomy and DataFormat")
+    public void thenVerifyImageSetBasedOnFilterWithModalityAnatomyAndDataFormat() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Institution - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatAndInstitutionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Institution")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatAndInstitution() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest&data_format=dataFormat&institution=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Anatomy, DataFormat and Institution")
+    public void thenVerifyImageSetBasedOnFilterWithModalityAnatomyDataFormatAndInstitution() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Anatomy, DataFormat, Institution and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatInstitutionAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Anatomy, DataFormat, Institution and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatInstitutionAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest&data_format=dataFormat&institution=UCSF&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Anatomy, DataFormat, Institution and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithModalityAnatomyDataFormatInstitutionAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Anatomy, Institution and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyInstitutionAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Anatomy, Institution and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyInstitutionAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&anatomy=Chest&institution=UCSF&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Anatomy, Institution and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithModalityAnatomyInstitutionAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Anatomy, Institution - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyInstitutionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Anatomy, Institution")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyInstitution() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&anatomy=Chest&institution=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Anatomy, Institution")
+    public void thenVerifyImageSetBasedOnFilterWithModalityAnatomyInstitution() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Anatomy, Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Anatomy, Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&anatomy=Chest&equipment=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Anatomy, Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithModalityAnatomyEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithModalityEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Institution - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityInstitutionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Institution")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityInstitution() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&institution=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Institution")
+    public void thenVerifyImageSetBasedOnFilterWithModalityInstitution() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, DataFormat - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, DataFormat")
+    public void v() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&data_format=dataFormat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, DataFormat")
+    public void thenVerifyImageSetBasedOnFilterWithModalityDataFormat() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatAndEquipmentDataSetUpProvided() {
+
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest&data_format=dataFormat&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, Anatomy, DataFormat and Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithModalityAnatomyDataFormatAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, DataFormat,Institution And Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatInstitutionAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, DataFormat,Institution And Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatInstitutionAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&data_format=dataFormat&institution=UCSF&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, DataFormat,Institution And Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithModalityDataFormatInstitutionAndEquipment() throws Exception {
+         retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, DataFormat And Equipment - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatAndEquipmentDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, DataFormat And Equipment")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatAndEquipment() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&data_format=dataFormat&equipment=CT")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, DataFormat And Equipment")
+    public void thenVerifyImageSetBasedOnFilterWithModalityDataFormatAndEquipment() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Modality, DataFormat And Institution - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatAndInstitutionDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Modality, DataFormat And Institution")
+    public void whenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatAndInstitution() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&data_format=dataFormat&institution=UCSF")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12")
+        );
+    }
+    @Then("verify Image set based on filter  with Modality, DataFormat And Institution")
+    public void thenVerifyImageSetBasedOnFilterWithModalityDataFormatAndInstitution() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
