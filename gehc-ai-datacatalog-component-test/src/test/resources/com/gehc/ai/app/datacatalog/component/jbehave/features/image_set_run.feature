@@ -174,10 +174,10 @@ Given Get Image set based on filter criteria with Modality, Anatomy, Equipment -
 When Get Image set based on filter criteria with Modality, Anatomy, Equipment
 Then verify Image set based on filter  with Modality, Anatomy, Equipment
 
-#Scenario: Get Image set based on filter criteria with Modality, Equipment
-#Given Get Image set based on filter criteria with Modality, Equipment - DataSetUp Provided
-#When Get Image set based on filter criteria with Modality, Equipment
-#Then verify Image set based on filter  with Modality, Equipment
+Scenario: Get Image set based on filter criteria with Modality, Equipment
+Given Get Image set based on filter criteria with Modality, Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Equipment
+Then verify Image set based on filter  with Modality, Equipment
 
 Scenario: Get Image set based on filter criteria with Modality, Institution
 Given Get Image set based on filter criteria with Modality, Institution - DataSetUp Provided
