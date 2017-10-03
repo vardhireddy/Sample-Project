@@ -579,6 +579,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				imageSeriesLst = getImageSeriesWithModalityDataFormat(validParams, orgIdLst, modalityLst);
 			} else if (validParams.containsKey(INSTITUTION)) {
 				imageSeriesLst = getImageSeriesWithModalityInstitution(validParams, orgIdLst, modalityLst);
+			} else if (validParams.containsKey(EQUIPMENT)) {
+				imageSeriesLst = getImageSeriesWithModalityEquiment(validParams, orgIdLst, modalityLst);
 			} else{
 				imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst, modalityLst);
 			}
@@ -595,6 +597,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		} else {
 			imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
 		}
+		return imageSeriesLst;
+	}
+
+	private List<ImageSeries> getImageSeriesWithModalityEquiment(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+		List<ImageSeries> imageSeriesLst;
+		List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
+		imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndEquipmentIn(orgIdLst, modalityLst,
+				equipmentLst);
 		return imageSeriesLst;
 	}
 
@@ -979,34 +989,49 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if(null != groupby && !groupby.isEmpty() && groupby.equalsIgnoreCase(ANNOTATIONS_ABSENT)){
 			filters.put(ANNOTATIONS_ABSENT, imageSeriesRepository.countImgWithNoAnn(orgId).get(0));
 		}else{
-			List<Object[]> modalityCount = imageSeriesRepository.countModality(orgId);
-			if (null != modalityCount && !modalityCount.isEmpty()) {
-				filters.putAll(getFiltersCount(modalityCount, MODALITY));
-			}
-			List<Object[]> anatomyCount = imageSeriesRepository.countAnatomy(orgId);
-			if (null != anatomyCount && !anatomyCount.isEmpty()) {
-				filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
-			}
-			List<Object[]> dataFormatCount = imageSeriesRepository.countDataFormat(orgId);
-			if (null != dataFormatCount && !dataFormatCount.isEmpty()) {
-				filters.putAll(getFiltersCount(dataFormatCount, DATA_FORMAT));
-			}
-			List<Object[]> institutionCount = imageSeriesRepository.countInstitution(orgId);
-			if (null != institutionCount && !institutionCount.isEmpty()) {
-				filters.putAll(getFiltersCount(institutionCount, INSTITUTION));
-			}
-			List<Object[]> equipmentCount = imageSeriesRepository.countEquipment(orgId);
-			if (null != equipmentCount && !equipmentCount.isEmpty()) {
-				filters.putAll(getFiltersCount(equipmentCount, EQUIPMENT));
-			}
-			List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);		
-			if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
-				filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
-			}
+			filters.putAll(getModalityAndAnatomyCount(orgId, filters));
+			filters.putAll(getDataFormatAndInstitutionCount(orgId, filters));
+			filters.putAll(getEquipmentAndAnnoatationTypeCount(orgId, filters));
 		}
 		return filters;
 	}
-	
+
+	private Map<String, Object> getEquipmentAndAnnoatationTypeCount(String orgId, Map<String, Object> filters) {
+		List<Object[]> equipmentCount = imageSeriesRepository.countEquipment(orgId);
+		if (null != equipmentCount && !equipmentCount.isEmpty()) {
+            filters.putAll(getFiltersCount(equipmentCount, EQUIPMENT));
+        }
+		List<Object[]> annotationTypeCount = annotationRepository.countAnnotationType(orgId);
+		if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
+            filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
+        }
+		return filters;
+	}
+
+	private Map<String, Object> getDataFormatAndInstitutionCount(String orgId, Map<String, Object> filters) {
+		List<Object[]> dataFormatCount = imageSeriesRepository.countDataFormat(orgId);
+		if (null != dataFormatCount && !dataFormatCount.isEmpty()) {
+            filters.putAll(getFiltersCount(dataFormatCount, DATA_FORMAT));
+        }
+		List<Object[]> institutionCount = imageSeriesRepository.countInstitution(orgId);
+		if (null != institutionCount && !institutionCount.isEmpty()) {
+            filters.putAll(getFiltersCount(institutionCount, INSTITUTION));
+        }
+		return filters;
+	}
+
+	private Map<String, Object> getModalityAndAnatomyCount(String orgId, Map<String, Object> filters) {
+		List<Object[]> modalityCount = imageSeriesRepository.countModality(orgId);
+		if (null != modalityCount && !modalityCount.isEmpty()) {
+            filters.putAll(getFiltersCount(modalityCount, MODALITY));
+        }
+		List<Object[]> anatomyCount = imageSeriesRepository.countAnatomy(orgId);
+		if (null != anatomyCount && !anatomyCount.isEmpty()) {
+            filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
+        }
+        return filters;
+	}
+
 	private Map<String, Object> getFiltersCount(List<Object[]> objList, String filter){
 		Map<String, Object> filters = new HashMap<String, Object>();
 			Map<String, Long> filterMap = new HashMap<String, Long>();

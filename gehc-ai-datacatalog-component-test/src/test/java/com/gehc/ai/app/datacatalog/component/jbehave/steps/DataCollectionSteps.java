@@ -330,10 +330,22 @@ public class DataCollectionSteps {
         List<Object[]> countM =  getQueryList("modality");
         //anatomy
         List<Object[]> countA = getQueryList("anatomy");
-        //annotations
+        //annotation
         List<Object[]> countAnn = getQueryList("annotations");
+
+        //data_format
+        List<Object[]> countD = getQueryList("data_format");
+        //institution
+        List<Object[]> countI = getQueryList("institution");
+        //equipment
+        List<Object[]> countE = getQueryList("equipment");
+
+
         when(imageSeriesRepository.countAnatomy(anyString())).thenReturn(countA);
         when(imageSeriesRepository.countModality(anyString())).thenReturn(countM);
+        when(imageSeriesRepository.countDataFormat(anyString())).thenReturn(countD);
+        when(imageSeriesRepository.countInstitution(anyString())).thenReturn(countI);
+        when(imageSeriesRepository.countEquipment(anyString())).thenReturn(countE);
         when(annotationRepository.countAnnotationType(anyString())).thenReturn(countAnn);
     }
     @When("Get DataSet for Filters by OrgId")
@@ -341,37 +353,36 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-summary")
                         .contentType(MediaType.APPLICATION_JSON)
-                .param("modality","['CT', 'MR', 'DX']&anatomy=['Lung', 'Chest']")
-                .param("anatomy","['Lung', 'Chest']&geClass=[{\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]")
+                        .requestAttr("orgId","123")
+               // .param("modality","['CT', 'MR', 'DX']&anatomy=['Lung', 'Chest']")
+
         );
     }
     @Then("verify DataSet for Filters by OrgId")
     public void thenVerifyDataSetForFiltersByOrgId() throws Exception {
-        retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"annotations\":{\"test\":1},\"modality\":{\"DX\":121,\"CR\":8082}}")));
+        retrieveResult.andExpect(content().string(containsString("{\"data_format\":{\"dataFormat\":1},\"institution\":{\"UCSF\":1},\"equipment\":{\"CT\":1},\"annotations\":{\"test\":1},\"modality\":{\"DX\":121,\"CR\":8082},\"anatomy\":{\"CHEST\":8203}}")));
     }
 
-    @Given("Retrieve DataSet for Filters by OrgId when Annotation count is null DataSetUp Provided")
+    @Given("Retrieve DataSet for Filters by OrgId when Annotation Absent DataSetUp Provided")
     public void givenRetrieveDataSetForFiltersByOrgIdWhenAnnotationCountIsNullDataSetUpProvided() {
-        //Modality
-        List<Object[]> countM =  getQueryList("modality");
-        //anatomy
-        List<Object[]> countA = getQueryList("anatomy");
-        when(imageSeriesRepository.countAnatomy(anyString())).thenReturn(countA);
-        when(imageSeriesRepository.countModality(anyString())).thenReturn(countM);
-        when(annotationRepository.countAnnotationType(anyString())).thenReturn(null);
+        List<Long> countAnn = new ArrayList<Long>();
+        countAnn.add(0,1L);
+        countAnn.add(1,2L);
+        when(imageSeriesRepository.countImgWithNoAnn(anyString())).thenReturn(countAnn);
     }
 
-    @When("Get DataSet for Filters by OrgId when Annotation count is null")
+    @When("Get DataSet for Filters by OrgId when Annotation Absent")
     public void whenGetDataSetForFiltersByOrgIdWhenAnnotationCountIsNull() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-summary")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("groupby","annotation-absent")
                 .requestAttr("orgId","123")
+
         );
     }
-    @Then("verify DataSet for Filters by OrgId when Annotation count is null")
+    @Then("verify DataSet for Filters by OrgId when Annotation Absent")
     public void thenVerifyDataSetForFiltersByOrgIdWhenAnnotationCountIsNull() throws Exception {
-        retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"modality\":{\"DX\":121,\"CR\":8082}}")));
+        retrieveResult.andExpect(content().string(containsString("{\"annotation-absent\":1}")));
 
     }
 
@@ -593,7 +604,22 @@ public class DataCollectionSteps {
            Object[]  annotations = new Object[] {
                    "test",1L};
            countM.add(0,annotations);
-        }
+        }else if(input.equals("data_format")){
+           Object[]  data_format = new Object[] {
+                  "dataFormat",1L};
+           countM.add(0,data_format);
+
+       }else if(input.equals("institution")){
+           Object[]  institution = new Object[] {
+                   "UCSF",1L};
+           countM.add(0,institution);
+
+       }else if(input.equals("equipment")){
+           Object[]  equipment = new Object[] {
+                   "CT",1L};
+           countM.add(0,equipment);
+
+    }
         return countM;
     }
 }

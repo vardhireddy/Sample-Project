@@ -65,10 +65,10 @@ Feature: DataCollection DataCatalog
   When Get DataSet for Filters by OrgId
   Then verify DataSet for Filters by OrgId
 
-  Scenario: Retrieve DataSet for Filters by OrgId when Annotation count is null
-  Given Retrieve DataSet for Filters by OrgId when Annotation count is null DataSetUp Provided
-  When Get DataSet for Filters by OrgId when Annotation count is null
-  Then verify DataSet for Filters by OrgId when Annotation count is null
+  Scenario: Retrieve DataSet for Filters by OrgId when Annotation Absent
+  Given Retrieve DataSet for Filters by OrgId when Annotation Absent DataSetUp Provided
+  When Get DataSet for Filters by OrgId when Annotation Absent
+  Then verify DataSet for Filters by OrgId when Annotation Absent
 
   Scenario: Retrieve DataSet for Filters by OrgId when Annotation count is empty
   Given Retrieve DataSet for Filters by OrgId when Annotation count is empty DataSetUp Provided
