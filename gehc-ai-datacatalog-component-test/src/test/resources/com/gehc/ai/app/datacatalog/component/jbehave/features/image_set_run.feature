@@ -199,7 +199,12 @@ Given Get Image set based on filter criteria with Modality, DataFormat And Equip
 When Get Image set based on filter criteria with Modality, DataFormat And Equipment
 Then verify Image set based on filter  with Modality, DataFormat And Equipment
 
-Scenario: Get Image set based on filter criteria with Modality, DataFormat And Equipment
+Scenario: Get Image set based on filter criteria with Modality, DataFormat And Institution
 Given Get Image set based on filter criteria with Modality, DataFormat And Institution - DataSetUp Provided
 When Get Image set based on filter criteria with Modality, DataFormat And Institution
 Then verify Image set based on filter  with Modality, DataFormat And Institution
+
+Scenario: Get Image set based on filter criteria with Modality, Institution and Equipment
+Given Get Image set based on filter criteria with Modality, Institution and Equipment - DataSetUp Provided
+When Get Image set based on filter criteria with Modality, Institution and Equipment
+Then verify Image set based on filter  with Modality, Institution and Equipment
