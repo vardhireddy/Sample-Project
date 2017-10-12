@@ -1009,17 +1009,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private Map<String, Object> getDataFormatAndInstitutionCount(String orgId, Map<String, Object> filters) {
-		logger.info("************* Getting DataFormat And InstitutionCount ");
 		List<Object[]> dataFormatCount = imageSeriesRepository.countDataFormat(orgId); 
-		logger.info("************* Got DataFormat Count " + dataFormatCount);
 		if (null != dataFormatCount && !dataFormatCount.isEmpty()) {
-			logger.info("************* DataFormat Count list size " + dataFormatCount.size());
             filters.putAll(getFiltersCount(dataFormatCount, DATA_FORMAT));
         }
 		List<Object[]> institutionCount = imageSeriesRepository.countInstitution(orgId);
-		logger.info("************* Got Institution Count " + institutionCount);
 		if (null != institutionCount && !institutionCount.isEmpty()) {
-			logger.info("************* Institution Count list size " + institutionCount.size());
             filters.putAll(getFiltersCount(institutionCount, INSTITUTION));
         }
 		return filters;

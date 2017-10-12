@@ -193,3 +193,15 @@ alter table annotation modify image_set bigint(20);
 
 alter table data_set 
 add filters JSON;
+
+alter table lfdb.image_set  
+CHANGE COLUMN `manufacturer` `manufacturer` varchar(255);
+
+alter table lfdb.image_set 
+add `equipment` varchar(255) DEFAULT "UNKNOWN";
+
+alter table lfdb.image_set 
+add `image_type` varchar(50) DEFAULT "UNKNOWN";
+
+alter table lfdb.image_set 
+add `view` varchar(50) DEFAULT "UNKNOWN";
