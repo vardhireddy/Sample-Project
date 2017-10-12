@@ -247,7 +247,7 @@ public class ImageSeries implements Serializable {
 	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
 			String uri, String seriesInstanceUid, String description, String institution, String equipment,
 			String manufacturer, String imageType, String view, int instanceCount, Object properties, String uploadBy,
-			Date uploadDate, Long patientDbId, Long studyDbId, Patient patient, List<Annotation> annotation,
+			Date uploadDate, Long patientDbId, Long studyDbId, Patient patient,
 			String acqDate, String acqTime) {
 		super();
 		this.id = id;
