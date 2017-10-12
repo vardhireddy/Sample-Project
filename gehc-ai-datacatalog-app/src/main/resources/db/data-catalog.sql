@@ -195,7 +195,7 @@ alter table data_set
 add filters JSON;
 
 alter table lfdb.image_set  
-CHANGE COLUMN `manufacturer` `manufacturer` varchar(255);
+CHANGE COLUMN `equipment` `manufacturer` varchar(255);
 
 alter table lfdb.image_set 
 add `equipment` varchar(255) DEFAULT "UNKNOWN";

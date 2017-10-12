@@ -94,7 +94,7 @@ public class DataCatalogDaoImplTest {
         when(query.getResultList()).thenReturn(expectedList);
         List returnList = dataCatalogDao.getImgSeries(getParamsMap(), getImageSeries(),typeList);
         System.out.println("TTTTTT" + expectedList + "MMMMM" + returnList);
-        String expected = "id=1, schemaVersion=null, orgId=123, modality=DX, anatomy=CHEST, dataFormat=test, uri=null, seriesInstanceUid=null, description=null, institution=test, equipment=test, instanceCount=123, properties=null, uploadBy=null, uploadDate=null, patientDbId=null, studyDbId=null, patient=com.gehc.ai.app.datacatalog.entity.Patient";
+        String expected = "id=1, schemaVersion=null, orgId=123, modality=DX, anatomy=CHEST, dataFormat=test, uri=null, seriesInstanceUid=null, description=null, institution=test, equipment=test, manufacturer=null, imageType=null, view=null, instanceCount=123, properties=null, uploadBy=null, uploadDate=null, patientDbId=null, studyDbId=null, patient=com.gehc.ai.app.datacatalog.entity.Patient";
         assert (returnList.toString().contains(expected));
     }
 
@@ -107,7 +107,7 @@ public class DataCatalogDaoImplTest {
         imageSeries.setModality("CT");
         imageSeries.setDataFormat("test");
         imageSeries.setInstitution("test");
-        imageSeries.setEquipment("test");
+        imageSeries.setManufacturer("test");
         imageSeries.setUploadBy("BDD");
         imageSeries.setPatientDbId(1L);
         ImageSeries imageSeries1 = new ImageSeries();
