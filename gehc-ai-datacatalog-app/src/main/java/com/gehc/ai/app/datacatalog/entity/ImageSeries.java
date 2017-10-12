@@ -61,6 +61,29 @@ public class ImageSeries implements Serializable {
 	private String description;
 	private String institution;
 	private String equipment;
+	private String manufacturer;
+	@Column(name = "image_type")
+	private String imageType;
+	
+	public String getImageType() {
+		return imageType;
+	}
+	public void setImageType(String imageType) {
+		this.imageType = imageType;
+	}
+	public String getView() {
+		return view;
+	}
+	public void setView(String view) {
+		this.view = view;
+	}
+	private String view;
+	public String getManufacturer() {
+		return manufacturer;
+	}
+	public void setManufacturer(String manufacturer) {
+		this.manufacturer = manufacturer;
+	}
 	@Column(name = "instance_count")
 	private int instanceCount;
 	@Convert(converter = JsonConverter.class)
@@ -217,11 +240,15 @@ public class ImageSeries implements Serializable {
 		this.properties = properties;
 	} // NOSONAR
 	
-	
+	public ImageSeries() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
 			String uri, String seriesInstanceUid, String description, String institution, String equipment,
-			int instanceCount, Object properties, String uploadBy, Date uploadDate, Long patientDbId, Long studyDbId,
-			Patient patient, String acqDate, String acqTime) {
+			String manufacturer, String imageType, String view, int instanceCount, Object properties, String uploadBy,
+			Date uploadDate, Long patientDbId, Long studyDbId, Patient patient, List<Annotation> annotation,
+			String acqDate, String acqTime) {
 		super();
 		this.id = id;
 		this.schemaVersion = schemaVersion;
@@ -234,28 +261,29 @@ public class ImageSeries implements Serializable {
 		this.description = description;
 		this.institution = institution;
 		this.equipment = equipment;
+		this.manufacturer = manufacturer;
+		this.imageType = imageType;
+		this.view = view;
 		this.instanceCount = instanceCount;
 		this.properties = properties;
 		this.uploadBy = uploadBy;
-		this.uploadDate = new Date(uploadDate.getTime());
+		this.uploadDate = uploadDate;
 		this.patientDbId = patientDbId;
 		this.studyDbId = studyDbId;
 		this.patient = patient;
+		this.annotation = annotation;
 		this.acqDate = acqDate;
 		this.acqTime = acqTime;
-	}
-	public ImageSeries() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 	@Override
 	public String toString() {
 		return "ImageSeries [id=" + id + ", schemaVersion=" + schemaVersion + ", orgId=" + orgId + ", modality="
 				+ modality + ", anatomy=" + anatomy + ", dataFormat=" + dataFormat + ", uri=" + uri
 				+ ", seriesInstanceUid=" + seriesInstanceUid + ", description=" + description + ", institution="
-				+ institution + ", equipment=" + equipment + ", instanceCount=" + instanceCount + ", properties="
-				+ properties + ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
-				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", acqDate=" + acqDate + ", acqTime=" + acqTime
-				+ "]";
+				+ institution + ", equipment=" + equipment + ", manufacturer=" + manufacturer + ", imageType="
+				+ imageType + ", view=" + view + ", instanceCount=" + instanceCount + ", properties=" + properties
+				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
+				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", annotation=" + annotation + ", acqDate="
+				+ acqDate + ", acqTime=" + acqTime + "]";
 	}
 }
