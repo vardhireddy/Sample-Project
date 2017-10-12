@@ -267,11 +267,10 @@ public class ImageSeries implements Serializable {
 		this.instanceCount = instanceCount;
 		this.properties = properties;
 		this.uploadBy = uploadBy;
-		this.uploadDate = uploadDate;
+		this.uploadDate = new Date(uploadDate.getTime());
 		this.patientDbId = patientDbId;
 		this.studyDbId = studyDbId;
 		this.patient = patient;
-		this.annotation = annotation;
 		this.acqDate = acqDate;
 		this.acqTime = acqTime;
 	}
@@ -283,7 +282,7 @@ public class ImageSeries implements Serializable {
 				+ institution + ", equipment=" + equipment + ", manufacturer=" + manufacturer + ", imageType="
 				+ imageType + ", view=" + view + ", instanceCount=" + instanceCount + ", properties=" + properties
 				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
-				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", annotation=" + annotation + ", acqDate="
+				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", acqDate="
 				+ acqDate + ", acqTime=" + acqTime + "]";
 	}
 }
