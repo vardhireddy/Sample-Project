@@ -198,10 +198,10 @@ alter table lfdb.image_set
 CHANGE COLUMN `equipment` `manufacturer` varchar(255);
 
 alter table lfdb.image_set 
-add `equipment` varchar(255) DEFAULT "UNKNOWN";
+add `equipment` varchar(255) DEFAULT "N/A";
 
 alter table lfdb.image_set 
-add `image_type` varchar(50) DEFAULT "UNKNOWN";
+add `image_type` varchar(50) DEFAULT "N/A";
 
 alter table lfdb.image_set 
-add `view` varchar(50) DEFAULT "UNKNOWN";
+add `view` varchar(50) DEFAULT "N/A";
