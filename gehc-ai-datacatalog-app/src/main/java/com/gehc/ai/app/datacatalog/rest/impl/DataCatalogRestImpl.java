@@ -921,12 +921,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		List<AnnotationImgSetDataCol> annImgSetDCLst = null;
 		List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
 		if (null != dsLst && !dsLst.isEmpty()) {
-			logger.info("* dsLst.size() = " + dsLst.size());
+			logger.info("***** Data set Lst.size() = " + dsLst.size());
 			if (null != dsLst.get(0).getImageSets()) {
 				List<String> types = new ArrayList<String>();
 				types.add(annotationType);
+			/*	List<ImageSeries> imgSeriesLst = imageSeriesRepository
+						.findByIdIn((List<Long>) dsLst.get(0).getImageSets());*/
+				logger.info("***** Converting image set object to long lst ");
+				List<Long> imgSetLst = (List<Long>) (dsLst.get(0).getImageSets());
+				logger.info("***** Passing image set long list to get details of seies " + imgSetLst);
 				List<ImageSeries> imgSeriesLst = imageSeriesRepository
-						.findByIdIn((List<Long>) dsLst.get(0).getImageSets());
+						.findByIdIn(imgSetLst);
+				logger.info("***** Checking if image set is null or empty");
 				if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
 					logger.info(" imgSeriesLst.size() = " + imgSeriesLst.size());
 					Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
