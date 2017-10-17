@@ -202,6 +202,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/patient", method = RequestMethod.POST)
 	public Patient postPatient(@RequestBody Patient p) throws DataCatalogException {
 		if (null != p && null != p.getPatientId() && null != p.getOrgId() && null == p.getId()) {
+			logger.info("*** Now saving patient " + p.toString());
 			List<Patient> patientLst = patientRepository.findByPatientIdAndOrgId(p.getPatientId(), p.getOrgId());
 			if (patientLst != null && !patientLst.isEmpty()) {
 				return patientLst.get(0);
@@ -219,6 +220,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/study", method = RequestMethod.POST)
 	public Study postStudy(@RequestBody Study s) throws DataCatalogException {
 		if (null != s && null != s.getStudyInstanceUid() && null != s.getOrgId() && null == s.getId()) {
+			logger.info("*** Now saving study " + s.toString());
 			List<Study> studyLst= studyRepository.findByOrgIdAndStudyInstanceUid(s.getOrgId(), s.getStudyInstanceUid());
 			if (studyLst != null && !studyLst.isEmpty()) {
 				return studyLst.get(0);
@@ -382,6 +384,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/image-set", method = RequestMethod.POST)
 	public ImageSeries saveImageSeries(@RequestBody ImageSeries i) {
+		if (null != i ){
+			logger.info("*** Now saving image series " + i.toString());
+		}
 		return imageSeriesRepository.save(i);
 	}
 
