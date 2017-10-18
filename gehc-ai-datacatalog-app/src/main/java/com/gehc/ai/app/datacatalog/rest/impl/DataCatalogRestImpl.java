@@ -933,12 +933,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			/*	List<ImageSeries> imgSeriesLst = imageSeriesRepository
 						.findByIdIn((List<Long>) dsLst.get(0).getImageSets());*/
 				List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
-				List<Long> imgSerIdLst = new ArrayList<Long>();
-				if (null != imgSeries && !imgSeries.isEmpty()) {
+				List<Long> imgSerIdLst = getImgSerIdLst(imgSeries);
+				/*if (null != imgSeries && !imgSeries.isEmpty()) {
 					for (int i = 0; i < imgSeries.size(); i++) {
 						imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
 					}
-				}
+				}*/
 				List<ImageSeries> imgSeriesLst = imageSeriesRepository
 						.findByIdIn(imgSerIdLst);
 				logger.info("***** Got img series by id sucessfully");
@@ -996,6 +996,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 		return (List) new ArrayList<AnnotationImgSetDataCol>();
 
+	}
+	
+	private List<Long> getImgSerIdLst(List<Object> imgSeries){
+		List<Long> imgSerIdLst = new ArrayList<Long>();
+		if (null != imgSeries && !imgSeries.isEmpty()) {
+			for (int i = 0; i < imgSeries.size(); i++) {
+				imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+			}
+		}
+		return imgSerIdLst;
 	}
 	
 	@Override
