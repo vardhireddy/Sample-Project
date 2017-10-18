@@ -1073,44 +1073,4 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		return null;
 	}
-
-
-	@Override
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@RequestMapping(value = "/datacatalog/mInfer", method = RequestMethod.POST)
-	public Object coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) { 	// NOSONAR
-		Object response = null;	// NOSONAR
-		HttpHeaders outHeaders = new HttpHeaders();	// NOSONAR
-		outHeaders.setContentType(APPLICATION_JSON);	// NOSONAR
-		if (null != request.getHeader("X-Role")) {	// NOSONAR
-			outHeaders.set("X-Role", request.getHeader("X-Role"));	// NOSONAR
-		}	// NOSONAR
-		if (null != request.getHeader("X-UOM-Id")) {	// NOSONAR
-			outHeaders.set("X-UOM-Id", request.getHeader("X-UOM-Id"));	// NOSONAR
-		}	// NOSONAR
-		if (null != request.getHeader("X-Principal")) {	// NOSONAR
-			outHeaders.set("X-Principal", request.getHeader("X-Principal"));	// NOSONAR
-		}	// NOSONAR
-		if (null != request.getHeader("Authorization")) {	// NOSONAR
-			outHeaders.set("Authorization", request.getHeader("Authorization"));	// NOSONAR
-		}	// NOSONAR
-		if (null != request.getHeader("X-Request-Id")) {	// NOSONAR
-			outHeaders.set("X-Request-Id", request.getHeader("X-Request-Id"));	// NOSONAR
-		}	// NOSONAR
-		logger.info("++++++++++++++++++++++++DEBUG New headers AFTER:" + outHeaders);	// NOSONAR
-		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, outHeaders);	// NOSONAR
-		try {	// NOSONAR
-			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);	// NOSONAR
-			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);	// NOSONAR
-			logger.info("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + coolidgeMInferenceUrl + " is " + response);	// NOSONAR
-		} catch (RestClientException rx) {	// NOSONAR
-			logger.error("Error posting to Coolidge", rx);	// NOSONAR
-		} catch (URISyntaxException ux) {	// NOSONAR
-			logger.error("!!! Invalid URL while calling Coolidge inference", ux);	// NOSONAR
-		} catch(Exception e){	// NOSONAR
-			logger.error("*** Exception occured while calling Coolidge inference", e);	// NOSONAR
-		}	// NOSONAR
-		return response;	// NOSONAR
-	}	// NOSONAR
 }
