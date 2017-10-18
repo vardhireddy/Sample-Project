@@ -123,10 +123,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	private AnnotationPropRepository annotationPropRepository;
 	@Autowired
 	private ImageSeriesRepository imageSeriesRepository;
-	
+
 	@Autowired
 	private IDataCatalogService dataCatalogService;
-	
+
 	private Set<Long> getUniqueImgSetIds(List<Annotation> annotationLst) {
 		Set<Long> uniqueImgSetIds = new HashSet<Long>();
 		if (null != annotationLst && !annotationLst.isEmpty()) {
@@ -202,6 +202,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/patient", method = RequestMethod.POST)
 	public Patient postPatient(@RequestBody Patient p) throws DataCatalogException {
 		if (null != p && null != p.getPatientId() && null != p.getOrgId() && null == p.getId()) {
+			logger.info("[In REST, Adding new patient data with id = " + p.getId() + " and org id = " + p.getOrgId() + " ]");
 			List<Patient> patientLst = patientRepository.findByPatientIdAndOrgId(p.getPatientId(), p.getOrgId());
 			if (patientLst != null && !patientLst.isEmpty()) {
 				return patientLst.get(0);
@@ -219,6 +220,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/study", method = RequestMethod.POST)
 	public Study postStudy(@RequestBody Study s) throws DataCatalogException {
 		if (null != s && null != s.getStudyInstanceUid() && null != s.getOrgId() && null == s.getId()) {
+			logger.info("[In REST, Adding new study with id = " + s.getId() + ", instance uid = " + s.getStudyInstanceUid() + " and org id = " + s.getOrgId() + " ]");
 			List<Study> studyLst= studyRepository.findByOrgIdAndStudyInstanceUid(s.getOrgId(), s.getStudyInstanceUid());
 			if (studyLst != null && !studyLst.isEmpty()) {
 				return studyLst.get(0);
@@ -234,13 +236,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/annotation", method = RequestMethod.GET)
 	public List<Annotation> getAnnotationsByImgSet(@QueryParam("imagesetid") Long imagesetid) {
 		// Note: this is being used in C2M as well
+		logger.info("In REST getAnnotationsByImgSet , image set id = " + imagesetid);
 		if (null != imagesetid) {
 			return annotationRepository.findByImageSetId(Long.valueOf(imagesetid));
 		} else {
 			return new ArrayList<Annotation>();
 		}
 	}
-	
+
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -249,6 +252,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		ApiResponse apiResponse = null;
 		try {
 			Annotation newAnnotation = annotationRepository.save(annotation);
+			logger.info("[In REST, Saving new annotaion with id = " + newAnnotation.getId() + "]");
 			apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
 					ApplicationConstants.SUCCESS, newAnnotation.getId().toString());
 		} catch (Exception e) {
@@ -277,11 +281,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				String[] idStrings = ids.split(",");
 				for (int i = 0; i < idStrings.length; i++) {
 					ann.setId(Long.valueOf(idStrings[i]));
-						logger.info(" -----Delete annotation " + Long.valueOf(idStrings[i]) );
+						logger.info("[-----Delete annotation " + Long.valueOf(idStrings[i]) +"]");
 						//Get annotation object as somehow it was crying for org_id is null
 						List<Annotation> annLst = getAnnotationsById(idStrings[i], null);
 						if(!annLst.isEmpty()){
-							logger.info(" annLst.size() " + annLst.size() );
+							logger.info(" annLst.size() " + annLst.size());
 							annotationRepository.delete(annLst.get(0));
 						}else{
 							annotationRepository.delete(ann);
@@ -306,6 +310,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/annotation/{ids}", method = RequestMethod.GET)
 	public List<Annotation> getAnnotationsById(@PathVariable String ids, HttpServletRequest request) {
+		logger.info("In REST, getAnnotationsById");
 		List<Long> idsLst = new ArrayList<Long>();
 		String[] idStrings = ids.split(",");
 		for (int i = 0; i < idStrings.length; i++)
@@ -317,7 +322,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/annotation-properties", method = RequestMethod.GET)
 	public List<AnnotationProperties> getAnnotationProperties(@QueryParam("orgId") String orgId) {
-		logger.info("--- In getAnnotationProperties, orgId = " + orgId);
+		logger.info("--- In REST, getAnnotationProperties, orgId = " + orgId);
 		ResponseBuilder responseBuilder;
 		List<AnnotationProperties> annotationProperties = new ArrayList<AnnotationProperties>();
 		try {
@@ -365,6 +370,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST)
 	public DataSet saveDataSet(@RequestBody DataSet d, HttpServletRequest request) {
+		logger.info("[In REST, Creating new data collection, orgId = " + request.getAttribute("orgId") + "]");
 		if (null != request.getAttribute("orgId")) {
 			d.setOrgId(request.getAttribute("orgId").toString());
 			return dataSetRepository.save(d);
@@ -397,7 +403,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
 		// TODO:Use ManyToOne mapping between Image Series and Patient
 		if (null != ids && ids.length() > 0 && null != orgId && !orgId.isEmpty()) {
-			logger.info("Now getiing patient db id based on patient id " + ids + " org id " + orgId);
+			logger.info("Now getting patient db id based on patient id " + ids + " org id " + orgId);
 			List<Patient> patLst = patientRepository.findByPatientIdAndOrgId(ids, orgId);
 			if (null != patLst && !patLst.isEmpty()) {
 				logger.info("[Image Series] Got patient DB id ");
@@ -417,7 +423,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
 		// Note: Coolidge is using this as well
-		logger.info("Get img series for DC id " + id);
+		logger.info("In REST , Get img series for DC id " + id);
 		List<DataSet> dsLst = new ArrayList<DataSet>();
 		if (null != id) {
 			dsLst = dataSetRepository.findById(id);
@@ -445,6 +451,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}", method = RequestMethod.GET)
 	public List<DataSet> getDataSetById(@PathVariable Long id, HttpServletRequest request) {
+		logger.info("In REST, Get DC by Id " + id);
 		return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
 				: dataSetRepository.findByIdAndOrgId(id, request.getAttribute("orgId").toString());
 	}
@@ -458,7 +465,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.GET)
 	public List<DataSet> getDataSetByType(@QueryParam("type") String type, HttpServletRequest request) {
-		logger.info("Get DC for type " + type);
+		logger.info("In REST, Get DC for type " + type);
 		if (null != type) {
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
 					: dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type,
@@ -479,6 +486,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
 		{
+			logger.info("In REST, getImgSeries");
 			Map<String, Object> validParams = constructValidParams(params,
 					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, GE_CLASS, DATA_FORMAT, INSTITUTION, EQUIPMENT));
 			// List of img set based on filter criteria other than annotation
@@ -523,6 +531,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		List<ImageSeries> patientImageSeriesLst = new ArrayList<ImageSeries>();
 		imageSeriesLst = getImageSeriesListWithValidParamsAndOrgId(validParams, orgIdLst);
 
+		logger.debug("In REST , get image series list ");
 		// Get the data with annotation filter
 		if (validParams.containsKey(ANNOTATIONS)) {
 			List<String> typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS).toString());
@@ -552,6 +561,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	private List<ImageSeries> getPatientForImageSeriesWithOrWithOutAnn(Map<String, Object> validParams,
 			List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn,
 			List<ImageSeries> imageSeriesLst) {
+		logger.debug("In REST , get patient for image series with Or without annotation");
 		if (null != imgSetWithAnnotation && !imgSetWithAnnotation.isEmpty()) {
 			// Data with Annotation
 			return getPatientForImgSeriesLst(imgSetWithAnnotation);
@@ -570,6 +580,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, Object> validParams,
 			List<String> orgIdLst) {
+		logger.debug("In REST , get image series list with valid params and orgId");
 		List<ImageSeries> imageSeriesLst = null;
 		if (validParams.containsKey(MODALITY)) {
 			List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY).toString());
@@ -601,6 +612,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithModalityEquiment(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+		logger.debug("In REST , get image series with modality ,equiment");
 		List<ImageSeries> imageSeriesLst;
 		List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
 		imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndEquipmentIn(orgIdLst, modalityLst,
@@ -609,6 +621,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithInstitution(Map<String, Object> validParams, List<String> orgIdLst) {
+		logger.debug("In REST , get image series with institution");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 		if (validParams.containsKey(EQUIPMENT)) {
@@ -623,6 +636,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithDataFormat(Map<String, Object> validParams, List<String> orgIdLst) {
+		logger.debug("In REST , get image series with data format");
 		List<ImageSeries> imageSeriesLst;
 		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
 		if (validParams.containsKey(INSTITUTION)) {
@@ -647,6 +661,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithAnatomy(Map<String, Object> validParams, List<String> orgIdLst) {
+		logger.debug("In REST , get image series with anatomy");
 		List<ImageSeries> imageSeriesLst;
 		List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
 		if (validParams.containsKey(DATA_FORMAT)) {
@@ -670,6 +685,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithAnatomyInstitutionAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst) {
+		logger.debug("In REST , get image series with anatomy, institution and/Or equipment");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 		if (validParams.containsKey(EQUIPMENT)) {
@@ -684,6 +700,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithAnatomyDataFomatInstitutionAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst, List<String> dataFormatLst) {
+		logger.debug("In REST , get Image series with anatomy, data format, institution and/Or equipment");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 		if (validParams.containsKey(EQUIPMENT)) {
@@ -698,6 +715,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithModalityInstitution(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+		logger.debug("In REST , get Image series with modality, institution");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 		if (validParams.containsKey(EQUIPMENT)) {
@@ -711,6 +729,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithModalityDataFormat(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+		logger.debug("In REST , get Image series with modality, data format");
 		List<ImageSeries> imageSeriesLst;
 		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
 		if (validParams.containsKey(INSTITUTION)) {
@@ -737,6 +756,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithModalityAnatomy(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+		logger.debug("In REST , get Image series with modality , anatomy");
 		List<ImageSeries> imageSeriesLst;
 		List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
 		if (validParams.containsKey(DATA_FORMAT)) {
@@ -752,6 +772,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+		logger.debug("In REST , get Image series with modality, anatomy and/Or equipment");
 		List<ImageSeries> imageSeriesLst;
 		if (validParams.containsKey(EQUIPMENT)) {
             List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
@@ -765,6 +786,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrInstitution(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+		logger.debug("In REST , get Image series with modality, anatomy and/or institution");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
 		if (validParams.containsKey(EQUIPMENT)) {
@@ -779,6 +801,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndDataFormat(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+		logger.debug("In REST , get Image series with modality, anatomy, data format");
 		List<ImageSeries> imageSeriesLst;
 		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
 		if (validParams.containsKey(INSTITUTION)) {
@@ -806,6 +829,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	private List<ImageSeries> getImageSeriesWithAnnotations(List<ImageSeries> imgSetWithAnnotation,
 		List<ImageSeries> imageSeriesLst, List<String> typeLst, List<Long> imgSeriesIdLst, List<String> orgIdLst) {
+		logger.debug("In REST , get Image series with annotations");
 		List<Annotation> annotationLst = new ArrayList<Annotation>();
 		annotationLst = annotationRepository.findByImageSetIdInAndTypeInAndOrgId(imgSeriesIdLst, typeLst, orgIdLst);
 		Set<Long> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
@@ -822,6 +846,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	private List<ImageSeries> getImageSeriesWithOutAnnotations(List<ImageSeries> imgSetWithOutAnn,
 			List<ImageSeries> imageSeriesLst, List<Long> imgSeriesIdLst) {
+		logger.debug("In REST , get Image series without annotations");
 		List<Annotation> annotationLst = new ArrayList<Annotation>();
 		annotationLst = annotationRepository.findByImageSetIdIn(imgSeriesIdLst);
 		Set<Long> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
@@ -863,6 +888,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
+		logger.debug("In REST , patient for image series list");
 		List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
 		for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
@@ -876,16 +902,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		return imgSerWithPatientLst;
 	}
-	
+
 	@Override
 	@RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesById(@PathVariable Long id) {
+		logger.info("*** In REST get image series by id " + id);
 		return imageSeriesRepository.findById(id);
 	}
 
 	@Override
 	@RequestMapping(value = "/datacatalog/study/{studyId}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByStudyDbId(@PathVariable Long studyId, HttpServletRequest request) {
+		logger.info("*** In REST get image series by study id " + studyId);
 		return request.getAttribute("orgId") == null ? new ArrayList<ImageSeries>()
 				: imageSeriesRepository.findByStudyDbIdAndOrgId(studyId, request.getAttribute("orgId").toString());
 	}
@@ -941,7 +969,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						imgSeriesMap.put(imageSeries.getId(), imageSeries);
 					}
 					List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn((List<Long>) dsLst.get(0).getImageSets(),
-							types); 
+							types);
 					if (null != annotationLst && !annotationLst.isEmpty()) {
 						logger.info(" annotationLst.size() = " + annotationLst.size());
 						annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
@@ -985,12 +1013,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return (List) new ArrayList<AnnotationImgSetDataCol>();
 
 	}
-	
+
 	@Override
 	@RequestMapping(value = "/datacatalog/data-summary", method = RequestMethod.GET)
 	public Map<String, Object> dataSummary(@QueryParam("groupby") String groupby, HttpServletRequest request) {
 		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
-		logger.info("Get dataSummary for orgId = " + orgId + " group by " + groupby);	
+		logger.info("[Get dataSummary for orgId = " + orgId + " group by " + groupby + "]");
 		Map<String, Object> filters = new HashMap<String, Object>();
 		if(null != groupby && !groupby.isEmpty() && groupby.equalsIgnoreCase(ANNOTATIONS_ABSENT)){
 			filters.put(ANNOTATIONS_ABSENT, imageSeriesRepository.countImgWithNoAnn(orgId).get(0));
@@ -1003,6 +1031,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private Map<String, Object> getEquipmentAndAnnoatationTypeCount(String orgId, Map<String, Object> filters) {
+		logger.debug("In REST, getEquipmentAndAnnoatationTypeCount, orgId = " + orgId);
 		List<Object[]> equipmentCount = imageSeriesRepository.countEquipment(orgId);
 		if (null != equipmentCount && !equipmentCount.isEmpty()) {
             filters.putAll(getFiltersCount(equipmentCount, EQUIPMENT));
@@ -1015,7 +1044,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private Map<String, Object> getDataFormatAndInstitutionCount(String orgId, Map<String, Object> filters) {
-		List<Object[]> dataFormatCount = imageSeriesRepository.countDataFormat(orgId); 
+		logger.debug("In REST, getDataFormatAndInstitutionCount, orgId = " + orgId);
+		List<Object[]> dataFormatCount = imageSeriesRepository.countDataFormat(orgId);
 		if (null != dataFormatCount && !dataFormatCount.isEmpty()) {
             filters.putAll(getFiltersCount(dataFormatCount, DATA_FORMAT));
         }
@@ -1027,6 +1057,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private Map<String, Object> getModalityAndAnatomyCount(String orgId, Map<String, Object> filters) {
+		logger.debug("In REST, getModalityAndAnatomyCount, orgId = " + orgId);
 		List<Object[]> modalityCount = imageSeriesRepository.countModality(orgId);
 		if (null != modalityCount && !modalityCount.isEmpty()) {
             filters.putAll(getFiltersCount(modalityCount, MODALITY));
@@ -1051,6 +1082,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
 	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params, HttpServletRequest request) {
+		logger.info("Get ge class data summary, orgId = " + request.getAttribute("orgId"));
 		if (null != request.getAttribute("orgId")) {
 			String orgId = request.getAttribute("orgId").toString();
 			if(null != orgId && !orgId.isEmpty() && null != params.get(ANNOTATIONS)){
@@ -1068,6 +1100,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/mInfer", method = RequestMethod.POST)
 	public Object coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) { 	// NOSONAR
+		logger.info("[In REST coolidgeMInfer, Posting data to coolidge]"); // NOSONAR
 		Object response = null;	// NOSONAR
 		HttpHeaders outHeaders = new HttpHeaders();	// NOSONAR
 		outHeaders.setContentType(APPLICATION_JSON);	// NOSONAR
@@ -1091,7 +1124,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		try {	// NOSONAR
 			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);	// NOSONAR
 			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);	// NOSONAR
-			logger.info("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + coolidgeMInferenceUrl + " is " + response);	// NOSONAR
+			logger.debug("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + coolidgeMInferenceUrl + " is " + response);	// NOSONAR
 		} catch (RestClientException rx) {	// NOSONAR
 			logger.error("Error posting to Coolidge", rx);	// NOSONAR
 		} catch (URISyntaxException ux) {	// NOSONAR
