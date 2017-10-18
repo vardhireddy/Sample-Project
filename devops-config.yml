@@ -77,7 +77,6 @@ DeployVars:
    update_lambda: false
    update_integration: false
    update_production: false
-   aws_deploy: true
    aws_update_task_and_service: true
    aws_update_task_only: false
    aws_update_service_only: false

@@ -1,8 +1,8 @@
 /*
  * DataCatalogRestImpl.java
- * 
+ *
  * Copyright (c) 2016 by General Electric Company. All rights reserved.
- * 
+ *
  * The copyright to the computer software herein is the property of
  * General Electric Company. The software may be used and/or copied only
  * with the written permission of General Electric Company or in accordance
@@ -202,7 +202,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/patient", method = RequestMethod.POST)
 	public Patient postPatient(@RequestBody Patient p) throws DataCatalogException {
 		if (null != p && null != p.getPatientId() && null != p.getOrgId() && null == p.getId()) {
-			logger.info("[In REST, Adding new patient data with id = " + p.getId() + " and org id = " + p.getOrgId() + " ]");
+			logger.info("[In REST, Saving patient data with id = " + p.getId() + " and org id = " + p.getOrgId() + " ]");
 			List<Patient> patientLst = patientRepository.findByPatientIdAndOrgId(p.getPatientId(), p.getOrgId());
 			if (patientLst != null && !patientLst.isEmpty()) {
 				return patientLst.get(0);
@@ -220,7 +220,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/study", method = RequestMethod.POST)
 	public Study postStudy(@RequestBody Study s) throws DataCatalogException {
 		if (null != s && null != s.getStudyInstanceUid() && null != s.getOrgId() && null == s.getId()) {
-			logger.info("[In REST, Adding new study with id = " + s.getId() + ", instance uid = " + s.getStudyInstanceUid() + " and org id = " + s.getOrgId() + " ]");
+			logger.info("[In REST, Saving study with id = " + s.getId() + ", instance uid = " + s.getStudyInstanceUid() + " and org id = " + s.getOrgId() + " ]");
 			List<Study> studyLst= studyRepository.findByOrgIdAndStudyInstanceUid(s.getOrgId(), s.getStudyInstanceUid());
 			if (studyLst != null && !studyLst.isEmpty()) {
 				return studyLst.get(0);
@@ -388,6 +388,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/image-set", method = RequestMethod.POST)
 	public ImageSeries saveImageSeries(@RequestBody ImageSeries i) {
+		if (null != i ){
+			logger.info("*** Now saving image series " + i.toString());
+		}
 		return imageSeriesRepository.save(i);
 	}
 
@@ -955,12 +958,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				types.add(annotationType);
 			/*	List<ImageSeries> imgSeriesLst = imageSeriesRepository
 						.findByIdIn((List<Long>) dsLst.get(0).getImageSets());*/
-				logger.info("***** Converting image set object to long lst ");
-				List<Long> imgSetLst = (List<Long>) (dsLst.get(0).getImageSets());
-				logger.info("***** Passing image set long list to get details of seies " + imgSetLst);
+				List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
+				List<Long> imgSerIdLst = getImgSerIdLst(imgSeries);
+				/*if (null != imgSeries && !imgSeries.isEmpty()) {
+					for (int i = 0; i < imgSeries.size(); i++) {
+						imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+					}
+				}*/
 				List<ImageSeries> imgSeriesLst = imageSeriesRepository
-						.findByIdIn(imgSetLst);
-				logger.info("***** Checking if image set is null or empty");
+						.findByIdIn(imgSerIdLst);
+				logger.info("***** Got img series by id sucessfully");
 				if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
 					logger.info(" imgSeriesLst.size() = " + imgSeriesLst.size());
 					Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
@@ -968,8 +975,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
 						imgSeriesMap.put(imageSeries.getId(), imageSeries);
 					}
-					List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn((List<Long>) dsLst.get(0).getImageSets(),
+					/*List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn((List<Long>) dsLst.get(0).getImageSets(),
+							types); */
+					List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn(imgSerIdLst,
 							types);
+					logger.info("***** Got annotationLst by img series id and type");
 					if (null != annotationLst && !annotationLst.isEmpty()) {
 						logger.info(" annotationLst.size() = " + annotationLst.size());
 						annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
@@ -1012,6 +1022,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 		return (List) new ArrayList<AnnotationImgSetDataCol>();
 
+	}
+
+	private List<Long> getImgSerIdLst(List<Object> imgSeries){
+		List<Long> imgSerIdLst = new ArrayList<Long>();
+		if (null != imgSeries && !imgSeries.isEmpty()) {
+			for (int i = 0; i < imgSeries.size(); i++) {
+				imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+			}
+		}
+		return imgSerIdLst;
 	}
 
 	@Override
@@ -1093,45 +1113,4 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		return null;
 	}
-
-
-	@Override
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@RequestMapping(value = "/datacatalog/mInfer", method = RequestMethod.POST)
-	public Object coolidgeMInfer(@RequestBody String jsonObj, HttpServletRequest request) { 	// NOSONAR
-		logger.info("[In REST coolidgeMInfer, Posting data to coolidge]"); // NOSONAR
-		Object response = null;	// NOSONAR
-		HttpHeaders outHeaders = new HttpHeaders();	// NOSONAR
-		outHeaders.setContentType(APPLICATION_JSON);	// NOSONAR
-		if (null != request.getHeader("X-Role")) {	// NOSONAR
-			outHeaders.set("X-Role", request.getHeader("X-Role"));	// NOSONAR
-		}	// NOSONAR
-		if (null != request.getHeader("X-UOM-Id")) {	// NOSONAR
-			outHeaders.set("X-UOM-Id", request.getHeader("X-UOM-Id"));	// NOSONAR
-		}	// NOSONAR
-		if (null != request.getHeader("X-Principal")) {	// NOSONAR
-			outHeaders.set("X-Principal", request.getHeader("X-Principal"));	// NOSONAR
-		}	// NOSONAR
-		if (null != request.getHeader("Authorization")) {	// NOSONAR
-			outHeaders.set("Authorization", request.getHeader("Authorization"));	// NOSONAR
-		}	// NOSONAR
-		if (null != request.getHeader("X-Request-Id")) {	// NOSONAR
-			outHeaders.set("X-Request-Id", request.getHeader("X-Request-Id"));	// NOSONAR
-		}	// NOSONAR
-		logger.info("++++++++++++++++++++++++DEBUG New headers AFTER:" + outHeaders);	// NOSONAR
-		HttpEntity<String> entity = new HttpEntity<String>(jsonObj, outHeaders);	// NOSONAR
-		try {	// NOSONAR
-			URI coolidgeMInferenceUri = new URI(coolidgeMInferenceUrl);	// NOSONAR
-			response = restTemplate.postForObject(coolidgeMInferenceUri, entity, String.class);	// NOSONAR
-			logger.debug("++++++++++++++++++++++++DEBUG Got response fromCoolidge:" + coolidgeMInferenceUrl + " is " + response);	// NOSONAR
-		} catch (RestClientException rx) {	// NOSONAR
-			logger.error("Error posting to Coolidge", rx);	// NOSONAR
-		} catch (URISyntaxException ux) {	// NOSONAR
-			logger.error("!!! Invalid URL while calling Coolidge inference", ux);	// NOSONAR
-		} catch(Exception e){	// NOSONAR
-			logger.error("*** Exception occured while calling Coolidge inference", e);	// NOSONAR
-		}	// NOSONAR
-		return response;	// NOSONAR
-	}	// NOSONAR
 }

@@ -12,8 +12,9 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
-import java.io.Serializable;
-import java.sql.Date;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -21,10 +22,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+import java.io.Serializable;
+import java.sql.Date;
 
 /**
  * Created by 200014175 on 10/27/2016.
@@ -168,5 +167,13 @@ public class Patient implements Serializable {
     }
     public void setProperties(String properties) {
         this.properties = properties;
+    }
+
+    @Override
+    public String toString() {
+        return "Patient [id=" + id + ", schemaVersion=" + schemaVersion + ", orgId=" + orgId
+                + ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientId=" + patientId
+                + ", Name =" + patientName + ", age=" + age + ", gender="
+                + gender + ", birthDate=" + birthDate + "]";
     }
 }
