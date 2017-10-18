@@ -932,12 +932,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				types.add(annotationType);
 			/*	List<ImageSeries> imgSeriesLst = imageSeriesRepository
 						.findByIdIn((List<Long>) dsLst.get(0).getImageSets());*/
-				logger.info("***** Converting image set object to long lst ");
-				List<Long> imgSetLst = (List<Long>) (dsLst.get(0).getImageSets());
-				logger.info("***** Passing image set long list to get details of seies " + imgSetLst);
+				List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
+				List<Long> imgSerIdLst = new ArrayList<Long>();
+				if (null != imgSeries && !imgSeries.isEmpty()) {
+					for (int i = 0; i < imgSeries.size(); i++) {
+						imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+					}
+				}
 				List<ImageSeries> imgSeriesLst = imageSeriesRepository
-						.findByIdIn(imgSetLst);
-				logger.info("***** Checking if image set is null or empty");
+						.findByIdIn(imgSerIdLst);
+				logger.info("***** Got img series by id sucessfully");
 				if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
 					logger.info(" imgSeriesLst.size() = " + imgSeriesLst.size());
 					Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
@@ -945,8 +949,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
 						imgSeriesMap.put(imageSeries.getId(), imageSeries);
 					}
-					List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn((List<Long>) dsLst.get(0).getImageSets(),
+					/*List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn((List<Long>) dsLst.get(0).getImageSets(),
+							types); */
+					List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn(imgSerIdLst,
 							types); 
+					logger.info("***** Got annotationLst by img series id and type");
 					if (null != annotationLst && !annotationLst.isEmpty()) {
 						logger.info(" annotationLst.size() = " + annotationLst.size());
 						annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
