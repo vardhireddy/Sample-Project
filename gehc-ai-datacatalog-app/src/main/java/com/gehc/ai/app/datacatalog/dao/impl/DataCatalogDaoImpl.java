@@ -125,7 +125,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typeLst) {
-		logger.info(" In DAO , getting image series ");
+		logger.debug(" In DAO , getting image series ");
 		ObjectMapper mapper = new ObjectMapper();	
 		GEClass [] geClasses = getGEClasses(params);
 		//Get image set
@@ -170,7 +170,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 	
 	public GEClass [] getGEClasses(Map<String, Object> params){
-		logger.info(" In DAO , getting GE classes ");
+		logger.debug(" In DAO , getting GE classes ");
 		ObjectMapper mapper = new ObjectMapper();
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			if (GE_CLASS.equals(entry.getKey())) {
@@ -192,7 +192,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 	
 	public List<Long> getImgSeriesIdLst(List<ImageSeries> imgSeriesLst){
-		logger.info(" In DAO , getting image series Id list ");
+		logger.debug(" In DAO , getting image series Id list ");
 		List<Long> imgSeriesIdLst = new ArrayList<Long>();
 		for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
@@ -202,7 +202,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 	
 	public List<ImageSeries> getImgSeriesLst(List<Object[]> objList){
-		logger.info(" In DAO , getting image series list ");
+		logger.debug(" In DAO , getting image series list ");
 		List<ImageSeries> result = new ArrayList<ImageSeries>();
 		objList.stream().forEach((record) -> {
 			ImageSeries imgSeries = new ImageSeries();

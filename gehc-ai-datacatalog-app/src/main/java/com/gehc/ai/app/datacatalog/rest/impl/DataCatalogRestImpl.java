@@ -426,7 +426,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
 		// Note: Coolidge is using this as well
-		logger.info("In REST , Get img series for DC id " + id);
+		logger.debug("In REST , Get img series for DC id " + id);
 		List<DataSet> dsLst = new ArrayList<DataSet>();
 		if (null != id) {
 			dsLst = dataSetRepository.findById(id);
@@ -454,7 +454,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}", method = RequestMethod.GET)
 	public List<DataSet> getDataSetById(@PathVariable Long id, HttpServletRequest request) {
-		logger.info("In REST, Get DC by Id " + id);
+		logger.debug("In REST, Get DC by Id " + id);
 		return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
 				: dataSetRepository.findByIdAndOrgId(id, request.getAttribute("orgId").toString());
 	}
@@ -468,7 +468,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.GET)
 	public List<DataSet> getDataSetByType(@QueryParam("type") String type, HttpServletRequest request) {
-		logger.info("In REST, Get DC for type " + type);
+		logger.debug("In REST, Get DC for type " + type);
 		if (null != type) {
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
 					: dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type,
@@ -909,14 +909,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesById(@PathVariable Long id) {
-		logger.info("*** In REST get image series by id " + id);
+		logger.debug("*** In REST get image series by id " + id);
 		return imageSeriesRepository.findById(id);
 	}
 
 	@Override
 	@RequestMapping(value = "/datacatalog/study/{studyId}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByStudyDbId(@PathVariable Long studyId, HttpServletRequest request) {
-		logger.info("*** In REST get image series by study id " + studyId);
+		logger.debug("*** In REST get image series by study id " + studyId);
 		return request.getAttribute("orgId") == null ? new ArrayList<ImageSeries>()
 				: imageSeriesRepository.findByStudyDbIdAndOrgId(studyId, request.getAttribute("orgId").toString());
 	}
@@ -933,7 +933,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/patient", method = RequestMethod.GET)
 	public List<Patient> getAllPatients(HttpServletRequest request) {
-		logger.info(" In REST getAllPatients, orgId = " + request.getAttribute("orgId"));
+		logger.debug(" In REST getAllPatients, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? new ArrayList<Patient>()
 				: patientRepository.findByOrgId(request.getAttribute("orgId").toString());
 	}
@@ -952,7 +952,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		List<AnnotationImgSetDataCol> annImgSetDCLst = null;
 		List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
 		if (null != dsLst && !dsLst.isEmpty()) {
-			logger.info("***** Data set Lst.size() = " + dsLst.size());
+			logger.debug("***** Data set Lst.size() = " + dsLst.size());
 			if (null != dsLst.get(0).getImageSets()) {
 				List<String> types = new ArrayList<String>();
 				types.add(annotationType);
@@ -1038,7 +1038,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/data-summary", method = RequestMethod.GET)
 	public Map<String, Object> dataSummary(@QueryParam("groupby") String groupby, HttpServletRequest request) {
 		String orgId = request.getAttribute("orgId") == null ? null : request.getAttribute("orgId").toString();
-		logger.info("[Get dataSummary for orgId = " + orgId + " group by " + groupby + "]");
+		logger.debug("Get dataSummary for orgId = " + orgId + " group by " + groupby );
 		Map<String, Object> filters = new HashMap<String, Object>();
 		if(null != groupby && !groupby.isEmpty() && groupby.equalsIgnoreCase(ANNOTATIONS_ABSENT)){
 			filters.put(ANNOTATIONS_ABSENT, imageSeriesRepository.countImgWithNoAnn(orgId).get(0));
