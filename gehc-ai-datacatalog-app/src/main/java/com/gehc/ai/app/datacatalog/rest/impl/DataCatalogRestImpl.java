@@ -170,7 +170,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/patient/{ids}", method = RequestMethod.GET)
 	public List<Patient> getPatients(@PathVariable String ids, HttpServletRequest request) {
-		logger.info("*** In REST getPatients, orgId = " + request.getAttribute("orgId"));
+		logger.debug("*** In REST getPatients, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? new ArrayList<Patient>()
 				: patientRepository.findByIdInAndOrgId(getListOfLongsFromParams(ids),
 						request.getAttribute("orgId").toString());
@@ -179,7 +179,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/study", method = RequestMethod.GET)
 	public List<Study> getStudy(HttpServletRequest request) {
-		logger.info("*** In REST get all studies, orgId = " + request.getAttribute("orgId"));
+		logger.debug("*** In REST get all studies, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? new ArrayList<Study>()
 				: studyRepository.findByOrgId(request.getAttribute("orgId").toString());
 	}
@@ -187,7 +187,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/study/{ids}", method = RequestMethod.GET)
 	public List<Study> getStudiesById(@PathVariable String ids, HttpServletRequest request) {
-		logger.info("*** In REST getStudiesById, orgId = " + request.getAttribute("orgId"));
+		logger.debug("*** In REST getStudiesById, orgId = " + request.getAttribute("orgId"));
 		List<Long> pids = new ArrayList<Long>();
 		String[] idStrings = ids.split(",");
 		for (int i = 0; i < idStrings.length; i++)
@@ -236,7 +236,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/annotation", method = RequestMethod.GET)
 	public List<Annotation> getAnnotationsByImgSet(@QueryParam("imagesetid") Long imagesetid) {
 		// Note: this is being used in C2M as well
-		logger.info("In REST getAnnotationsByImgSet , image set id = " + imagesetid);
+		logger.debug("In REST getAnnotationsByImgSet , image set id = " + imagesetid);
 		if (null != imagesetid) {
 			return annotationRepository.findByImageSetId(Long.valueOf(imagesetid));
 		} else {
@@ -285,7 +285,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 						//Get annotation object as somehow it was crying for org_id is null
 						List<Annotation> annLst = getAnnotationsById(idStrings[i], null);
 						if(!annLst.isEmpty()){
-							logger.info(" annLst.size() " + annLst.size());
+							logger.debug(" annLst.size() " + annLst.size());
 							annotationRepository.delete(annLst.get(0));
 						}else{
 							annotationRepository.delete(ann);
@@ -310,7 +310,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/annotation/{ids}", method = RequestMethod.GET)
 	public List<Annotation> getAnnotationsById(@PathVariable String ids, HttpServletRequest request) {
-		logger.info("In REST, getAnnotationsById");
+		logger.debug("In REST, getAnnotationsById");
 		List<Long> idsLst = new ArrayList<Long>();
 		String[] idStrings = ids.split(",");
 		for (int i = 0; i < idStrings.length; i++)
@@ -322,7 +322,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/annotation-properties", method = RequestMethod.GET)
 	public List<AnnotationProperties> getAnnotationProperties(@QueryParam("orgId") String orgId) {
-		logger.info("--- In REST, getAnnotationProperties, orgId = " + orgId);
+		logger.debug("--- In REST, getAnnotationProperties, orgId = " + orgId);
 		ResponseBuilder responseBuilder;
 		List<AnnotationProperties> annotationProperties = new ArrayList<AnnotationProperties>();
 		try {
@@ -389,7 +389,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/image-set", method = RequestMethod.POST)
 	public ImageSeries saveImageSeries(@RequestBody ImageSeries i) {
 		if (null != i ){
-			logger.info("*** Now saving image series " + i.toString());
+			logger.debug("*** Now saving image series " + i.toString());
 		}
 		return imageSeriesRepository.save(i);
 	}
@@ -406,7 +406,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
 		// TODO:Use ManyToOne mapping between Image Series and Patient
 		if (null != ids && ids.length() > 0 && null != orgId && !orgId.isEmpty()) {
-			logger.info("Now getting patient db id based on patient id " + ids + " org id " + orgId);
+			logger.debug("Now getting patient db id based on patient id " + ids + " org id " + orgId);
 			List<Patient> patLst = patientRepository.findByPatientIdAndOrgId(ids, orgId);
 			if (null != patLst && !patLst.isEmpty()) {
 				logger.info("[Image Series] Got patient DB id ");
@@ -489,7 +489,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@RequestMapping(value = "/datacatalog/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
 		{
-			logger.info("In REST, getImgSeries");
+			logger.debug("In REST, getImgSeries");
 			Map<String, Object> validParams = constructValidParams(params,
 					Arrays.asList(ORG_ID, MODALITY, ANATOMY, ANNOTATIONS, SERIES_INS_UID, GE_CLASS, DATA_FORMAT, INSTITUTION, EQUIPMENT));
 			// List of img set based on filter criteria other than annotation
@@ -924,7 +924,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/patient/{ids}/study", method = RequestMethod.GET)
 	public List<Study> getStudiesByPatientDbid(@PathVariable String ids, HttpServletRequest request) {
-		logger.info("*** In REST getStudiesByPatientDbid, orgId = " + request.getAttribute("orgId"));
+		logger.debug("*** In REST getStudiesByPatientDbid, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? new ArrayList<Study>()
 				: studyRepository.findByPatientDbIdAndOrgId(Long.valueOf(ids),
 						request.getAttribute("orgId").toString());
@@ -967,9 +967,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				}*/
 				List<ImageSeries> imgSeriesLst = imageSeriesRepository
 						.findByIdIn(imgSerIdLst);
-				logger.info("***** Got img series by id sucessfully");
+				logger.debug("***** Got img series by id sucessfully");
 				if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
-					logger.info(" imgSeriesLst.size() = " + imgSeriesLst.size());
+					logger.debug(" imgSeriesLst.size() = " + imgSeriesLst.size());
 					Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
 					for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 						ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
@@ -981,7 +981,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							types);
 					logger.info("***** Got annotationLst by img series id and type");
 					if (null != annotationLst && !annotationLst.isEmpty()) {
-						logger.info(" annotationLst.size() = " + annotationLst.size());
+						logger.debug(" annotationLst.size() = " + annotationLst.size());
 						annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
 						for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();) {
 							AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
@@ -1015,7 +1015,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 
 		if (annImgSetDCLst != null) {
-			logger.info(" annImgSetDCLst.size() = " + annImgSetDCLst.size());
+			logger.debug(" annImgSetDCLst.size() = " + annImgSetDCLst.size());
 			responseBuilder = Response.ok(annImgSetDCLst);
 			return (List) responseBuilder.build().getEntity();
 		}
@@ -1102,7 +1102,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
 	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params, HttpServletRequest request) {
-		logger.info("Get ge class data summary, orgId = " + request.getAttribute("orgId"));
+		logger.debug("Get ge class data summary, orgId = " + request.getAttribute("orgId"));
 		if (null != request.getAttribute("orgId")) {
 			String orgId = request.getAttribute("orgId").toString();
 			if(null != orgId && !orgId.isEmpty() && null != params.get(ANNOTATIONS)){
