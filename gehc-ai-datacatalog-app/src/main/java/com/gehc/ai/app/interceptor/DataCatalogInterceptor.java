@@ -76,8 +76,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 //				return true;
 //		   }
 		   boolean foundAuthToken = false;
-           logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod());
-           logger.info( " ### In preHandle method, req.getServletPath() = " + req.getServletPath());
+           logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod() + ", req.getServletPath() = " + req.getServletPath());
            if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
 	           Enumeration headerNames = req.getHeaderNames();
 	           String key = null;
