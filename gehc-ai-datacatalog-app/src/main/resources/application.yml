@@ -1,5 +1,6 @@
 ### AWS
 spring:
+  application.name: Datacatalog
   datasource:
     url: ${spring_datasource_url:jdbc:mysql://dd13e7t1i438cg0.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/lfdb}
     username: ${spring_datatsource_username:dbadmin123}
