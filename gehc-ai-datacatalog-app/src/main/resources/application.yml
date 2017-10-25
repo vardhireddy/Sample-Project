@@ -38,9 +38,19 @@ dev:
 ##Local
 ## Use -Dspring.profiles.active=local as part of the JVM arguments when running locally
 spring:
+  application.name: Datacatalog
   profiles: local
   datasource:
     url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
     username: root
     password: root
 coolidge.micro.inference.url: http://127.0.0.1:6001/mInfer
+server:
+  port: 8080
+logging:
+  pattern.console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr([${spring.application.name:-}]){yellow} %clr([%X{aws-request-id:-}]){blue} %clr([%X{amzn-trace-id:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  level:
+    org: ${thirdparty_log_level:WARN}
+    java: ${thirdparty_log_level:WARN}
+    com.gehc.ai.app: ${application_log_level:DEBUG}  
+    guru.springframework.controllers: DEBUG
