@@ -56,7 +56,7 @@ CREATE TABLE if not exists `image_set` (
   `acq_time` varchar(25) DEFAULT NULL,
   `description` varchar(100) DEFAULT NULL,
   `institution` varchar(100) DEFAULT NULL,
-  `equipment` varchar(100) DEFAULT NULL,
+  `manufacturer` varchar(100) DEFAULT NULL,
   `instance_count` int(11) DEFAULT NULL,
   `upload_by` varchar(255) DEFAULT NULL,
   `upload_date` datetime DEFAULT CURRENT_TIMESTAMP,

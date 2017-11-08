@@ -1,6 +1,3 @@
-alter table image_set  
-CHANGE COLUMN `manufacturer` `manufacturer` varchar(255);
-
 alter table image_set 
 add `equipment` varchar(255);
 

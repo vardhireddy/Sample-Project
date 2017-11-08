@@ -27,14 +27,14 @@ coolidge.micro.inference.url: http://10.50.55.14:6000/mInfer
 dev:
   mode: false
   orgId: null
-#flyway:
-#  enabled: ${flyway_enabled:false}
-#  schemas: lfdb
-#  baselineOnMigrate: true
-#  validateOnMigrate: false
-#  url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST}
-#  user: ${spring_datatsource_username:root}
-#  password: ${spring_datasource_password:root}
+flyway:
+  enabled: ${flyway_enabled:true}
+  schemas: lfdb
+  baselineOnMigrate: true
+  validateOnMigrate: false
+  url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST}
+  user: ${spring_datatsource_username:root}
+  password: ${spring_datasource_password:root}
 ---
 ##Local
 ## Use -Dspring.profiles.active=local as part of the JVM arguments when running locally
