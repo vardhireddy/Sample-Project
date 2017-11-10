@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -248,7 +249,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/annotation", method = RequestMethod.POST)
-	public ApiResponse saveAnnotation(@RequestBody Annotation annotation) {
+	public ApiResponse saveAnnotation(@Valid @RequestBody Annotation annotation) {
 		ApiResponse apiResponse = null;
 		try {
 			Annotation newAnnotation = annotationRepository.save(annotation);
@@ -369,7 +370,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST)
-	public DataSet saveDataSet(@RequestBody DataSet d, HttpServletRequest request) {
+	public DataSet saveDataSet(@Valid @RequestBody DataSet d, HttpServletRequest request) {
 		logger.info("[In REST, Creating new data collection, orgId = " + request.getAttribute("orgId") + "]");
 		if (null != request.getAttribute("orgId")) {
 			d.setOrgId(request.getAttribute("orgId").toString());

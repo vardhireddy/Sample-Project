@@ -173,7 +173,7 @@ public class DataCollectionSteps {
     @Then("verify Saving DataSet")
     public void verifySaveDatSet() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"123\",\"createdBy\":\"test\",\"properties\":{}}")));
+        retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"123\",\"createdBy\":\"test\",\"properties\":{},\"imageSets\":[]}")));
     }
 
     @Given("Retrieve DataSet by Type DataSetUp Provided")
@@ -576,6 +576,7 @@ public class DataCollectionSteps {
         dataSet.setOrgId("123");
         dataSet.setSchemaVersion("123");
         dataSet.setType("Annotation");
+        dataSet.setImageSets(new ArrayList());
         return dataSet;
     }
 
