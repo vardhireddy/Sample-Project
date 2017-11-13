@@ -29,7 +29,7 @@ dev:
   orgId: null
 flyway:
   enabled: ${flyway_enabled:true}
-  schemas: aruna_lfdb
+  schemas: lfdb
   baselineOnMigrate: true
   validateOnMigrate: false
   url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST}
