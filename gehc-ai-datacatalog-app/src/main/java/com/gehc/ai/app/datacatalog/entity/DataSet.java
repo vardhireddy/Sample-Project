@@ -64,6 +64,8 @@ public class DataSet implements Serializable {
 	private String createdDate;
 
 	//private int imageSetsSize;
+	@Pattern(regexp = "Experiment|Annotation|Inference")
+	@NotNull
     private String type;
 
     @Column ( name = "org_id" )
