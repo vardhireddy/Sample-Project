@@ -23,7 +23,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.*;
+//import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,9 +34,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
-import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.DIGIT;
-import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.ELEMENT_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ELEMENT_NAME;
 
 /**
  * @author 212071558

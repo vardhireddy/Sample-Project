@@ -30,10 +30,9 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
-import com.gehc.ai.app.common.constants.validationConstants;
 
-import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.ELEMENT_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ELEMENT_NAME;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
