@@ -33,7 +33,7 @@ import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.DESCRIPTION;
 import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.DIGIT;
-import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.ENTITY_NAME;
+import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.ELEMENT_NAME;
 
 /**
  * @author 212071558
@@ -63,7 +63,7 @@ public class Annotation implements Serializable {
      */
     @Column(name="org_id")
     @Size(min=3, max=255)
-    @Pattern(regexp = ENTITY_NAME)
+    @Pattern(regexp = ELEMENT_NAME)
     @NotNull
     private String orgId;
 

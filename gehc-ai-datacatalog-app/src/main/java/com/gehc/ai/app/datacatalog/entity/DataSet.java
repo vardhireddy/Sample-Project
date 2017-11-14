@@ -33,7 +33,7 @@ import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.common.constants.validationConstants;
 
 import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.ENTITY_NAME;
+import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.ELEMENT_NAME;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
@@ -65,7 +65,7 @@ public class DataSet implements Serializable {
     private String type;
     @Column ( name = "org_id" )
 	@Size(min=3, max=255)
-	@Pattern(regexp = ENTITY_NAME)
+	@Pattern(regexp = ELEMENT_NAME)
 	@NotNull
     private String orgId;
     @Column ( name = "created_by" )
