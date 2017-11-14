@@ -112,6 +112,7 @@ public class CommonSteps {
         annotation.setId(1L);
         annotation.setAnnotationDate(getDate());
         annotation.setAnnotatorId("123");
+        annotation.setAnnotationTool("Tool");
         ImageSeries imageSeries =  getOneimageSeries();
         imageSeries.setId(1L);
         annotation.setImageSet(imageSeries);
@@ -119,6 +120,8 @@ public class CommonSteps {
         annotation.setSchemaVersion("123");
         annotation.setType("type");
         annotation.setSchemaVersion("1");
+        annotation.setOrgId("Test");
+        annotation.setImageSetId(1L);
         return annotation;
     }
 

@@ -15,6 +15,7 @@ package com.gehc.ai.app.datacatalog.entity;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -23,10 +24,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+import com.gehc.ai.app.common.constants.validationConstants;
+
+import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.DESCRIPTION;
+import static com.gehc.ai.app.common.constants.validationConstants.ValidatorConstants.ELEMENT_NAME;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
@@ -42,7 +49,13 @@ public class DataSet implements Serializable {
     private Long id;
     @Column ( name = "schema_version" )
 	private String schemaVersion;
+	@Size(min=3, max=200)
+	@Pattern(regexp = DESCRIPTION)
+	@NotNull
 	private String name;
+	@Size(min=3, max=255)
+	@Pattern(regexp = DESCRIPTION)
+	@NotNull
 	private String description;
 	//@Column ( name = "image_sets" )
 	//private String[] imageSets;
@@ -51,6 +64,9 @@ public class DataSet implements Serializable {
 	//private int imageSetsSize;
     private String type;
     @Column ( name = "org_id" )
+	@Size(min=3, max=255)
+	@Pattern(regexp = ELEMENT_NAME)
+	@NotNull
     private String orgId;
     @Column ( name = "created_by" )
     private String createdBy;
@@ -58,6 +74,7 @@ public class DataSet implements Serializable {
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
+	@NotNull
     private Object properties; // NOSONAR
     
     public Object getProperties() {
@@ -74,6 +91,7 @@ public class DataSet implements Serializable {
 	}
 	@Convert(converter = JsonConverter.class)
     @Column ( name = "image_sets" )
+	@NotNull
     private Object  imageSets; // NOSONAR
 	
     /**
