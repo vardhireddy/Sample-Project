@@ -46,27 +46,31 @@ public class DataSet implements Serializable {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO )
     private Long id;
+
     @Column ( name = "schema_version" )
 	private String schemaVersion;
 	@Size(min=3, max=200)
 	@Pattern(regexp = DESCRIPTION)
 	@NotNull
 	private String name;
+
 	@Size(min=3, max=255)
 	@Pattern(regexp = DESCRIPTION)
-	@NotNull
 	private String description;
+
 	//@Column ( name = "image_sets" )
 	//private String[] imageSets;
 	@Column(name = "created_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private String createdDate;
+
 	//private int imageSetsSize;
     private String type;
+
     @Column ( name = "org_id" )
 	@Size(min=3, max=255)
 	@Pattern(regexp = ELEMENT_NAME)
-	@NotNull
     private String orgId;
+
     @Column ( name = "created_by" )
     private String createdBy;
     /**
@@ -82,12 +86,14 @@ public class DataSet implements Serializable {
 	public void setProperties(Object properties) {
 		this.properties = properties;
 	} // NOSONAR
+
 	public Object getImageSets() { // NOSONAR
 		return imageSets; // NOSONAR
 	}
 	public void setImageSets(Object  imageSets) { // NOSONAR
 		this.imageSets = imageSets; // NOSONAR
 	}
+
 	@Convert(converter = JsonConverter.class)
     @Column ( name = "image_sets" )
 	@NotNull

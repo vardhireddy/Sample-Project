@@ -66,7 +66,6 @@ public class Annotation implements Serializable {
     @Column(name="org_id")
     @Size(min=3, max=255)
     @Pattern(regexp = ELEMENT_NAME)
-    @NotNull
     private String orgId;
 
     /**
@@ -81,8 +80,7 @@ public class Annotation implements Serializable {
     @Column(name="annotation_tool")
     @Size(min=3, max=255)
     @Pattern(regexp = DESCRIPTION)
-    @NotNull
-    private String annotationTool;      
+    private String annotationTool;
     /**
      * Date data was annotated. Should be left to database to provide.
      */

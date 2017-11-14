@@ -59,3 +59,5 @@ logging:
     org: ${thirdparty_log_level:WARN}
     java: ${thirdparty_log_level:WARN}
     com.gehc.ai.app: ${application_log_level:DEBUG}  
+flyway:
+  enabled: ${flyway_enabled:false}
