@@ -41,7 +41,6 @@ logging:
     org: ${thirdparty_log_level:WARN}
     java: ${thirdparty_log_level:WARN}
     com.gehc.ai.app: ${application_log_level:DEBUG}
-    guru.springframework.controllers: DEBUG
 
 ---
 ##Local
@@ -60,4 +59,3 @@ logging:
     org: ${thirdparty_log_level:WARN}
     java: ${thirdparty_log_level:WARN}
     com.gehc.ai.app: ${application_log_level:DEBUG}  
-    guru.springframework.controllers: DEBUG
