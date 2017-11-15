@@ -1114,4 +1114,34 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		return null;
 	}
+	
+	@Override
+	@RequestMapping(value = "/datacatalog/data-collection/{ids}", method = RequestMethod.DELETE)
+	public ApiResponse deleteDataCollection(@PathVariable String ids, HttpServletRequest request) {
+		ApiResponse apiResponse = null;
+		DataSet dataSet = new DataSet();
+		try {
+			if (null != ids && ids.length() > 0) {
+				String[] idStrings = ids.split(",");
+				for (int i = 0; i < idStrings.length; i++) {
+					dataSet.setId(Long.valueOf(idStrings[i]));
+						logger.info("[-----Delete DC " + Long.valueOf(idStrings[i]) +"]");
+						List<DataSet> dataSetLst = getDataSetById(Long.valueOf(idStrings[i]), request);
+						if(!dataSetLst.isEmpty()){
+							logger.debug(" annLst.size() " + dataSetLst.size());
+							dataSetRepository.delete(dataSetLst.get(0));
+						}else{
+							dataSetRepository.delete(dataSet);
+						}
+						apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
+								ApplicationConstants.SUCCESS, ids);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Exception occured while calling delete data collection ", e);
+			apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE,
+					"Id does not exist", ids);
+		}
+		return apiResponse;
+	}
 }
