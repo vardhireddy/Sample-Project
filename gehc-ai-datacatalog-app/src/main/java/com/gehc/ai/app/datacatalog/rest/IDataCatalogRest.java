@@ -16,6 +16,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.annotation.PathVariable;
+
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
@@ -234,4 +236,9 @@ public interface IDataCatalogRest {
      * @return
      */
     Map<Object, Object> geClassDataSummary(Map<String, String> params, HttpServletRequest request);
+    
+    /**
+     * @param ids
+     */
+    ApiResponse deleteDataCollection(String ids, HttpServletRequest request);
 }
