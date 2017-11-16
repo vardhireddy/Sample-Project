@@ -56,7 +56,7 @@ public class Annotation implements Serializable {
     private Long id;
 
     @Column(name="schema_version")
-    @Size(min=1, max=50)
+    @Size(min=0, max=50)
     @Pattern(regexp = DESCRIPTION)
     private String schemaVersion;
 
@@ -64,7 +64,7 @@ public class Annotation implements Serializable {
      * The organization who owns the data. 
      */
     @Column(name="org_id")
-    @Size(min=3, max=255)
+    @Size(min=0, max=255)
     @Pattern(regexp = ELEMENT_NAME)
     private String orgId;
 
@@ -78,7 +78,7 @@ public class Annotation implements Serializable {
     private String annotatorId;
 
     @Column(name="annotation_tool")
-    @Size(min=3, max=255)
+    @Size(min=0, max=255)
     @Pattern(regexp = DESCRIPTION)
     private String annotationTool;
     /**
