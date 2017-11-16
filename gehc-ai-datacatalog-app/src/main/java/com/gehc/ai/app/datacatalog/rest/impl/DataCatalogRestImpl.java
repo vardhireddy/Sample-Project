@@ -1116,13 +1116,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 	
 	@Override
-	@RequestMapping(value = "/datacatalog/data-collection/{ids}", method = RequestMethod.DELETE)
-	public ApiResponse deleteDataCollection(@PathVariable String ids, HttpServletRequest request) {
+	@RequestMapping(value = "/datacatalog/data-collection/{id}", method = RequestMethod.DELETE)
+	public ApiResponse deleteDataCollection(@PathVariable String id, HttpServletRequest request) {
 		ApiResponse apiResponse = null;
 		DataSet dataSet = new DataSet();
 		try {
-			if (null != ids && ids.length() > 0) {
-				String[] idStrings = ids.split(",");
+			if (null != id && id.length() > 0) {
+				String[] idStrings = id.split(",");
 				for (int i = 0; i < idStrings.length; i++) {
 					dataSet.setId(Long.valueOf(idStrings[i]));
 						logger.info("[-----Delete DC " + Long.valueOf(idStrings[i]) +"]");
@@ -1134,13 +1134,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							dataSetRepository.delete(dataSet);
 						}
 						apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-								ApplicationConstants.SUCCESS, ids);
+								ApplicationConstants.SUCCESS, id);
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Exception occured while calling delete data collection ", e);
 			apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE,
-					"Id does not exist", ids);
+					"Id does not exist", id);
 		}
 		return apiResponse;
 	}
