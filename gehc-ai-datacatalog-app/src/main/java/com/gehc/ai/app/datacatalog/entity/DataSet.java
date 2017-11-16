@@ -54,8 +54,8 @@ public class DataSet implements Serializable {
 	@NotNull
 	private String name;
 
+	//need to fix it to handle for null or empty string when pattern tag added
 	@Size(min=0, max=255)
-	@Pattern(regexp = DESCRIPTION)
 	private String description;
 
 	//@Column ( name = "image_sets" )
