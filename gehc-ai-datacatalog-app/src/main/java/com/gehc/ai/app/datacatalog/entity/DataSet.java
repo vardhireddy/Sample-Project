@@ -54,7 +54,7 @@ public class DataSet implements Serializable {
 	@NotNull
 	private String name;
 
-	@Size(min=3, max=255)
+	@Size(min=0, max=255)
 	@Pattern(regexp = DESCRIPTION)
 	private String description;
 
@@ -67,7 +67,7 @@ public class DataSet implements Serializable {
     private String type;
 
     @Column ( name = "org_id" )
-	@Size(min=3, max=255)
+	@Size(min=0, max=255)
 	@Pattern(regexp = ELEMENT_NAME)
     private String orgId;
 
