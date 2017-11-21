@@ -68,7 +68,6 @@ public class CORSFilter implements Filter {
     private void setHeaderIfNotPresent( HttpServletResponse response, String key, String value ) {
         logger.debug( "Checking for header [{}]:[{}]", key, value );
         if ( !response.containsHeader( key ) ) {
-            logger.debug( "Header not present [{}]:[{}] : Setting Now", key, value );
             response.setHeader( key, value );
         }
     }
