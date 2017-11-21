@@ -41,8 +41,6 @@ public class CORSFilter implements Filter {
 
         HttpServletResponse response = (HttpServletResponse)res;
         HttpServletRequest request = (HttpServletRequest)req;
-        String requestId = request.getHeader("x-amzn-RequestId");
-        MDC.put( "aws-request-id", requestId );
         String traceId = request.getHeader("X-Amzn-Trace-Id");
 		MDC.put("amzn-trace-id", traceId);
         setHeaderIfNotPresent( response, "Access-Control-Allow-Origin", "*" );
