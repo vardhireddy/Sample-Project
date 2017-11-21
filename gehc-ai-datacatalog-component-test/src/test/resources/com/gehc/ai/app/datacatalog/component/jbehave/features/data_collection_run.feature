@@ -90,3 +90,7 @@ Feature: DataCollection DataCatalog
   When Get DataSummary for GE-Class without org id
   Then verify DataSummary for GE-Class without org id
 
+  Scenario: Delete multiple Data Collections by ids 
+  Given  Multiple Data Collections by ids 
+  When Delete Data collection by ids API is called
+  Then verify Data Collection by ids has been deleted

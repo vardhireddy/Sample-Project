@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -248,7 +249,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/annotation", method = RequestMethod.POST)
-	public ApiResponse saveAnnotation(@RequestBody Annotation annotation) {
+	public ApiResponse saveAnnotation(@Valid @RequestBody Annotation annotation) {
 		ApiResponse apiResponse = null;
 		try {
 			Annotation newAnnotation = annotationRepository.save(annotation);
@@ -369,7 +370,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST)
-	public DataSet saveDataSet(@RequestBody DataSet d, HttpServletRequest request) {
+	public DataSet saveDataSet(@Valid @RequestBody DataSet d, HttpServletRequest request) {
 		logger.info("[In REST, Creating new data collection, orgId = " + request.getAttribute("orgId") + "]");
 		if (null != request.getAttribute("orgId")) {
 			d.setOrgId(request.getAttribute("orgId").toString());
@@ -1112,5 +1113,35 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	@RequestMapping(value = "/datacatalog/data-collection/{id}", method = RequestMethod.DELETE)
+	public ApiResponse deleteDataCollection(@PathVariable String id, HttpServletRequest request) {
+		ApiResponse apiResponse = null;
+		DataSet dataSet = new DataSet();
+		try {
+			if (null != id && id.length() > 0) {
+				String[] idStrings = id.split(",");
+				for (int i = 0; i < idStrings.length; i++) {
+					dataSet.setId(Long.valueOf(idStrings[i]));
+						logger.info("[-----Delete DC " + Long.valueOf(idStrings[i]) +"]");
+						List<DataSet> dataSetLst = getDataSetById(Long.valueOf(idStrings[i]), request);
+						if(!dataSetLst.isEmpty()){
+							logger.debug(" annLst.size() " + dataSetLst.size());
+							dataSetRepository.delete(dataSetLst.get(0));
+						}else{
+							dataSetRepository.delete(dataSet);
+						}
+						apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
+								ApplicationConstants.SUCCESS, id);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Exception occured while calling delete data collection ", e);
+			apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE,
+					"Id does not exist", id);
+		}
+		return apiResponse;
 	}
 }
