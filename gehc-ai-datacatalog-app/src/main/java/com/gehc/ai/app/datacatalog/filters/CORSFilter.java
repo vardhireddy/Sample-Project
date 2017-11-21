@@ -41,8 +41,6 @@ public class CORSFilter implements Filter {
 
         HttpServletResponse response = (HttpServletResponse)res;
         HttpServletRequest request = (HttpServletRequest)req;
-        String requestId = request.getHeader("x-amzn-RequestId");
-        MDC.put( "aws-request-id", requestId );
         String traceId = request.getHeader("X-Amzn-Trace-Id");
 		MDC.put("amzn-trace-id", traceId);
         setHeaderIfNotPresent( response, "Access-Control-Allow-Origin", "*" );
@@ -70,7 +68,6 @@ public class CORSFilter implements Filter {
     private void setHeaderIfNotPresent( HttpServletResponse response, String key, String value ) {
         logger.debug( "Checking for header [{}]:[{}]", key, value );
         if ( !response.containsHeader( key ) ) {
-            logger.debug( "Header not present [{}]:[{}] : Setting Now", key, value );
             response.setHeader( key, value );
         }
     }
