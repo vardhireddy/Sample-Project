@@ -12,6 +12,10 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+import static com.gehc.ai.app.common.constants.ValidationConstants.USER_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
+
 import java.sql.Date;
 
 import javax.persistence.Column;
@@ -20,6 +24,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
@@ -38,9 +44,13 @@ public class AnnotationProperties {
      * The organization who owns the data. 
      */
     @Column(name="org_id")
+    @Size(max=255)
+    @Pattern(regexp = UUID)
     private String orgId;
     
     @Column(name="resource_name")
+    @Size(max=500)
+    @Pattern(regexp = ENTITY_NAME)
     private String resourceName;
     public String getResourceName() {
 		return resourceName;
@@ -60,6 +70,8 @@ public class AnnotationProperties {
     private Date createdDate;
     
     @Column(name="created_by")
+    @Size(max=200)
+    @Pattern(regexp = USER_NAME)
     private String createdBy;
 
 	public Long getId() {

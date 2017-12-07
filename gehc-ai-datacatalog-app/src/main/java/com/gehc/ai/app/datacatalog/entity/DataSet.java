@@ -32,7 +32,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ELEMENT_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+import static com.gehc.ai.app.common.constants.ValidationConstants.USER_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
@@ -48,14 +51,18 @@ public class DataSet implements Serializable {
     private Long id;
 
     @Column ( name = "schema_version" )
+    @Size(max=50)
+	@Pattern(regexp = ENTITY_NAME)
 	private String schemaVersion;
+    
 	@Size(min=3, max=200)
-	@Pattern(regexp = DESCRIPTION)
+	@Pattern(regexp = ENTITY_NAME)
 	@NotNull
 	private String name;
 
 	//need to fix it to handle for null or empty string when pattern tag added
-	@Size(min=0, max=255)
+	@Size(min=0, max=500)
+	@Pattern(regexp = DESCRIPTION)
 	private String description;
 
 	//@Column ( name = "image_sets" )
@@ -64,14 +71,19 @@ public class DataSet implements Serializable {
 	private String createdDate;
 
 	//private int imageSetsSize;
+	@Size(min=0, max=50)
+	@Pattern(regexp = DATA_SET_TYPE)
+	@NotNull
     private String type;
-
+	
     @Column ( name = "org_id" )
 	@Size(min=0, max=255)
-	@Pattern(regexp = ELEMENT_NAME)
+	@Pattern(regexp = UUID)
     private String orgId;
 
     @Column ( name = "created_by" )
+    @Size(min=0, max=200)
+	@Pattern(regexp = USER_NAME)
     private String createdBy;
     /**
      * Flexible JSON object to store properties of data collection
