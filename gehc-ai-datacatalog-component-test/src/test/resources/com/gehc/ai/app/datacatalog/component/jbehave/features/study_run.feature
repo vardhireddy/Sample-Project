@@ -32,6 +32,11 @@ Feature: Study DataCatalog
   When save Study with Null Study id
   Then verify Saving Study with Null Study id
 
+  Scenario: Save Study with Null PatientDbId
+  Given Save Study with Null PatientDbId - DataSetUp Provided
+  When save Study with Null PatientDbId
+  Then verify Saving Study with Null PatientDbId
+  
   Scenario: Save new study
     Given Save new study - DataSetUp Provided
     When Save new study

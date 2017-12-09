@@ -24,6 +24,11 @@ Feature: DataCollection DataCatalog
   Given Retrieve DataSet by Type DataSetUp Provided
   When Get data collection by Type -  Annotation
   Then verify data collection by Type -  Annotation
+  
+  Scenario: Retrieve DataSet by Type return empty
+  Given Return empty array list
+  When Get data collection by Type is not valid
+  Then verify data collection by Type is not valid
 
   Scenario: Save DataSet
   Given Save DataSet - DataSetUp Provided
@@ -39,6 +44,26 @@ Feature: DataCollection DataCatalog
   Given DataCatalog Raw Target Data - DataSetUp Provided
   When get DataCatalog Raw Target Data
   Then verify DataCatalog Raw Target Data
+  
+  Scenario: DataCatalog Raw Target Data with invalid Id- throws Exception
+  Given DataCatalog Raw Target Data with invalid Id
+  When get DataCatalog Raw Target Data with invalid Id
+  Then verify DataCatalog Raw Target Data with invalid Id- throws Exception
+  
+  Scenario: DataCatalog Raw Target Data with long Id- throws Exception
+  Given DataCatalog Raw Target Data with long Id
+  When get DataCatalog Raw Target Data with long Id
+  Then verify DataCatalog Raw Target Data with long Id- throws Exception
+  
+  Scenario: DataCatalog Raw Target Data with invalid annotationType- throws Exception
+  Given DataCatalog Raw Target Data with invalid annotationType
+  When get DataCatalog Raw Target Data with invalid annotationType
+  Then verify DataCatalog Raw Target Data with invalid annotationType- throws Exception
+  
+  Scenario: DataCatalog Raw Target Data with long annotationType- throws Exception
+  Given DataCatalog Raw Target Data with long annotationType
+  When get DataCatalog Raw Target Data with long annotationType
+  Then verify DataCatalog Raw Target Data with long annotationType- throws Exception
 
   Scenario: Retrieve Image Set with ID
   Given Retrieve Image Set with ID DataSetUp Provided
@@ -84,6 +109,11 @@ Feature: DataCollection DataCatalog
   Given Retrieve DataSummary for GE-Class
   When Get DataSummary for GE-Class
   Then verify DataSummary for GE-Class
+  
+  Scenario: Retrieve DataSummary for GE-Class with invalid annotation type
+  Given Retrieve DataSummary for GE-Class with invalid annotation type
+  When Get DataSummary for GE-Class with invalid annotation type
+  Then verify DataSummary for GE-Class with invalid annotation type
 
   Scenario: Retrieve DataSummary for GE-Class without org id
   Given Retrieve DataSummary for GE-Class without org id

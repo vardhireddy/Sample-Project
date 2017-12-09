@@ -501,7 +501,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			Pattern pattern = Pattern.compile(patternStr);
 			Matcher matcher = pattern.matcher(type);		
 			boolean matchFound = matcher.matches();		
-			if(!matchFound || type.length() > 50){
+			if(!matchFound){
 				logger.debug("BAD REQUEST : type is not valid");
 				return new ArrayList<DataSet>();
 			}

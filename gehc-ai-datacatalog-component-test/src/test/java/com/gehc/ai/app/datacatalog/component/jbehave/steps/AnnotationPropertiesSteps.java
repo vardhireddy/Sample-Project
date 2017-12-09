@@ -51,7 +51,7 @@ public class AnnotationPropertiesSteps {
     private final AnnotationPropRepository annotationPropRepository;
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
-    private String AnnotationProp = "[{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"123\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"},{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"123\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"}]";
+    private String AnnotationProp = "[{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"},{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"}]";
     private Throwable throwable = null;
     @Autowired
     public AnnotationPropertiesSteps(MockMvc mockMvc, AnnotationPropRepository annotationPropRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
@@ -82,7 +82,7 @@ public class AnnotationPropertiesSteps {
                 post("/api/v1/annotation-properties")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(AnnotationPropertiesToJSON(annotationProperties))
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
     
@@ -90,6 +90,56 @@ public class AnnotationPropertiesSteps {
     public void thenVerifyStoreAnAnnotationPropertiesSetData() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
+    }
+    
+    @Given("Get Annotation Properties set data with invalid orgId Throws Exception - DataSetUp Provided")
+    public void givenGetAnnotationPropertiesSetDataWithInvalidOrgIdThrowsExceptionDataSetUpProvided() {
+    	AnnotationProperties annotationProperties =  setAnnotationProp();
+        List<AnnotationProperties> annoPropList =  new ArrayList<AnnotationProperties>();
+        annoPropList.add(annotationProperties);
+        when(annotationPropRepository.findByOrgId(anyString())).thenReturn(annoPropList);
+    }
+
+
+    @When("Get Annotation Properties set data with invalid orgId - Throws Exception")
+    public void whenGetAnnotationPropertiesSetDataWithInvalidOrgIdThrowsException() throws Exception{
+    	retrieveResult = mockMvc.perform(
+                get("/api/v1/annotation-properties?orgId=123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "123")
+        );
+    }
+
+    @Then("Verify Get Annotation Properties set data with invalid orgId Throws Exception")
+    public void thenVerifyGetAnnotationPropertiesSetDataWithInvalidOrgIdThrowsException() throws Exception{
+    	retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
+    
+    @Given("Get Annotation Properties set data with long orgId Throws Exception - DataSetUp Provided")
+    public void givenGetAnnotationPropertiesSetDataWithLongOrgIdThrowsExceptionDataSetUpProvided() {
+    	AnnotationProperties annotationProperties =  setAnnotationProp();
+        List<AnnotationProperties> annoPropList =  new ArrayList<AnnotationProperties>();
+        annoPropList.add(annotationProperties);
+        when(annotationPropRepository.findByOrgId(anyString())).thenReturn(annoPropList);
+    }
+
+
+    @When("Get Annotation Properties set data with long orgId - Throws Exception")
+    public void whenGetAnnotationPropertiesSetDataWithLongOrgIdThrowsException() throws Exception{
+    	String longOrgId = "12345678-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-12345678-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-12345678-abcd-42ca-a317-4d408b98c500-4d408b98c500-abcd-42ca-a317-4d408b98c500";
+    	retrieveResult = mockMvc.perform(
+                get("/api/v1/annotation-properties?orgId=" + longOrgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", longOrgId)
+        );
+    }
+
+
+    @Then("Verify Get Annotation Properties set data with long orgId Throws Exception")
+    public void thenVerifyGetAnnotationPropertiesSetDataWithLongOrgIdThrowsException() throws Exception{
+    	retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
     @Given("Get Annotation Properties set data - DataSetUp Provided")
@@ -105,9 +155,9 @@ public class AnnotationPropertiesSteps {
     @When("Get Annotation Properties set data")
     public void whenGetAnnotationPropertiesSetData() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/annotation-properties?orgId=12")
+                get("/api/v1/annotation-properties?orgId=12345678-abcd-42ca-a317-4d408b98c500")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
 
@@ -126,7 +176,7 @@ public class AnnotationPropertiesSteps {
     public void whenGetAnnotationPropertiesSetDataThrowsServiceException() {
         try{
         retrieveResult = mockMvc.perform(
-                get("/api/v1/annotation-properties?orgId=12")
+                get("/api/v1/annotation-properties?orgId=12345678-abcd-42ca-a317-4d408b98c500")
                         .contentType(MediaType.APPLICATION_JSON)
         );}
         catch(Exception e){
@@ -150,7 +200,7 @@ public class AnnotationPropertiesSteps {
     public void whenGetAnnotationPropertiesSetDataThrowsException() {
         try{
             retrieveResult = mockMvc.perform(
-                    get("/api/v1/annotation-properties?orgId=12")
+                    get("/api/v1/annotation-properties?orgId=12345678-abcd-42ca-a317-4d408b98c500")
                             .contentType(MediaType.APPLICATION_JSON)
             );}
         catch(Exception e){
@@ -178,7 +228,7 @@ public class AnnotationPropertiesSteps {
                 post("/api/v1/annotation-properties")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(AnnotationPropertiesToJSON(annotationProperties))
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );}
         catch(Exception e){
             throwable = e;
@@ -201,7 +251,7 @@ public class AnnotationPropertiesSteps {
         annotationProperties.setCreatedBy("test");
         annotationProperties.setCreatedDate(commonSteps.getDate());
         annotationProperties.setId(1L);
-        annotationProperties.setOrgId("123");
+        annotationProperties.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         annotationProperties.setResourceName("TEST");
         annotationProperties.setSchemaVersion("123");
         return annotationProperties;
