@@ -34,7 +34,6 @@ import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
 import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-import static com.gehc.ai.app.common.constants.ValidationConstants.USER_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
 
 @Entity
@@ -83,7 +82,7 @@ public class DataSet implements Serializable {
 
     @Column ( name = "created_by" )
     @Size(min=0, max=200)
-	@Pattern(regexp = USER_NAME)
+	@Pattern(regexp = ENTITY_NAME)
     private String createdBy;
     /**
      * Flexible JSON object to store properties of data collection

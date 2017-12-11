@@ -110,6 +110,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String DATA_FORMAT = "data_format";
 	public static final String INSTITUTION = "institution";
 	public static final String EQUIPMENT = "equipment";
+	public static final int ORG_ID_LENGTH = 255;
+	public static final int DATA_COLLECTION_ID_LENGTH = 11;
+	public static final int ANNOTATION_TYPE_LENGTH = 500;
 
 	@Value("${coolidge.micro.inference.url}")
 	private String coolidgeMInferenceUrl;
@@ -344,7 +347,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			Pattern pattern = Pattern.compile(patternStr);
 			Matcher matcher = pattern.matcher(orgId);		
 			boolean matchFound = matcher.matches();		
-			if(!matchFound || orgId.length() > 255){
+			if(!matchFound || orgId.length() > ORG_ID_LENGTH){
 				logger.debug("BAD REQUEST : org id is not valid");
 				return new ArrayList<AnnotationProperties>();
 			}
@@ -994,7 +997,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			Pattern patternAnnotationType = Pattern.compile(patternStrAnnotationType);
 			Matcher matcherAnnotationType = patternAnnotationType.matcher(annotationType);		
 			boolean matchFoundAnnotationType = matcherAnnotationType.matches();	
-			if(!matchFoundAnnotationType || !matchFoundId || id.length() > 11 || annotationType.length() > 500){
+			if(!matchFoundAnnotationType || !matchFoundId || id.length() > DATA_COLLECTION_ID_LENGTH || annotationType.length() > ANNOTATION_TYPE_LENGTH){
 				logger.debug("Datacollection id or annotation type is not valid");
 				throw new BadRequestException("Datacollection id or annotation type is not valid");
 			}

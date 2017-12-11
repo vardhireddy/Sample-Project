@@ -26,7 +26,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
 import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
-import static com.gehc.ai.app.common.constants.ValidationConstants.USER_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 import java.io.Serializable;
@@ -75,7 +74,7 @@ public class Patient implements Serializable {
      */
     @Column(name="patient_name")
     @Size(max=500)
-    @Pattern(regexp = USER_NAME)
+    @Pattern(regexp = ENTITY_NAME)
     private String patientName;
     public String getPatientName() {
         return patientName;
@@ -171,7 +170,7 @@ public class Patient implements Serializable {
      */
     @Column(name="upload_by")
     @Size(max=255)
-    @Pattern(regexp = USER_NAME)
+    @Pattern(regexp = ENTITY_NAME)
     private String uploadBy;
     public String getUploadBy() {
         return uploadBy;

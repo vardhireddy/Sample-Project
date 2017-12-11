@@ -15,10 +15,8 @@ package com.gehc.ai.app.datacatalog.entity;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
-import static com.gehc.ai.app.common.constants.ValidationConstants.INSTANCE_UID;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DIGIT;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.ValidationConstants.USER_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 import java.sql.Date;
@@ -83,7 +81,7 @@ public class Study {
      */
     @Column (name="study_instance_uid")
     @Size(max=255)
-    @Pattern(regexp = INSTANCE_UID)
+    @Pattern(regexp = ENTITY_NAME)
     private String studyInstanceUid;
     public String getStudyInstanceUid() {
         return studyInstanceUid;
@@ -153,7 +151,7 @@ public class Study {
      */
     @Column (name="referring_physician")
     @Size(max=255)
-    @Pattern(regexp = USER_NAME)
+    @Pattern(regexp = ENTITY_NAME)
     private String referringPhysician;
     public String getReferringPhysician() {
         return referringPhysician;
@@ -210,7 +208,7 @@ public class Study {
     */
     @Column(name="upload_by")
     @Size(max=255)
-    @Pattern(regexp = USER_NAME)
+    @Pattern(regexp = ENTITY_NAME)
     private String uploadBy;
     public String getUploadBy() {
         return uploadBy;

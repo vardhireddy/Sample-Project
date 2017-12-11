@@ -15,8 +15,6 @@ package com.gehc.ai.app.datacatalog.entity;
 import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.ValidationConstants.INSTANCE_UID;
-import static com.gehc.ai.app.common.constants.ValidationConstants.USER_NAME;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -82,7 +80,7 @@ public class ImageSeries implements Serializable {
 	
 	@Column(name = "series_instance_uid")
 	@Size(min=0, max=255)
-	@Pattern(regexp = INSTANCE_UID)
+	@Pattern(regexp = ENTITY_NAME)
 	private String seriesInstanceUid;
 	
 	@Size(min=0, max=100)
@@ -136,7 +134,7 @@ public class ImageSeries implements Serializable {
 	 */
 	@Column(name = "upload_by")
 	@Size(min=0, max=255)
-	@Pattern(regexp = USER_NAME)
+	@Pattern(regexp = ENTITY_NAME)
 	private String uploadBy;
 	/**
 	 * Date data was uploaded into database. Should be left to database to

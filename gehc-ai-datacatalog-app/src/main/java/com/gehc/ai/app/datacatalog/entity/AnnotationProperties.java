@@ -13,7 +13,6 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-import static com.gehc.ai.app.common.constants.ValidationConstants.USER_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
 
 import java.sql.Date;
@@ -71,7 +70,7 @@ public class AnnotationProperties {
     
     @Column(name="created_by")
     @Size(max=200)
-    @Pattern(regexp = USER_NAME)
+    @Pattern(regexp = ENTITY_NAME)
     private String createdBy;
 
 	public Long getId() {
