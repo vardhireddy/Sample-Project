@@ -3,9 +3,9 @@ Feature: DataCatalog Component - Cos Notification
 Narrative: As a data scientist, I should be able to save Cos Notification event in datacatalog
 
 @functional
-@crs
+@crs_10732
 
-@test
+@test_53602
 Scenario: Store Cos Notification in DataCatalog
 Meta: @automated
 Given Store Cos Notification in DataCatalog - DataSetUp Provided
