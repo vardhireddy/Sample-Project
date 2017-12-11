@@ -11,58 +11,58 @@ Throw Exception while Storing an annotation set data
 Throw Exception while Delete annotation set data for Ids
 
 @functional
-@crs
+@crs_10731
 
-@test
+@test_53594
 Scenario: Store an annotation set data
 Meta: @automated
 Given Store an annotation set data - DataSetUp Provided
 When Store an annotation set data
 Then Verify Store an annotation set data
 
-@test
+@test_53595
 Scenario: Get annotation set data
 Meta: @automated
 Given Get annotation set data - DataSetUp Provided
 When Get annotation set data
 Then Verify Get annotation set data
 
-@test
+@test_53596
 Scenario: Get annotation set data by Imageset Id
 Meta: @automated
 Given Get annotation set data by Imageset Id - DataSetUp Provided
 When Get annotation set data by Imageset Id
 Then Verify Get annotation set data by Imageset Id
 
-@test
+@test_53597
 Scenario: Get annotation set data for Ids
 Meta: @automated
 Given Get annotation set data for Ids - DataSetUp Provided
 When Get annotation set data for Ids
 Then Verify Get annotation set data for Ids
 
-@test
+@test_53598
 Scenario: Delete annotation set data for Ids
 Meta: @automated
 Given Delete annotation set data for Ids - DataSetUp Provided
 When Delete annotation set data for Ids
 Then Verify Delete annotation set data for Ids
 
-@test
+@test_53599
 Scenario: Delete annotation set data for Ids with out org id
 Meta: @automated
 Given Delete annotation set data for Ids with out org id - DataSetUp Provided
 When Delete annotation set data for Ids with out org id
 Then Verify Delete annotation set data for Ids with out org id
 
-@test
+@test_53600
 Scenario: Throw Exception while Storing an annotation set data
 Meta: @automated
 Given Store an annotation set data for throwing exception - DataSetUp Provided
 When Store an annotation set data throws exception
 Then Verify Store an annotation set data throws exception
 
-@test
+@test_53601
 Scenario: Throw Exception while Delete annotation set data for Ids
 Meta: @automated
 Given Delete annotation set data for Ids throws exception - DataSetUp Provided

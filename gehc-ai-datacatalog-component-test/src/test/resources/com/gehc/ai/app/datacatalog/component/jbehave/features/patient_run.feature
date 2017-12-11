@@ -1,4 +1,4 @@
-Feature: DataCatalog Component -  Patient
+Feature: DataCatalog Component -  Study
 
 Narrative: As a data scientist, I should be able to
 Retrieve study by patient Provided
@@ -13,7 +13,7 @@ Save Patient with Null ID
 Save Patient
 Retrieve image series by patient id
 Save Existing Patient retrievs patient details
-Retrieve image series by patient id when patient ids list returned null
+Retrieve image series by patient id with patient ids list returned null
 Retrieve image series by patient id
 
 @functional
@@ -102,4 +102,3 @@ Meta: @automated
 Given Retrieve image series by patient when patient ids list returned empty- DataSetUp Provided
 When Get image series by patient ids when patient ids list returned empty
 Then verify image series by patient ids when patient ids list returned empty
-
