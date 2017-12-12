@@ -44,7 +44,7 @@ public class AnnotationSteps {
     private final CommonSteps commonSteps;
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
-    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"1\",\"orgId\":\"Test\",\"annotatorId\":\"123\",\"annotationTool\":\"Tool\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSetId\":1,\"item\":{}}]";
+    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"v1\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"annotatorId\":\"123\",\"annotationTool\":\"Tool\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSetId\":1,\"item\":{}}]";
 
     @Autowired
     public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
@@ -74,7 +74,7 @@ public class AnnotationSteps {
                 post("/api/v1/annotation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(AnnotationToJSON(annotation))
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
 
@@ -95,7 +95,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation?imagesetid=100")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
 
     }
@@ -118,7 +118,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
 
     }
@@ -141,7 +141,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
 
     }
@@ -164,7 +164,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 delete("/api/v1/annotation/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
 
     }
@@ -211,7 +211,7 @@ public class AnnotationSteps {
                 post("/api/v1/annotation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(AnnotationToJSON(annotation))
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
 
@@ -231,7 +231,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 delete("/api/v1/annotation/ ")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
     @Then("Verify Delete annotation set data for Ids throws exception")
@@ -251,7 +251,7 @@ public class AnnotationSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/annotation/,")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
     @Then("Verify Get annotation set data for Ids null")

@@ -119,8 +119,8 @@ public class CommonSteps {
        annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
         annotation.setType("type");
-        annotation.setSchemaVersion("1");
-        annotation.setOrgId("Test");
+        annotation.setSchemaVersion("v1");
+        annotation.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         annotation.setImageSetId(1L);
         return annotation;
     }

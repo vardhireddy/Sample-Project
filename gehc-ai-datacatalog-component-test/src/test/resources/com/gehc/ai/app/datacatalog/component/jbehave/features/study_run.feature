@@ -60,3 +60,10 @@ Meta: @automated
 Given Save new study - DataSetUp Provided
 When Save new study
 Then verify Save new study
+
+@test
+Scenario: Save Study with Null PatientDbId
+Meta: @automated
+Given Save Study with Null PatientDbId - DataSetUp Provided
+When save Study with Null PatientDbId
+Then verify Saving Study with Null PatientDbId

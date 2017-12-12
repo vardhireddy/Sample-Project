@@ -42,3 +42,17 @@ Meta: @automated
 Given Post Annotation Properties set data Throws Exception - DataSetUp Provided
 When Post Annotation Properties set data - Throws Exception
 Then Verify Post Annotation Properties set data Throws Exception
+
+@test
+Scenario: Get Annotation Properties set data with invalid orgId - Throws Exception
+Meta: @automated
+Given Get Annotation Properties set data with invalid orgId Throws Exception - DataSetUp Provided
+When Get Annotation Properties set data with invalid orgId - Throws Exception
+Then Verify Get Annotation Properties set data with invalid orgId Throws Exception
+
+@test
+Scenario: Get Annotation Properties set data with long orgId - Throws Exception
+Meta: @automated
+Given Get Annotation Properties set data with long orgId Throws Exception - DataSetUp Provided
+When Get Annotation Properties set data with long orgId - Throws Exception
+Then Verify Get Annotation Properties set data with long orgId Throws Exception
