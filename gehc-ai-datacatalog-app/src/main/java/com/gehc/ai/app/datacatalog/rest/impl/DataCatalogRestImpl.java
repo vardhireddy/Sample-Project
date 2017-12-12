@@ -987,21 +987,20 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity("Datacollection id and annotation type is required to get annotation for a data collection").build());
 		}
-		else{
-			String patternStrId = DIGIT;
-			Pattern patternId = Pattern.compile(patternStrId);
-			Matcher matcherId = patternId.matcher(id);		
-			boolean matchFoundId = matcherId.matches();	
-			
-			String patternStrAnnotationType = ENTITY_NAME;
-			Pattern patternAnnotationType = Pattern.compile(patternStrAnnotationType);
-			Matcher matcherAnnotationType = patternAnnotationType.matcher(annotationType);		
-			boolean matchFoundAnnotationType = matcherAnnotationType.matches();	
-			if(!matchFoundAnnotationType || !matchFoundId || id.length() > DATA_COLLECTION_ID_LENGTH || annotationType.length() > ANNOTATION_TYPE_LENGTH){
-				logger.debug("Datacollection id or annotation type is not valid");
-				throw new BadRequestException("Datacollection id or annotation type is not valid");
-			}
+		String patternStrId = DIGIT;
+		Pattern patternId = Pattern.compile(patternStrId);
+		Matcher matcherId = patternId.matcher(id);		
+		boolean matchFoundId = matcherId.matches();	
+		
+		String patternStrAnnotationType = ENTITY_NAME;
+		Pattern patternAnnotationType = Pattern.compile(patternStrAnnotationType);
+		Matcher matcherAnnotationType = patternAnnotationType.matcher(annotationType);		
+		boolean matchFoundAnnotationType = matcherAnnotationType.matches();	
+		if(!matchFoundAnnotationType || !matchFoundId || id.length() > DATA_COLLECTION_ID_LENGTH || annotationType.length() > ANNOTATION_TYPE_LENGTH){
+			logger.debug("Datacollection id or annotation type is not valid");
+			throw new BadRequestException("Datacollection id or annotation type is not valid");
 		}
+		
 		ResponseBuilder responseBuilder;
 		List<AnnotationImgSetDataCol> annImgSetDCLst = null;
 		List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
