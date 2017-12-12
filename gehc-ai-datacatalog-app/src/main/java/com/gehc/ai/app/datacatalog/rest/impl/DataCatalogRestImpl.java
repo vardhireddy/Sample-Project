@@ -975,18 +975,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return request.getAttribute("orgId") == null ? new ArrayList<Patient>()
 				: patientRepository.findByOrgId(request.getAttribute("orgId").toString());
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	@RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
-	public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
-		logger.info(" Entering method getRawTargetData --> id: " + id + " Type: " + annotationType);
-		// Note: works fine with new DC which has image sets as Array of Longs
-		if ((id == null) || (id.length() == 0) || annotationType == null ) {
-			logger.debug("Datacollection id and annotation type is required to get annotation for a data collection");
-			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity("Datacollection id and annotation type is required to get annotation for a data collection").build());
-		}
+	
+	private void checkInvalidType(String id,String annotationType){
 		String patternStrId = DIGIT;
 		Pattern patternId = Pattern.compile(patternStrId);
 		Matcher matcherId = patternId.matcher(id);		
@@ -1000,7 +990,22 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			logger.debug("Datacollection id or annotation type is not valid");
 			throw new BadRequestException("Datacollection id or annotation type is not valid");
 		}
-		
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
+	public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
+		logger.info(" Entering method getRawTargetData --> id: " + id + " Type: " + annotationType);
+		// Note: works fine with new DC which has image sets as Array of Longs
+		if ((id == null) || (id.length() == 0) || annotationType == null ) {
+			logger.debug("Datacollection id and annotation type is required to get annotation for a data collection");
+			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity("Datacollection id and annotation type is required to get annotation for a data collection").build());
+		}
+		else{
+			checkInvalidType(id,annotationType);
+		}
 		ResponseBuilder responseBuilder;
 		List<AnnotationImgSetDataCol> annImgSetDCLst = null;
 		List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
