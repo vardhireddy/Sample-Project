@@ -14,8 +14,10 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -566,7 +568,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	private List<ImageSeries> getImageSeriesList(Map<String, Object> validParams,
-			List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn) {
+			List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn) throws DataCatalogException {
 		List<ImageSeries> imageSeriesLst;
 		List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID).toString());
 		List<ImageSeries> patientImageSeriesLst = new ArrayList<ImageSeries>();
@@ -620,7 +622,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 
 	private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, Object> validParams,
-			List<String> orgIdLst) {
+			List<String> orgIdLst) throws DataCatalogException {
 		logger.debug("In REST , get image series list with valid params and orgId");
 		List<ImageSeries> imageSeriesLst = null;
 		if (validParams.containsKey(MODALITY)) {
@@ -652,7 +654,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithModalityEquiment(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+	private List<ImageSeries> getImageSeriesWithModalityEquiment(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) throws DataCatalogException {
 		logger.debug("In REST , get image series with modality ,equiment");
 		List<ImageSeries> imageSeriesLst;
 		List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
@@ -661,7 +663,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithInstitution(Map<String, Object> validParams, List<String> orgIdLst) {
+	private List<ImageSeries> getImageSeriesWithInstitution(Map<String, Object> validParams, List<String> orgIdLst) throws DataCatalogException {
 		logger.debug("In REST , get image series with institution");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
@@ -676,7 +678,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithDataFormat(Map<String, Object> validParams, List<String> orgIdLst) {
+	private List<ImageSeries> getImageSeriesWithDataFormat(Map<String, Object> validParams, List<String> orgIdLst) throws DataCatalogException {
 		logger.debug("In REST , get image series with data format");
 		List<ImageSeries> imageSeriesLst;
 		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
@@ -701,7 +703,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithAnatomy(Map<String, Object> validParams, List<String> orgIdLst) {
+	private List<ImageSeries> getImageSeriesWithAnatomy(Map<String, Object> validParams, List<String> orgIdLst) throws DataCatalogException {
 		logger.debug("In REST , get image series with anatomy");
 		List<ImageSeries> imageSeriesLst;
 		List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
@@ -725,7 +727,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithAnatomyInstitutionAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst) {
+	private List<ImageSeries> getImageSeriesWithAnatomyInstitutionAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst) throws DataCatalogException {
 		logger.debug("In REST , get image series with anatomy, institution and/Or equipment");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
@@ -740,7 +742,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithAnatomyDataFomatInstitutionAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst, List<String> dataFormatLst) {
+	private List<ImageSeries> getImageSeriesWithAnatomyDataFomatInstitutionAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst, List<String> dataFormatLst) throws DataCatalogException {
 		logger.debug("In REST , get Image series with anatomy, data format, institution and/Or equipment");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
@@ -755,7 +757,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithModalityInstitution(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+	private List<ImageSeries> getImageSeriesWithModalityInstitution(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) throws DataCatalogException {
 		logger.debug("In REST , get Image series with modality, institution");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
@@ -769,7 +771,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithModalityDataFormat(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+	private List<ImageSeries> getImageSeriesWithModalityDataFormat(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) throws DataCatalogException {
 		logger.debug("In REST , get Image series with modality, data format");
 		List<ImageSeries> imageSeriesLst;
 		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
@@ -796,7 +798,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithModalityAnatomy(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) {
+	private List<ImageSeries> getImageSeriesWithModalityAnatomy(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst) throws DataCatalogException {
 		logger.debug("In REST , get Image series with modality , anatomy");
 		List<ImageSeries> imageSeriesLst;
 		List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
@@ -812,7 +814,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrEquipment(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) throws DataCatalogException {
 		logger.debug("In REST , get Image series with modality, anatomy and/Or equipment");
 		List<ImageSeries> imageSeriesLst;
 		if (validParams.containsKey(EQUIPMENT)) {
@@ -826,7 +828,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrInstitution(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrInstitution(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) throws DataCatalogException {
 		logger.debug("In REST , get Image series with modality, anatomy and/or institution");
 		List<ImageSeries> imageSeriesLst;
 		List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
@@ -841,7 +843,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imageSeriesLst;
 	}
 
-	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndDataFormat(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) {
+	private List<ImageSeries> getImageSeriesWithModalityAnatomyAndDataFormat(Map<String, Object> validParams, List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) throws DataCatalogException {
 		logger.debug("In REST , get Image series with modality, anatomy, data format");
 		List<ImageSeries> imageSeriesLst;
 		List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
@@ -904,13 +906,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return imgSetWithOutAnn;
 	}
 
-	private List<String> getListOfStringsFromParams(String values) {
+	private List<String> getListOfStringsFromParams(String values) throws DataCatalogException {
 		List<String> valueLst = new ArrayList<String>();
 		if (null != values && !values.isEmpty()) {
 			String[] valueStrings = values.split(",");
 			if (null != valueStrings && valueStrings.length > 0) {
 				for (int i = 0; i < valueStrings.length; i++)
-					valueLst.add(valueStrings[i].toLowerCase());
+					try {
+						valueLst.add(URLDecoder.decode(valueStrings[i], "UTF-8").toLowerCase());
+					} catch (UnsupportedEncodingException e) {
+						throw new DataCatalogException("Unable to decode request params");
+					}
 			}
 		}
 		return valueLst;
