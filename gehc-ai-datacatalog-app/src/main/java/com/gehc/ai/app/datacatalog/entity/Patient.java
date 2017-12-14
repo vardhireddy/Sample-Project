@@ -22,6 +22,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+
 import java.io.Serializable;
 import java.sql.Date;
 
@@ -53,6 +59,8 @@ public class Patient implements Serializable {
 //	}
 
 	@Column(name="schema_version")
+	@Size(max=50)
+    @Pattern(regexp = ENTITY_NAME)
     private String schemaVersion;
     public String getSchemaVersion() {
         return schemaVersion;
@@ -65,6 +73,8 @@ public class Patient implements Serializable {
      * Alphabetic component of Patient Name in DICOM tag (0010,0010). Phonetic and ideographic components are not included.
      */
     @Column(name="patient_name")
+    @Size(max=500)
+    @Pattern(regexp = ENTITY_NAME)
     private String patientName;
     public String getPatientName() {
         return patientName;
@@ -77,6 +87,8 @@ public class Patient implements Serializable {
      * DICOM tag (0010,0020)
      */
     @Column(name="patient_id")
+    @Size(min=1, max=255)
+    @Pattern(regexp = ENTITY_NAME)
     private String patientId;
     public String getPatientId() {
         return patientId;
@@ -89,6 +101,8 @@ public class Patient implements Serializable {
      * Birth date is intentionally left as a string so it can be whatever is in the DICOM tag (0010,0030)
      */
     @Column(name="birth_date")
+    @Size(max=255)
+    @Pattern(regexp = ENTITY_NAME)
     private String birthDate;
     public String getBirthDate() {
         return birthDate;
@@ -100,6 +114,8 @@ public class Patient implements Serializable {
     /**
      * DICOM tag (0010,0040)
      */
+    @Size(max=50)
+    @Pattern(regexp = ENTITY_NAME)
     private String gender;
     public String getGender() {
         return gender;
@@ -111,6 +127,8 @@ public class Patient implements Serializable {
     /**
      * Age is intentionally left as a string so it can be whatever is in the DICOM tag (0010,1010)
      */
+    @Size(max=255)
+    @Pattern(regexp = ENTITY_NAME)
     private String age;
     public String getAge() {
         return age;
@@ -123,6 +141,8 @@ public class Patient implements Serializable {
      * The organization who owns or uploads the data. This could be an entry in an org database
      */
     @Column(name="org_id")
+    @Size(max=255)
+    @Pattern(regexp = UUID)
     private String orgId;
     public String getOrgId() { return orgId; }
     public void setOrgId(String orgId) {
@@ -149,6 +169,8 @@ public class Patient implements Serializable {
      * An identifier for the one who uploaded the data. This allows to query for the data uploaded by a specific person.
      */
     @Column(name="upload_by")
+    @Size(max=255)
+    @Pattern(regexp = ENTITY_NAME)
     private String uploadBy;
     public String getUploadBy() {
         return uploadBy;

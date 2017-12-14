@@ -35,7 +35,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ELEMENT_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 /**
  * @author 212071558
@@ -57,7 +58,7 @@ public class Annotation implements Serializable {
 
     @Column(name="schema_version")
     @Size(min=0, max=50)
-    @Pattern(regexp = DESCRIPTION)
+    @Pattern(regexp = ENTITY_NAME)
     private String schemaVersion;
 
     /**
@@ -65,14 +66,14 @@ public class Annotation implements Serializable {
      */
     @Column(name="org_id")
     @Size(min=0, max=255)
-    @Pattern(regexp = ELEMENT_NAME)
+    @Pattern(regexp = UUID)
     private String orgId;
 
     /**
      * An identifier for the one who annotated the data. This allows to query for the data annotated by a specific person.
      */
     @Column(name="annotator_id")
-    @Size(min=3, max=255)
+    @Size(min=1, max=255)
     @Pattern(regexp = DESCRIPTION)
     @NotNull
     private String annotatorId;

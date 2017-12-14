@@ -12,12 +12,16 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
@@ -36,6 +40,8 @@ public class CosNotification {
         this.id = id;
     }
     @Column( name = "org_id" )
+    @Size(max=255)
+    @Pattern(regexp = UUID)
     private String orgId;
 
      /**
