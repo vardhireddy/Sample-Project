@@ -91,11 +91,10 @@ public class ImageSeries implements Serializable {
 	@Pattern(regexp = ENTITY_NAME)
 	private String institution;
 	
-	@Size(min=0, max=100)
-	@Pattern(regexp = ENTITY_NAME)
+
 	private String equipment;
 	
-	@Pattern(regexp = ENTITY_NAME)
+
 	private String manufacturer;
 	
 	@Column(name = "image_type")
