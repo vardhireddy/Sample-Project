@@ -26,5 +26,14 @@ experiment.targetData.gtMaskLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.
 experiment.targetData.imgLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
 experiment.targetData.locationType: s3
 uom.user.me.url: ${uom_api_gateway_url:https://6zpi3igymc.execute-api.us-east-1.amazonaws.com/prdge_idam_uomapi}/v1/user/me?level.value=2
+coolidge.micro.inference.url: http://10.202.102.166:6000/mInfer
 dev.mode: false
 dev.orgId: null
+flyway:
+  enabled: ${flyway_enabled:false}
+  schemas: lfdb
+  baselineOnMigrate: true
+  validateOnMigrate: false
+  url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST}
+  user: ${spring_datatsource_username:root}
+  password: ${spring_datasource_password:root}

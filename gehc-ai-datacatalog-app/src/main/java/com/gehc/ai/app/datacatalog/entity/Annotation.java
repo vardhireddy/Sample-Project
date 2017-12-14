@@ -20,12 +20,22 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+//import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+
+import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ELEMENT_NAME;
 
 /**
  * @author 212071558
@@ -44,20 +54,33 @@ public class Annotation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     @Column(name="schema_version")
+    @Size(min=0, max=50)
+    @Pattern(regexp = DESCRIPTION)
     private String schemaVersion;
+
     /**
      * The organization who owns the data. 
      */
     @Column(name="org_id")
+    @Size(min=0, max=255)
+    @Pattern(regexp = ELEMENT_NAME)
     private String orgId;
+
     /**
      * An identifier for the one who annotated the data. This allows to query for the data annotated by a specific person.
      */
     @Column(name="annotator_id")
+    @Size(min=3, max=255)
+    @Pattern(regexp = DESCRIPTION)
+    @NotNull
     private String annotatorId;
+
     @Column(name="annotation_tool")
-    private String annotationTool;      
+    @Size(min=0, max=255)
+    @Pattern(regexp = DESCRIPTION)
+    private String annotationTool;
     /**
      * Date data was annotated. Should be left to database to provide.
      */
@@ -65,15 +88,38 @@ public class Annotation implements Serializable {
    // @JsonFormat(pattern="yyyyMMdd")
     @Column(name="annotation_date", columnDefinition="DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Date annotationDate;
+
     @Column(name="type")
+    @Size(min=2, max=100)
+    @Pattern(regexp = DESCRIPTION)
+    @NotNull
     private String type;
+    
     @Column(name="image_set")
-    private String imageSet;  
-    /**
+	private Long imageSetId;
+    
+    public Long getImageSetId() {
+		return imageSetId;
+	}
+	public void setImageSetId(Long imageSetId) {
+		this.imageSetId = imageSetId;
+	}
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name="image_set", insertable = false, updatable = false)
+    private ImageSeries imageSet;
+    public ImageSeries getImageSet() {
+		return imageSet;
+	}
+	public void setImageSet(ImageSeries imageSet) {
+		this.imageSet = imageSet;
+	}
+	/**
      * Flexible JSON object to store annotated items
      */
     @Convert(converter = JsonConverter.class)
-    private Object item;
+    @NotNull
+    private Object item; // NOSONAR
     /**
      * @return the id
      */
@@ -159,22 +205,12 @@ public class Annotation implements Serializable {
     public void setType( String type ) {
         this.type = type;
     }
-    /**
-     * @return the imageSet
-     */
-    public String getImageSet() {
-        return imageSet;
-    }
-    /**
-     * @param imageSet the imageSet to set
-     */
-    public void setImageSet( String imageSet ) {
-        this.imageSet = imageSet;
-    }
+
+
     /**
      * @return the item
      */
-    public Object getItem() {
+    public Object getItem() { // NOSONAR
         return item;
     }
     /**
@@ -182,5 +218,5 @@ public class Annotation implements Serializable {
      */
     public void setItem( Object item ) {
         this.item = item;
-    }
+    } // NOSONAR
 }

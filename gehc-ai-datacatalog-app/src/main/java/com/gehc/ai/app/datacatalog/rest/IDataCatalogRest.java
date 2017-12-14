@@ -15,97 +15,28 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataCollection;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.ImageSet;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 
 /**
  * @author 212071558
  */
 public interface IDataCatalogRest {
-    /**
-     * Get Image Set by Org Id
-     *
-     * @param params
-     * @param request, to get an org id based on authentication token
-     * @return List<ImageSet>
-     */
-    List<ImageSet> getImgSet(Map<String, String> params, HttpServletRequest request );
-
-    /**
-     * Get Image Set by Data Collection Id
-     * 
-     * @param dataCollectionId
-     * @param request, to get an org id based on authentication token
-     * @return List<ImageSet>
-     */
-    List<ImageSet> getImgSetByDataCollId( String dataCollectionId, HttpServletRequest request );
-
-    /**
-     * Get Data Collection
-     * 
-     * @param type, DC type like Annotation or Experiment
-     * @return List<DataCollection>
-     */
-    List<DataCollection> getDataCollection(String id, String type, HttpServletRequest request);
-    
-    /**
-     * Create Data Collection
-     * 
-     * @param dataCollection
-     * @param request, to get an org id based on authentication token
-     * @return response
-     */
-    Response createDataCollection( DataCollection dataCollection, HttpServletRequest request );
-
-    /**
-     * @param imageSet
-     * @param request, to get an org id based on authentication token
-     * @return
-     */
-    String insertImageSet( ImageSet imageSet, HttpServletRequest request );
 
     /**
      * @return String Success
      */
     String healthCheck();
-
-    /**
-     * @param id id of target data
-     * @param type type of target data
-     * @param request, to get an org id based on authentication token
-     * @return target data that matches id and type
-     */
-    Map getExperimentTargetData( String id, String type, HttpServletRequest request );
-
-    /**
-     * @param id id of data collection       
-     * @return Annotation data for imagesets in a given Datacollection
-     */
-
-    @SuppressWarnings ("unchecked")
-    @RequestMapping(value = "/dataCatalog/annotationByDataCollectionId", method = RequestMethod.GET)
-    List getAnnotationByDataColId(@QueryParam("id") String id,
-                                  @QueryParam("annotationType") String annotationType);
-
-    /**
-     * @param queryMap fields from patient table columns
-     * @return list of patient satisfying search criteria
-     */
-      List<Patient> getPatient( HttpServletRequest request );
 
     /**
      * @param queryMap list of studies satisfying search criteria
@@ -119,7 +50,7 @@ public interface IDataCatalogRest {
      * @param p patient
      * @return patient added
      */
-    Patient postPatient( Patient p );
+    Patient postPatient( Patient p ) throws DataCatalogException;
 
     /**
      * save study to database
@@ -127,21 +58,7 @@ public interface IDataCatalogRest {
      * @param s study
      * @return study added
      */
-    Study postStudy( Study s );
-
-    /**
-     * @param patientId
-     * @param request, to get an org id based on authentication token
-     * @return studies given a patient
-     */
-    List<Study> getStudies( String patientId, HttpServletRequest request );
-
-    /**
-     * @param studyId
-     * @param request, to get an org id based on authentication token
-     * @return image sets associated with the studyId
-     */
-    List<ImageSet> getImageSetByStudyId( String studyId, HttpServletRequest request );
+    Study postStudy( Study s ) throws DataCatalogException;
 
     /**
      * @param ids
@@ -161,15 +78,15 @@ public interface IDataCatalogRest {
      * @param ids
      * @param request, to get an org id based on authentication token
      */
-    ApiResponse deleteAnnotation( String ids, HttpServletRequest request );
+    ApiResponse deleteAnnotation( String ids );
 
     /**
      * @param imageSet
      * @param request, to get an org id based on authentication token
      * @return
      */
-    List<Annotation> getAnnotationsByImgSet(String imageSet, HttpServletRequest request );
-
+    List<Annotation> getAnnotationsByImgSet(Long imageSet );
+    
     /**
      * Save an Annotation
      * @param annotation
@@ -181,20 +98,6 @@ public interface IDataCatalogRest {
      * @param n
      */
     void postCOSNotification(CosNotification n );
-    
-    /**
-     * @param patientid
-     * @param request, to get an org id based on authentication token
-     * @return
-     */
-    List<ImageSet> getImageSetByPatientId( String patientid, HttpServletRequest request );
-    
-    /**
-     * @param dataCollection
-     * @param request, to get an org id based on authentication token
-     * @return
-     */
-    ApiResponse updateDataCollection( DataCollection dataCollection, HttpServletRequest request );
     
     /**
      * @param request, to get an org id based on authentication token
@@ -221,9 +124,10 @@ public interface IDataCatalogRest {
      * Insert or update an DataSet
      * 
      * @param d data set object
+     * @param request TODO
      * @return recently saved object
      */
-    DataSet saveDataSet( DataSet d );
+    DataSet saveDataSet( DataSet d, HttpServletRequest request );
     
     /**
      * Insert or update an image series
@@ -236,9 +140,10 @@ public interface IDataCatalogRest {
     /**
      * Get Image Series by Patient id
      * @param patientId
+     * @param org_id TODO
      * @return list of Image Series
      */
-    List<ImageSeries> getImgSeriesByPatientId( String patientId );
+    List<ImageSeries> getImgSeriesByPatientId( String patientId, String orgId );
     
     /**
      * Get Image Series by Data Set Id
@@ -247,7 +152,7 @@ public interface IDataCatalogRest {
      * @param request, to get an org id based on authentication token
      * @return list of Image Series
      */
-    List<ImageSeries> getImgSeriesByDSId( Long id, HttpServletRequest request );
+    List<ImageSeries> getImgSeriesByDSId( Long id );
     
     /**
      * Get Data Set by it's id
@@ -265,4 +170,75 @@ public interface IDataCatalogRest {
      * @return list of Data Set
      */
     List<DataSet> getDataSetByType( String type, HttpServletRequest request);
+
+    /**
+     * Get Image Set by Org Id
+     *
+     * @param params
+     * @param request, to get an org id based on authentication token
+     * @return List<ImageSeries>
+     */
+    List<ImageSeries> getImgSeries(Map<String, Object> params );
+    
+    /**
+     * Get Image Series by Series Instance UUId
+     * 
+     * @param id
+     * @param request, to get an org id based on authentication token
+     * @return list of Image Series
+     */
+    List<ImageSeries> getImgSeriesById( Long id);
+    
+    /**
+     * Get Image Series by Series Instance UUId
+     * 
+     * @param id
+     * @param request TODO
+     * @param request, to get an org id based on authentication token
+     * @return list of Image Series
+     */
+    List<ImageSeries> getImgSeriesByStudyDbId( Long studyDbId, HttpServletRequest request);
+    
+    /**
+     * @param patientId
+     * @param request, to get an org id based on authentication token
+     * @return studies given a patient
+     */
+    List<Study> getStudiesByPatientDbid(String patientDbid, HttpServletRequest request);
+    
+    /**
+     * @param request
+     * @return
+     */
+    List<Patient> getAllPatients(HttpServletRequest request);
+    
+    /**
+     * @param id
+     * @param annotationType
+     * @return
+     */
+    List getRawTargetData(String id,String annotationType);
+    /**
+     * @return String Success
+     */
+    String healthcheck();
+      
+    /**
+     * @param groupBy
+     * @param request
+     * @return map of all the filters
+     */
+    Map<String, Object> dataSummary(String groupby, HttpServletRequest request);
+    
+    /**
+     * @param params
+     * @param request
+     * @return
+     */
+    Map<Object, Object> geClassDataSummary(Map<String, String> params, HttpServletRequest request);
+    
+    /**
+     * @param ids
+     */
+    ApiResponse deleteDataCollection(String ids, HttpServletRequest request);
 }

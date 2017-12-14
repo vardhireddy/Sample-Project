@@ -1,6 +1,21 @@
+/*
+ * DataSet.java
+ *
+ * Copyright (c) 2017 by General Electric Company. All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of
+ * General Electric Company. The software may be used and/or copied only
+ * with the written permission of General Electric Company or in accordance
+ * with the terms and conditions stipulated in the agreement/contract
+ * under which the software has been supplied.
+ */
+
 package com.gehc.ai.app.datacatalog.entity;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -9,10 +24,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+
+import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ELEMENT_NAME;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
@@ -26,42 +46,71 @@ public class DataSet implements Serializable {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO )
     private Long id;
+
     @Column ( name = "schema_version" )
 	private String schemaVersion;
+	@Size(min=3, max=200)
+	@Pattern(regexp = DESCRIPTION)
+	@NotNull
 	private String name;
+
+	//need to fix it to handle for null or empty string when pattern tag added
+	@Size(min=0, max=255)
 	private String description;
+
 	//@Column ( name = "image_sets" )
 	//private String[] imageSets;
-	@Column ( name = "created_date" )
+	@Column(name = "created_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private String createdDate;
+
 	//private int imageSetsSize;
     private String type;
+
     @Column ( name = "org_id" )
+	@Size(min=0, max=255)
+	@Pattern(regexp = ELEMENT_NAME)
     private String orgId;
+
     @Column ( name = "created_by" )
     private String createdBy;
     /**
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
-    private Object properties;
+	@NotNull
+    private Object properties; // NOSONAR
     
     public Object getProperties() {
 		return properties;
-	}
+	} // NOSONAR
 	public void setProperties(Object properties) {
 		this.properties = properties;
+	} // NOSONAR
+
+	public Object getImageSets() { // NOSONAR
+		return imageSets; // NOSONAR
 	}
-	public Object getImageSets() {
-		return imageSets;
+	public void setImageSets(Object  imageSets) { // NOSONAR
+		this.imageSets = imageSets; // NOSONAR
 	}
-	public void setImageSets(Object imageSets) {
-		this.imageSets = imageSets;
-	}
+
 	@Convert(converter = JsonConverter.class)
     @Column ( name = "image_sets" )
-    private Object imageSets;
+	@NotNull
+    private Object  imageSets; // NOSONAR
+	
+    /**
+     * Flexible JSON object to store properties of data collection
+     */
+    @Convert(converter = JsonConverter.class)
+    private Object filters; // NOSONAR
     
+	public Object getFilters() { // NOSONAR
+		return filters; // NOSONAR
+	}
+	public void setFilters(Object filters) { // NOSONAR
+		this.filters = filters; // NOSONAR
+	}
 	public Long getId() {
 		return id;
 	}

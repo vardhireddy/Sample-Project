@@ -1,5 +1,5 @@
 /*
- * TargetData.java
+ * ValidationConstants.java
  *
  * Copyright (c) 2016 by General Electric Company. All rights reserved.
  *
@@ -9,17 +9,15 @@
  * with the terms and conditions stipulated in the agreement/contract
  * under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.entity;
+package com.gehc.ai.app.common.constants;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+/**
+ * Created by sowjanyanaidu on 11/9/17.
+ */
+public abstract class ValidationConstants {
 
-public class TargetData {
-	@JsonProperty("gtMask")
-	public String gtMask;
-	
-	@JsonProperty("img")
-	public String img;
-	
-	@JsonProperty("patientId")
-	public String patientId;
+        public static final String ELEMENT_NAME="^[a-zA-Z0-9][a-zA-Z0-9\\s'&.,-]{2,255}$";
+        public static final String DESCRIPTION="^[a-zA-Z0-9-,.\\s]+$";
+        public static final String DIGIT="^[0-9]+$";
 }
+

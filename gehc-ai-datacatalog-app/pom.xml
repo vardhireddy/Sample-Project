@@ -26,9 +26,10 @@
         <powermock.version>1.6.6</powermock.version>
         <aws-cognito-lib.version>1.0.20170227211433</aws-cognito-lib.version>
         <!-- Sonar -->
-        <sonar.exclusions>**/App.java</sonar.exclusions>
-        <sonar.coverage.exclusions>**/App.java</sonar.coverage.exclusions>
+        <sonar.exclusions>**/filters/JsonConverter.java,**/interceptor/DataCatalogInterceptor.java,**/constants/ApplicationConstants.java</sonar.exclusions>
+        <sonar.coverage.exclusions>**/filters/JsonConverter.java,**/interceptor/DataCatalogInterceptor.java,**/constants/ApplicationConstants.java</sonar.coverage.exclusions>
         <rest.assured.version>2.3.3</rest.assured.version>
+        <validation-api.version>2.0.0.Final</validation-api.version>
     </properties>
    
    <dependencies>
@@ -94,6 +95,15 @@
 			<version>${rest.assured.version}</version>
 			<scope>test</scope>
 		</dependency>
+	  	<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+       <dependency>
+           <groupId>javax.validation</groupId>
+           <artifactId>validation-api</artifactId>
+           <version>${validation-api.version}</version>
+       </dependency>
   </dependencies>
 
     <build>
@@ -115,26 +125,13 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.6.201602180812</version>
                 <configuration>
-                    <destFile>${sonar.jacoco.reportPath}</destFile>
-                    <append>true</append>
+                    <!-- The destination file for the code coverage report has to be set
+                                  to the same value in the parent pom and in each module pom. Then JaCoCo will
+                                  add up information in the same report, so that, it will give the cross-module
+                                  code coverage. -->
+                    <destFile>${project.basedir}/../target/jacoco.exec</destFile>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

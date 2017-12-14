@@ -174,4 +174,34 @@ patient_dbid INT,
 study_dbid INT
 );
 
-alter table image_series AUTO_INCREMENT=1496700263266;
+ALTER TABLE lfdb.image_set MODIFY COLUMN id BIGINT(20); 
+
+alter table lfdb.image_set  
+CHANGE COLUMN `dataFormat` `data_format` varchar(100);
+
+alter table lfdb.image_set  
+CHANGE COLUMN `orgId` `org_id` varchar(255);
+
+alter table lfdb.image_set  
+CHANGE COLUMN `schemaVersion` `schema_version` varchar(50);
+
+Alter table lfdb.image_set modify id BIGINT(20) AUTO_INCREMENT;
+
+alter table image_set AUTO_INCREMENT=1635500015265;
+
+alter table annotation modify image_set bigint(20);
+
+alter table data_set 
+add filters JSON;
+
+alter table lfdb.image_set  
+CHANGE COLUMN `equipment` `manufacturer` varchar(255);
+
+alter table lfdb.image_set 
+add `equipment` varchar(255) DEFAULT "N/A";
+
+alter table lfdb.image_set 
+add `image_type` varchar(50) DEFAULT "N/A";
+
+alter table lfdb.image_set 
+add `view` varchar(50) DEFAULT "N/A";

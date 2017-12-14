@@ -12,6 +12,7 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,6 +35,8 @@ public class CosNotification {
     public void setId(Long id) {
         this.id = id;
     }
+    @Column( name = "org_id" )
+    private String orgId;
 
      /**
      * Actual message from COS notification, can be parsed
@@ -51,6 +54,12 @@ public class CosNotification {
      */
     public void setMessage( Object message ) {
         this.message = message;
+    }
+    public String getOrgId() {
+        return orgId;
+    }
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
    
 }

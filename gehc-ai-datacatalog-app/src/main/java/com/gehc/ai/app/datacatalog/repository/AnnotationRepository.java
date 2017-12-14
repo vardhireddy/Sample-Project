@@ -13,10 +13,13 @@ package com.gehc.ai.app.datacatalog.repository;
 
 import java.util.List;
 
-import com.gehc.ai.app.datacatalog.entity.Annotation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
 /**
  * @author 212071558
@@ -24,16 +27,16 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource(collectionResourceRel = "annotation", path = "annotation")
 public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
-    List<Annotation> findByTypeIn(List<String> type);
+	List<Annotation> findByTypeIn(List<String> type);
     List<Annotation> findByIdIn(List<Long> ids);
-    List<Annotation> findByImageSet(@Param("imageSet") String imageSet);
-    List<Annotation> findByImageSetIn(List<String> imageSet);
-    List<Annotation> findByImageSetInAndTypeIn(List<String> imageSets, List<String> types);
-    List<Annotation> findByImageSetAndOrgId(@Param("imageSet") String imageSet, @Param("orgId") String orgId);
-    List<Annotation> findByIdInAndOrgId(List<Long> ids, String orgId);
- //   @Query(value="delete from annotation a where a.id = ?1")
-  //  void deleteById(Long id);
+    List<Annotation> findByImageSetId(@Param("imageSetId") Long imageSet);
+    List<Annotation> findByImageSetIdIn(List<Long> imageSet);
+    List<Annotation> findByImageSetIdInAndTypeIn(List<Long> imageSets, List<String> types);
+    List<Annotation> findByImageSetInAndTypeIn(List<ImageSeries> imageSets, List<String> types);
     @Override
     <S extends Annotation> S save(S entity);
-  //  <S extends Annotation> S delete(S entity);
+    @Query("SELECT type as name, count(distinct imageSet) as count FROM Annotation where orgId=:orgId group by type")
+    List<Object[]> countAnnotationType(@Param("orgId") String orgId);
+    void delete(Annotation deleted);
+    List<Annotation> findByImageSetIdInAndTypeInAndOrgId(List<Long> imageSets, List<String> types, List<String> orgId);
 }

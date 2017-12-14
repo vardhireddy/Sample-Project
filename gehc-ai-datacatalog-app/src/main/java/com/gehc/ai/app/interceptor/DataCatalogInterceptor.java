@@ -68,16 +68,15 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {      
         if(null != req){
-		   String orgId = req.getParameter("org-id");
-		   logger.info("DC prehandle, org-id in request: " + orgId);
-		   if (!StringUtils.isEmpty(orgId)) {
-			   logger.info("DC prehandle, where org-id is passed: " + orgId);
-				req.setAttribute("orgId", orgId);
-				return true;
-		   }
+//		   String orgId = req.getParameter("org-id");
+//		   logger.info("DC prehandle, org-id in request: " + orgId);
+//		   if (!StringUtils.isEmpty(orgId)) {
+//			   logger.info("DC prehandle, where org-id is passed: " + orgId);
+//				req.setAttribute("orgId", orgId);
+//				return true;
+//		   }
 		   boolean foundAuthToken = false;
-           logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod());
-           logger.info( " ### In preHandle method, req.getServletPath() = " + req.getServletPath());
+           logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod() + ", req.getServletPath() = " + req.getServletPath());
            if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
 	           Enumeration headerNames = req.getHeaderNames();
 	           String key = null;
@@ -98,7 +97,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/study")){
 	        	   logger.info( " +++ In preHandle method, save study is getting called so not looking for org id");
 	           } else if(foundAuthToken){
-	               logger.info( " +++ In preHandle method, auth token = " + req.getHeader( HttpHeaders.AUTHORIZATION ));
+	               logger.info( " +++ In preHandle method, found auth token. Calling User me API");
 	               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
 	           } else if (!foundAuthToken && !StringUtils.isEmpty(devMode) && devMode.equalsIgnoreCase("true")) {
 					   req.setAttribute("orgId", devOrgId);

@@ -1,8 +1,22 @@
+/*
+ * ImageSeries.java
+ *
+ * Copyright (c) 2017 by General Electric Company. All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of
+ * General Electric Company. The software may be used and/or copied only
+ * with the written permission of General Electric Company or in accordance
+ * with the terms and conditions stipulated in the agreement/contract
+ * under which the software has been supplied.
+ */
+
 package com.gehc.ai.app.datacatalog.entity;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -10,16 +24,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
-@Table(name = "image_series")
+@Table(name = "image_set")
 public class ImageSeries implements Serializable {
 	/**
 	 * 
@@ -45,10 +61,33 @@ public class ImageSeries implements Serializable {
 	private String description;
 	private String institution;
 	private String equipment;
+	private String manufacturer;
+	@Column(name = "image_type")
+	private String imageType;
+	
+	public String getImageType() {
+		return imageType;
+	}
+	public void setImageType(String imageType) {
+		this.imageType = imageType;
+	}
+	public String getView() {
+		return view;
+	}
+	public void setView(String view) {
+		this.view = view;
+	}
+	private String view;
+	public String getManufacturer() {
+		return manufacturer;
+	}
+	public void setManufacturer(String manufacturer) {
+		this.manufacturer = manufacturer;
+	}
 	@Column(name = "instance_count")
 	private int instanceCount;
 	@Convert(converter = JsonConverter.class)
-	private Object properties;
+	private Object properties; // NOSONAR
 	/**
 	 * An identifier for the one who uploaded the data. This allows to query for
 	 * the data uploaded by a specific person.
@@ -72,7 +111,31 @@ public class ImageSeries implements Serializable {
 	@OneToOne
 	@JoinColumn(name="id") 
 	private Patient patient;
-
+    
+    @OneToMany(mappedBy = "imageSet", cascade = CascadeType.ALL)
+    private List<Annotation> annotation;
+	
+	private String acqDate;
+    public String getAcqDate() {
+		return acqDate;
+	}
+	public void setAcqDate(String acqDate) {
+		this.acqDate = acqDate;
+	}
+	public String getAcqTime() {
+		return acqTime;
+	}
+	public void setAcqTime(String acqTime) {
+		this.acqTime = acqTime;
+	}
+	private String acqTime;
+	
+	public Patient getPatient() {
+		return patient;
+	}
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -164,51 +227,62 @@ public class ImageSeries implements Serializable {
 		this.uploadBy = uploadBy;
 	}
 	public Date getUploadDate() {
-		return uploadDate;
+		return new Date(uploadDate.getTime());
 	}
+	@JsonIgnore
 	public void setUploadDate(Date uploadDate) {
-		this.uploadDate = uploadDate;
+		this.uploadDate = new Date(uploadDate.getTime());
 	}
 	public Object getProperties() {
 		return properties;
-	}
+	} // NOSONAR
 	public void setProperties(Object properties) {
 		this.properties = properties;
-	}
-	public ImageSeries(Long id, String schemaVersion, Long studyDbId, Long patientDbId, String seriesInstanceUid,
-			String modality, String anatomy, String description, String institution, String equipment,
-			String dataFormat, String uri, int instanceCount, String orgId, String uploadBy, Date uploadDate,
-			Object properties) {
-		super();
-		this.id = id;
-		this.schemaVersion = schemaVersion;
-		this.studyDbId = studyDbId;
-		this.patientDbId = patientDbId;
-		this.seriesInstanceUid = seriesInstanceUid;
-		this.modality = modality;
-		this.anatomy = anatomy;
-		this.description = description;
-		this.institution = institution;
-		this.equipment = equipment;
-		this.dataFormat = dataFormat;
-		this.uri = uri;
-		this.instanceCount = instanceCount;
-		this.orgId = orgId;
-		this.uploadBy = uploadBy;
-		this.uploadDate = uploadDate;
-		this.properties = properties;
-	}
+	} // NOSONAR
+	
 	public ImageSeries() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
+			String uri, String seriesInstanceUid, String description, String institution, String equipment,
+			String manufacturer, String imageType, String view, int instanceCount, Object properties, String uploadBy,
+			Date uploadDate, Long patientDbId, Long studyDbId, Patient patient,
+			String acqDate, String acqTime) {
+		super();
+		this.id = id;
+		this.schemaVersion = schemaVersion;
+		this.orgId = orgId;
+		this.modality = modality;
+		this.anatomy = anatomy;
+		this.dataFormat = dataFormat;
+		this.uri = uri;
+		this.seriesInstanceUid = seriesInstanceUid;
+		this.description = description;
+		this.institution = institution;
+		this.equipment = equipment;
+		this.manufacturer = manufacturer;
+		this.imageType = imageType;
+		this.view = view;
+		this.instanceCount = instanceCount;
+		this.properties = properties;
+		this.uploadBy = uploadBy;
+		this.uploadDate = new Date(uploadDate.getTime());
+		this.patientDbId = patientDbId;
+		this.studyDbId = studyDbId;
+		this.patient = patient;
+		this.acqDate = acqDate;
+		this.acqTime = acqTime;
+	}
 	@Override
 	public String toString() {
-		return "ImageSeries [id=" + id + ", schemaVersion=" + schemaVersion + ", studyDbId=" + studyDbId
-				+ ", patientDbId=" + patientDbId + ", seriesInstanceUid=" + seriesInstanceUid + ", modality=" + modality
-				+ ", anatomy=" + anatomy + ", description=" + description + ", institution=" + institution
-				+ ", equipment=" + equipment + ", dataFormat=" + dataFormat + ", uri=" + uri + ", instanceCount="
-				+ instanceCount + ", orgId=" + orgId + ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate
-				+ ", properties=" + properties + "]";
+		return "ImageSeries [id=" + id + ", schemaVersion=" + schemaVersion + ", orgId=" + orgId + ", modality="
+				+ modality + ", anatomy=" + anatomy + ", dataFormat=" + dataFormat + ", uri=" + uri
+				+ ", seriesInstanceUid=" + seriesInstanceUid + ", description=" + description + ", institution="
+				+ institution + ", equipment=" + equipment + ", manufacturer=" + manufacturer + ", imageType="
+				+ imageType + ", view=" + view + ", instanceCount=" + instanceCount + ", properties=" + properties
+				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
+				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", acqDate="
+				+ acqDate + ", acqTime=" + acqTime + "]";
 	}
 }

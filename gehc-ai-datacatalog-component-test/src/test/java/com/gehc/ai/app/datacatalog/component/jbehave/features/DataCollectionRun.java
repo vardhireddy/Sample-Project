@@ -12,5 +12,5 @@
 
 package com.gehc.ai.app.datacatalog.component.jbehave.features;
 
-public class DataCatalogRun extends AbstractSpringJBehaveStory {
+public class DataCollectionRun extends AbstractSpringJBehaveStory {
 }
