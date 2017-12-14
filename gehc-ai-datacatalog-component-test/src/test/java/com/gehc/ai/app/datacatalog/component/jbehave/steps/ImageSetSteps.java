@@ -116,7 +116,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?series-instance-uid=1&org-id=12")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
 
         );
 
@@ -165,7 +164,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?series-instance-uid=1&org-id=12")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
 
     }
@@ -188,7 +186,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?series-instance-uid=1&org-id=12")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );}
         catch(Exception e){
             throwable = e;
@@ -217,7 +214,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267-d195-499f-bfd8-7d92875c7035&modality=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
 
     }
@@ -240,7 +236,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
 
     }
@@ -265,7 +260,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung&annotations=point")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
 
@@ -287,7 +281,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
 
@@ -309,7 +302,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&anatomy=Lung")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
 
@@ -346,7 +338,7 @@ public class ImageSetSteps {
 
     @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationABSENTDataSetUpProvided() {
-        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        List<ImageSeries> imgSeries = commonSteps.getImageSeriesWithFilterOneModality();
         when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotationWithOutValidId());
@@ -357,7 +349,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung&annotations=absent")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation ABSENT")
@@ -380,7 +371,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=61939267&modality=CT&anatomy=Lung&annotations=absent")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with ORG ID ,Modality, Anatomy and Annotation ABSENT returns empty ImageSeries")
@@ -400,7 +390,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set/no-annotations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with No Annotation")
@@ -425,7 +414,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest,Lung")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
                 .param("ge-class", "[{\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]")
         );
 
@@ -448,7 +436,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
 
@@ -469,7 +456,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&institution=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Institution")
@@ -489,7 +475,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&data_format=dataFormat")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with DataFormat")
@@ -509,7 +494,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&institution=UCSF&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Institution and Equipment")
@@ -529,7 +513,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&data_format=dataFormat&institution=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with DataFormat and Institution")
@@ -549,7 +532,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&data_format=dataFormat&institution=UCSF&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with DataFormat, Institution and Equipment")
@@ -569,7 +551,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&data_format=dataFormat&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with DataFormat and Equipment")
@@ -588,7 +569,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&data_format=dataFormat")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Anatomy and DataFormat")
@@ -608,7 +588,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&data_format=dataFormat&institution=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Anatomy, DataFormat and Institution")
@@ -628,7 +607,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&data_format=dataFormat&institution=UCSF&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Anatomy, DataFormat, Institution and Equipment")
@@ -648,7 +626,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&institution=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Anatomy, Institution")
@@ -668,7 +645,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&institution=UCSF&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
 
@@ -690,7 +666,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&anatomy=chest&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Anatomy, Equipment")
@@ -710,7 +685,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest&data_format=dataFormat")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Anatomy and DataFormat")
@@ -731,7 +705,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest&data_format=dataFormat&institution=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Anatomy, DataFormat and Institution")
@@ -752,7 +725,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest&data_format=dataFormat&institution=UCSF&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Anatomy, DataFormat, Institution and Equipment")
@@ -773,7 +745,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&anatomy=Chest&institution=UCSF&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Anatomy, Institution and Equipment")
@@ -794,7 +765,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&anatomy=Chest&institution=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Anatomy, Institution")
@@ -815,7 +785,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&anatomy=Chest&equipment=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Anatomy, Equipment")
@@ -836,7 +805,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Equipment")
@@ -857,7 +825,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&institution=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Institution")
@@ -878,7 +845,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT&data_format=dataFormat")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, DataFormat")
@@ -900,7 +866,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest&data_format=dataFormat&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Anatomy, DataFormat and Equipment")
@@ -918,9 +883,8 @@ public class ImageSetSteps {
     @When("Get Image set based on filter criteria with Modality, DataFormat,Institution And Equipment")
     public void whenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatInstitutionAndEquipment() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&data_format=dataFormat&institution=UCSF&equipment=CT")
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&data_format=dataFormat&institution=UCSF%2C+MONT,TEST&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, DataFormat,Institution And Equipment")
@@ -940,7 +904,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&data_format=dataFormat&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, DataFormat And Equipment")
@@ -960,7 +923,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&data_format=dataFormat&institution=UCSF")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, DataFormat And Institution")
@@ -980,7 +942,6 @@ public class ImageSetSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&institution=UCSF&equipment=CT")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
         );
     }
     @Then("verify Image set based on filter  with Modality, Institution and Equipment")

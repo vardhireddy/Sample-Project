@@ -588,7 +588,7 @@ public class DataCollectionSteps {
         dataSets.add(dataSet);
 
         when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
-        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeries());
+        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
     }
 
     private DataSet getSaveDataSet() {
