@@ -42,9 +42,11 @@ Get Image set based on filter criteria with Modality, DataFormat,Institution And
 Get Image set based on filter criteria with Modality, DataFormat And Equipment
 Get Image set based on filter criteria with Modality, DataFormat And Institution
 Get Image set based on filter criteria with Modality, Institution and Equipment
+Get Image set based on filter criteria with Institution name containing accepted special characters like comma
+Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
 
 
-@functional
+  @functional
 @crs_10734
 
 
@@ -335,3 +337,18 @@ Meta: @automated
 Given Get Image set based on filter criteria with Modality, Institution and Equipment - DataSetUp Provided
 When Get Image set based on filter criteria with Modality, Institution and Equipment
 Then verify Image set based on filter  with Modality, Institution and Equipment
+
+
+@test
+Scenario: Get Image set based on filter criteria with Institution name containing accepted special characters like comma
+Meta: @automated
+Given Get Image set based on filter criteria with Institution name containing accepted special characters- DataSetUp Provided
+When Get Image set based on filter criteria with Institution name containing accepted special characters
+Then verify Image set based on filter  with Institution name containing accepted special characters
+
+@test
+Scenario: Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
+Meta: @automated
+Given Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes - DataSetUp Provided
+When Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
+Then verify Image set based on filter  with Equipment name containing accepted special characters like quotes and slashes

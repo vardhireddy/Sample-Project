@@ -43,6 +43,34 @@ public class CommonSteps {
         return imageSeries;
     }
 
+    public List<ImageSeries> getImageSeriesWithEquipmentsSpecialChars() {
+        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
+        ImageSeries imageSeriesDx = getSingleImageSeries();
+        imageSeriesDx.setEquipment(" \"\\\"Geode Platform\\\"\"");
+        imgSerLst.add(imageSeriesDx);
+        return imgSerLst;
+    }
+
+    public ImageSeries getOneimageSerieswithInsitutions(){
+        ImageSeries imageSeries = new ImageSeries();
+        imageSeries.setDescription("test");
+        imageSeries.setAnatomy("Lung");
+        imageSeries.setModality("CT");
+        imageSeries.setDataFormat("dataFormat");
+        imageSeries.setUri("tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10");
+        imageSeries.setSeriesInstanceUid("1");
+        imageSeries.setInstitution("UCSF, Institution,Montogmenry");
+        imageSeries.setEquipment("tem");
+        imageSeries.setInstanceCount(1);
+        imageSeries.setUploadBy("BDD");
+        imageSeries.setUploadDate(getDate());
+        imageSeries.setPatientDbId(1L);
+        Map prop = new HashMap<String,String>();
+        prop.put("test", "bdd");
+        imageSeries.setProperties(prop);
+        return imageSeries;
+    }
+
     public List<ImageSeries> getImageSeries() {
         List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
         ImageSeries imageSeries = getSingleImageSeries();

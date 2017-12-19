@@ -62,8 +62,8 @@ public class ImageSetSteps {
     private Throwable throwable = null;
 
     private DataCatalogDaoImpl dataCatalogDao;
-
-
+    private String IMAGE_SERIES_WITH_INSTITUTIONS = "[{\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF, Institution,Montogmenry\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]";
+    private String IMAGE_SERIES_WITH_EQUIPMENT = "[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\" \\\"\\\\\\\"Geode Platform\\\\\\\"\\\"\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]";
     @Autowired
     public ImageSetSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor,DataCatalogDaoImpl dataCatalogDao) {
         this.mockMvc = mockMvc;
@@ -445,6 +445,26 @@ public class ImageSetSteps {
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
 
+    @Given("Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes - DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithEquipmentNameContainingAcceptedSpecialCharactersLikeQuotesAndSlashesDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeriesWithEquipmentsSpecialChars();
+        when(imageSeriesRepository.findByOrgIdInAndEquipmentIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+
+    }
+    @When("Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes")
+    public void whenGetImageSetBasedOnFilterCriteriaWithEquipmentNameContainingAcceptedSpecialCharactersLikeQuotesAndSlashes() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&equipment=\"\\\"Geode Platform\\\"\"")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify Image set based on filter  with Equipment name containing accepted special characters like quotes and slashes")
+    public void thenVerifyImageSetBasedOnFilterWithEquipmentNameContainingAcceptedSpecialCharactersLikeQuotesAndSlashes() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(IMAGE_SERIES_WITH_EQUIPMENT)));
+
+    }
+
     @Given("Get Image set based on filter criteria with Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
@@ -462,6 +482,28 @@ public class ImageSetSteps {
     public void thenVerifyImageSetBasedOnFilterWithInstitution() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+
+    @Given("Get Image set based on filter criteria with Institution name containing accepted special characters- DataSetUp Provided")
+    public void givenGetImageSetBasedOnFilterCriteriaWithInstitutionNameContainingAcceptedSpecialCharactersDataSetUpProvided() {
+        ImageSeries imageSeries = commonSteps.getOneimageSerieswithInsitutions();
+        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
+        imgSerLst.add(imageSeries);
+        when(imageSeriesRepository.findByOrgIdInAndInstitutionIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSerLst);
+    }
+
+    @When("Get Image set based on filter criteria with Institution name containing accepted special characters")
+    public void whenGetImageSetBasedOnFilterCriteriaWithInstitutionNameContainingAcceptedSpecialCharacters() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set?org-id=4fac7976-e58b-472a-960b-42d7e3689f20&institution=UCSF%2C Institution,Montogmery")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+    @Then("verify Image set based on filter  with Institution name containing accepted special characters")
+    public void thenVerifyImageSetBasedOnFilterWithInstitutionNameContainingAcceptedSpecialCharacters() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(IMAGE_SERIES_WITH_INSTITUTIONS)));
+
     }
 
     @Given("Get Image set based on filter criteria with DataFormat - DataSetUp Provided")

@@ -12,10 +12,6 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
-
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
@@ -38,6 +34,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+
+import static com.gehc.ai.app.common.constants.ValidationConstants.*;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
@@ -88,13 +86,15 @@ public class ImageSeries implements Serializable {
 	private String description;
 	
 	@Size(min=0, max=100)
-	@Pattern(regexp = ENTITY_NAME)
+	@Pattern(regexp = SOURCE_NAME)
 	private String institution;
 	
-
+	@Size(min=0, max=255)
+	@Pattern(regexp = SOURCE_NAME)
 	private String equipment;
-	
 
+	@Size(min=0, max=255)
+	@Pattern(regexp = SOURCE_NAME)
 	private String manufacturer;
 	
 	@Column(name = "image_type")
