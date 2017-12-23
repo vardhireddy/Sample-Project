@@ -13,7 +13,9 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -69,7 +71,14 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "on an.image_set=im.id "
 			+ "inner join patient p "
 			+ "on p.id = im.patient_dbid ";
-
+	
+	private static final String GET_IMGSET_DATA_BY_FILTERS = "select im.id, im.org_id, modality, anatomy, data_format, series_instance_uid, institution, manufacturer, "
+			+ "instance_count, equipment, image_type, view, p.patient_id, age, gender from image_set im inner join annotation an on an.image_set=im.id inner join patient p on p.id = im.patient_dbid ";
+	/*public static final String GET_IMGSET_DATA_BY_FILTERS = "select im.id, modality, p.patient_id from image_set im "
+			+ "inner join annotation an "
+			+ "on an.image_set=im.id "
+			+ "inner join patient p "
+			+ "on p.id = im.patient_dbid ";*/
 	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
 	@Autowired
@@ -220,5 +229,94 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			result.add(imgSeries);
 		});
 		return result;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getDataCatalog()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ImageSeries> getImgSetByFilters(Map<String, Object> params) throws Exception {
+		List<ImageSeries> imageSetList = null;
+		Map<Object, Object> filterMap = new HashMap<Object, Object>();
+		StringBuilder builder = new StringBuilder();
+		builder.append(GET_IMGSET_DATA_BY_FILTERS);
+
+		builder.append(buildQuery(params));
+		logger.info("Query = " + builder.toString());
+		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
+		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+		@SuppressWarnings("unchecked")
+		List<Object[]> objList = q.getResultList();
+		if(null != objList && !objList.isEmpty()){
+			ImageSeries imgSeries = new ImageSeries();
+			Patient p = new Patient();
+	        objList.stream().forEach((record) -> {
+	        	if (record[0] instanceof BigInteger){
+	        		imgSeries.setId(((BigInteger) record[0]).longValue());
+	        	}
+	        	imgSeries.setOrgId((String) record[1]);
+	        	imgSeries.setModality((String) record[2]);
+	        	imgSeries.setAnatomy((String) record[3]);
+	        	imgSeries.setDataFormat((String) record[4]);
+	        	imgSeries.setSeriesInstanceUid((String) record[5]);
+	        	imgSeries.setInstitution((String) record[6]);
+	        	imgSeries.setManufacturer((String) record[7]);
+	        	imgSeries.setInstanceCount((int) record[8]);
+	        	imgSeries.setEquipment((String) record[9]);
+	        	imgSeries.setImageType((String) record[10]);
+	        	imgSeries.setView((String) record[11]);
+	        	p.setPatientId((String) record[12]);
+	        	p.setAge((String) record[13]);
+	        	p.setGender((String) record[14]);
+	        	imgSeries.setPatient(p);
+	        	imageSeriesList.add(imgSeries);
+	        });     
+	        logger.info(" imageDatilsList.size() " + imageSeriesList.size());
+		}
+	
+
+		return imageSeriesList;
+	}
+
+	String buildQuery(Map<String, Object> params) {
+		StringBuilder builder = new StringBuilder();
+		if (null != params && params.size() > 0) {
+			builder.append("WHERE ");
+
+			Iterator<String> paramIterator = params.keySet().iterator();
+			while (paramIterator.hasNext()) {
+				String key = paramIterator.next();
+				String values = params.get(key).toString();
+				builder.append(constructWhereClause(key,values));
+				if (paramIterator.hasNext()) {
+					builder.append(" AND ");
+				}
+			}
+		}
+		return builder.toString();
+	}
+	private String constructWhereClause(String param, String values) {
+		StringBuilder whereClause = new StringBuilder().append("im."+param + " IN (") ;
+        whereClause.append(quoteValues(values));
+		whereClause.append(")");
+
+		return whereClause.toString();
+	}
+
+	private String quoteValues(String values) {
+		StringBuilder builder = new StringBuilder();
+		Iterator<String> valuesIterator = Arrays.asList(values.split(",")).iterator();
+
+		while (valuesIterator.hasNext()) {
+			builder.append("\"").append(valuesIterator.next()).append("\"");
+			if (valuesIterator.hasNext()) {
+				builder.append(", ");
+			}
+		}
+
+		return builder.toString();
 	}
 }
