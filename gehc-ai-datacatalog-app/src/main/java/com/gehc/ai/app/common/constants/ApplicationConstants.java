@@ -26,4 +26,6 @@ public final class ApplicationConstants {
     /** Other Constants  */
     public static final String SUCCESS = "SUCCESS";
     public static final String FAILURE = "FAILURE";
+	public static final String ANNOTATIONS = "annotations";
+	public static final String GE_CLASS = "ge-class";
 }
