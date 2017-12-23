@@ -241,4 +241,7 @@ public interface IDataCatalogRest {
      * @param ids
      */
     ApiResponse deleteDataCollection(String ids, HttpServletRequest request);
+    
+    List<ImageSeries> getImgSetByFilters(Map<String, Object> params);
+
 }

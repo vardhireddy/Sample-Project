@@ -38,4 +38,14 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typelst) {
 		return dataCatalogDao.getImgSeries(params, imgSeriesLst, typelst);
 	}
+	
+    /**
+     * @param params
+     * @return
+     * @throws Exception 
+     */
+	@Override
+	public List<ImageSeries> getImgSetByFilters(Map<String, Object> params) throws Exception {
+		return dataCatalogDao.getImgSetByFilters(params);
+	}
 }
