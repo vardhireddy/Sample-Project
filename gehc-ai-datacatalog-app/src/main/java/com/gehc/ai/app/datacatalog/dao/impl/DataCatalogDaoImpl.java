@@ -241,6 +241,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public List<ImageSeries> getImgSetByFilters(Map<String, Object> params) throws Exception {
 		List<ImageSeries> imageSetList = null;
 		Map<Object, Object> filterMap = new HashMap<Object, Object>();
+		params.remove("annotations");
 		StringBuilder builder = new StringBuilder();
 		builder.append(GET_IMGSET_DATA_BY_FILTERS);
 

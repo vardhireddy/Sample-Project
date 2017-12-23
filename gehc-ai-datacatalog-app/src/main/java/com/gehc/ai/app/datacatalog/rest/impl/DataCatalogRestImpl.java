@@ -528,8 +528,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
 		{
 			logger.debug("In REST, getImgSeries");
-			Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORGANIZATION_ID, MODALITY, ANATOMY,
-					ANNOTATIONS, SERIESINSUID, GE_CLASS, DATA_FORMAT, INSTITUTION, EQUIPMENT));
+			Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORGANIZATION_ID, MODALITY,
+					ANATOMY, ANNOTATIONS, SERIESINSUID, GE_CLASS, DATA_FORMAT, INSTITUTION, EQUIPMENT));
 			// List of img set based on filter criteria other than annotation
 			List<ImageSeries> imageSeriesLst;// = new ArrayList<ImageSeries>();
 			// List of img set with annotation
@@ -1256,46 +1256,22 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public List<ImageSeries> getImgSetByFilters(@RequestParam Map<String, Object> params) {
 
 		Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
-				 SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
+				SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
 		ResponseBuilder responseBuilder;
 		List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();
 		try {
-			if (null != validParams) {
-				if (validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
+				if (null != validParams && validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
 					logger.info("Getting img series based on series uid and org id");
 					return imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(
 							getListOfStringsFromParams(validParams.get(SERIES_INS_UID).toString()),
 							getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
-				} else if (validParams.containsKey(ORG_ID)) {
-					imageSeriesLst=  dataCatalogService.getImgSetByFilters(validParams);
-					if (!imageSeriesLst.isEmpty()) {
-						// Get the data with annotation filter
-						if (validParams.containsKey(ANNOTATIONS)) {
-							List<ImageSeries> imgSetWithAnnotation = null; List<ImageSeries> imgSetWithOutAnn = null;
-							List<String> typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS).toString());
-							if (!typeLst.isEmpty()) {
-								// List of image series id based on criteria
-								// other than annotation
-								List<Long> imgSeriesIdLst = new ArrayList<Long>();
-								for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
-									ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-									imgSeriesIdLst.add(imageSeries.getId());
-								}
-								if (typeLst.contains(ABSENT)) {
-									imgSetWithOutAnn = getImageSeriesWithOutAnnotations(imgSetWithOutAnn, imageSeriesLst,
-											imgSeriesIdLst);
-								} else if (validParams.containsKey(GE_CLASS) && validParams.containsKey(ANNOTATIONS)) {
-									return dataCatalogService.getImgSeries(params, imageSeriesLst, typeLst);
-								} else {
-									List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID).toString());
-									imgSetWithAnnotation = getImageSeriesWithAnnotations(imgSetWithAnnotation, imageSeriesLst, typeLst,
-											imgSeriesIdLst, orgIdLst);
-								}
-							}
-						}
+				} else if (null != validParams && validParams.containsKey(ORG_ID)) {
+					imageSeriesLst = dataCatalogService.getImgSetByFilters(validParams);
+					if (!imageSeriesLst.isEmpty() && params.containsKey(ANNOTATIONS)) {
+						validParams.put(ANNOTATIONS, params.get(ANNOTATIONS));
+						return getImgSetByAnnotations(imageSeriesLst, validParams);
 					}
 				}
-			}
 		} catch (ServiceException e) {
 			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity("Operation failed while retrieving image set by org id").build());
@@ -1305,5 +1281,38 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 		responseBuilder = Response.ok(imageSeriesLst);
 		return (List<ImageSeries>) responseBuilder.build().getEntity();
+	}
+
+	private List<ImageSeries> getImgSetByAnnotations(List<ImageSeries> imageSeriesLst,
+			Map<String, Object> validParams) {
+		List<ImageSeries> imgSetWithAnnotation = new ArrayList<ImageSeries>();
+		List<ImageSeries> imgSetWithOutAnn = new ArrayList<ImageSeries>();
+		List<String> typeLst;
+		try {
+			typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS).toString());
+			if (!typeLst.isEmpty()) {
+				// List of image series id based on criteria
+				// other than annotation
+				List<Long> imgSeriesIdLst = new ArrayList<Long>();
+				for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext();) {
+					ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
+					imgSeriesIdLst.add(imageSeries.getId());
+				}
+				if (typeLst.contains(ABSENT)) {
+					return getImageSeriesWithOutAnnotations(imgSetWithOutAnn, imageSeriesLst,
+							imgSeriesIdLst);
+				} else if (validParams.containsKey(GE_CLASS)) {
+					return dataCatalogService.getImgSeries(validParams, imageSeriesLst, typeLst);
+				} else {
+					List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID).toString());
+					return getImageSeriesWithAnnotations(imgSetWithAnnotation, imageSeriesLst, typeLst,
+							imgSeriesIdLst, orgIdLst);
+				}
+			}
+		} catch (DataCatalogException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new ArrayList<ImageSeries>();
 	}
 }

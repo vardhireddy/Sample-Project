@@ -1,24 +1,27 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.entity.GEClass;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.when;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.entity.GEClass;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
 /**
  * Created by sowjanyanaidu on 9/5/17.
@@ -162,5 +165,56 @@ public class DataCatalogDaoImplTest {
             countM.add(0, annotations);
         }
         return countM;
+    }
+    
+
+    @Test
+    public void testConstructQueryWithEmptyParams() {
+        String params = dataCatalogDao.buildQuery(null);
+        assertEquals("Params should be empty when the passed params maps is null",params, "");
+    }
+
+    private Map<String, Object> constructQueryParam(String key, Object values) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(key, values);
+        return params;
+    }
+
+    @Test
+    public void testConstructQueryWithSingleParam() {
+        Map<String, Object> input = constructQueryParam("modality", "CT");
+        String result = dataCatalogDao.buildQuery(input);
+        String expectedResult = "WHERE im.modality IN (\"CT\")";
+        assertEquals("Param constructed in incorrect ", expectedResult, result);
+    }
+
+    @Test
+    public void testConstructQueryWithSingleParamMultipleValue() {
+    	Map<String, Object> input = constructQueryParam("modality", "CT,MR");
+        String result = dataCatalogDao.buildQuery(input);
+        String expectedResult = "WHERE im.modality IN (\"CT\", \"MR\")";
+
+        assertEquals("Param constructed in incorrect ", expectedResult, result);
+    }
+
+    @Test
+    public void testConstructQueryWithMultipleParamSingleValue() {
+        Map<String, Object> input = constructQueryParam("modality", "CT");
+        input.putAll(constructQueryParam("anatomy", "LUNG"));
+        String result = dataCatalogDao.buildQuery(input);
+        String expectedResult = "WHERE im.modality IN (\"CT\") AND im.anatomy IN (\"LUNG\")";
+
+        assertEquals("Param constructed in incorrect ", expectedResult, result);
+
+    }
+    @Test
+    public void testConstructQueryWithMultipleParamMultipleValue() {
+    	Map<String, Object> input = constructQueryParam("modality", "CT,MR");
+        input.putAll(constructQueryParam("anatomy", "LUNG,HEART"));
+        String result = dataCatalogDao.buildQuery(input);
+        String expectedResult = "WHERE im.modality IN (\"CT\", \"MR\") AND im.anatomy IN (\"LUNG\", \"HEART\")";
+
+        assertEquals("Param constructed in incorrect ", expectedResult, result);
+
     }
 }
