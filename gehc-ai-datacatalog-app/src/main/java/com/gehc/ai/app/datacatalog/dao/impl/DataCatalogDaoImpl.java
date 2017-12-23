@@ -73,7 +73,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "on p.id = im.patient_dbid ";
 	
 	private static final String GET_IMGSET_DATA_BY_FILTERS = "select im.id, im.org_id, modality, anatomy, data_format, series_instance_uid, institution, manufacturer, "
-			+ "instance_count, equipment, image_type, view, p.patient_id, age, gender from image_set im inner join annotation an on an.image_set=im.id inner join patient p on p.id = im.patient_dbid ";
+			+ "instance_count, equipment, image_type, view, p.patient_id, age, gender from image_set im inner join patient p on p.id = im.patient_dbid ";
 	/*public static final String GET_IMGSET_DATA_BY_FILTERS = "select im.id, modality, p.patient_id from image_set im "
 			+ "inner join annotation an "
 			+ "on an.image_set=im.id "
@@ -251,10 +251,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
 		@SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
-		if(null != objList && !objList.isEmpty()){
-			ImageSeries imgSeries = new ImageSeries();
+		if(null != objList && !objList.isEmpty()){		
 			Patient p = new Patient();
 	        objList.stream().forEach((record) -> {
+	        	ImageSeries imgSeries = new ImageSeries();
 	        	if (record[0] instanceof BigInteger){
 	        		imgSeries.setId(((BigInteger) record[0]).longValue());
 	        	}
@@ -296,6 +296,15 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					builder.append(" AND ");
 				}
 			}
+			/*Iterator<String> paramIterator = params.keySet().iterator();
+			for (Map.Entry<String,Object> entry : params.entrySet()) {
+				  String key = entry.getKey();
+				  String values = entry.getValue().toString();
+				  builder.append(constructWhereClause(key,values));
+					if (paramIterator.hasNext()) {
+						builder.append(" AND ");
+					}
+				}*/
 		}
 		return builder.toString();
 	}
@@ -303,7 +312,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		StringBuilder whereClause = new StringBuilder().append("im."+param + " IN (") ;
         whereClause.append(quoteValues(values));
 		whereClause.append(")");
-
 		return whereClause.toString();
 	}
 
