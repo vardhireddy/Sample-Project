@@ -12,6 +12,9 @@
 
 package com.gehc.ai.app.datacatalog.dao.impl;
 
+import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
+import static com.gehc.ai.app.common.constants.ApplicationConstants.GE_CLASS;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -211,7 +214,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 	
 	public List<ImageSeries> getImgSeriesLst(List<Object[]> objList){
-		logger.debug(" In DAO , getting image series list ");
 		List<ImageSeries> result = new ArrayList<ImageSeries>();
 		objList.stream().forEach((record) -> {
 			ImageSeries imgSeries = new ImageSeries();
@@ -228,6 +230,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			imgSeries.setEquipment(record[8].toString());
 			result.add(imgSeries);
 		});
+		logger.debug(" In DAO , getting image series list  size is "+(result!=null?result.size():0));
 		return result;
 	}
 	
@@ -239,17 +242,14 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImageSeries> getImgSetByFilters(Map<String, Object> params) throws Exception {
-		List<ImageSeries> imageSetList = null;
-		Map<Object, Object> filterMap = new HashMap<Object, Object>();
-		params.remove("annotations");
+		params.remove(ANNOTATIONS);
+		params.remove(GE_CLASS);
 		StringBuilder builder = new StringBuilder();
 		builder.append(GET_IMGSET_DATA_BY_FILTERS);
-
 		builder.append(buildQuery(params));
 		logger.info("Query = " + builder.toString());
 		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
-		@SuppressWarnings("unchecked")
 		List<Object[]> objList = q.getResultList();
 		if(null != objList && !objList.isEmpty()){		
 			Patient p = new Patient();
@@ -277,8 +277,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        });     
 	        logger.info(" imageDatilsList.size() " + imageSeriesList.size());
 		}
-	
-
 		return imageSeriesList;
 	}
 

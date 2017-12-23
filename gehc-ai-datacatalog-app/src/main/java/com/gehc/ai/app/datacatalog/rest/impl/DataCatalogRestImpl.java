@@ -904,6 +904,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 				}
 			}
 		}
+		logger.debug("Size of img set list with annotations "+ (imgSetWithAnnotation!=null?imgSetWithAnnotation.size():0));
 		return imgSetWithAnnotation;
 	}
 
@@ -923,6 +924,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		} else {
 			return imageSeriesLst;
 		}
+		logger.debug("Size of img set list without annotations "+ (imgSetWithOutAnn!=null?imgSetWithOutAnn.size():0));
 		return imgSetWithOutAnn;
 	}
 
@@ -1267,10 +1269,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 							getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
 				} else if (null != validParams && validParams.containsKey(ORG_ID)) {
 					imageSeriesLst = dataCatalogService.getImgSetByFilters(validParams);
-					if (!imageSeriesLst.isEmpty() && params.containsKey(ANNOTATIONS)) {
-						validParams.put(ANNOTATIONS, params.get(ANNOTATIONS));
-						return getImgSetByAnnotations(imageSeriesLst, validParams);
-					}
+					//if (!imageSeriesLst.isEmpty() && params.containsKey(ANNOTATIONS)) {
+					//	validParams.put(ANNOTATIONS, params.get(ANNOTATIONS));
+						return getImgSetByAnnotations(imageSeriesLst, params);
+					//}
 				}
 		} catch (ServiceException e) {
 			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
