@@ -1,5 +1,37 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
+import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
+
+import org.jbehave.core.annotations.BeforeScenario;
+import org.jbehave.core.annotations.Given;
+import org.jbehave.core.annotations.Then;
+import org.jbehave.core.annotations.When;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
@@ -9,40 +41,7 @@ import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.datacatalog.rest.impl.DataCatalogRestImpl;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
-import org.hibernate.internal.QueryImpl;
-import org.hibernate.internal.SQLQueryImpl;
-import org.jbehave.core.annotations.BeforeScenario;
-import org.jbehave.core.annotations.Given;
-import org.jbehave.core.annotations.Then;
-import org.jbehave.core.annotations.When;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by sowjanyanaidu on 7/13/17.
@@ -1024,5 +1023,52 @@ public class ImageSetSteps {
         when(imageSeriesRepository.findByStudyDbIdAndOrgId(anyLong(), anyString())).thenReturn(imgSerLst);
     }
 
+    @Given("Get Image set filter by SUID - DataSetUp Provided")
+    public void givenImagesetBasedOnFilterCriteria() throws Exception {
+        when(imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(anyListOf(String.class),anyListOf(String.class))).thenReturn(commonSteps.getImageSeries());
+    }
 
+
+    @When("Get Image set filter by SUID")
+    public void getImagesetBasedOnFilterCriteria() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/filter?series_instance_uid=1&org_id=12")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    @Then("verify Image set filter by SUID")
+    public void verifyImagesetBasedOnFilterCriteria() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+    
+    @Given("Get Image set by filter criteria with ORG ID ,Modality, Anatomy, GE_CLASS and Annotation - DataSetUp Provided")
+    public void givenGetImageSetByFilterCriteriaWithORGIDModalityAnatomyGE_CLASSAndAnnotationDataSetUpProvided() {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+     //   when(imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(anyListOf(String.class),anyListOf(String.class),anyListOf(String.class))).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSetByFilters(anyMap())).thenReturn(imgSeries);
+        
+        List <Annotation> annList = new ArrayList<Annotation>();
+        annList.add(commonSteps.getAnnotation());
+        when(annotationRepository.findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annList);
+    }
+
+    @When("Get Image set by filter criteria with ORG ID ,Modality, Anatomy, GE_CLASS and Annotation")
+    public void whenGetImageSetByFilterCriteriaWithORGIDModalityAnatomyGE_CLASSAndAnnotation() throws Exception {
+
+
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/filter?org_id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest,Lung")
+                        .contentType(MediaType.APPLICATION_JSON)
+                .param("ge-class", "[{\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]")
+        );
+
+    }
+
+    @Then("verify Image set by filter  with ORG ID ,Modality, Anatomy, GE_CLASS and Annotation")
+    public void thenVerifyImageSetByFilterWithORGIDModalityAnatomyGE_CLASSAndAnnotation() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
 }
