@@ -279,16 +279,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		StringBuilder builder = new StringBuilder();
 		if (null != params && params.size() > 0) {
 			builder.append("WHERE ");
-
-			/*Iterator<String> paramIterator = params.keySet().iterator();
-			while (paramIterator.hasNext()) {
-				String key = paramIterator.next();
-				String values = params.get(key).toString();
-				builder.append(constructWhereClause(key,values));
-				if (paramIterator.hasNext()) {
-					builder.append(" AND ");
-				}
-			}*/
 			for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
 				Map.Entry<String, Object> entry = entries.next();
 				String key = entry.getKey();
