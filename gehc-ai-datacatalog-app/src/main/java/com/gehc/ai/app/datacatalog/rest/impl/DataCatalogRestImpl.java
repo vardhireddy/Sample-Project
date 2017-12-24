@@ -1261,7 +1261,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					return imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(
 							getListOfStringsFromParams(validParams.get(SERIES_INS_UID).toString()),
 							getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
-				} else if (validParams.containsKey(ORG_ID)) {
+				} else if (null != validParams && validParams.containsKey(ORG_ID)) {
 					imageSeriesLst = dataCatalogService.getImgSetByFilters(validParams);
 						return getImgSetByAnnotations(imageSeriesLst, params);
 				}
