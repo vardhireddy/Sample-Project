@@ -13,7 +13,6 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
 import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
-import static com.gehc.ai.app.common.constants.ApplicationConstants.GE_CLASS;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -167,7 +166,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
         	try {
 				queryBuilder.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
@@ -189,13 +187,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					try {
 						return mapper.readValue(entry.getValue().toString(), GEClass [].class);
 					} catch (JsonParseException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (JsonMappingException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 			}
@@ -230,7 +225,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			imgSeries.setEquipment(record[8].toString());
 			result.add(imgSeries);
 		});
-		logger.debug(" In DAO , getting image series list  size is "+(result!=null?result.size():0));
+		logger.debug(" In DAO , getting image series list  size is "+result.size());
 		return result;
 	}
 	
@@ -241,7 +236,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ImageSeries> getImgSetByFilters(Map<String, Object> params) throws Exception {
+	public List<ImageSeries> getImgSetByFilters(Map<String, Object> params) {
 		params.remove(ANNOTATIONS);
 		params.remove(GE_CLASS);
 		StringBuilder builder = new StringBuilder();
@@ -285,7 +280,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		if (null != params && params.size() > 0) {
 			builder.append("WHERE ");
 
-			Iterator<String> paramIterator = params.keySet().iterator();
+			/*Iterator<String> paramIterator = params.keySet().iterator();
 			while (paramIterator.hasNext()) {
 				String key = paramIterator.next();
 				String values = params.get(key).toString();
@@ -293,16 +288,16 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				if (paramIterator.hasNext()) {
 					builder.append(" AND ");
 				}
+			}*/
+			for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
+				Map.Entry<String, Object> entry = entries.next();
+				String key = entry.getKey();
+				String values = entry.getValue().toString();
+				builder.append(constructWhereClause(key,values));
+				if (entries.hasNext()) {
+					builder.append(" AND ");
+				}
 			}
-			/*Iterator<String> paramIterator = params.keySet().iterator();
-			for (Map.Entry<String,Object> entry : params.entrySet()) {
-				  String key = entry.getKey();
-				  String values = entry.getValue().toString();
-				  builder.append(constructWhereClause(key,values));
-					if (paramIterator.hasNext()) {
-						builder.append(" AND ");
-					}
-				}*/
 		}
 		return builder.toString();
 	}

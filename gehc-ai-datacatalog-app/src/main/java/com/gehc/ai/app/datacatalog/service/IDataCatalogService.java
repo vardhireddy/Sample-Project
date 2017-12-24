@@ -39,5 +39,5 @@ public interface IDataCatalogService {
      * @return
      * @throws Exception 
      */
-    List<ImageSeries> getImgSetByFilters(Map<String, Object> params) throws Exception;
+    List<ImageSeries> getImgSetByFilters(Map<String, Object> params);
 }

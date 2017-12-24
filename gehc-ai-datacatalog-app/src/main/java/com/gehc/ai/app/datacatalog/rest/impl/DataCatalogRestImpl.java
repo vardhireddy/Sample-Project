@@ -55,7 +55,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -112,9 +111,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	@Value("${coolidge.micro.inference.url}")
 	private String coolidgeMInferenceUrl;
-	@Autowired
-	private RestTemplate restTemplate;
-
 	@Value("${uom.user.me.url}")
 	private String uomMeUrl;
 	@Autowired
@@ -522,7 +518,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 *
 	 * @see IDataCatalogRest#getDataCollection()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/datacatalog/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
@@ -1022,7 +1017,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	@RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
 	public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
@@ -1256,7 +1251,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/filter", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSetByFilters(@RequestParam Map<String, Object> params) {
-
 		Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
 				SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
 		ResponseBuilder responseBuilder;
@@ -1267,12 +1261,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					return imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(
 							getListOfStringsFromParams(validParams.get(SERIES_INS_UID).toString()),
 							getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
-				} else if (null != validParams && validParams.containsKey(ORG_ID)) {
+				} else if (validParams.containsKey(ORG_ID)) {
 					imageSeriesLst = dataCatalogService.getImgSetByFilters(validParams);
-					//if (!imageSeriesLst.isEmpty() && params.containsKey(ANNOTATIONS)) {
-					//	validParams.put(ANNOTATIONS, params.get(ANNOTATIONS));
 						return getImgSetByAnnotations(imageSeriesLst, params);
-					//}
 				}
 		} catch (ServiceException e) {
 			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)

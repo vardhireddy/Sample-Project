@@ -16,8 +16,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.PathVariable;
-
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
@@ -217,7 +215,8 @@ public interface IDataCatalogRest {
      * @param annotationType
      * @return
      */
-    List getRawTargetData(String id,String annotationType);
+    @SuppressWarnings("rawtypes")
+	List getRawTargetData(String id,String annotationType);
     /**
      * @return String Success
      */
