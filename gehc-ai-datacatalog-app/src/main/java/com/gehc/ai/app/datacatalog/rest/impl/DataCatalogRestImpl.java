@@ -1256,15 +1256,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		ResponseBuilder responseBuilder;
 		List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();
 		try {
-				if (null != validParams && validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
+			 if(null != validParams ){	
+				if (validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
 					logger.info("Getting img series based on series uid and org id");
 					return imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(
 							getListOfStringsFromParams(validParams.get(SERIES_INS_UID).toString()),
 							getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
-				} else if (null != validParams && validParams.containsKey(ORG_ID)) {
+				} else if (validParams.containsKey(ORG_ID)) {
 					imageSeriesLst = dataCatalogService.getImgSetByFilters(validParams);
 						return getImgSetByAnnotations(imageSeriesLst, params);
 				}
+			 }
 		} catch (ServiceException e) {
 			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity("Operation failed while retrieving image set by org id").build());
