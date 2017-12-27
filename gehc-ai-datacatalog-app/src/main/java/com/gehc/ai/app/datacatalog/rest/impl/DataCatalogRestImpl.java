@@ -1249,7 +1249,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	@RequestMapping(value = "/datacatalog/filter", method = RequestMethod.GET)
+	@RequestMapping(value = "/datacatalog/image-set/filter", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSetByFilters(@RequestParam Map<String, Object> params) {
 		Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
 				SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
@@ -1258,11 +1258,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		try {
 			 if(null != validParams ){	
 				if (validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
-					logger.info("Getting img series based on series uid and org id");
+					logger.debug("Getting img series based on series uid and org id");
 					return imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(
 							getListOfStringsFromParams(validParams.get(SERIES_INS_UID).toString()),
 							getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
 				} else if (validParams.containsKey(ORG_ID)) {
+					logger.debug("Getting img series based on all the filters");
 					imageSeriesLst = dataCatalogService.getImgSetByFilters(validParams);
 						return getImgSetByAnnotations(imageSeriesLst, params);
 				}

@@ -174,7 +174,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		queryBuilder.append(imageSeriesIds);
         queryBuilder.append(" and ");
 		queryBuilder.append(annotationTypes);
-        logger.info(" getImgSeries query is " + queryBuilder);
+        logger.debug(" getImgSeries query with GE class is " + queryBuilder);
         Query q = em.createNativeQuery(queryBuilder.toString()); // NOSONAR
         return getImgSeriesLst(q.getResultList());
 	}
@@ -242,7 +242,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		StringBuilder builder = new StringBuilder();
 		builder.append(GET_IMGSET_DATA_BY_FILTERS);
 		builder.append(buildQuery(params));
-		logger.info("Query = " + builder.toString());
+		logger.debug("Query to get image set by filters = " + builder.toString());
 		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
 		List<Object[]> objList = q.getResultList();
@@ -270,7 +270,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	imgSeries.setPatient(p);
 	        	imageSeriesList.add(imgSeries);
 	        });     
-	        logger.info(" imageDatilsList.size() " + imageSeriesList.size());
+	        logger.debug("Image set lis size " + imageSeriesList.size());
 		}
 		return imageSeriesList;
 	}
