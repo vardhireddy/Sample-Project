@@ -1249,7 +1249,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	@RequestMapping(value = "/datacatalog/image-set/filter", method = RequestMethod.GET)
+	@RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSetByFilters(@RequestParam Map<String, Object> params) {
 		Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
 				SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
