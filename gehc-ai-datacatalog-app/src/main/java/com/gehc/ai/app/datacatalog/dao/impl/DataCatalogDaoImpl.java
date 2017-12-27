@@ -136,7 +136,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typeLst) {
-		logger.debug(" In DAO , getting image series ");
+		logger.debug("Getting image series ");
 		ObjectMapper mapper = new ObjectMapper();	
 		GEClass [] geClasses = getGEClasses(params);
 		//Get image set
@@ -174,13 +174,13 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		queryBuilder.append(imageSeriesIds);
         queryBuilder.append(" and ");
 		queryBuilder.append(annotationTypes);
-        logger.info(" getImgSeries query is " + queryBuilder);
+        logger.debug(" getImgSeries query with GE class is " + queryBuilder);
         Query q = em.createNativeQuery(queryBuilder.toString()); // NOSONAR
         return getImgSeriesLst(q.getResultList());
 	}
 	
 	public GEClass [] getGEClasses(Map<String, Object> params){
-		logger.debug(" In DAO , getting GE classes ");
+		logger.debug("Getting GE classes ");
 		ObjectMapper mapper = new ObjectMapper();
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			if (GE_CLASS.equals(entry.getKey())) {
@@ -199,7 +199,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 	
 	public List<Long> getImgSeriesIdLst(List<ImageSeries> imgSeriesLst){
-		logger.debug(" In DAO , getting image series Id list ");
+		logger.debug("Getting image series Id list ");
 		List<Long> imgSeriesIdLst = new ArrayList<Long>();
 		for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
 			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
@@ -225,7 +225,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			imgSeries.setEquipment(record[8].toString());
 			result.add(imgSeries);
 		});
-		logger.debug(" In DAO , getting image series list  size is "+result.size());
+		logger.debug("Getting image series list size is "+result.size());
 		return result;
 	}
 	
@@ -242,7 +242,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		StringBuilder builder = new StringBuilder();
 		builder.append(GET_IMGSET_DATA_BY_FILTERS);
 		builder.append(buildQuery(params));
-		logger.info("Query = " + builder.toString());
+		logger.debug("Query to get image set by filters = " + builder.toString());
 		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
 		List<Object[]> objList = q.getResultList();
@@ -270,7 +270,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	imgSeries.setPatient(p);
 	        	imageSeriesList.add(imgSeries);
 	        });     
-	        logger.info(" imageDatilsList.size() " + imageSeriesList.size());
+	        logger.debug("Image set lis size " + imageSeriesList.size());
 		}
 		return imageSeriesList;
 	}
