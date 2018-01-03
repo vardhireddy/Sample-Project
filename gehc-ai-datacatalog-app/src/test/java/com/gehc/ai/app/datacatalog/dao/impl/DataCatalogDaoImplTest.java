@@ -69,6 +69,20 @@ public class DataCatalogDaoImplTest {
         assertEquals("{8082=CR, 121=DX}", result.toString());
 
     }
+
+    @Test
+    public void testgetImageSeriesByFilters() {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
+        List expectedList = new ArrayList();
+        Object[] newObj = new Object[]{"1","4fac7976-e58b-472a-960b-42d7e3689f20","DX","CHEST","PNG","12345","UCSF","test",1,"GE XRAY","test","test","123","12","M"};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        List result = dataCatalogDao.getImgSetByFilters(input);
+        assertEquals(getImageSeriesWithFilters().toString(), result.toString());
+
+    }
     //TODO: Need to review this test. It breaks when toString() method is added to Patient
     @Test
     public void testGetImageSeries() {
@@ -90,6 +104,31 @@ public class DataCatalogDaoImplTest {
         String expected = "id=1, schemaVersion=null, orgId=123, modality=DX, anatomy=CHEST, dataFormat=test, uri=null, seriesInstanceUid=null, description=null, institution=test, equipment=test, manufacturer=null, imageType=null, view=null, instanceCount=123, properties=null, uploadBy=null, uploadDate=null, patientDbId=null, studyDbId=null, patient=com.gehc.ai.app.datacatalog.entity.Patient";
         //assert (returnList.toString().contains(expected));
         assertEquals("{8082=CR, 121=DX}", "{8082=CR, 121=DX}");
+    }
+
+    private List<ImageSeries> getImageSeriesWithFilters(){
+        List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+        ImageSeries imgSeries = new ImageSeries();
+        Patient p = new Patient();
+
+        imgSeries.setOrgId("4fac7976-e58b-472a-960b-42d7e3689f20");
+        imgSeries.setModality("DX");
+        imgSeries.setAnatomy("CHEST");
+        imgSeries.setDataFormat("PNG");
+        imgSeries.setSeriesInstanceUid("12345");
+        imgSeries.setInstitution("UCSF");
+        imgSeries.setManufacturer("test");
+        imgSeries.setInstanceCount(1);
+        imgSeries.setEquipment("GE XRAY");
+        imgSeries.setImageType("test");
+        imgSeries.setView("test");
+        p.setPatientId("123");
+        p.setAge("12");
+        p.setGender("M");
+
+        imgSeries.setPatient(p);
+        imageSeriesList.add(imgSeries);
+        return imageSeriesList;
     }
 
     private List<ImageSeries> getImageSeries() {

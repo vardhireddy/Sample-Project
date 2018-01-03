@@ -352,3 +352,16 @@ Meta: @automated
 Given Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes - DataSetUp Provided
 When Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
 Then verify Image set based on filter  with Equipment name containing accepted special characters like quotes and slashes
+
+@test
+Scenario: Get Image set based on filter criteria with ORG ID and Modality throws Service Exception
+Meta: @automated
+Given Get Image set based on filter criteria with ORG ID and Modality throws Service Exception - DataSetUp Provided
+When Get Image set based on filter criteria with ORG ID and Modality throws Service Exception
+Then verify Image set based on filter  with ORG ID and Modality throws Service Exception
+
+@test
+Scenario: Get Image set based on filter criteria with filters null
+Given Get Image set based on filter criteria with filters null
+When Get Image set based on filter criteria with filters null
+Then verify Image set based on filter with filters null
