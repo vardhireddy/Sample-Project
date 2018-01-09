@@ -415,21 +415,27 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ApiResponse apiResponse = null;
         logger.info("[In REST, update institution = " + u.getInstitution() + u.getSeriesUIds());
         try {
-            if (!(u.getSeriesUIds().isEmpty())) {
+            if (u.getSeriesUIds().length>0) {
                 imageSeriesRepository.updateInstitution(u.getInstitution(), u.getSeriesUIds());
                 apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                        ApplicationConstants.SUCCESS, u.getSeriesUIds().toString());
+                        ApplicationConstants.SUCCESS,convertStringArrayToString(u.getSeriesUIds(), ","));
             }
         } catch (Exception e) {
             logger.error("Exception occured while updating institution ", e);
             apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE,
-                    "Id does not exist", u.getSeriesUIds().toString());
+                    "Id does not exist", convertStringArrayToString(u.getSeriesUIds(), ","));
 
         }
 
         return apiResponse;
     }
 
+    private static String convertStringArrayToString(String[] strArr, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (String str : strArr)
+            sb.append(str).append(delimiter);
+        return sb.substring(0, sb.length() - 1);
+    }
     /*
      * (non-Javadoc)
      *

@@ -1018,7 +1018,7 @@ public class ImageSetNewSteps {
 
     @Given("Update institution by ImageSeries Ids - Data Setup")
     public void givenUpdateIntitutionByImageSeriesIdsDataSetup()  {
-        doNothing().when(imageSeriesRepository).updateInstitution(anyString(),anyListOf(String.class));
+        doNothing().when(imageSeriesRepository).updateInstitution(anyString(),any());
     }
 
     @When("Update institution by ImageSeries Ids is called")

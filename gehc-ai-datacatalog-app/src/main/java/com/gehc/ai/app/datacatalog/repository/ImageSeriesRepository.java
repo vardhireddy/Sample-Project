@@ -89,5 +89,5 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     @Modifying
     @Query("update ImageSeries i set i.institution=:institution where i.seriesInstanceUid in :seriesUIds")
-    void updateInstitution( @Param("institution") String institution, @Param("seriesUIds") List<String> seriesUIds);
+    void updateInstitution( @Param("institution") String institution, @Param("seriesUIds") String [] seriesUIds);
  }
