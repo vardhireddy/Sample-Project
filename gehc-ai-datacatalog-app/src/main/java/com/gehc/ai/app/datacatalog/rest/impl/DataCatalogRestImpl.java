@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1129,7 +1130,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		logger.debug("Get dataSummary for orgId = " + orgId + " group by " + groupby);
 		Map<String, Object> filters = new HashMap<String, Object>();
 		if (null != groupby && !groupby.isEmpty() && groupby.equalsIgnoreCase(ANNOTATIONS_ABSENT)) {
+			logger.debug("Started for ANNOTATIONS_ABSENT"+ new Timestamp(System.currentTimeMillis()));
 			filters.put(ANNOTATIONS_ABSENT, imageSeriesRepository.countImgWithNoAnn(orgId).get(0));
+			logger.debug("END ANNOTATIONS_ABSENT"+ new Timestamp(System.currentTimeMillis()));
 		} else {
 			filters.putAll(getModalityAndAnatomyCount(orgId, filters));
 			filters.putAll(getDataFormatAndInstitutionCount(orgId, filters));
@@ -1140,6 +1143,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	private Map<String, Object> getEquipmentAndAnnoatationTypeCount(String orgId, Map<String, Object> filters) {
 		logger.debug("In REST, getEquipmentAndAnnoatationTypeCount, orgId = " + orgId);
+		logger.debug("Started for getEquipmentAndAnnoatationTypeCount"+new Timestamp(System.currentTimeMillis()));
 		List<Object[]> equipmentCount = imageSeriesRepository.countEquipment(orgId);
 		if (null != equipmentCount && !equipmentCount.isEmpty()) {
 			filters.putAll(getFiltersCount(equipmentCount, EQUIPMENT));
@@ -1148,11 +1152,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if (null != annotationTypeCount && !annotationTypeCount.isEmpty()) {
 			filters.putAll(getFiltersCount(annotationTypeCount, ANNOTATIONS));
 		}
+		logger.debug("END for getEquipmentAndAnnoatationTypeCount"+new Timestamp(System.currentTimeMillis()));
 		return filters;
 	}
 
 	private Map<String, Object> getDataFormatAndInstitutionCount(String orgId, Map<String, Object> filters) {
 		logger.debug("In REST, getDataFormatAndInstitutionCount, orgId = " + orgId);
+		logger.debug("Started for getDataFormatAndInstitutionCount"+new Timestamp(System.currentTimeMillis()));
 		List<Object[]> dataFormatCount = imageSeriesRepository.countDataFormat(orgId);
 		if (null != dataFormatCount && !dataFormatCount.isEmpty()) {
 			filters.putAll(getFiltersCount(dataFormatCount, DATA_FORMAT));
@@ -1161,11 +1167,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if (null != institutionCount && !institutionCount.isEmpty()) {
 			filters.putAll(getFiltersCount(institutionCount, INSTITUTION));
 		}
+		logger.debug("End for getDataFormatAndInstitutionCount"+new Timestamp(System.currentTimeMillis()));
 		return filters;
 	}
 
 	private Map<String, Object> getModalityAndAnatomyCount(String orgId, Map<String, Object> filters) {
 		logger.debug("In REST, getModalityAndAnatomyCount, orgId = " + orgId);
+		logger.debug("Started for getModalityAndAnatomyCount"+new Timestamp(System.currentTimeMillis()));
 		List<Object[]> modalityCount = imageSeriesRepository.countModality(orgId);
 		if (null != modalityCount && !modalityCount.isEmpty()) {
 			filters.putAll(getFiltersCount(modalityCount, MODALITY));
@@ -1174,6 +1182,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if (null != anatomyCount && !anatomyCount.isEmpty()) {
 			filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
 		}
+		logger.debug("END for getModalityAndAnatomyCount"+new Timestamp(System.currentTimeMillis()));
 		return filters;
 	}
 
@@ -1192,6 +1201,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params,
 			HttpServletRequest request) {
 		logger.debug("Get ge class data summary, orgId = " + request.getAttribute("orgId"));
+
 		if (null != request.getAttribute("orgId")) {
 			String orgId = request.getAttribute("orgId").toString();
 			if (null != orgId && !orgId.isEmpty() && null != params.get(ANNOTATIONS)) {
