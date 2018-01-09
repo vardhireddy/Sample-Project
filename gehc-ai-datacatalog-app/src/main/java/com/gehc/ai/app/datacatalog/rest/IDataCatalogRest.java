@@ -17,13 +17,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 
 /**
@@ -242,5 +236,7 @@ public interface IDataCatalogRest {
     ApiResponse deleteDataCollection(String ids, HttpServletRequest request);
     
     List<ImageSeries> getImgSetByFilters(Map<String, Object> params);
+
+    ApiResponse updateInstitutionByImageSeriesList(InstitutionSet u, HttpServletRequest request);
 
 }

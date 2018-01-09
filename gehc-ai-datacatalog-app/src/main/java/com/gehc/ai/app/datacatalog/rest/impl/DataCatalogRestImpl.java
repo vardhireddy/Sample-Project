@@ -44,6 +44,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import com.gehc.ai.app.datacatalog.entity.*;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,14 +62,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
@@ -403,6 +396,30 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			return dataSetRepository.save(d);
 		} else
 			return null;
+	}
+
+
+	@Override
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RequestMapping(value = "/datacatalog/update-institution", method = RequestMethod.PUT)
+	public ApiResponse updateInstitutionByImageSeriesList(@Valid @RequestBody InstitutionSet u, HttpServletRequest request) {
+		ApiResponse apiResponse = null;
+		logger.info("[In REST, update institution = " +u.getInstitution()+ u.getSeriesUIds());
+			try{
+			if (!(u.getSeriesUIds().isEmpty())) {
+					imageSeriesRepository.updateInstitution( u.getInstitution(), u.getSeriesUIds());
+					apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
+							ApplicationConstants.SUCCESS, u.getSeriesUIds().toString());
+				}
+			}catch(Exception e){
+				logger.error("Exception occured while updating institution ", e);
+				apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE,
+						"Id does not exist", u.getSeriesUIds().toString());
+
+			}
+
+			return apiResponse;
 	}
 
 	/*
