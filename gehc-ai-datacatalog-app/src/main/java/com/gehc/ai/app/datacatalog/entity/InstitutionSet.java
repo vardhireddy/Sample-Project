@@ -12,11 +12,6 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import javax.persistence.Entity;
-import java.util.List;
-
 /**
  * Created by sowjanyanaidu on 1/3/18.
  */
