@@ -151,27 +151,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 			return new GEClass[0];
 	}
-	
-	public List<ImageSeries> getImgSeriesLst(List<Object[]> objList){
-		List<ImageSeries> result = new ArrayList<ImageSeries>();
-		objList.stream().forEach((record) -> {
-			ImageSeries imgSeries = new ImageSeries();
-			imgSeries.setId(Long.valueOf(record[0].toString()));
-			imgSeries.setOrgId(record[1].toString());
-			Patient p = new Patient();
-			p.setPatientId(record[2].toString());
-			imgSeries.setPatient(p);
-			imgSeries.setModality(record[3].toString());
-			imgSeries.setAnatomy(record[4].toString());
-			imgSeries.setInstanceCount(Integer.valueOf(record[5].toString()));
-			imgSeries.setDataFormat(record[6].toString());
-			imgSeries.setInstitution(record[7].toString());
-			imgSeries.setEquipment(record[8].toString());
-			result.add(imgSeries);
-		});
-		logger.debug("Getting image series list size is "+result.size());
-		return result;
-	}
+
 
 	private String quoteValues(String values) {
 		StringBuilder builder = new StringBuilder();
