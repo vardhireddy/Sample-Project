@@ -24,11 +24,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,15 +42,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +59,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
@@ -132,17 +130,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Autowired
     private IDataCatalogService dataCatalogService;
-
-    private Set<Long> getUniqueImgSetIds(List<Annotation> annotationLst) {
-        Set<Long> uniqueImgSetIds = new HashSet<Long>();
-        if (null != annotationLst && !annotationLst.isEmpty()) {
-            for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext(); ) {
-                Annotation annotation = (Annotation) annotationItr.next();
-                uniqueImgSetIds.add(annotation.getImageSet().getId());
-            }
-        }
-        return uniqueImgSetIds;
-    }
 
     Map<String, Object> constructValidParams(Map<String, Object> params, List<String> allowedParams) {
         Map<String, Object> validParams = new HashMap<>();
@@ -545,416 +532,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see IDataCatalogRest#getDataCollection()
-     */
-    @Override
-    @RequestMapping(value = "/datacatalog/image-set", method = RequestMethod.GET)
-    public List<ImageSeries> getImgSeries(@RequestParam Map<String, Object> params) {
-        {
-            logger.debug("In REST, getImgSeries");
-            Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORGANIZATION_ID, MODALITY,
-                    ANATOMY, ANNOTATIONS, SERIESINSUID, GE_CLASS, DATA_FORMAT, INSTITUTION, EQUIPMENT));
-            // List of img set based on filter criteria other than annotation
-            List<ImageSeries> imageSeriesLst;// = new ArrayList<ImageSeries>();
-            // List of img set with annotation
-            List<ImageSeries> imgSetWithAnnotation = new ArrayList<ImageSeries>();
-            // List of img set which does not have annotation
-            List<ImageSeries> imgSetWithOutAnn = new ArrayList<ImageSeries>();
-            try {
-                if (null != validParams) {
-                    if (validParams.containsKey(SERIESINSUID) && validParams.containsKey(ORGANIZATION_ID)) {
-                        return imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(
-                                getListOfStringsFromParams(validParams.get(SERIESINSUID).toString()),
-                                getListOfStringsFromParams(validParams.get(ORGANIZATION_ID).toString()));
-                    } else if (validParams.containsKey(ORGANIZATION_ID)) {
-                        imageSeriesLst = getImageSeriesList(validParams, imgSetWithAnnotation, imgSetWithOutAnn);
-                        if (!imageSeriesLst.isEmpty()) {
-                            if (validParams.containsKey(GE_CLASS) && validParams.containsKey(ANNOTATIONS)) {
-                                // Get the annotation type bcoz an image set can
-                                // have multiple anntations with different types
-                                List<String> typeLst = getListOfStringsFromParams(
-                                        validParams.get(ANNOTATIONS).toString());
-                                return dataCatalogService.getImgSeries(params, imageSeriesLst, typeLst);
-                            } else {
-                                return imageSeriesLst;
-                            }
-                        }
-                    }
-                }
-            } catch (RuntimeException e) {
-                throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Operation failed while filtering image set data").build());
-            } catch (Exception e) {
-                throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("Operation failed while filtering image set data").build());
-            }
-            return new ArrayList<ImageSeries>();
-        }
-    }
-
-    private List<ImageSeries> getImageSeriesList(Map<String, Object> validParams,
-                                                 List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn) throws DataCatalogException {
-        List<ImageSeries> imageSeriesLst;
-        List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORGANIZATION_ID).toString());
-        List<ImageSeries> patientImageSeriesLst = new ArrayList<ImageSeries>();
-        imageSeriesLst = getImageSeriesListWithValidParamsAndOrgId(validParams, orgIdLst);
-
-        logger.debug("In REST , get image series list ");
-        // Get the data with annotation filter
-        if (validParams.containsKey(ANNOTATIONS)) {
-            List<String> typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS).toString());
-            if (!typeLst.isEmpty()) {
-                // List of image series id based on criteria
-                // other than annotation
-                List<Long> imgSeriesIdLst = new ArrayList<Long>();
-                for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
-                    ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                    imgSeriesIdLst.add(imageSeries.getId());
-                }
-                if (typeLst.contains(ABSENT)) {
-                    imgSetWithOutAnn = getImageSeriesWithOutAnnotations(imgSetWithOutAnn, imageSeriesLst,
-                            imgSeriesIdLst);
-                } else {
-                    imgSetWithAnnotation = getImageSeriesWithAnnotations(imgSetWithAnnotation, imageSeriesLst, typeLst,
-                            imgSeriesIdLst, orgIdLst);
-                }
-            }
-        }
-
-        patientImageSeriesLst = getPatientForImageSeriesWithOrWithOutAnn(validParams, imgSetWithAnnotation,
-                imgSetWithOutAnn, imageSeriesLst);
-        return patientImageSeriesLst;
-    }
-
-    private List<ImageSeries> getPatientForImageSeriesWithOrWithOutAnn(Map<String, Object> validParams,
-                                                                       List<ImageSeries> imgSetWithAnnotation, List<ImageSeries> imgSetWithOutAnn,
-                                                                       List<ImageSeries> imageSeriesLst) {
-        logger.debug("In REST , get patient for image series with Or without annotation");
-        if (null != imgSetWithAnnotation && !imgSetWithAnnotation.isEmpty()) {
-            // Data with Annotation
-            return getPatientForImgSeriesLst(imgSetWithAnnotation);
-        } else if (null != imgSetWithOutAnn && !imgSetWithOutAnn.isEmpty()) {
-            // Data with no Annotation
-            return getPatientForImgSeriesLst(imgSetWithOutAnn);
-        } else if (!validParams.containsKey(ANNOTATIONS)) { // DC
-            // without
-            // Annotation
-            // criteria
-            return getPatientForImgSeriesLst(imageSeriesLst);
-        }
-        return new ArrayList<ImageSeries>();
-    }
-
-    private List<ImageSeries> getImageSeriesListWithValidParamsAndOrgId(Map<String, Object> validParams,
-                                                                        List<String> orgIdLst) throws DataCatalogException {
-        logger.debug("In REST , get image series list with valid params and orgId");
-        List<ImageSeries> imageSeriesLst = null;
-        if (validParams.containsKey(MODALITY)) {
-            List<String> modalityLst = getListOfStringsFromParams(validParams.get(MODALITY).toString());
-            if (validParams.containsKey(ANATOMY)) {
-                imageSeriesLst = getImageSeriesWithModalityAnatomy(validParams, orgIdLst, modalityLst);
-            } else if (validParams.containsKey(DATA_FORMAT)) {
-                imageSeriesLst = getImageSeriesWithModalityDataFormat(validParams, orgIdLst, modalityLst);
-            } else if (validParams.containsKey(INSTITUTION)) {
-                imageSeriesLst = getImageSeriesWithModalityInstitution(validParams, orgIdLst, modalityLst);
-            } else if (validParams.containsKey(EQUIPMENT)) {
-                imageSeriesLst = getImageSeriesWithModalityEquiment(validParams, orgIdLst, modalityLst);
-            } else {
-                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityIn(orgIdLst, modalityLst);
-            }
-        } else if (validParams.containsKey(ANATOMY)) {
-            imageSeriesLst = getImageSeriesWithAnatomy(validParams, orgIdLst);
-        } else if (validParams.containsKey(DATA_FORMAT)) {
-            imageSeriesLst = getImageSeriesWithDataFormat(validParams, orgIdLst);
-        } else if (validParams.containsKey(INSTITUTION)) {
-            imageSeriesLst = getImageSeriesWithInstitution(validParams, orgIdLst);
-        } else if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndEquipmentIn(orgIdLst, equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdIn(orgIdLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithModalityEquiment(Map<String, Object> validParams, List<String> orgIdLst,
-                                                                 List<String> modalityLst) throws DataCatalogException {
-        logger.debug("In REST , get image series with modality ,equiment");
-        List<ImageSeries> imageSeriesLst;
-        List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-        imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndEquipmentIn(orgIdLst, modalityLst,
-                equipmentLst);
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithInstitution(Map<String, Object> validParams, List<String> orgIdLst)
-            throws DataCatalogException {
-        logger.debug("In REST , get image series with institution");
-        List<ImageSeries> imageSeriesLst;
-        List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-        if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionInAndEquipmentIn(orgIdLst, institutionLst,
-                    equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndInstitutionIn(orgIdLst, institutionLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithDataFormat(Map<String, Object> validParams, List<String> orgIdLst)
-            throws DataCatalogException {
-        logger.debug("In REST , get image series with data format");
-        List<ImageSeries> imageSeriesLst;
-        List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-        if (validParams.containsKey(INSTITUTION)) {
-            List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-            if (validParams.containsKey(EQUIPMENT)) {
-                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionInAndEquipmentIn(
-                        orgIdLst, dataFormatLst, institutionLst, equipmentLst);
-            } else {
-                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndInstitutionIn(orgIdLst,
-                        dataFormatLst, institutionLst);
-            }
-        } else if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatInAndEquipmentIn(orgIdLst, dataFormatLst,
-                    equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndDataFormatIn(orgIdLst, dataFormatLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithAnatomy(Map<String, Object> validParams, List<String> orgIdLst)
-            throws DataCatalogException {
-        logger.debug("In REST , get image series with anatomy");
-        List<ImageSeries> imageSeriesLst;
-        List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
-        if (validParams.containsKey(DATA_FORMAT)) {
-            List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-            if (validParams.containsKey(INSTITUTION)) {
-                imageSeriesLst = getImageSeriesWithAnatomyDataFomatInstitutionAndOrEquipment(validParams, orgIdLst,
-                        anatomyLst, dataFormatLst);
-            } else {
-                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatIn(orgIdLst, anatomyLst,
-                        dataFormatLst);
-            }
-        } else if (validParams.containsKey(INSTITUTION)) {
-            imageSeriesLst = getImageSeriesWithAnatomyInstitutionAndOrEquipment(validParams, orgIdLst, anatomyLst);
-        } else if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndEquipmentIn(orgIdLst, anatomyLst,
-                    equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyIn(orgIdLst, anatomyLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithAnatomyInstitutionAndOrEquipment(Map<String, Object> validParams,
-                                                                                 List<String> orgIdLst, List<String> anatomyLst) throws DataCatalogException {
-        logger.debug("In REST , get image series with anatomy, institution and/Or equipment");
-        List<ImageSeries> imageSeriesLst;
-        List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-        if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionInAndEquipmentIn(orgIdLst,
-                    anatomyLst, institutionLst, equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndInstitutionIn(orgIdLst, anatomyLst,
-                    institutionLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithAnatomyDataFomatInstitutionAndOrEquipment(
-            Map<String, Object> validParams, List<String> orgIdLst, List<String> anatomyLst, List<String> dataFormatLst)
-            throws DataCatalogException {
-        logger.debug("In REST , get Image series with anatomy, data format, institution and/Or equipment");
-        List<ImageSeries> imageSeriesLst;
-        List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-        if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository
-                    .findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, anatomyLst,
-                            dataFormatLst, institutionLst, equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndDataFormatInAndInstitutionIn(orgIdLst,
-                    anatomyLst, dataFormatLst, institutionLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithModalityInstitution(Map<String, Object> validParams,
-                                                                    List<String> orgIdLst, List<String> modalityLst) throws DataCatalogException {
-        logger.debug("In REST , get Image series with modality, institution");
-        List<ImageSeries> imageSeriesLst;
-        List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-        if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionInAndEquipmentIn(orgIdLst,
-                    modalityLst, institutionLst, equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndInstitutionIn(orgIdLst, modalityLst,
-                    institutionLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithModalityDataFormat(Map<String, Object> validParams,
-                                                                   List<String> orgIdLst, List<String> modalityLst) throws DataCatalogException {
-        logger.debug("In REST , get Image series with modality, data format");
-        List<ImageSeries> imageSeriesLst;
-        List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-        if (validParams.containsKey(INSTITUTION)) {
-            List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-            if (validParams.containsKey(EQUIPMENT)) {
-                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-                imageSeriesLst = imageSeriesRepository
-                        .findByOrgIdInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst, modalityLst,
-                                dataFormatLst, institutionLst, equipmentLst);
-            } else {
-                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndInstitutionIn(
-                        orgIdLst, modalityLst, dataFormatLst, institutionLst);
-            }
-        } else {
-            if (validParams.containsKey(EQUIPMENT)) {
-                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatInAndEquipmentIn(orgIdLst,
-                        modalityLst, dataFormatLst, equipmentLst);
-            } else {
-                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndModalityInAndDataFormatIn(orgIdLst, modalityLst,
-                        dataFormatLst);
-            }
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithModalityAnatomy(Map<String, Object> validParams, List<String> orgIdLst,
-                                                                List<String> modalityLst) throws DataCatalogException {
-        logger.debug("In REST , get Image series with modality , anatomy");
-        List<ImageSeries> imageSeriesLst;
-        List<String> anatomyLst = getListOfStringsFromParams(validParams.get(ANATOMY).toString());
-        if (validParams.containsKey(DATA_FORMAT)) {
-            imageSeriesLst = getImageSeriesWithModalityAnatomyAndDataFormat(validParams, orgIdLst, modalityLst,
-                    anatomyLst);
-        } else {
-            if (validParams.containsKey(INSTITUTION)) {
-                imageSeriesLst = getImageSeriesWithModalityAnatomyAndOrInstitution(validParams, orgIdLst, modalityLst,
-                        anatomyLst);
-            } else {
-                imageSeriesLst = getImageSeriesWithModalityAnatomyAndOrEquipment(validParams, orgIdLst, modalityLst,
-                        anatomyLst);
-            }
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrEquipment(Map<String, Object> validParams,
-                                                                              List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) throws DataCatalogException {
-        logger.debug("In REST , get Image series with modality, anatomy and/Or equipment");
-        List<ImageSeries> imageSeriesLst;
-        if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndEquipmentIn(orgIdLst,
-                    anatomyLst, modalityLst, equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityIn(orgIdLst, anatomyLst,
-                    modalityLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithModalityAnatomyAndOrInstitution(Map<String, Object> validParams,
-                                                                                List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) throws DataCatalogException {
-        logger.debug("In REST , get Image series with modality, anatomy and/or institution");
-        List<ImageSeries> imageSeriesLst;
-        List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-        if (validParams.containsKey(EQUIPMENT)) {
-            List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionInAndEquipmentIn(
-                    orgIdLst, anatomyLst, modalityLst, institutionLst, equipmentLst);
-        } else {
-            imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndInstitutionIn(orgIdLst,
-                    anatomyLst, modalityLst, institutionLst);
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithModalityAnatomyAndDataFormat(Map<String, Object> validParams,
-                                                                             List<String> orgIdLst, List<String> modalityLst, List<String> anatomyLst) throws DataCatalogException {
-        logger.debug("In REST , get Image series with modality, anatomy, data format");
-        List<ImageSeries> imageSeriesLst;
-        List<String> dataFormatLst = getListOfStringsFromParams(validParams.get(DATA_FORMAT).toString());
-        if (validParams.containsKey(INSTITUTION)) {
-            List<String> institutionLst = getListOfStringsFromParams(validParams.get(INSTITUTION).toString());
-            if (validParams.containsKey(EQUIPMENT)) {
-                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-                imageSeriesLst = imageSeriesRepository
-                        .findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionInAndEquipmentIn(orgIdLst,
-                                anatomyLst, modalityLst, dataFormatLst, institutionLst, equipmentLst);
-            } else {
-                imageSeriesLst = imageSeriesRepository
-                        .findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndInstitutionIn(orgIdLst, anatomyLst,
-                                modalityLst, dataFormatLst, institutionLst);
-            }
-        } else {
-            if (validParams.containsKey(EQUIPMENT)) {
-                List<String> equipmentLst = getListOfStringsFromParams(validParams.get(EQUIPMENT).toString());
-                imageSeriesLst = imageSeriesRepository
-                        .findByOrgIdInAndAnatomyInAndModalityInAndDataFormatInAndEquipmentIn(orgIdLst, anatomyLst,
-                                modalityLst, dataFormatLst, equipmentLst);
-            } else {
-                imageSeriesLst = imageSeriesRepository.findByOrgIdInAndAnatomyInAndModalityInAndDataFormatIn(orgIdLst,
-                        anatomyLst, modalityLst, dataFormatLst);
-            }
-        }
-        return imageSeriesLst;
-    }
-
-    private List<ImageSeries> getImageSeriesWithAnnotations(List<ImageSeries> imgSetWithAnnotation,
-                                                            List<ImageSeries> imageSeriesLst, List<String> typeLst, List<Long> imgSeriesIdLst, List<String> orgIdLst) {
-        logger.debug("In REST , get Image series with annotations");
-        List<Annotation> annotationLst = new ArrayList<Annotation>();
-        annotationLst = annotationRepository.findByImageSetIdInAndTypeInAndOrgId(imgSeriesIdLst, typeLst, orgIdLst);
-        Set<Long> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
-        if (!uniqueImgSetIds.isEmpty()) {
-            for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
-                ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                if (uniqueImgSetIds.contains(imageSeries.getId())) {
-                    imgSetWithAnnotation.add(imageSeries);
-                }
-            }
-        }
-        logger.debug("Size of img set list with annotations " + (imgSetWithAnnotation != null ? imgSetWithAnnotation.size() : 0));
-        return imgSetWithAnnotation;
-    }
-
-    private List<ImageSeries> getImageSeriesWithOutAnnotations(List<ImageSeries> imgSetWithOutAnn,
-                                                               List<ImageSeries> imageSeriesLst, List<Long> imgSeriesIdLst) {
-        logger.debug("In REST , get Image series without annotations");
-        List<Annotation> annotationLst = new ArrayList<Annotation>();
-        annotationLst = annotationRepository.findByImageSetIdIn(imgSeriesIdLst);
-        Set<Long> uniqueImgSetIds = getUniqueImgSetIds(annotationLst);
-        if (!uniqueImgSetIds.isEmpty()) {
-            for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
-                ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                if (!uniqueImgSetIds.contains(imageSeries.getId())) {
-                    imgSetWithOutAnn.add(imageSeries);
-                }
-            }
-        } else {
-            return imageSeriesLst;
-        }
-        logger.debug("Size of img set list without annotations " + (imgSetWithOutAnn != null ? imgSetWithOutAnn.size() : 0));
-        return imgSetWithOutAnn;
-    }
-
     private List<String> getListOfStringsFromParams(String values) throws DataCatalogException {
         List<String> valueLst = new ArrayList<String>();
         if (null != values && !values.isEmpty()) {
@@ -1071,18 +648,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             if (null != dsLst.get(0).getImageSets()) {
                 List<String> types = new ArrayList<String>();
                 types.add(annotationType);
-                /*
-				 * List<ImageSeries> imgSeriesLst = imageSeriesRepository
-				 * .findByIdIn((List<Long>) dsLst.get(0).getImageSets());
-				 */
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = getImgSerIdLst(imgSeries);
-				/*
-				 * if (null != imgSeries && !imgSeries.isEmpty()) { for (int i =
-				 * 0; i < imgSeries.size(); i++) {
-				 * imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString())); }
-				 * }
-				 */
                 List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdLst);
                 logger.debug("***** Got img series by id sucessfully");
                 if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
@@ -1092,11 +659,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
                         imgSeriesMap.put(imageSeries.getId(), imageSeries);
                     }
-					/*
-					 * List<Annotation> annotationLst =
-					 * annotationRepository.findByImageSetIdInAndTypeIn((List<
-					 * Long>) dsLst.get(0).getImageSets(), types);
-					 */
+
                     List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn(imgSerIdLst,
                             types);
                     logger.info("***** Got annotationLst by img series id and type");
@@ -1246,7 +809,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     logger.debug("BAD REQUEST : query parameter is not valid");
                     return null;
                 }
-
                 params.remove(ANNOTATIONS);
                 return dataCatalogService.geClassDataSummary(params, orgId, type);
             }
@@ -1282,78 +844,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     "Id does not exist", id);
         }
         return apiResponse;
-    }
-
-    /*
-     *   * (non-Javadoc)   *   * @see
-     * com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()  
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    @RequestMapping(value = "/datacatalog/image-series-old", method = RequestMethod.GET)
-    public List<ImageSeries> getImgSetByFilters(@RequestParam Map<String, Object> params) {
-        Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
-                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
-        ResponseBuilder responseBuilder;
-        List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();
-        try {
-            if (null != validParams) {
-                if (validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
-                    logger.debug("Getting img series based on series uid and org id");
-                    return imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(
-                            getListOfStringsFromParams(validParams.get(SERIES_INS_UID).toString()),
-                            getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
-                } else if (validParams.containsKey(ORG_ID) && validParams.containsKey(ANNOTATIONS)) {
-                    logger.debug("Getting img series based on all the filters");
-                    imageSeriesLst = dataCatalogService.getImgSetByFilters(validParams);
-                    return getImgSetByAnnotations(imageSeriesLst, params);
-                } else if (validParams.containsKey(ORG_ID)) {
-                    logger.debug("Getting img series based on all the filters");
-                    return dataCatalogService.getImgSetByFilters(validParams);
-                }
-            }
-        } catch (ServiceException e) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Operation failed while retrieving image set by org id").build());
-        } catch (Exception e) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Operation failed while retrieving image set by org id").build());
-        }
-        responseBuilder = Response.ok(imageSeriesLst);
-        return (List<ImageSeries>) responseBuilder.build().getEntity();
-    }
-
-    private List<ImageSeries> getImgSetByAnnotations(List<ImageSeries> imageSeriesLst,
-                                                     Map<String, Object> validParams) {
-        List<ImageSeries> imgSetWithAnnotation = new ArrayList<ImageSeries>();
-        List<ImageSeries> imgSetWithOutAnn = new ArrayList<ImageSeries>();
-        List<String> typeLst;
-        try {
-            typeLst = getListOfStringsFromParams(validParams.get(ANNOTATIONS).toString());
-            if (!typeLst.isEmpty()) {
-                // List of image series id based on criteria
-                // other than annotation
-                List<Long> imgSeriesIdLst = new ArrayList<Long>();
-                for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
-                    ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                    imgSeriesIdLst.add(imageSeries.getId());
-                }
-                if (typeLst.contains(ABSENT)) {
-                    return getImageSeriesWithOutAnnotations(imgSetWithOutAnn, imageSeriesLst,
-                            imgSeriesIdLst);
-                } else if (validParams.containsKey(GE_CLASS)) {
-                    return dataCatalogService.getImgSeries(validParams, imageSeriesLst, typeLst);
-                } else {
-                    List<String> orgIdLst = getListOfStringsFromParams(validParams.get(ORG_ID).toString());
-                    return getImageSeriesWithAnnotations(imgSetWithAnnotation, imageSeriesLst, typeLst,
-                            imgSeriesIdLst, orgIdLst);
-                }
-            }
-        } catch (DataCatalogException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return new ArrayList<ImageSeries>();
     }
     
     /*

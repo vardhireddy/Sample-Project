@@ -50,8 +50,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	
 	public static final String GE_CLASS ="ge-class";
 	public static final String ABSENT ="absent";
-	public static final String FALSE ="false";
-	public static final String TRUE ="true";
 	
 	public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
 			 + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
@@ -76,9 +74,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "on an.image_set=im.id "
 			+ "inner join patient p "
 			+ "on p.id = im.patient_dbid ";
-	
-	private static final String GET_IMGSET_DATA_BY_FILTERS = "select im.id, im.org_id, modality, anatomy, data_format, series_instance_uid, institution, manufacturer, "
-			+ "instance_count, equipment, image_type, view, p.patient_id, age, gender from image_set im inner join patient p on p.id = im.patient_dbid ";
 	
 	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  x.instance_count, x.equipment, x.patient_id "
 			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, im.series_instance_uid from patient p, image_set im "
@@ -137,52 +132,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 		return filterMap;
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typeLst) {
-		logger.debug("Getting image series ");
-		ObjectMapper mapper = new ObjectMapper();	
-		GEClass [] geClasses = getGEClasses(params);
-		//Get image set
-		List<Long> imgSeriesIdLst = getImgSeriesIdLst(imgSeriesLst);
-		StringBuilder imageSeriesIds = new StringBuilder();
-		imageSeriesIds.append(" image_set in (");
-		if(null != imgSeriesIdLst && !imgSeriesIdLst.isEmpty()){
-			for (Iterator<Long> imgSeriesIdItr = imgSeriesIdLst.iterator(); imgSeriesIdItr.hasNext();) {
-				imageSeriesIds.append(imgSeriesIdItr.next() + (imgSeriesIdItr.hasNext() ? "," : ""));
-			}
-		}
-		imageSeriesIds.append(")");
-		//build query for annotation types
-		StringBuilder annotationTypes = new StringBuilder();
-		annotationTypes.append(" type in ('");
-			if(null != typeLst && !typeLst.isEmpty()){
-				for (Iterator<String> typeLstItr = typeLst.iterator(); typeLstItr.hasNext();) {
-					annotationTypes.append(typeLstItr.next() + (typeLstItr.hasNext() ? "','" : ""));
-				}
-			}
-			annotationTypes.append("')");
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append(GE_CLASS_QUERY);
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        for (int k = 0; k < geClasses.length; k++) {
-        	queryBuilder.append(k==0? "where (" : "or ");
-        	try {
-				queryBuilder.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-        }
-        queryBuilder.append(")");      
-        queryBuilder.append(" and ");
-		queryBuilder.append(imageSeriesIds);
-        queryBuilder.append(" and ");
-		queryBuilder.append(annotationTypes);
-        logger.debug(" getImgSeries query with GE class is " + queryBuilder);
-        Query q = em.createNativeQuery(queryBuilder.toString()); // NOSONAR
-        return getImgSeriesLst(q.getResultList());
-	}
 	
 	public GEClass [] getGEClasses(Map<String, Object> params){
 		logger.debug("Getting GE classes ");
@@ -201,16 +150,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			}
 		}
 			return new GEClass[0];
-	}
-	
-	public List<Long> getImgSeriesIdLst(List<ImageSeries> imgSeriesLst){
-		logger.debug("Getting image series Id list ");
-		List<Long> imgSeriesIdLst = new ArrayList<Long>();
-		for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
-			ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-			imgSeriesIdLst.add(imageSeries.getId());
-		}
-		return imgSeriesIdLst;
 	}
 	
 	public List<ImageSeries> getImgSeriesLst(List<Object[]> objList){
@@ -232,76 +171,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		});
 		logger.debug("Getting image series list size is "+result.size());
 		return result;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getDataCatalog()
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<ImageSeries> getImgSetByFilters(Map<String, Object> params) {
-		params.remove(ANNOTATIONS);
-		params.remove(GE_CLASS);
-		StringBuilder builder = new StringBuilder();
-		builder.append(GET_IMGSET_DATA_BY_FILTERS);
-		builder.append(buildQuery(params));
-		logger.debug("Query to get image set by filters = " + builder.toString());
-		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
-		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
-		List<Object[]> objList = q.getResultList();
-		if(null != objList && !objList.isEmpty()){		
-			Patient p = new Patient();
-	        objList.stream().forEach((record) -> {
-	        	ImageSeries imgSeries = new ImageSeries();
-	        	if (record[0] instanceof BigInteger){
-	        		imgSeries.setId(((BigInteger) record[0]).longValue());
-	        	}
-	        	imgSeries.setOrgId((String) record[1]);
-	        	imgSeries.setModality((String) record[2]);
-	        	imgSeries.setAnatomy((String) record[3]);
-	        	imgSeries.setDataFormat((String) record[4]);
-	        	imgSeries.setSeriesInstanceUid((String) record[5]);
-	        	imgSeries.setInstitution((String) record[6]);
-	        	imgSeries.setManufacturer((String) record[7]);
-	        	imgSeries.setInstanceCount((int) record[8]);
-	        	imgSeries.setEquipment((String) record[9]);
-	        	imgSeries.setImageType((String) record[10]);
-	        	imgSeries.setView((String) record[11]);
-	        	p.setPatientId((String) record[12]);
-	        	p.setAge((String) record[13]);
-	        	p.setGender((String) record[14]);
-	        	imgSeries.setPatient(p);
-	        	imageSeriesList.add(imgSeries);
-	        });     
-	        logger.debug("Image set lis size " + imageSeriesList.size());
-		}
-		return imageSeriesList;
-	}
-
-	String buildQuery(Map<String, Object> params) {
-		StringBuilder builder = new StringBuilder();
-		if (null != params && params.size() > 0) {
-			builder.append("WHERE ");
-			for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
-				Map.Entry<String, Object> entry = entries.next();
-				String key = entry.getKey();
-				String values = entry.getValue().toString();
-				builder.append(buildWhereClause(key,values));
-				if (entries.hasNext()) {
-					builder.append(" AND ");
-				}
-			}
-		}
-		return builder.toString();
-	}
-	
-	private String buildWhereClause(String param, String values) {
-		StringBuilder whereClause = new StringBuilder().append("im."+param + " IN (") ;
-        whereClause.append(quoteValues(values));
-		whereClause.append(")");
-		return whereClause.toString();
 	}
 
 	private String quoteValues(String values) {
@@ -359,7 +228,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	
 	String constructQuery(Map<String, Object> params) {
 		boolean geclassPresent = false;
-		//String absentFlag = null;
 		Map<String, Object> geclassParams = new HashMap<String, Object>();
 			if(params.containsKey(GE_CLASS)){
 				geclassPresent = true;
@@ -370,12 +238,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		if (null != params && params.size() > 0) {
 			if(params.containsKey(ANNOTATIONS)){
 				if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
-					//absentFlag = FALSE;
 					builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
 					builder.append(constructAnnotationWhereClause("type", params.get(ANNOTATIONS).toString()));
 					builder.append(" AND ");
 				}else{
-					//absentFlag = TRUE;
 					builder.append(ANNOTATION_ABSENT_QUERY);
 				}
 			}else{
@@ -392,9 +258,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				}
 			}
 		}
-		/*if(null != absentFlag && TRUE.equalsIgnoreCase(absentFlag)){
-			builder.append(ANNOTATION_ABSENT_QUERY);
-		}else*/ if(geclassPresent){
+		if(geclassPresent){
 			builder.append(getGEClassQuery(geclassParams));
 		}
 		return builder.toString();

@@ -172,15 +172,6 @@ public interface IDataCatalogRest {
     List<DataSet> getDataSetByType(String type, HttpServletRequest request);
 
     /**
-     * Get Image Set by Org Id
-     *
-     * @param params
-     * @param request, to get an org id based on authentication token
-     * @return List<ImageSeries>
-     */
-    List<ImageSeries> getImgSeries(Map<String, Object> params) throws DataCatalogException;
-
-    /**
      * Get Image Series by Series Instance UUId
      *
      * @param id
@@ -244,8 +235,11 @@ public interface IDataCatalogRest {
      */
     ApiResponse deleteDataCollection(String ids, HttpServletRequest request);
 
-    List<ImageSeries> getImgSetByFilters(Map<String, Object> params);
-
     ApiResponse updateInstitutionByImageSeriesList(InstitutionSet u, HttpServletRequest request);
+    
+    /**
+     * @param params
+     * @return
+     */
     List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
 }
