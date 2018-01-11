@@ -235,7 +235,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				params.remove(GE_CLASS);
 			}
 		StringBuilder builder = new StringBuilder();
-		if (null != params && params.size() > 0) {
+		if (params.size() > 0) {
 			if(params.containsKey(ANNOTATIONS)){
 				if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
 					builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
