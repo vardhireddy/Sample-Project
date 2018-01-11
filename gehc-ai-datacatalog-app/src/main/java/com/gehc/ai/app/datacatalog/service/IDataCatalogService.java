@@ -40,4 +40,11 @@ public interface IDataCatalogService {
      * @throws Exception 
      */
     List<ImageSeries> getImgSetByFilters(Map<String, Object> params);
+    
+    /**
+     * @param params
+     * @return
+     * @throws Exception 
+     */
+    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
 }

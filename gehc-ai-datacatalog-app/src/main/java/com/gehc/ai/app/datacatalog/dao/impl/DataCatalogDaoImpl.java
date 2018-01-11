@@ -49,6 +49,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	private static Logger logger = LoggerFactory.getLogger(DataCatalogDaoImpl.class);
 	
 	public static final String GE_CLASS ="ge-class";
+	public static final String ABSENT ="absent";
+	public static final String FALSE ="false";
+	public static final String TRUE ="true";
 	
 	public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
 			 + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
@@ -76,11 +79,13 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	
 	private static final String GET_IMGSET_DATA_BY_FILTERS = "select im.id, im.org_id, modality, anatomy, data_format, series_instance_uid, institution, manufacturer, "
 			+ "instance_count, equipment, image_type, view, p.patient_id, age, gender from image_set im inner join patient p on p.id = im.patient_dbid ";
-	/*public static final String GET_IMGSET_DATA_BY_FILTERS = "select im.id, modality, p.patient_id from image_set im "
-			+ "inner join annotation an "
-			+ "on an.image_set=im.id "
-			+ "inner join patient p "
-			+ "on p.id = im.patient_dbid ";*/
+	
+	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  x.instance_count, x.equipment, x.patient_id "
+			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, im.series_instance_uid from patient p, image_set im "
+			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
+	
+	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
+			
 	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
 	@Autowired
@@ -283,7 +288,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				Map.Entry<String, Object> entry = entries.next();
 				String key = entry.getKey();
 				String values = entry.getValue().toString();
-				builder.append(constructWhereClause(key,values));
+				builder.append(buildWhereClause(key,values));
 				if (entries.hasNext()) {
 					builder.append(" AND ");
 				}
@@ -291,7 +296,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 		return builder.toString();
 	}
-	private String constructWhereClause(String param, String values) {
+	
+	private String buildWhereClause(String param, String values) {
 		StringBuilder whereClause = new StringBuilder().append("im."+param + " IN (") ;
         whereClause.append(quoteValues(values));
 		whereClause.append(")");
@@ -310,5 +316,120 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 
 		return builder.toString();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.gehc.ai.app.dc.dao.IDataCatalogDao#getDataCatalog()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(GET_IMG_SERIES_DATA_BY_FILTERS);
+		builder.append(constructQuery(params));
+		logger.debug("Query to get image series by filters = " + builder.toString());
+		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
+		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+		List<Object[]> objList = q.getResultList();
+		if(null != objList && !objList.isEmpty()){		
+			Patient p = new Patient();
+	        objList.stream().forEach((record) -> {
+	        	ImageSeries imgSeries = new ImageSeries();
+	        	if (record[0] instanceof BigInteger){
+	        		imgSeries.setId(((BigInteger) record[0]).longValue());
+	        	}
+	        	imgSeries.setOrgId((String) record[1]);
+	        	imgSeries.setModality((String) record[2]);
+	        	imgSeries.setAnatomy((String) record[3]);
+	        	imgSeries.setDataFormat((String) record[4]);
+	        	imgSeries.setSeriesInstanceUid((String) record[5]);
+	        	imgSeries.setInstitution((String) record[6]);
+	        	imgSeries.setInstanceCount((int) record[7]);
+	        	imgSeries.setEquipment((String) record[8]);
+	        	p.setPatientId((String) record[9]);
+	        	imgSeries.setPatient(p);
+	        	imageSeriesList.add(imgSeries);
+	        });     
+	        logger.debug("Image series lis size " + imageSeriesList.size());
+		}
+		return imageSeriesList;
+	}
+	
+	String constructQuery(Map<String, Object> params) {
+		boolean geclassPresent = false;
+		//String absentFlag = null;
+		Map<String, Object> geclassParams = new HashMap<String, Object>();
+			if(params.containsKey(GE_CLASS)){
+				geclassPresent = true;
+				geclassParams.put(GE_CLASS, params.get(GE_CLASS));
+				params.remove(GE_CLASS);
+			}
+		StringBuilder builder = new StringBuilder();
+		if (null != params && params.size() > 0) {
+			if(params.containsKey(ANNOTATIONS)){
+				if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
+					//absentFlag = FALSE;
+					builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
+					builder.append(constructAnnotationWhereClause("type", params.get(ANNOTATIONS).toString()));
+					builder.append(" AND ");
+				}else{
+					//absentFlag = TRUE;
+					builder.append(ANNOTATION_ABSENT_QUERY);
+				}
+			}else{
+				builder.append(" WHERE ");
+			}
+			params.remove(ANNOTATIONS);
+			for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
+				Map.Entry<String, Object> entry = entries.next();
+				String key = entry.getKey();
+				String values = entry.getValue().toString();
+				builder.append(constructWhereClause(key,values));
+				if (entries.hasNext()) {
+					builder.append(" AND ");
+				}
+			}
+		}
+		/*if(null != absentFlag && TRUE.equalsIgnoreCase(absentFlag)){
+			builder.append(ANNOTATION_ABSENT_QUERY);
+		}else*/ if(geclassPresent){
+			builder.append(getGEClassQuery(geclassParams));
+		}
+		return builder.toString();
+	}
+	
+	private String constructWhereClause(String param, String values) {
+		StringBuilder whereClause = new StringBuilder().append("x."+param + " IN (") ;
+        whereClause.append(quoteValues(values));
+		whereClause.append(")");
+		return whereClause.toString();
+	}
+	
+	private String constructAnnotationWhereClause(String param, String values) {
+		StringBuilder whereClause = new StringBuilder().append(param + " IN (") ;
+        whereClause.append(quoteValues(values));
+		whereClause.append(")");
+		return whereClause.toString();
+	}
+	
+	private String getGEClassQuery(Map<String, Object> params) {
+		logger.debug("In getGEClassQuery ");
+		ObjectMapper mapper = new ObjectMapper();	
+		GEClass [] geClasses = getGEClasses(params);
+        StringBuilder queryBuilder = new StringBuilder();
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        for (int k = 0; k < geClasses.length; k++) {
+        	queryBuilder.append(k==0? " and (" : "or ");
+        	try {
+				queryBuilder.append("JSON_CONTAINS(an.item, '" + mapper.writeValueAsString(geClasses[k]) + "', '$.properties.ge_class') ");
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+        }
+        queryBuilder.append(")");      
+        logger.debug(" Query with GE class is " + queryBuilder);
+        return queryBuilder.toString();
 	}
 }

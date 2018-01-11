@@ -247,5 +247,5 @@ public interface IDataCatalogRest {
     List<ImageSeries> getImgSetByFilters(Map<String, Object> params);
 
     ApiResponse updateInstitutionByImageSeriesList(InstitutionSet u, HttpServletRequest request);
-
+    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
 }
