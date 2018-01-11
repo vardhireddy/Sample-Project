@@ -1290,7 +1290,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @SuppressWarnings("unchecked")
     @Override
-    @RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
+    @RequestMapping(value = "/datacatalog/image-series-old", method = RequestMethod.GET)
     public List<ImageSeries> getImgSetByFilters(@RequestParam Map<String, Object> params) {
         Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
                 SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
@@ -1354,5 +1354,40 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             e.printStackTrace();
         }
         return new ArrayList<ImageSeries>();
+    }
+    
+    /*
+     *   * (non-Javadoc)   *   * @see
+     * com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()  
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    @RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
+    public List<ImageSeries> getImgSeriesByFilters(@RequestParam Map<String, Object> params) {
+        Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
+                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
+        ResponseBuilder responseBuilder;
+        List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();
+        try {
+            if (null != validParams) {
+                if (validParams.containsKey(SERIES_INS_UID) && validParams.containsKey(ORG_ID)) {
+                    logger.debug("Getting img series based on series uid and org id");
+                    return imageSeriesRepository.findBySeriesInstanceUidInAndOrgIdIn(
+                            getListOfStringsFromParams(validParams.get(SERIES_INS_UID).toString()),
+                            getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
+                } else if (validParams.containsKey(ORG_ID)) {
+                    logger.debug("Getting img series based on all filters");
+                    return dataCatalogService.getImgSeriesByFilters(validParams);
+                }
+            }
+        } catch (ServiceException e) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Operation failed while retrieving image set by org id").build());
+        } catch (Exception e) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Operation failed while retrieving image set by org id").build());
+        }
+        responseBuilder = Response.ok(imageSeriesLst);
+        return (List<ImageSeries>) responseBuilder.build().getEntity();
     }
 }
