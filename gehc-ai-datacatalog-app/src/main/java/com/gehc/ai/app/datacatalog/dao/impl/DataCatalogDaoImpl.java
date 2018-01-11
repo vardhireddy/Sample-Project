@@ -183,8 +183,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
 		List<Object[]> objList = q.getResultList();
 		if(null != objList && !objList.isEmpty()){		
-			Patient p = new Patient();
 	        objList.stream().forEach((record) -> {
+	        	Patient p = new Patient();
 	        	ImageSeries imgSeries = new ImageSeries();
 	        	if (record[0] instanceof BigInteger){
 	        		imgSeries.setId(((BigInteger) record[0]).longValue());
