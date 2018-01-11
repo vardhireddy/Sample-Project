@@ -5,6 +5,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,60 +71,85 @@ public class DataCatalogDaoImplTest {
 
     }
 
-/*    @Test
-    public void testgetImageSeriesByFilters() {
+    public void dataSetUp(){
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{"1","4fac7976-e58b-472a-960b-42d7e3689f20","DX","CHEST","PNG","12345","UCSF","test",1,"GE XRAY","test","test","123","12","M"};
+        Object[] newObj = new Object[]{BigInteger.valueOf(1),"4fac7976-e58b-472a-960b-42d7e3689f20","DX","CHEST","PNG","12345","UCSF",1,"GE XRAY","test"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
+    }
+
+   @Test
+    public void testgetImageSeriesByFilters() {
+        dataSetUp();
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+       input.putAll(constructQueryParam("annotations", "LABEL"));
+       input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        assertEquals(getImageSeriesWithFilters().toString(), result.toString());
+    }
+
+    @Test
+    public void testgetImageSeriesByFiltersWithAnnoationsAbsent() {
+        dataSetUp();
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "absent"));
+        input.putAll(constructQueryParam("ge-class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        assertEquals(getImageSeriesWithFilters().toString(), result.toString());
+    }
+
+    @Test
+    public void testgetImageSeriesByFiltersWithOutAnnoations() {
+        dataSetUp();
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
-    }*/
+    }
     //TODO: Need to review this test. It breaks when toString() method is added to Patient
-/*    @Test
-    public void testGetImageSeries() {
-        List expectedList = new ArrayList();
-        Object[] id = new Object[]{1L};
-        Patient patient = new Patient();
-        patient.setOrgId("123");
-        Object[] newObj = new Object[]{"1", "123", patient, "DX", "CHEST", 123, "test","test","test"};
-        Object[] annotations = new Object[]{
-                "label", 1L};
-
-        expectedList.add(newObj);
-        List typeList = new ArrayList();
-        typeList.add("label");
-        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
-        when(query.getResultList()).thenReturn(expectedList);
-        List returnList = dataCatalogDao.getImgSeries(getParamsMap(), getImageSeries(),typeList);
-        System.out.println("TTTTTT2" + expectedList + "MMMMM2" + returnList);
-        String expected = "id=1, schemaVersion=null, orgId=123, modality=DX, anatomy=CHEST, dataFormat=test, uri=null, seriesInstanceUid=null, description=null, institution=test, equipment=test, manufacturer=null, imageType=null, view=null, instanceCount=123, properties=null, uploadBy=null, uploadDate=null, patientDbId=null, studyDbId=null, patient=com.gehc.ai.app.datacatalog.entity.Patient";
-        //assert (returnList.toString().contains(expected));
-        assertEquals("{8082=CR, 121=DX}", "{8082=CR, 121=DX}");
-    }*/
+//   @Test
+//    public void testGetImageSeries() {
+//        List expectedList = new ArrayList();
+//        Object[] id = new Object[]{1L};
+//        Patient patient = new Patient();
+//        patient.setOrgId("123");
+//        Object[] newObj = new Object[]{"1", "123", patient, "DX", "CHEST", 123, "test","test","test"};
+//        Object[] annotations = new Object[]{
+//                "label", 1L};
+//
+//        expectedList.add(newObj);
+//        List typeList = new ArrayList();
+//        typeList.add("label");
+//        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+//        when(query.getResultList()).thenReturn(expectedList);
+//        List returnList = dataCatalogDao.getImgSeriesByFilters(getParamsMap());
+//        System.out.println("TTTTTT2" + expectedList + "MMMMM2" + returnList);
+//        String expected = "";
+//                //"id=1, schemaVersion=null, orgId=123, modality=DX, anatomy=CHEST, dataFormat=test, uri=null, seriesInstanceUid=null, description=null, institution=test, equipment=test, manufacturer=null, imageType=null, view=null, instanceCount=123, properties=null, uploadBy=null, uploadDate=null, patientDbId=null, studyDbId=null, patient=com.gehc.ai.app.datacatalog.entity.Patient";
+//        assert (returnList.toString().contains(expected));
+//        //assertEquals("{8082=CR, 121=DX}", "{8082=CR, 121=DX}");
+//    }
 
     private List<ImageSeries> getImageSeriesWithFilters(){
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
         ImageSeries imgSeries = new ImageSeries();
         Patient p = new Patient();
-
+        imgSeries.setId(1L);
         imgSeries.setOrgId("4fac7976-e58b-472a-960b-42d7e3689f20");
         imgSeries.setModality("DX");
         imgSeries.setAnatomy("CHEST");
         imgSeries.setDataFormat("PNG");
         imgSeries.setSeriesInstanceUid("12345");
         imgSeries.setInstitution("UCSF");
-        imgSeries.setManufacturer("test");
+//        imgSeries.setManufacturer("test");
         imgSeries.setInstanceCount(1);
         imgSeries.setEquipment("GE XRAY");
-        imgSeries.setImageType("test");
-        imgSeries.setView("test");
-        p.setPatientId("123");
-        p.setAge("12");
-        p.setGender("M");
+//        imgSeries.setImageType("test");
+//        imgSeries.setView("test");
+        p.setPatientId("test");
+//        p.setAge("12");
+//        p.setGender("M");
 
         imgSeries.setPatient(p);
         imageSeriesList.add(imgSeries);

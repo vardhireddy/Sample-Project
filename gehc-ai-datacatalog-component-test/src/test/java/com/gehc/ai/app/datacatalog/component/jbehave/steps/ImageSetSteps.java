@@ -244,7 +244,7 @@ public class ImageSetSteps {
     @When("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation")
     public void whenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotation() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-series?org_id=61939267&modality=CT&anatomy=Lung&annotations=point")
+                get("/api/v1/datacatalog/image-series?org_id=61939267&modality=CT&anatomy=Lung&annotations=point,label")
                         .contentType(MediaType.APPLICATION_JSON)
         );
     }
@@ -396,9 +396,9 @@ public class ImageSetSteps {
 
 
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-series?org_id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest,Lung")
+                get("/api/v1/datacatalog/image-series?org_id=4fac7976-e58b-472a-960b-42d7e3689f20&modality=CT,DX&anatomy=Chest,Lung&annotations=LABEL&ge-class=%5B%7B%22name%22%3A%22Foreign%20Bodies%22%2C%22value%22%3A%22Absent%22%2C%22patient_outcome%22%3A%225.1%22%7D%5D")
                         .contentType(MediaType.APPLICATION_JSON)
-                .param("ge-class", "[{\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]")
+                //.param("ge-class", "[{\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]")
         );
 
     }
