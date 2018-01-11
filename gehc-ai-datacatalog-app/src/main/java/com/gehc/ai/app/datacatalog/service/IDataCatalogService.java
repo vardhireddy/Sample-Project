@@ -28,21 +28,6 @@ public interface IDataCatalogService {
     
     /**
      * @param params
-     * @param imgSeriesLst
-     * @param typelst TODO
-     * @return
-     */
-    List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typelst);
-    
-    /**
-     * @param params
-     * @return
-     * @throws Exception 
-     */
-    List<ImageSeries> getImgSetByFilters(Map<String, Object> params);
-    
-    /**
-     * @param params
      * @return
      * @throws Exception 
      */
