@@ -66,7 +66,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         when(query.getResultList()).thenReturn(getQueryList("modality"));
-        Map result = dataCatalogDao.geClassDataSummary(getMapForGEClassDataSummary(), "123", "label");
+        Map result = dataCatalogDao.geClassDataSummary(getMapForGEClassDataSummary(), "123");
         assertEquals("{8082=CR, 121=DX}", result.toString());
 
     }

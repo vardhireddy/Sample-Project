@@ -21,10 +21,9 @@ public interface IDataCatalogService {
     /**
      * @param params
      * @param orgId
-     * @param type
      * @return
      */
-    Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId, String type);
+    Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId);
     
     /**
      * @param params

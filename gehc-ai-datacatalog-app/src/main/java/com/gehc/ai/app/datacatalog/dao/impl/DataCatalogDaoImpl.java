@@ -51,22 +51,25 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public static final String GE_CLASS ="ge-class";
 	public static final String ABSENT ="absent";
 	
-	public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
-			 + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
-			 + " FROM annotation JOIN ( SELECT  0 AS idx UNION "
-			 + " SELECT  1 AS idx UNION "
-			 + " SELECT  2 AS idx UNION "
-			 + " SELECT  3 AS idx UNION "
-			 + " SELECT  4 AS idx UNION "
-			 + " SELECT  5 AS idx UNION "
-			 + " SELECT  6 AS idx UNION "
-			 + " SELECT  7 AS idx UNION "
-			 + " SELECT  8 AS idx UNION "
-			 + " SELECT  9 AS idx UNION "
-			 + " SELECT  10 AS idx UNION "
-			 + " SELECT  11 ) AS indices WHERE org_id = :orgId and type = :type and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
-			 + " ORDER BY id, idx) AS LABEL_JSON ";
-	public static final String GE_CLASS_COUNTS_SUFFIX = " GROUP BY single_class";
+    public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
+            + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
+            + " FROM annotation JOIN ( SELECT  0 AS idx UNION "
+            + " SELECT  1 AS idx UNION "
+            + " SELECT  2 AS idx UNION "
+            + " SELECT  3 AS idx UNION "
+            + " SELECT  4 AS idx UNION "
+            + " SELECT  5 AS idx UNION "
+            + " SELECT  6 AS idx UNION "
+            + " SELECT  7 AS idx UNION "
+            + " SELECT  8 AS idx UNION "
+            + " SELECT  9 AS idx UNION "
+            + " SELECT  10 AS idx UNION "
+            + " SELECT  11 ) AS indices WHERE org_id = :orgId and ";
+
+    public static final String GE_CLASS_COUNTS_MIDDLE = " and JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL "
+            + " ORDER BY id, idx) AS LABEL_JSON ";
+           
+    public static final String GE_CLASS_COUNTS_SUFFIX = " GROUP BY single_class";
 
 	public static final String GE_CLASS_QUERY = "select distinct im.id, im.org_id, p.patient_id, im.modality, im.anatomy, im.instance_count "
 			+ ", im.data_format, im.institution, im.equipment from image_set im "
@@ -104,34 +107,38 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 
 	@Override
-	public Map<Object, Object> geClassDataSummary(Map<String, String> filters, String orgId, String type) {
-		logger.info(" In DAO geClassDataSummary, orgId = " + orgId + " type = " + type);
-		Map<Object, Object> filterMap = new HashMap<Object, Object>();
-		if(null != orgId && !orgId.isEmpty() && null != type && !type.isEmpty()){
-			StringBuilder queryBuilder = new StringBuilder();		
-			if (!filters.isEmpty()) {
-				queryBuilder.append(" inner join image_set on image_set.id = image_set where ");
-				for (Iterator<Map.Entry<String, String>> entries = filters.entrySet().iterator();entries.hasNext();) {
-					Map.Entry<String, String> entry = entries.next();
-					queryBuilder.append(getColumnQueryString(entry.getKey(), entry.getValue()));
-					if (entries.hasNext())
-						queryBuilder.append(" and ");
-				}
-			}
-			String queryString = GE_CLASS_COUNTS_PREFIX + queryBuilder + GE_CLASS_COUNTS_SUFFIX;
-			Query q = em.createNativeQuery(queryString);	// NOSONAR
-			q.setParameter("orgId", orgId);
-			q.setParameter("type", type);
-			@SuppressWarnings("unchecked")
-			List<Object[]> objList = q.getResultList();
-			if(null != objList && !objList.isEmpty()){
-		        objList.stream().forEach((record) -> {
-		            filterMap.put(record[1], record[0]);
-		        });     
-			}
-		}
-		return filterMap;
-	}
+    public Map<Object, Object> geClassDataSummary(Map<String, String> filters, String orgId) {
+                    StringBuilder annotQueryBuilder = new StringBuilder();        
+                    if(filters.containsKey(ANNOTATIONS)){
+                                    annotQueryBuilder.append(constructAnnotationWhereClause("type", filters.get(ANNOTATIONS).toString()));
+                    }
+                    filters.remove(ANNOTATIONS);
+                    Map<Object, Object> filterMap = new HashMap<Object, Object>();
+                    if(null != orgId && !orgId.isEmpty()){
+                                    StringBuilder queryBuilder = new StringBuilder();                    
+                                    if (!filters.isEmpty()) {
+                                                    queryBuilder.append(" inner join image_set on image_set.id = image_set where ");
+                                                    for (Iterator<Map.Entry<String, String>> entries = filters.entrySet().iterator();entries.hasNext();) {
+                                                                    Map.Entry<String, String> entry = entries.next();
+                                                                    queryBuilder.append(getColumnQueryString(entry.getKey(), entry.getValue()));
+                                                                    if (entries.hasNext())
+                                                                                    queryBuilder.append(" and ");
+                                                    }
+                                    }
+                                    String queryString = GE_CLASS_COUNTS_PREFIX + annotQueryBuilder + GE_CLASS_COUNTS_MIDDLE + queryBuilder + GE_CLASS_COUNTS_SUFFIX;
+                                    logger.debug(" Query to get GE classes = " + queryString + " for org id = " + orgId);
+                                    Query q = em.createNativeQuery(queryString);        // NOSONAR
+                                    q.setParameter("orgId", orgId);
+                                    @SuppressWarnings("unchecked")
+                                    List<Object[]> objList = q.getResultList();
+                                    if(null != objList && !objList.isEmpty()){
+                            objList.stream().forEach((record) -> {
+                                filterMap.put(record[1], record[0]);
+                            });     
+                                    }
+                    }
+                    return filterMap;
+    }
 	
 	public GEClass [] getGEClasses(Map<String, Object> params){
 		logger.debug("Getting GE classes ");
