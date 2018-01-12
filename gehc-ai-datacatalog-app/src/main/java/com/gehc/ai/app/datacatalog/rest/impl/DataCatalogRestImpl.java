@@ -880,4 +880,40 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         responseBuilder = Response.ok(imageSeriesLst);
         return (List<ImageSeries>) responseBuilder.build().getEntity();
     }
+
+
+
+
+    private List<Long> getImgSeriesIdsByDSId(@PathVariable Long id) {
+        // Note: Coolidge is using this as well
+        logger.debug("In REST , Get img series for DC id " + id);
+        List<DataSet> dsLst = new ArrayList<DataSet>();
+        if (null != id) {
+            dsLst = dataSetRepository.findById(id);
+            if (null != dsLst && !dsLst.isEmpty()) {
+                @SuppressWarnings("unchecked")
+                List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
+                List<Long> imgSerIdLst = new ArrayList<Long>();
+                if (null != imgSeries && !imgSeries.isEmpty()) {
+                    for (int i = 0; i < imgSeries.size(); i++) {
+                        imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+                    }
+                    return imgSerIdLst;
+                }
+            }
+        }
+        return new ArrayList<Long>();
+    }
+
+    @Override
+    @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
+    public List<Annotation> getAnnotationsByDSId(@PathVariable Long id, @QueryParam("orgId") String orgId) {
+        List<Annotation> annotationList = new ArrayList<Annotation>();
+        List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
+        if (null != imgSerIdLst && !imgSerIdLst.isEmpty()) {
+            annotationList = annotationRepository.findByImageSetIdInAndOrgId(imgSerIdLst, orgId);
+        }
+        return annotationList;
+    }
+
 }

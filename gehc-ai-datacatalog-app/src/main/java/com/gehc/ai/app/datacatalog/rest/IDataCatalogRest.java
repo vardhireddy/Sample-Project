@@ -242,4 +242,15 @@ public interface IDataCatalogRest {
      * @return
      */
     List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
+
+    /**
+     * @param id
+     * @return
+     */
+    List<Annotation> getAnnotationsByDSId(Long id, String orgId);
+    /**
+     * @param id
+     * @return
+     */
+
 }
