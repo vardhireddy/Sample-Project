@@ -894,7 +894,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 @SuppressWarnings("unchecked")
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = new ArrayList<Long>();
-                if (null != imgSeries && !imgSeries.isEmpty()) {
+                if (!imgSeries.isEmpty()) {
                     for (int i = 0; i < imgSeries.size(); i++) {
                         imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
                     }

@@ -708,7 +708,28 @@ public class DataCollectionSteps {
     	retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
-    
+
+    @Given("Get Annotaition Ids by datacollectionId - Data Setup")
+    public void givenGetAnnotaitionIdsByDatacollectionIdDataSetup() {
+        List<DataSet> dataSet = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSet);
+        List annotationIds = new ArrayList();
+        annotationIds.add(0,1);
+        annotationIds.add(0,2);
+        when(annotationRepository.findByImageSetIdInAndOrgId(anyList(), anyString())).thenReturn(annotationIds);
+    }
+    @When("Get Annotaition Ids by datacollectionId is called")
+    public void whenGetAnnotaitionIdsByDatacollectionIdIsCalled() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/1/annotation")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    @Then("verify Get Annotaition Ids by datacollectionId")
+    public void thenVerifyGetAnnotaitionIdsByDatacollectionId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[2,1]")));
+    }
 
 
     private Map getMapForGEClassDataSummary() {
