@@ -208,3 +208,9 @@ Scenario: Get Annotaition Ids by datacollectionId
 Given Get Annotaition Ids by datacollectionId - Data Setup
 When Get Annotaition Ids by datacollectionId is called
 Then verify Get Annotaition Ids by datacollectionId
+
+@test
+Scenario: Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
+Given Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup
+When Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound
+Then verify Get Annotaition Ids by datacollectionId  When ImageSeriesNotFound
