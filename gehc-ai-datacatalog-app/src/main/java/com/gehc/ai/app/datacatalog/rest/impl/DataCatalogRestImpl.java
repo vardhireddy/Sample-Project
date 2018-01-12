@@ -910,7 +910,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List<Annotation> getAnnotationsByDSId(@PathVariable Long id, @QueryParam("orgId") String orgId) {
         List<Annotation> annotationList = new ArrayList<Annotation>();
         List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
-        if (null != imgSerIdLst && !imgSerIdLst.isEmpty()) {
+        if (!imgSerIdLst.isEmpty()) {
             annotationList = annotationRepository.findByImageSetIdInAndOrgId(imgSerIdLst, orgId);
         }
         return annotationList;

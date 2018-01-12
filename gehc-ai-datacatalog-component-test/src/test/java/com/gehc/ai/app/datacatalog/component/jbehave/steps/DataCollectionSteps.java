@@ -731,6 +731,27 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("[2,1]")));
     }
 
+    @Given("Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup")
+    public void givenGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFoundDataSetup() {
+        List<DataSet> dataSet = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
+        List annotationIds = new ArrayList();
+        annotationIds.add(0,1);
+        annotationIds.add(0,2);
+        when(annotationRepository.findByImageSetIdInAndOrgId(anyList(), anyString())).thenReturn(new ArrayList());
+    }
+    @When("Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound")
+    public void whenGetAnnotaitionIdsByDatacollectionIdIsCalledWhenImageSeriesNotFound() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/1/annotation")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    @Then("verify Get Annotaition Ids by datacollectionId  When ImageSeriesNotFound")
+    public void thenVerifyGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFound() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
+
 
     private Map getMapForGEClassDataSummary() {
         Map resultSet = new HashMap();
