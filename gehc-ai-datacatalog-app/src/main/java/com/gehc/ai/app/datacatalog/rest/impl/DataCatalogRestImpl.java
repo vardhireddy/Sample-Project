@@ -799,18 +799,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         if (null != request.getAttribute("orgId")) {
             String orgId = request.getAttribute("orgId").toString();
             if (null != orgId && !orgId.isEmpty() && null != params.get(ANNOTATIONS)) {
-                String type = params.get("annotations");
-
-                String patternStrAnnotation = ENTITY_NAME;
-                Pattern patternAnnotation = Pattern.compile(patternStrAnnotation);
-                Matcher matcherAnnotation = patternAnnotation.matcher(type);
-                boolean matchFoundAnnotation = matcherAnnotation.matches();
-                if (!matchFoundAnnotation) {
-                    logger.debug("BAD REQUEST : query parameter is not valid");
-                    return null;
-                }
-                params.remove(ANNOTATIONS);
-                return dataCatalogService.geClassDataSummary(params, orgId, type);
+                return dataCatalogService.geClassDataSummary(params, orgId);
             }
         }
         return null;

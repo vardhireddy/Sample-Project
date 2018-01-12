@@ -30,8 +30,8 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	private IDataCatalogDao dataCatalogDao;
 
 	@Override
-	public Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId, String type) {
-		return dataCatalogDao.geClassDataSummary(params, orgId, type);
+	public Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId) {
+		return dataCatalogDao.geClassDataSummary(params, orgId);
 	}
 	
     /**

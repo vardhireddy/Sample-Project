@@ -628,7 +628,7 @@ public class DataCollectionSteps {
     @Given("Retrieve DataSummary for GE-Class")
     public void givenRetrieveDataSummaryGEClassdDataSetUpProvided() {
         Map resultSet = getMapForGEClassDataSummary();
-        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
     }
 
 
@@ -649,7 +649,7 @@ public class DataCollectionSteps {
     @Given("Retrieve DataSummary for GE-Class with invalid annotation type")
     public void givenRetrieveDataSummaryForGEClassWithInvalidAnnotationType() {
     	Map resultSet = getMapForGEClassDataSummary();
-        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
     }
 
 
@@ -673,7 +673,7 @@ public class DataCollectionSteps {
     @Given("Retrieve DataSummary for GE-Class without org id")
     public void givenRetrieveDataSummaryGEClassdNoOrgIdDataSetUpProvided() {
         Map resultSet = getMapForGEClassDataSummary();
-        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
     }
 
 
