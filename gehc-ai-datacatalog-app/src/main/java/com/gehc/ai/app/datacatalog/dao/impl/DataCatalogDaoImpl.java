@@ -110,7 +110,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
     public Map<Object, Object> geClassDataSummary(Map<String, String> filters, String orgId) {
                     StringBuilder annotQueryBuilder = new StringBuilder();        
                     if(filters.containsKey(ANNOTATIONS)){
-                                    annotQueryBuilder.append(constructAnnotationWhereClause("type", filters.get(ANNOTATIONS).toString()));
+                                    annotQueryBuilder.append(constructAnnotationWhereClause("type", filters.get(ANNOTATIONS)));
                     }
                     filters.remove(ANNOTATIONS);
                     Map<Object, Object> filterMap = new HashMap<Object, Object>();
