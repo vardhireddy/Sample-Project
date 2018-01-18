@@ -908,7 +908,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
-    public List<AnnotationDetails> getAnnotationsByDSId(@PathVariable Long id, @QueryParam("orgId") String orgId) {
+    public List<AnnotationDetails> getAnnotationsByDSId(@PathVariable Long id) {
         List<AnnotationDetails> annotationByDSList = new ArrayList<AnnotationDetails>();
         List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
         if (!imgSerIdLst.isEmpty()) {
