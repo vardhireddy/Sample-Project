@@ -253,5 +253,5 @@ public interface IDataCatalogRest {
      * @param id
      * @return
      */
-    List<AnnotationDetails> getAnnotationsByDSId(Long id, String orgId);
+    List<AnnotationDetails> getAnnotationsByDSId(Long id);
 }
