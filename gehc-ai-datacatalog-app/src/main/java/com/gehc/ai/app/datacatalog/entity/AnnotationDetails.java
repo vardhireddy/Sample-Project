@@ -1,6 +1,6 @@
 package com.gehc.ai.app.datacatalog.entity;
 
-public class AnnotationByDS {
+public class AnnotationDetails {
 		private static final long serialVersionUID = 1L;
 		private String patientId;
 		private String seriesInstanceUid;
@@ -51,7 +51,7 @@ public class AnnotationByDS {
 		public void setGeClass(Object geClass) {
 			this.geClass = geClass;
 		}
-		public AnnotationByDS(String patientId, String seriesInstanceUid, Long annotationId, String type,
+		public AnnotationDetails(String patientId, String seriesInstanceUid, Long annotationId, String type,
 				String objectName, Object data, Object geClass) {
 			super();
 			this.patientId = patientId;
@@ -62,7 +62,7 @@ public class AnnotationByDS {
 			this.data = data;
 			this.geClass = geClass;
 		}
-		public AnnotationByDS() {
+		public AnnotationDetails() {
 			super();
 			// TODO Auto-generated constructor stub
 		}

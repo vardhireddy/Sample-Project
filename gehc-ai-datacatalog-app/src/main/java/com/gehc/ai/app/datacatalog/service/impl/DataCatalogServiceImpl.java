@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
-import com.gehc.ai.app.datacatalog.entity.AnnotationByDS;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
@@ -46,7 +46,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public List<AnnotationByDS> getAnnotationsByDSId(List<Long> imgSerIdLst) {
+	public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) {
 		return dataCatalogDao.getAnnotationsByDSId(imgSerIdLst);
 	}
 }

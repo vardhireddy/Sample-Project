@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationByDS;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
@@ -253,5 +253,5 @@ public interface IDataCatalogRest {
      * @param id
      * @return
      */
-    List<AnnotationByDS> getAnnotationsByDSId(Long id, String orgId);
+    List<AnnotationDetails> getAnnotationsByDSId(Long id, String orgId);
 }
