@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
@@ -713,10 +715,17 @@ public class DataCollectionSteps {
     public void givenGetAnnotaitionIdsByDatacollectionIdDataSetup() {
         List<DataSet> dataSet = getDataSetsWithImageSet();
         when(dataSetRepository.findById(anyLong())).thenReturn(dataSet);
-        List annotationIds = new ArrayList();
-        annotationIds.add(0,1);
-        annotationIds.add(0,2);
-        when(annotationRepository.findByImageSetIdInAndOrgId(anyList(), anyString())).thenReturn(annotationIds);
+        List<AnnotationDetails> annotationIds = new ArrayList<AnnotationDetails>();
+        AnnotationDetails annotation = new AnnotationDetails();
+        annotation.setAnnotationId(1L);
+        annotation.setType("test");
+        annotation.setPatientId("1");
+        annotation.setGeClass("{}");
+        annotation.setData("{}");
+        annotation.setSeriesInstanceUid("SUID");
+        annotationIds.add(annotation);
+        when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(annotationIds);
+
     }
     @When("Get Annotaition Ids by datacollectionId is called")
     public void whenGetAnnotaitionIdsByDatacollectionIdIsCalled() throws Exception {
@@ -728,17 +737,16 @@ public class DataCollectionSteps {
     @Then("verify Get Annotaition Ids by datacollectionId")
     public void thenVerifyGetAnnotaitionIdsByDatacollectionId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[2,1]")));
+        retrieveResult.andExpect(content().string(containsString("[{\"patientId\":\"1\",\"seriesInstanceUid\":\"SUID\",\"annotationId\":1,\"type\":\"test\",\"objectName\":null,\"data\":\"{}\",\"geClass\":\"{}\"}]")));
     }
 
     @Given("Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup")
     public void givenGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFoundDataSetup() {
         List<DataSet> dataSet = getDataSetsWithImageSet();
         when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
-        List annotationIds = new ArrayList();
-        annotationIds.add(0,1);
-        annotationIds.add(0,2);
-        when(annotationRepository.findByImageSetIdInAndOrgId(anyList(), anyString())).thenReturn(new ArrayList());
+        List<ImageSeries> imgSerIdLst = new ArrayList<ImageSeries>();
+        when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(imgSerIdLst);
+
     }
     @When("Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound")
     public void whenGetAnnotaitionIdsByDatacollectionIdIsCalledWhenImageSeriesNotFound() throws Exception {
