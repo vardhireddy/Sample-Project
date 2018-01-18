@@ -109,7 +109,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[1]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[2]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[3]')) as CHAR(500)), "
-			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[4]')) as CHAR(500)) "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[4]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(an.item, '$.coord_sys') as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.indication')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.findings')) as CHAR(500)) "
 			+ " FROM patient p inner join image_set im on im.patient_dbid = p.id  "
 			+ " inner join annotation an on an.image_set = im.id "
 			+ " WHERE im.id in (";
@@ -345,6 +348,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	annotationByDS.setGeClass2((Object) record[8]);
 	        	annotationByDS.setGeClass3((Object) record[9]);
 	        	annotationByDS.setGeClass4((Object) record[10]);
+	        	annotationByDS.setCoordSys((String) record[11]);
+	        	annotationByDS.setIndication((String) record[12]);
+	        	annotationByDS.setFindings((String) record[13]);
 	        	annotationByDSList.add(annotationByDS);
 	        });     
 	        logger.debug("Annotation lis size " + annotationByDSList.size());

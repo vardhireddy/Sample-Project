@@ -19,6 +19,27 @@ public class AnnotationDetails {
 		private Long annotationId;
 	    private String type;
 	    private String objectName;
+	    private String coordSys;
+	    public String getCoordSys() {
+			return coordSys;
+		}
+		public void setCoordSys(String coordSys) {
+			this.coordSys = coordSys;
+		}
+		public String getIndication() {
+			return indication;
+		}
+		public void setIndication(String indication) {
+			this.indication = indication;
+		}
+		public String getFindings() {
+			return findings;
+		}
+		public void setFindings(String findings) {
+			this.findings = findings;
+		}
+		private String indication;
+	    private String findings;
 	    private Object data;
 	    private Object geClass;
 	    private Object geClass1;
