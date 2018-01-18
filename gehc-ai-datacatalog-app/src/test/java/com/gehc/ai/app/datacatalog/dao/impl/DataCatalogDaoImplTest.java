@@ -115,7 +115,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{"1", "SUID", 1L, "test", "test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"};
+        Object[] newObj = new Object[]{"1", "SUID", 1, "test", "test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
@@ -125,6 +125,7 @@ public class DataCatalogDaoImplTest {
         List result = dataCatalogDao.getAnnotationsByDSId(ids);
         assertEquals(getAnnotationDetails().size(), result.size());
         assertEquals(getAnnotationDetails().toArray()[0].getClass(), result.toArray()[0].getClass());
+        assertEquals(getAnnotationDetails().toString(), result.toString());
     }
     //TODO: Need to review this test. It breaks when toString() method is added to Patient
 //   @Test
