@@ -21,6 +21,34 @@ public class AnnotationDetails {
 	    private String objectName;
 	    private Object data;
 	    private Object geClass;
+	    private Object geClass1;
+	    public Object getGeClass1() {
+			return geClass1;
+		}
+		public void setGeClass1(Object geClass1) {
+			this.geClass1 = geClass1;
+		}
+		public Object getGeClass2() {
+			return geClass2;
+		}
+		public void setGeClass2(Object geClass2) {
+			this.geClass2 = geClass2;
+		}
+		public Object getGeClass3() {
+			return geClass3;
+		}
+		public void setGeClass3(Object geClass3) {
+			this.geClass3 = geClass3;
+		}
+		public Object getGeClass4() {
+			return geClass4;
+		}
+		public void setGeClass4(Object geClass4) {
+			this.geClass4 = geClass4;
+		}
+		private Object geClass2;
+	    private Object geClass3;
+	    private Object geClass4;
 		public String getPatientId() {
 			return patientId;
 		}
