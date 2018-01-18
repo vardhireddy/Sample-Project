@@ -14,7 +14,7 @@ package com.gehc.ai.app.datacatalog.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.gehc.ai.app.datacatalog.entity.AnnotationByDS;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
 public interface IDataCatalogDao {
@@ -33,5 +33,5 @@ public interface IDataCatalogDao {
      */
     List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
     
-    List<AnnotationByDS> getAnnotationsByDSId(List<Long> imgSerIdLst);  
+    List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst);  
 }

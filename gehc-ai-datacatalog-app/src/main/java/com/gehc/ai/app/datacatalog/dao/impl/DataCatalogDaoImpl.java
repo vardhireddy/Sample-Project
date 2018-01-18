@@ -38,7 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
-import com.gehc.ai.app.datacatalog.entity.AnnotationByDS;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
@@ -304,7 +304,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 
 	@Override
-	public List<AnnotationByDS> getAnnotationsByDSId(List<Long> imgSerIdLst) {
+	public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(GET_ANNOTATION_INFO_BY_IMG_SERIES);
             for (Iterator<Long> iter =  imgSerIdLst.iterator(); iter.hasNext();){
@@ -316,11 +316,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		builder.append(")");
 		logger.debug("Query to get annotation = " + builder.toString());
 		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
-		List<AnnotationByDS> annotationByDSList = new ArrayList<AnnotationByDS>();
+		List<AnnotationDetails> annotationByDSList = new ArrayList<AnnotationDetails>();
 		List<Object[]> objList = q.getResultList();
 		if(null != objList && !objList.isEmpty()){		
 	        objList.stream().forEach((record) -> {
-	        	AnnotationByDS annotationByDS = new AnnotationByDS();
+	        	AnnotationDetails annotationByDS = new AnnotationDetails();
 	        	annotationByDS.setPatientId((String) record[0]);
 	        	annotationByDS.setSeriesInstanceUid((String) record[1]);
 	        	if (record[2] instanceof Integer){
