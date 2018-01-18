@@ -85,7 +85,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
 	
-	private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, an.id, an.type, "
+	/*private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, an.id, an.type, "
 			+ " CAST(JSON_EXTRACT(an.item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(an.item, '$.data') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) as CHAR(500)) "
 			+ " FROM patient p inner join image_set im on im.patient_dbid = p.id  "
@@ -101,7 +101,18 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " SELECT  9 AS idx UNION "
 			+ " SELECT  10 AS idx UNION "
 			+ " SELECT  11) AS indices "
-			+ " WHERE JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL and im.id in (";
+			+ " WHERE JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL and im.id in (";*/
+	
+	private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, an.id, an.type, "
+			+ " CAST(JSON_EXTRACT(an.item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(an.item, '$.data') as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[0]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[1]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[2]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[3]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[4]')) as CHAR(500)) "
+			+ " FROM patient p inner join image_set im on im.patient_dbid = p.id  "
+			+ " inner join annotation an on an.image_set = im.id "
+			+ " WHERE im.id in (";
 			
 	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
@@ -330,6 +341,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	annotationByDS.setObjectName((String) record[4]);
 	        	annotationByDS.setData((Object) record[5]);
 	        	annotationByDS.setGeClass((Object) record[6]);
+	        	annotationByDS.setGeClass1((Object) record[7]);
+	        	annotationByDS.setGeClass2((Object) record[8]);
+	        	annotationByDS.setGeClass3((Object) record[9]);
+	        	annotationByDS.setGeClass4((Object) record[10]);
 	        	annotationByDSList.add(annotationByDS);
 	        });     
 	        logger.debug("Annotation lis size " + annotationByDSList.size());
