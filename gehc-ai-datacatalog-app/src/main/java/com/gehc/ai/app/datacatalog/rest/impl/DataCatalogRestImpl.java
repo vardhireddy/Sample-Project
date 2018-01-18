@@ -60,6 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.AnnotationByDS;
 import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
@@ -894,7 +895,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return new ArrayList<Long>();
     }
 
-    @Override
+/*    @Override
     @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
     public List<Annotation> getAnnotationsByDSId(@PathVariable Long id, @QueryParam("orgId") String orgId) {
         List<Annotation> annotationList = new ArrayList<Annotation>();
@@ -903,6 +904,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             annotationList = annotationRepository.findByImageSetIdInAndOrgId(imgSerIdLst, orgId);
         }
         return annotationList;
-    }
+    }*/
 
+    @Override
+    @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
+    public List<AnnotationByDS> getAnnotationsByDSId(@PathVariable Long id, @QueryParam("orgId") String orgId) {
+        List<AnnotationByDS> annotationByDSList = new ArrayList<AnnotationByDS>();
+        List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
+        if (!imgSerIdLst.isEmpty()) {
+        	annotationByDSList = dataCatalogService.getAnnotationsByDSId(imgSerIdLst);
+        }
+        return annotationByDSList;
+    }
 }

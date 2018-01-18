@@ -38,6 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.AnnotationByDS;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
@@ -83,6 +84,24 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
 	
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
+	
+	private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, an.id, an.type, "
+			+ " CAST(JSON_EXTRACT(an.item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(an.item, '$.data') as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) as CHAR(500)) "
+			+ " FROM patient p inner join image_set im on im.patient_dbid = p.id  "
+			+ " inner join annotation an on an.image_set = im.id "
+			+ " JOIN (  SELECT  0 AS idx UNION "
+			+ " SELECT  1 AS idx UNION "
+			+ " SELECT  2 AS idx UNION "
+			+ " SELECT  3 AS idx UNION "
+			+ " SELECT  4 AS idx UNION "
+			+ " SELECT  5 AS idx UNION "
+			+ " SELECT  6 AS idx UNION "
+			+ " SELECT  8 AS idx UNION "
+			+ " SELECT  9 AS idx UNION "
+			+ " SELECT  10 AS idx UNION "
+			+ " SELECT  11) AS indices "
+			+ " WHERE im.id in (";
 			
 	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
@@ -282,5 +301,39 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
         queryBuilder.append(")");      
         logger.debug(" Query with GE class is " + queryBuilder);
         return queryBuilder.toString();
+	}
+
+	@Override
+	public List<AnnotationByDS> getAnnotationsByDSId(List<Long> imgSerIdLst) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(GET_ANNOTATION_INFO_BY_IMG_SERIES);
+            for (Iterator<Long> iter =  imgSerIdLst.iterator(); iter.hasNext();){
+                builder.append(iter.next());
+                if (iter.hasNext()) {
+					builder.append(",");
+				}
+            }
+		builder.append(")");
+		logger.debug("Query to get annotation = " + builder.toString());
+		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
+		List<AnnotationByDS> annotationByDSList = new ArrayList<AnnotationByDS>();
+		List<Object[]> objList = q.getResultList();
+		if(null != objList && !objList.isEmpty()){		
+	        objList.stream().forEach((record) -> {
+	        	AnnotationByDS annotationByDS = new AnnotationByDS();
+	        	annotationByDS.setPatientId((String) record[0]);
+	        	annotationByDS.setSeriesInstanceUid((String) record[1]);
+	        	if (record[2] instanceof Integer){
+	        		annotationByDS.setAnnotationId(((Integer) record[2]).longValue());
+	        	}    
+	        	annotationByDS.setType((String) record[3]);
+	        	annotationByDS.setObjectName((String) record[4]);
+	        	annotationByDS.setData((Object) record[5]);
+	        	annotationByDS.setGeClass((Object) record[6]);
+	        	annotationByDSList.add(annotationByDS);
+	        });     
+	        logger.debug("Annotation lis size " + annotationByDSList.size());
+		}
+		return annotationByDSList;
 	}
 }
