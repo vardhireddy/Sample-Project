@@ -1,6 +1,9 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -14,6 +17,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import com.gehc.ai.app.datacatalog.entity.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,9 +25,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.entity.GEClass;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.Patient;
 
 /**
  * Created by sowjanyanaidu on 9/5/17.
@@ -71,21 +72,21 @@ public class DataCatalogDaoImplTest {
 
     }
 
-    public void dataSetUp(){
+    public void dataSetUp() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1),"4fac7976-e58b-472a-960b-42d7e3689f20","DX","CHEST","PNG","12345","UCSF",1,"GE XRAY","test"};
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
     }
 
-   @Test
+    @Test
     public void testgetImageSeriesByFilters() {
         dataSetUp();
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
-       input.putAll(constructQueryParam("annotations", "LABEL"));
-       input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        input.putAll(constructQueryParam("annotations", "LABEL"));
+        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
@@ -106,6 +107,24 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
+    }
+
+
+    @Test
+    public void testgetDCByID() {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
+        List expectedList = new ArrayList();
+        Object[] newObj = new Object[]{"1", "SUID", 1L, "test", "test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        List<Long> ids = new ArrayList<Long>();
+        ids.add(0, 1L);
+        ids.add(1, 2L);
+        List result = dataCatalogDao.getAnnotationsByDSId(ids);
+        assertEquals(getAnnotationDetails().size(), result.size());
+        assertEquals(getAnnotationDetails().toArray()[0].getClass(), result.toArray()[0].getClass());
     }
     //TODO: Need to review this test. It breaks when toString() method is added to Patient
 //   @Test
@@ -131,7 +150,7 @@ public class DataCatalogDaoImplTest {
 //        //assertEquals("{8082=CR, 121=DX}", "{8082=CR, 121=DX}");
 //    }
 
-    private List<ImageSeries> getImageSeriesWithFilters(){
+    private List<ImageSeries> getImageSeriesWithFilters() {
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
         ImageSeries imgSeries = new ImageSeries();
         Patient p = new Patient();
@@ -181,6 +200,21 @@ public class DataCatalogDaoImplTest {
         imgSerLst.add(imageSeries);
         imgSerLst.add(imageSeries1);
         return imgSerLst;
+    }
+
+
+    private List<AnnotationDetails> getAnnotationDetails() {
+        List<AnnotationDetails> annotationDetails = new ArrayList<AnnotationDetails>();
+        AnnotationDetails annotation = new AnnotationDetails();
+        annotation.setPatientId("1");
+        annotation.setSeriesInstanceUid("SUID");
+        annotation.setAnnotationId(1L);
+        annotation.setObjectName("test");
+        annotation.setType("test");
+        annotation.setGeClass("[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]");
+        annotation.setData("{}");
+        annotationDetails.add(annotation);
+        return annotationDetails;
     }
 
     private Map getMapForGEClassDataSummary() {
@@ -244,7 +278,7 @@ public class DataCatalogDaoImplTest {
         return params;
     }
 
-  //  @Test
+    //  @Test
     public void testConstructQueryWithSingleParam() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         String result = dataCatalogDao.constructQuery(input);
@@ -252,15 +286,15 @@ public class DataCatalogDaoImplTest {
         assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
-  //  @Test
+    //  @Test
     public void testConstructQueryWithSingleParamMultipleValue() {
-    	Map<String, Object> input = constructQueryParam("modality", "CT,MR");
+        Map<String, Object> input = constructQueryParam("modality", "CT,MR");
         String result = dataCatalogDao.constructQuery(input);
         String expectedResult = "WHERE x.modality IN (\"CT\", \"MR\")";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
-  //  @Test
+    //  @Test
     public void testConstructQueryWithMultipleParamSingleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         input.putAll(constructQueryParam("anatomy", "LUNG"));
@@ -269,9 +303,10 @@ public class DataCatalogDaoImplTest {
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
     }
-   // @Test
+
+    // @Test
     public void testConstructQueryWithMultipleParamMultipleValue() {
-    	Map<String, Object> input = constructQueryParam("modality", "CT,MR");
+        Map<String, Object> input = constructQueryParam("modality", "CT,MR");
         input.putAll(constructQueryParam("anatomy", "LUNG,HEART"));
         String result = dataCatalogDao.constructQuery(input);
         String expectedResult = "WHERE x.modality IN (\"CT\", \"MR\") AND x.anatomy IN (\"LUNG\", \"HEART\")";
