@@ -101,7 +101,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " SELECT  9 AS idx UNION "
 			+ " SELECT  10 AS idx UNION "
 			+ " SELECT  11) AS indices "
-			+ " WHERE im.id in (";
+			+ " WHERE JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL and im.id in (";
 			
 	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
