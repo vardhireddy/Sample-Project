@@ -104,7 +104,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " WHERE JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL and im.id in (";*/
 	
 	private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, an.id, an.type, "
-			+ " CAST(JSON_EXTRACT(an.item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(an.item, '$.data') as CHAR(1500)), "
+			+ " CAST(JSON_EXTRACT(an.item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(an.item, '$.data') as CHAR(5500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[0]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[1]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[2]')) as CHAR(500)), "
