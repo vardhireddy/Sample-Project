@@ -42,9 +42,11 @@ Get Image set based on filter criteria with Modality, DataFormat,Institution And
 Get Image set based on filter criteria with Modality, DataFormat And Equipment
 Get Image set based on filter criteria with Modality, DataFormat And Institution
 Get Image set based on filter criteria with Modality, Institution and Equipment
+Get Image set based on filter criteria with Institution name containing accepted special characters like comma
+Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
 
 
-@functional
+  @functional
 @crs_10734
 
 
@@ -335,3 +337,37 @@ Meta: @automated
 Given Get Image set based on filter criteria with Modality, Institution and Equipment - DataSetUp Provided
 When Get Image set based on filter criteria with Modality, Institution and Equipment
 Then verify Image set based on filter  with Modality, Institution and Equipment
+
+
+@test
+Scenario: Get Image set based on filter criteria with Institution name containing accepted special characters like comma
+Meta: @automated
+Given Get Image set based on filter criteria with Institution name containing accepted special characters- DataSetUp Provided
+When Get Image set based on filter criteria with Institution name containing accepted special characters
+Then verify Image set based on filter  with Institution name containing accepted special characters
+
+@test
+Scenario: Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
+Meta: @automated
+Given Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes - DataSetUp Provided
+When Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
+Then verify Image set based on filter  with Equipment name containing accepted special characters like quotes and slashes
+
+#@test
+#Scenario: Get Image set based on filter criteria with ORG ID and Modality throws Service Exception
+#Meta: @automated
+#Given Get Image set based on filter criteria with ORG ID and Modality throws Service Exception - DataSetUp Provided
+#When Get Image set based on filter criteria with ORG ID and Modality throws Service Exception
+#Then verify Image set based on filter  with ORG ID and Modality throws Service Exception
+#
+#@test
+#Scenario: Get Image set based on filter criteria with filters null
+#Given Get Image set based on filter criteria with filters null
+#When Get Image set based on filter criteria with filters null
+#Then verify Image set based on filter with filters null
+
+@test
+Scenario: Update institution by ImageSeries Ids
+Given Update institution by ImageSeries Ids - Data Setup
+When Update institution by ImageSeries Ids is called
+Then verify institution is updated

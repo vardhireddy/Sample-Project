@@ -24,7 +24,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
 import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 

@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
@@ -30,12 +31,22 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	private IDataCatalogDao dataCatalogDao;
 
 	@Override
-	public Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId, String type) {
-		return dataCatalogDao.geClassDataSummary(params, orgId, type);
+	public Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId) {
+		return dataCatalogDao.geClassDataSummary(params, orgId);
+	}
+	
+    /**
+     * @param params
+     * @return
+     * @throws Exception 
+     */
+	@Override
+	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params) {
+		return dataCatalogDao.getImgSeriesByFilters(params);
 	}
 
 	@Override
-	public List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typelst) {
-		return dataCatalogDao.getImgSeries(params, imgSeriesLst, typelst);
+	public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) {
+		return dataCatalogDao.getAnnotationsByDSId(imgSerIdLst);
 	}
 }

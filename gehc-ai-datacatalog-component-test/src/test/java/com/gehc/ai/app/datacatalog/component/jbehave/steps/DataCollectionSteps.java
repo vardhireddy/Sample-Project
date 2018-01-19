@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
@@ -628,7 +630,7 @@ public class DataCollectionSteps {
     @Given("Retrieve DataSummary for GE-Class")
     public void givenRetrieveDataSummaryGEClassdDataSetUpProvided() {
         Map resultSet = getMapForGEClassDataSummary();
-        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
     }
 
 
@@ -649,7 +651,7 @@ public class DataCollectionSteps {
     @Given("Retrieve DataSummary for GE-Class with invalid annotation type")
     public void givenRetrieveDataSummaryForGEClassWithInvalidAnnotationType() {
     	Map resultSet = getMapForGEClassDataSummary();
-        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
     }
 
 
@@ -673,7 +675,7 @@ public class DataCollectionSteps {
     @Given("Retrieve DataSummary for GE-Class without org id")
     public void givenRetrieveDataSummaryGEClassdNoOrgIdDataSetUpProvided() {
         Map resultSet = getMapForGEClassDataSummary();
-        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
     }
 
 
@@ -708,7 +710,55 @@ public class DataCollectionSteps {
     	retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
-    
+
+    @Given("Get Annotaition Ids by datacollectionId - Data Setup")
+    public void givenGetAnnotaitionIdsByDatacollectionIdDataSetup() {
+        List<DataSet> dataSet = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSet);
+        List<AnnotationDetails> annotationIds = new ArrayList<AnnotationDetails>();
+        AnnotationDetails annotation = new AnnotationDetails();
+        annotation.setAnnotationId(1L);
+        annotation.setType("test");
+        annotation.setPatientId("1");
+        annotation.setGeClass("{}");
+        annotation.setData("{}");
+        annotation.setSeriesInstanceUid("SUID");
+        annotationIds.add(annotation);
+        when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(annotationIds);
+
+    }
+    @When("Get Annotaition Ids by datacollectionId is called")
+    public void whenGetAnnotaitionIdsByDatacollectionIdIsCalled() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/1/annotation")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    @Then("verify Get Annotaition Ids by datacollectionId")
+    public void thenVerifyGetAnnotaitionIdsByDatacollectionId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[{\"patientId\":\"1\",\"seriesInstanceUid\":\"SUID\",\"annotationId\":1,\"type\":\"test\",\"objectName\":null,\"coordSys\":null,\"indication\":null,\"findings\":null,\"data\":\"{}\",\"geClass\":\"{}\",\"geClass1\":null,\"geClass2\":null,\"geClass3\":null,\"geClass4\":null}]")));
+    }
+
+    @Given("Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup")
+    public void givenGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFoundDataSetup() {
+        List<DataSet> dataSet = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
+        List<ImageSeries> imgSerIdLst = new ArrayList<ImageSeries>();
+        when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(imgSerIdLst);
+
+    }
+    @When("Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound")
+    public void whenGetAnnotaitionIdsByDatacollectionIdIsCalledWhenImageSeriesNotFound() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/1/annotation")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    @Then("verify Get Annotaition Ids by datacollectionId  When ImageSeriesNotFound")
+    public void thenVerifyGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFound() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
 
 
     private Map getMapForGEClassDataSummary() {
@@ -800,7 +850,7 @@ public class DataCollectionSteps {
         dataSets.add(dataSet);
 
         when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
-        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeries());
+        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
     }
 
     private DataSet getSaveDataSet() {

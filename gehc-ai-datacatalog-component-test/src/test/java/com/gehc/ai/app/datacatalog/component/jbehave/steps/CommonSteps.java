@@ -43,12 +43,51 @@ public class CommonSteps {
         return imageSeries;
     }
 
+    public List<ImageSeries> getImageSeriesWithEquipmentsSpecialChars() {
+        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
+        ImageSeries imageSeriesDx = getSingleImageSeries();
+        imageSeriesDx.setEquipment(" \"\\\"Geode Platform\\\"\"");
+        imgSerLst.add(imageSeriesDx);
+        return imgSerLst;
+    }
+
+    public ImageSeries getOneimageSerieswithInsitutions(){
+        ImageSeries imageSeries = new ImageSeries();
+        imageSeries.setDescription("test");
+        imageSeries.setAnatomy("Lung");
+        imageSeries.setModality("CT");
+        imageSeries.setDataFormat("dataFormat");
+        imageSeries.setUri("tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10");
+        imageSeries.setSeriesInstanceUid("1");
+        imageSeries.setInstitution("UCSF, Institution,Montogmenry");
+        imageSeries.setEquipment("tem");
+        imageSeries.setInstanceCount(1);
+        imageSeries.setUploadBy("BDD");
+        imageSeries.setUploadDate(getDate());
+        imageSeries.setPatientDbId(1L);
+        Map prop = new HashMap<String,String>();
+        prop.put("test", "bdd");
+        imageSeries.setProperties(prop);
+        return imageSeries;
+    }
+
     public List<ImageSeries> getImageSeries() {
+        List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
+        ImageSeries imageSeries = getSingleImageSeries();
+        imgSerLst.add(imageSeries);
+        ImageSeries imageSeriesDx = getSingleImageSeries();
+        imageSeriesDx.setModality("DX");
+        imgSerLst.add(imageSeriesDx);
+        return imgSerLst;
+    }
+
+    public List<ImageSeries> getImageSeriesWithFilterOneModality() {
         List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
         ImageSeries imageSeries = getSingleImageSeries();
         imgSerLst.add(imageSeries);
         return imgSerLst;
     }
+
 
     private ImageSeries getSingleImageSeries() {
         ImageSeries imageSeries = new ImageSeries();
@@ -94,9 +133,16 @@ public class CommonSteps {
     }
 
     public String expectedImageSeries() {
-        String imageSeries = "[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]";
+        String imageSeries = "[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1},{\"id\":1,\"modality\":\"DX\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]";
         return imageSeries;
     }
+
+//    public String expectedImageSeriesWithMultipleInstitutions() {
+//        String imageSeries = "[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF,MONT\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1},{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF,MONT\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":2}]";
+//        return imageSeries;
+//    }
+
+
 
     public String expectedImageSeriesJson() {
         String imageSeries = "{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}";

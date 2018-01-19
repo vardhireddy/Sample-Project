@@ -202,3 +202,15 @@ Meta: @automated
 Given Retrieve DataSummary for GE-Class with invalid annotation type
 When Get DataSummary for GE-Class with invalid annotation type
 Then verify DataSummary for GE-Class with invalid annotation type
+
+@test
+Scenario: Get Annotaition Ids by datacollectionId
+Given Get Annotaition Ids by datacollectionId - Data Setup
+When Get Annotaition Ids by datacollectionId is called
+Then verify Get Annotaition Ids by datacollectionId
+
+@test
+Scenario: Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
+Given Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup
+When Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound
+Then verify Get Annotaition Ids by datacollectionId  When ImageSeriesNotFound
