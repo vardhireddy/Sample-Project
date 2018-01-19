@@ -123,7 +123,7 @@ public class Study {
      */
     @Column (name="study_id")
     @Size(max=255)
-    @Pattern(regexp = DIGIT)
+    @Pattern(regexp = DESCRIPTION)
     private String studyId;
     public String getStudyId() {
         return studyId;
