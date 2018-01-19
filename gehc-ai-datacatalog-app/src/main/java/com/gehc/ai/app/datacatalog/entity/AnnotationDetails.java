@@ -41,7 +41,14 @@ public class AnnotationDetails {
 		private String indication;
 	    private String findings;
 	    private Object data;
-	    private Object geClass;
+	    private Object instances;
+	    public Object getInstances() {
+			return instances;
+		}
+		public void setInstances(Object instances) {
+			this.instances = instances;
+		}
+		private Object geClass;
 	    private Object geClass1;
 	    public Object getGeClass1() {
 			return geClass1;
