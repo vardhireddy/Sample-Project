@@ -737,7 +737,7 @@ public class DataCollectionSteps {
     @Then("verify Get Annotaition Ids by datacollectionId")
     public void thenVerifyGetAnnotaitionIdsByDatacollectionId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[{\"patientId\":\"1\",\"seriesInstanceUid\":\"SUID\",\"annotationId\":1,\"type\":\"test\",\"objectName\":null,\"coordSys\":null,\"indication\":null,\"findings\":null,\"data\":\"{}\",\"geClass\":\"{}\",\"geClass1\":null,\"geClass2\":null,\"geClass3\":null,\"geClass4\":null}]")));
+        retrieveResult.andExpect(content().string(containsString("[{\"patientId\":\"1\",\"seriesInstanceUid\":\"SUID\",\"annotationId\":1,\"type\":\"test\",\"objectName\":null,\"coordSys\":null,\"indication\":null,\"findings\":null,\"data\":\"{}\",\"instances\":null,\"geClass\":\"{}\",\"geClass1\":null,\"geClass2\":null,\"geClass3\":null,\"geClass4\":null}]")));
     }
 
     @Given("Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup")
