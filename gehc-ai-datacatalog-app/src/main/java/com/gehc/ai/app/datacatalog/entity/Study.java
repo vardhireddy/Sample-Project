@@ -12,9 +12,6 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 import java.sql.Date;
 
@@ -24,7 +21,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
@@ -42,7 +38,6 @@ public class Study {
 
     @Column(name="schema_version")
     @Size(max=50)
-    @Pattern(regexp = ENTITY_NAME)
     private String schemaVersion;
     public String getSchemaVersion() {
         return schemaVersion;
@@ -79,7 +74,6 @@ public class Study {
      */
     @Column (name="study_instance_uid")
     @Size(max=255)
-    @Pattern(regexp = ENTITY_NAME)
     private String studyInstanceUid;
     public String getStudyInstanceUid() {
         return studyInstanceUid;
@@ -93,7 +87,6 @@ public class Study {
      */
     @Column (name="study_date")
     @Size(max=255)
-    @Pattern(regexp = ENTITY_NAME)
     private String studyDate;
     public String getStudyDate() {
         return studyDate;
@@ -107,7 +100,6 @@ public class Study {
      */
     @Column (name="study_time")
     @Size(max=255)
-    @Pattern(regexp = ENTITY_NAME)
     private String studyTime;
     public String getStudyTime() {
         return studyTime;
@@ -121,7 +113,6 @@ public class Study {
      */
     @Column (name="study_id")
     @Size(max=255)
-    @Pattern(regexp = ENTITY_NAME)
     private String studyId;
     public String getStudyId() {
         return studyId;
@@ -135,7 +126,6 @@ public class Study {
      */
     @Column (name="study_description")
     @Size(max=100)
-    @Pattern(regexp = DESCRIPTION)
     private String studyDescription;
     public String getStudyDescription() {
         return studyDescription;
@@ -149,7 +139,6 @@ public class Study {
      */
     @Column (name="referring_physician")
     @Size(max=255)
-    @Pattern(regexp = ENTITY_NAME)
     private String referringPhysician;
     public String getReferringPhysician() {
         return referringPhysician;
@@ -176,7 +165,6 @@ public class Study {
      */
     @Column(name="org_id")
     @Size(max=255)
-    @Pattern(regexp = UUID)
     private String orgId;
     public String getOrgId() {
         return orgId;
@@ -206,7 +194,6 @@ public class Study {
     */
     @Column(name="upload_by")
     @Size(max=255)
-    @Pattern(regexp = ENTITY_NAME)
     private String uploadBy;
     public String getUploadBy() {
         return uploadBy;
