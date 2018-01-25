@@ -15,9 +15,9 @@ package com.gehc.ai.app.datacatalog.entity;
 public class AnnotationDetails {
 		private static final long serialVersionUID = 1L;
 		private String patientId;
-		private String seriesInstanceUid;
+		private String seriesUID;
 		private Long annotationId;
-	    private String type;
+	    private String annotationType;
 	    private String objectName;
 	    private String coordSys;
 	    public String getCoordSys() {
@@ -84,10 +84,10 @@ public class AnnotationDetails {
 			this.patientId = patientId;
 		}
 		public String getSeriesInstanceUid() {
-			return seriesInstanceUid;
+			return seriesUID;
 		}
 		public void setSeriesInstanceUid(String seriesInstanceUid) {
-			this.seriesInstanceUid = seriesInstanceUid;
+			this.seriesUID = seriesInstanceUid;
 		}
 		public Long getAnnotationId() {
 			return annotationId;
@@ -96,10 +96,10 @@ public class AnnotationDetails {
 			this.annotationId = annotationId;
 		}
 		public String getType() {
-			return type;
+			return annotationType;
 		}
 		public void setType(String type) {
-			this.type = type;
+			this.annotationType = type;
 		}
 		public String getObjectName() {
 			return objectName;
@@ -123,9 +123,9 @@ public class AnnotationDetails {
 				String objectName, Object data, Object geClass) {
 			super();
 			this.patientId = patientId;
-			this.seriesInstanceUid = seriesInstanceUid;
+			this.seriesUID = seriesInstanceUid;
 			this.annotationId = annotationId;
-			this.type = type;
+			this.annotationType = type;
 			this.objectName = objectName;
 			this.data = data;
 			this.geClass = geClass;
@@ -138,9 +138,9 @@ public class AnnotationDetails {
 	public String toString() {
 		return "AnnotationDetails{" +
 				", patientId='" + patientId + '\'' +
-				", seriesInstanceUid='" + seriesInstanceUid + '\'' +
+				", seriesInstanceUid='" + seriesUID + '\'' +
 				", annotationId='" + annotationId + '\'' +
-				", type='" + type + '\'' +
+				", type='" + annotationType + '\'' +
 				", objectName='" + objectName + '\'' +
 				", data='" + data + '\'' +
 				", geClass='" + geClass + '\'' +
