@@ -30,8 +30,14 @@ public class AnnotationDetails {
 		public void setAnnotationType(String annotationType) {
 			this.annotationType = annotationType;
 		}
-		private String objectName;
-	    private String coordSys;
+		private String name;
+	    public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		private String coordSys;
 	    private String maskURI;
 	    private Object maskOrigin;
 	    public Object getMaskOrigin() {
@@ -122,12 +128,6 @@ public class AnnotationDetails {
 		public void setAnnotationId(Long annotationId) {
 			this.annotationId = annotationId;
 		}
-		public String getObjectName() {
-			return objectName;
-		}
-		public void setObjectName(String objectName) {
-			this.objectName = objectName;
-		}
 		public Object getData() {
 			return data;
 		}
@@ -144,41 +144,5 @@ public class AnnotationDetails {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-	@Override
-	public String toString() {
-		return "AnnotationDetails{" +
-				", patientId='" + patientId + '\'' +
-				", seriesInstanceUid='" + seriesUID + '\'' +
-				", annotationId='" + annotationId + '\'' +
-				", type='" + annotationType + '\'' +
-				", objectName='" + objectName + '\'' +
-				", data='" + data + '\'' +
-				", geClass='" + geClass + '\'' +
-				'}';
-	}
-	public AnnotationDetails(String patientId, String seriesUID, Long annotationId, String annotationType,
-			String objectName, String coordSys, String maskURI, Object maskOrigin, String maskFormat, String indication,
-			String findings, Object data, Object instances, Object geClass, Object geClass1, Object geClass2,
-			Object geClass3, Object geClass4) {
-		super();
-		this.patientId = patientId;
-		this.seriesUID = seriesUID;
-		this.annotationId = annotationId;
-		this.annotationType = annotationType;
-		this.objectName = objectName;
-		this.coordSys = coordSys;
-		this.maskURI = maskURI;
-		this.maskOrigin = maskOrigin;
-		this.maskFormat = maskFormat;
-		this.indication = indication;
-		this.findings = findings;
-		this.data = data;
-		this.instances = instances;
-		this.geClass = geClass;
-		this.geClass1 = geClass1;
-		this.geClass2 = geClass2;
-		this.geClass3 = geClass3;
-		this.geClass4 = geClass4;
-	}
 	
 }
