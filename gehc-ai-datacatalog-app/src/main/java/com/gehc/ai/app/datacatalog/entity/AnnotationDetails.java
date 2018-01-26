@@ -144,5 +144,37 @@ public class AnnotationDetails {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-	
+		@Override
+		public String toString() {
+			return "AnnotationDetails [patientId=" + patientId + ", seriesUID=" + seriesUID + ", annotationId="
+					+ annotationId + ", annotationType=" + annotationType + ", name=" + name + ", coordSys=" + coordSys
+					+ ", maskURI=" + maskURI + ", maskOrigin=" + maskOrigin + ", maskFormat=" + maskFormat
+					+ ", indication=" + indication + ", findings=" + findings + ", data=" + data + ", instances="
+					+ instances + ", geClass=" + geClass + ", geClass1=" + geClass1 + ", geClass2=" + geClass2
+					+ ", geClass3=" + geClass3 + ", geClass4=" + geClass4 + "]";
+		}
+		public AnnotationDetails(String patientId, String seriesUID, Long annotationId, String annotationType,
+				String name, String coordSys, String maskURI, Object maskOrigin, String maskFormat, String indication,
+				String findings, Object data, Object instances, Object geClass, Object geClass1, Object geClass2,
+				Object geClass3, Object geClass4) {
+			super();
+			this.patientId = patientId;
+			this.seriesUID = seriesUID;
+			this.annotationId = annotationId;
+			this.annotationType = annotationType;
+			this.name = name;
+			this.coordSys = coordSys;
+			this.maskURI = maskURI;
+			this.maskOrigin = maskOrigin;
+			this.maskFormat = maskFormat;
+			this.indication = indication;
+			this.findings = findings;
+			this.data = data;
+			this.instances = instances;
+			this.geClass = geClass;
+			this.geClass1 = geClass1;
+			this.geClass2 = geClass2;
+			this.geClass3 = geClass3;
+			this.geClass4 = geClass4;
+		}
 }
