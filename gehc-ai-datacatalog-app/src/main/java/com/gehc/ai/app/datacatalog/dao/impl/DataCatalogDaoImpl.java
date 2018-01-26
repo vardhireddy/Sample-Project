@@ -113,7 +113,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(an.item, '$.coord_sys') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.indication')) as CHAR(5000)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.findings')) as CHAR(10000)), "
-			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(10000)) "
+			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(10000)),"
+			+ " CAST(JSON_EXTRACT(an.item, '$.origin') as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(an.item, '$.uri') as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(an.item, '$.format') as CHAR(500)) "
 			+ " FROM patient p inner join image_set im on im.patient_dbid = p.id  "
 			+ " inner join annotation an on an.image_set = im.id "
 			+ " WHERE im.id in (";
@@ -353,6 +356,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	annotationByDS.setIndication((String) record[12]);
 	        	annotationByDS.setFindings((String) record[13]);
 	        	annotationByDS.setInstances((Object) record[14]);
+	        	annotationByDS.setMaskOrigin((Object) record[15]);
+	        	annotationByDS.setMaskURI((String) record[16]);
+	        	annotationByDS.setMaskFormat((String) record[17]);
 	        	annotationByDSList.add(annotationByDS);
 	        });     
 	        logger.debug("Annotation lis size " + annotationByDSList.size());
