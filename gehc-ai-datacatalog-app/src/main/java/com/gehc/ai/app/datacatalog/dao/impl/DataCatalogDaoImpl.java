@@ -342,7 +342,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        		annotationByDS.setAnnotationId(((Integer) record[2]).longValue());
 	        	}    
 	        	annotationByDS.setAnnotationType((String) record[3]);
-	        	annotationByDS.setObjectName((String) record[4]);
+	        	annotationByDS.setName((String) record[4]);
 	        	annotationByDS.setData((Object) record[5]);
 	        	annotationByDS.setGeClass((Object) record[6]);
 	        	annotationByDS.setGeClass1((Object) record[7]);
