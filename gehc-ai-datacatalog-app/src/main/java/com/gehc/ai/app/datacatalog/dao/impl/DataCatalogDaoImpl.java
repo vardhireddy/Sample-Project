@@ -337,11 +337,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        objList.stream().forEach((record) -> {
 	        	AnnotationDetails annotationByDS = new AnnotationDetails();
 	        	annotationByDS.setPatientId((String) record[0]);
-	        	annotationByDS.setSeriesInstanceUid((String) record[1]);
+	        	annotationByDS.setSeriesUID((String) record[1]);
 	        	if (record[2] instanceof Integer){
 	        		annotationByDS.setAnnotationId(((Integer) record[2]).longValue());
 	        	}    
-	        	annotationByDS.setType((String) record[3]);
+	        	annotationByDS.setAnnotationType((String) record[3]);
 	        	annotationByDS.setObjectName((String) record[4]);
 	        	annotationByDS.setData((Object) record[5]);
 	        	annotationByDS.setGeClass((Object) record[6]);

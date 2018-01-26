@@ -16,10 +16,43 @@ public class AnnotationDetails {
 		private static final long serialVersionUID = 1L;
 		private String patientId;
 		private String seriesUID;
+		public String getSeriesUID() {
+			return seriesUID;
+		}
+		public void setSeriesUID(String seriesUID) {
+			this.seriesUID = seriesUID;
+		}
 		private Long annotationId;
 	    private String annotationType;
-	    private String objectName;
+	    public String getAnnotationType() {
+			return annotationType;
+		}
+		public void setAnnotationType(String annotationType) {
+			this.annotationType = annotationType;
+		}
+		private String objectName;
 	    private String coordSys;
+	    private String maskURI;
+	    private Object maskOrigin;
+	    public Object getMaskOrigin() {
+			return maskOrigin;
+		}
+		public void setMaskOrigin(Object maskOrigin) {
+			this.maskOrigin = maskOrigin;
+		}
+		public String getMaskURI() {
+			return maskURI;
+		}
+		public void setMaskURI(String maskURI) {
+			this.maskURI = maskURI;
+		}
+		public String getMaskFormat() {
+			return maskFormat;
+		}
+		public void setMaskFormat(String maskFormat) {
+			this.maskFormat = maskFormat;
+		}
+		private String maskFormat;
 	    public String getCoordSys() {
 			return coordSys;
 		}
@@ -83,23 +116,11 @@ public class AnnotationDetails {
 		public void setPatientId(String patientId) {
 			this.patientId = patientId;
 		}
-		public String getSeriesInstanceUid() {
-			return seriesUID;
-		}
-		public void setSeriesInstanceUid(String seriesInstanceUid) {
-			this.seriesUID = seriesInstanceUid;
-		}
 		public Long getAnnotationId() {
 			return annotationId;
 		}
 		public void setAnnotationId(Long annotationId) {
 			this.annotationId = annotationId;
-		}
-		public String getType() {
-			return annotationType;
-		}
-		public void setType(String type) {
-			this.annotationType = type;
 		}
 		public String getObjectName() {
 			return objectName;
@@ -119,17 +140,6 @@ public class AnnotationDetails {
 		public void setGeClass(Object geClass) {
 			this.geClass = geClass;
 		}
-		public AnnotationDetails(String patientId, String seriesInstanceUid, Long annotationId, String type,
-				String objectName, Object data, Object geClass) {
-			super();
-			this.patientId = patientId;
-			this.seriesUID = seriesInstanceUid;
-			this.annotationId = annotationId;
-			this.annotationType = type;
-			this.objectName = objectName;
-			this.data = data;
-			this.geClass = geClass;
-		}
 		public AnnotationDetails() {
 			super();
 			// TODO Auto-generated constructor stub
@@ -146,4 +156,29 @@ public class AnnotationDetails {
 				", geClass='" + geClass + '\'' +
 				'}';
 	}
+	public AnnotationDetails(String patientId, String seriesUID, Long annotationId, String annotationType,
+			String objectName, String coordSys, String maskURI, Object maskOrigin, String maskFormat, String indication,
+			String findings, Object data, Object instances, Object geClass, Object geClass1, Object geClass2,
+			Object geClass3, Object geClass4) {
+		super();
+		this.patientId = patientId;
+		this.seriesUID = seriesUID;
+		this.annotationId = annotationId;
+		this.annotationType = annotationType;
+		this.objectName = objectName;
+		this.coordSys = coordSys;
+		this.maskURI = maskURI;
+		this.maskOrigin = maskOrigin;
+		this.maskFormat = maskFormat;
+		this.indication = indication;
+		this.findings = findings;
+		this.data = data;
+		this.instances = instances;
+		this.geClass = geClass;
+		this.geClass1 = geClass1;
+		this.geClass2 = geClass2;
+		this.geClass3 = geClass3;
+		this.geClass4 = geClass4;
+	}
+	
 }
