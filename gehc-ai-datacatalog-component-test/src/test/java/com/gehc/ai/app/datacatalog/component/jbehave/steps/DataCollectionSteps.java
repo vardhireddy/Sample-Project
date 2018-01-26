@@ -718,11 +718,11 @@ public class DataCollectionSteps {
         List<AnnotationDetails> annotationIds = new ArrayList<AnnotationDetails>();
         AnnotationDetails annotation = new AnnotationDetails();
         annotation.setAnnotationId(1L);
-        annotation.setType("test");
+        annotation.setAnnotationType("test");
         annotation.setPatientId("1");
         annotation.setGeClass("{}");
         annotation.setData("{}");
-        annotation.setSeriesInstanceUid("SUID");
+        annotation.setSeriesUID("SUID");
         annotationIds.add(annotation);
         when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(annotationIds);
 

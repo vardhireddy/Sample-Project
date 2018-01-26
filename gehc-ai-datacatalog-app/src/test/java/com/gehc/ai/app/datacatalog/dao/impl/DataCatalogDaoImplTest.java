@@ -208,10 +208,10 @@ public class DataCatalogDaoImplTest {
         List<AnnotationDetails> annotationDetails = new ArrayList<AnnotationDetails>();
         AnnotationDetails annotation = new AnnotationDetails();
         annotation.setPatientId("1");
-        annotation.setSeriesInstanceUid("SUID");
+        annotation.setSeriesUID("SUID");
         annotation.setAnnotationId(1L);
         annotation.setObjectName("test");
-        annotation.setType("test");
+        annotation.setAnnotationType("test");
         annotation.setGeClass("[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]");
         annotation.setData("{}");
         annotation.setGeClass1("{}");
