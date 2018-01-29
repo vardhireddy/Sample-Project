@@ -110,6 +110,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[2]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[3]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[4]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[5]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[6]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[7]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[8]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[9]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[10]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.coord_sys') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.indication')) as CHAR(5000)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.findings')) as CHAR(10000)), "
@@ -352,13 +358,19 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	annotationByDS.setGeClass2((Object) record[8]);
 	        	annotationByDS.setGeClass3((Object) record[9]);
 	        	annotationByDS.setGeClass4((Object) record[10]);
-	        	annotationByDS.setCoordSys((String) record[11]);
-	        	annotationByDS.setIndication((String) record[12]);
-	        	annotationByDS.setFindings((String) record[13]);
-	        	annotationByDS.setInstances((Object) record[14]);
-	        	annotationByDS.setMaskOrigin((Object) record[15]);
-	        	annotationByDS.setMaskURI((String) record[16]);
-	        	annotationByDS.setMaskFormat((String) record[17]);
+	        	annotationByDS.setGeClass5((Object) record[11]);
+	        	annotationByDS.setGeClass6((Object) record[12]);
+	        	annotationByDS.setGeClass7((Object) record[13]);
+	        	annotationByDS.setGeClass8((Object) record[14]);
+	        	annotationByDS.setGeClass9((Object) record[15]);
+	        	annotationByDS.setGeClass10((Object) record[16]);
+	        	annotationByDS.setCoordSys((String) record[17]);
+	        	annotationByDS.setIndication((String) record[18]);
+	        	annotationByDS.setFindings((String) record[19]);
+	        	annotationByDS.setInstances((Object) record[20]);
+	        	annotationByDS.setMaskOrigin((Object) record[21]);
+	        	annotationByDS.setMaskURI((String) record[22]);
+	        	annotationByDS.setMaskFormat((String) record[23]);
 	        	annotationByDSList.add(annotationByDS);
 	        });     
 	        logger.debug("Annotation lis size " + annotationByDSList.size());

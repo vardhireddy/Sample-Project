@@ -116,6 +116,48 @@ public class AnnotationDetails {
 		private Object geClass2;
 	    private Object geClass3;
 	    private Object geClass4;
+	    private Object geClass5;
+	    public Object getGeClass5() {
+			return geClass5;
+		}
+		public void setGeClass5(Object geClass5) {
+			this.geClass5 = geClass5;
+		}
+		public Object getGeClass6() {
+			return geClass6;
+		}
+		public void setGeClass6(Object geClass6) {
+			this.geClass6 = geClass6;
+		}
+		public Object getGeClass7() {
+			return geClass7;
+		}
+		public void setGeClass7(Object geClass7) {
+			this.geClass7 = geClass7;
+		}
+		public Object getGeClass8() {
+			return geClass8;
+		}
+		public void setGeClass8(Object geClass8) {
+			this.geClass8 = geClass8;
+		}
+		public Object getGeClass9() {
+			return geClass9;
+		}
+		public void setGeClass9(Object geClass9) {
+			this.geClass9 = geClass9;
+		}
+		public Object getGeClass10() {
+			return geClass10;
+		}
+		public void setGeClass10(Object geClass10) {
+			this.geClass10 = geClass10;
+		}
+		private Object geClass6;
+	    private Object geClass7;
+	    private Object geClass8;
+	    private Object geClass9;
+	    private Object geClass10;
 		public String getPatientId() {
 			return patientId;
 		}
@@ -151,12 +193,15 @@ public class AnnotationDetails {
 					+ ", maskURI=" + maskURI + ", maskOrigin=" + maskOrigin + ", maskFormat=" + maskFormat
 					+ ", indication=" + indication + ", findings=" + findings + ", data=" + data + ", instances="
 					+ instances + ", geClass=" + geClass + ", geClass1=" + geClass1 + ", geClass2=" + geClass2
-					+ ", geClass3=" + geClass3 + ", geClass4=" + geClass4 + "]";
+					+ ", geClass3=" + geClass3 + ", geClass4=" + geClass4 + ", geClass5=" + geClass5 + ", geClass6="
+					+ geClass6 + ", geClass7=" + geClass7 + ", geClass8=" + geClass8 + ", geClass9=" + geClass9
+					+ ", geClass10=" + geClass10 + "]";
 		}
 		public AnnotationDetails(String patientId, String seriesUID, Long annotationId, String annotationType,
 				String name, String coordSys, String maskURI, Object maskOrigin, String maskFormat, String indication,
 				String findings, Object data, Object instances, Object geClass, Object geClass1, Object geClass2,
-				Object geClass3, Object geClass4) {
+				Object geClass3, Object geClass4, Object geClass5, Object geClass6, Object geClass7, Object geClass8,
+				Object geClass9, Object geClass10) {
 			super();
 			this.patientId = patientId;
 			this.seriesUID = seriesUID;
@@ -176,5 +221,11 @@ public class AnnotationDetails {
 			this.geClass2 = geClass2;
 			this.geClass3 = geClass3;
 			this.geClass4 = geClass4;
+			this.geClass5 = geClass5;
+			this.geClass6 = geClass6;
+			this.geClass7 = geClass7;
+			this.geClass8 = geClass8;
+			this.geClass9 = geClass9;
+			this.geClass10 = geClass10;
 		}
 }

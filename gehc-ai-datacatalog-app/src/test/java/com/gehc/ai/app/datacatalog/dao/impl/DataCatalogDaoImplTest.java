@@ -115,7 +115,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{"1", "SUID", 1, "test", "test", "test","test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]","{}","{}","{}","{}","{}","test","test","test","[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]"};
+        Object[] newObj = new Object[]{"1", "SUID", 1, "test", "test", "test","test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","test","test","test","[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
@@ -220,6 +220,12 @@ public class DataCatalogDaoImplTest {
         annotation.setGeClass2("{}");
         annotation.setGeClass3("{}");
         annotation.setGeClass4("{}");
+        annotation.setGeClass5("{}");
+        annotation.setGeClass6("{}");
+        annotation.setGeClass7("{}");
+        annotation.setGeClass8("{}");
+        annotation.setGeClass9("{}");
+        annotation.setGeClass10("{}");
         annotation.setFindings("test");
         annotation.setIndication("test");
         annotation.setCoordSys("test");
