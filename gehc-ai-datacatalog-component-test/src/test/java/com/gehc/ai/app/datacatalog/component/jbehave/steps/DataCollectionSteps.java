@@ -718,11 +718,11 @@ public class DataCollectionSteps {
         List<AnnotationDetails> annotationIds = new ArrayList<AnnotationDetails>();
         AnnotationDetails annotation = new AnnotationDetails();
         annotation.setAnnotationId(1L);
-        annotation.setType("test");
+        annotation.setAnnotationType("test");
         annotation.setPatientId("1");
         annotation.setGeClass("{}");
         annotation.setData("{}");
-        annotation.setSeriesInstanceUid("SUID");
+        annotation.setSeriesUID("SUID");
         annotationIds.add(annotation);
         when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(annotationIds);
 
@@ -737,7 +737,9 @@ public class DataCollectionSteps {
     @Then("verify Get Annotaition Ids by datacollectionId")
     public void thenVerifyGetAnnotaitionIdsByDatacollectionId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[{\"patientId\":\"1\",\"seriesInstanceUid\":\"SUID\",\"annotationId\":1,\"type\":\"test\",\"objectName\":null,\"coordSys\":null,\"indication\":null,\"findings\":null,\"data\":\"{}\",\"geClass\":\"{}\",\"geClass1\":null,\"geClass2\":null,\"geClass3\":null,\"geClass4\":null}]")));
+        retrieveResult.andExpect(content().string(containsString("[{\"patientId\":\"1\",\"seriesUID\":\"SUID\",\"annotationId\":1,\"annotationType\":\"test\",\"name\":null,\"coordSys\":null,\"maskURI\":null,\"maskOrigin\":null,\"maskFormat\":null,\"indication\":null,\"findings\":null,\"data\":\"{}\",\"instances\":null,\"geClass\":\"{}\",\"geClass1\":null,\"geClass2\":null,\"geClass3\":null,\"geClass4\":null,\"geClass5\":null,\"geClass6\":null,\"geClass7\":null,\"geClass8\":null,\"geClass9\":null,\"geClass10\":null}]"
+                )));
+
     }
 
     @Given("Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup")

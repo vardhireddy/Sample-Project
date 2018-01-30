@@ -27,7 +27,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,7 +34,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.*;
 
 @Entity
 @JsonInclude(Include.NON_NULL)
@@ -51,54 +49,43 @@ public class ImageSeries implements Serializable {
 	
 	@Column(name = "schema_version")
 	@Size(max=50)
-    @Pattern(regexp = ENTITY_NAME)
 	private String schemaVersion;
 	/**
 	 * The organization who owns the data.
 	 */
 	@Column(name = "org_id")
 	@Size(min=0, max=255)
-	@Pattern(regexp = UUID)
 	private String orgId;
 	
 	@Size(min=0, max=50)
-	@Pattern(regexp = ENTITY_NAME)
 	private String modality;
 	
 	@Size(min=0, max=50)
-	@Pattern(regexp = ENTITY_NAME)
 	private String anatomy;
 	
 	@Column(name = "data_format")
 	@Size(min=0, max=50)
-	@Pattern(regexp = ENTITY_NAME)
 	private String dataFormat;
 	
 	private String uri;
 	
 	@Column(name = "series_instance_uid")
 	@Size(min=0, max=255)
-	@Pattern(regexp = ENTITY_NAME)
 	private String seriesInstanceUid;
 	
 	@Size(min=0, max=100)
-	@Pattern(regexp = DESCRIPTION)
 	private String description;
 	
 	@Size(min=0, max=100)
-	@Pattern(regexp = SOURCE_NAME)
 	private String institution;
 	
 	@Size(min=0, max=255)
-	@Pattern(regexp = SOURCE_NAME)
 	private String equipment;
 
 	@Size(min=0, max=255)
-	@Pattern(regexp = SOURCE_NAME)
 	private String manufacturer;
 	
 	@Column(name = "image_type")
-	@Pattern(regexp = ENTITY_NAME)
 	private String imageType;
 	
 	public String getImageType() {
@@ -113,7 +100,6 @@ public class ImageSeries implements Serializable {
 	public void setView(String view) {
 		this.view = view;
 	}
-	@Pattern(regexp = ENTITY_NAME)
 	private String view;
 	
 	public String getManufacturer() {
@@ -133,7 +119,6 @@ public class ImageSeries implements Serializable {
 	 */
 	@Column(name = "upload_by")
 	@Size(min=0, max=255)
-	@Pattern(regexp = ENTITY_NAME)
 	private String uploadBy;
 	/**
 	 * Date data was uploaded into database. Should be left to database to
