@@ -16,14 +16,17 @@ import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gehc.ai.app.datacatalog.entity.*;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.GEClass;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 
 @Service
 @Component
