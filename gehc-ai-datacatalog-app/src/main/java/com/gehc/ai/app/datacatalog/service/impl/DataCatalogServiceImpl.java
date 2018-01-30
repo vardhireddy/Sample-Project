@@ -14,6 +14,8 @@ package com.gehc.ai.app.datacatalog.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -48,5 +50,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	@Override
 	public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) {
 		return dataCatalogDao.getAnnotationsByDSId(imgSerIdLst);
+	}
+
+	@Override
+	public List<Integer> getAnnotationsById(Annotation annotation) {
+		return dataCatalogDao.getAnnotationsIds(annotation);
 	}
 }

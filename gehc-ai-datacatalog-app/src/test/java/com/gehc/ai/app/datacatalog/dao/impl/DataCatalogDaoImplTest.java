@@ -9,15 +9,13 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import com.gehc.ai.app.datacatalog.entity.*;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -127,6 +125,204 @@ public class DataCatalogDaoImplTest {
         assertEquals(getAnnotationDetails().toArray()[0].getClass(), result.toArray()[0].getClass());
       //  assertEquals(getAnnotationDetails().toString(), result.toString());
     }
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSavePointAnnotation() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        resultList.add(1);
+        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,"IMAGE",null,null};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        List result = dataCatalogDao.getAnnotationsIds( getForPointAnnotation());
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSaveLineAnnotation() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        resultList.add(1);
+        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,"IMAGE",null,null};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Annotation lineAnnotation = getForPointAnnotation();
+        lineAnnotation.setType("line");
+        List result = dataCatalogDao.getAnnotationsIds( lineAnnotation);
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSaveLineAnnotationthatDoesntMatch() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        Object[] newObj = new Object[]{1,"test","[1105,616.3315508021391,2]",null,null,null,null,null,"IMAGE",null,null};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Annotation lineAnnotation = getForPointAnnotation();
+        lineAnnotation.setType("line");
+        List result = dataCatalogDao.getAnnotationsIds( lineAnnotation);
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSaveRectAnnotation() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        resultList.add(1);
+        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,"IMAGE",null,null};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Annotation rectAnnotation = getForPointAnnotation();
+        rectAnnotation.setType("rect");
+        getRectangleEllipseItemInfo(rectAnnotation);
+        List result = dataCatalogDao.getAnnotationsIds( rectAnnotation);
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSaveRectAnnotationCoordsDoesntMatch() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,1,1],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,"IMAGE",null,null};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Annotation rectAnnotation = getForPointAnnotation();
+        rectAnnotation.setType("rect");
+        getRectangleEllipseItemInfo(rectAnnotation);
+        List result = dataCatalogDao.getAnnotationsIds( rectAnnotation);
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSaveEllipseAnnotation() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        resultList.add(1);
+        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,"IMAGE",null,null};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Annotation ellipseAnnotation = getForPointAnnotation();
+        ellipseAnnotation.setType("ellipse");
+        getRectangleEllipseItemInfo(ellipseAnnotation);
+        List result = dataCatalogDao.getAnnotationsIds( ellipseAnnotation);
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSaveLableAnnotation() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        resultList.add(1);
+        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Annotation labelAnnotation = getForLabelAnnotation();
+        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSaveLableAnnotationGeCallsDoesntMatch() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"large\"}",null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Annotation labelAnnotation = getForLabelAnnotation();
+        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+    @Test
+    public void testGetAnnotationIdsWhenTriedToSaveLableAnnotationFindingsDoesntMatch() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,"IMAGE",null,"TEST"};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        Annotation labelAnnotation = getForLabelAnnotation();
+        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
+        assertEquals(result.toString(),resultList.toString());
+    }
+
+
+    private Annotation getRectangleEllipseItemInfo(Annotation rectAnnotation) {
+        LinkedHashMap item = new LinkedHashMap();
+        Map<String, List<Long>> dataMap = new HashMap<String, List<Long>>() ;
+        ArrayList list1 = new ArrayList();
+        list1.add(511.7407407407409);
+        list1.add(0);
+        list1.add(0);
+        dataMap.put("xdir",list1);
+        dataMap.put("ydir",list1);
+        dataMap.put("origin",list1);
+
+        item.put("data", dataMap);
+        item.put("properties","{\"ge_class\":[]}");
+        item.put("coord_sys","IMAGE");
+        item.put("object_name","test");
+        rectAnnotation.setItem(item);
+        return rectAnnotation;
+    }
+
+    private Annotation getForPointAnnotation() {
+        Annotation annotation = new Annotation();
+        annotation.setOrgId("123");
+        annotation.setAnnotationTool("");
+        annotation.setAnnotatorId("123");
+        Map<String, String> linkedHashMap = new LinkedHashMap<String, String>();
+        Map<String, List<String>> linkedHashMap1 = new LinkedHashMap<String, List<String>>();
+        linkedHashMap.put("data", "[1105.8823529411766,616.3315508021391,2]");
+        linkedHashMap.put("coord_sys", "IMAGE");
+        ArrayList<String> list = new ArrayList<String>();
+        linkedHashMap.put("properties", "{\"ge_class\": []}");
+        linkedHashMap.put("object_name", "test");
+
+        annotation.setItem(linkedHashMap);
+        annotation.setImageSetId(1L);
+        annotation.setType("point");
+
+        return annotation;
+    }
+
+    private Annotation getForLabelAnnotation() {
+        Annotation annotation = new Annotation();
+        annotation.setOrgId("123");
+        annotation.setAnnotationTool("");
+        annotation.setAnnotatorId("123");
+
+        LinkedHashMap geClassJson = new LinkedHashMap();
+
+        ArrayList<Map> list = new ArrayList<Map>();
+        Map map1 = new HashMap();
+
+        map1.put("name","Pneumothorax");
+        map1.put("value","Small");
+        list.add(map1);
+        Map map2 = new HashMap();
+        map2.put("ge_class",list);
+        map2.put("findings","Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC");
+        geClassJson.put("properties", map2);
+
+        annotation.setItem(geClassJson);
+        annotation.setImageSetId(1L);
+        annotation.setType("label");
+
+        return annotation;
+    }
+
     //TODO: Need to review this test. It breaks when toString() method is added to Patient
 //   @Test
 //    public void testGetImageSeries() {
