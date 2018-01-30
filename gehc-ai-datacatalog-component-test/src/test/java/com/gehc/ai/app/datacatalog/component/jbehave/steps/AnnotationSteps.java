@@ -93,7 +93,17 @@ public class AnnotationSteps {
         when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(ids);
 
     }
-
+    @When("Store an annotation set data  Annotation already exists")
+    public void whenStoreAnAnnotationSetDataExists() throws Exception {
+        Annotation annotation = commonSteps.getAnnotation();
+        annotation.setId(null);
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/annotation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(AnnotationToJSON(annotation))
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
     @Then("Verify Store an annotation set data if Annotation already exists should not save duplicate Annotation and will return the annotation id")
     public void thenVerifyStoreAnAnnotationSetDataIfAnnotationAlreadyExistsShouldNotSaveDuplicateAnnotationAndWillReturnTheAnnotationId() throws Exception {
         retrieveResult.andExpect(status().isOk());

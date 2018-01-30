@@ -140,6 +140,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[2]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[3]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[4]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[5]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[6]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[7]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[8]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[9]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[10]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, '$.coord_sys') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.indication')) as CHAR(5000)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.findings')) as CHAR(10000)) "
@@ -454,7 +460,18 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 
 	private boolean isAllGeClassKeysPresent(LinkedHashMap item, Object[] record) throws IOException {
-		return isGeClassKeysPresent(item, record, "ge_class");
+		return (isGeClassKeysPresent(item, record, 0,3) &&
+				isGeClassKeysPresent(item, record, 1,4) &&
+				isGeClassKeysPresent(item, record, 2,5) &&
+				isGeClassKeysPresent(item, record, 3,6) &&
+				isGeClassKeysPresent(item, record, 4,7) &&
+				isGeClassKeysPresent(item, record, 5,8) &&
+				isGeClassKeysPresent(item, record, 6,9) &&
+				isGeClassKeysPresent(item, record, 7,10) &&
+				isGeClassKeysPresent(item, record, 8,11) &&
+				isGeClassKeysPresent(item, record, 9,12) &&
+				isGeClassKeysPresent(item, record, 10,13)
+		);
 	}
 
 	private String getQueryStringForAnnotationIds(Annotation annotation) {
@@ -473,7 +490,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 
 	private void verifyAllRecordsExistInDb(Annotation annotation, List<Integer> ids, LinkedHashMap item, Object[] record, boolean dataKeysPresent, boolean geClassKeysPresent) {
 		if (item.get("object_name") == null || item.get("object_name").equals(getReplace(record[1]))) {
-			if (item.get("coord_sys") == null || item.get("coord_sys").equals((String) getReplace(record[8]))) {
+			if (item.get("coord_sys") == null || item.get("coord_sys").equals((String) getReplace(record[14]))) {
 				if ((!annotation.getType().equals("label") && dataKeysPresent) || (annotation.getType().equals("label") && geClassKeysPresent)) {
 					verifyIndicationFindingsPresentAndAddToIds(ids, item, record);
 				}
@@ -526,33 +543,38 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		return dataKeysPresent;
 	}
 
-	private boolean isGeClassKeysPresent(LinkedHashMap item, Object[] record, String geclass) throws IOException {
+	private boolean isGeClassKeysPresent(LinkedHashMap item, Object[] record, int geclassNum, int recordNum) throws IOException {
 		boolean geClassKeysPresent = false;
-		if (record[3] != null) {
+		if (record[recordNum] != null) {
 			Map<String, List<String>> geClassJson = (Map<String, List<String>>) item.get("properties");
-			Map<String, String> geClassMap = new ObjectMapper().readValue((String) record[3],
+			Map<String, String> geClassMap = new ObjectMapper().readValue((String) record[recordNum],
 					new TypeReference<Map<String, String>>() {
 					});
-			if (geClassJson.containsKey(geclass)) {
-				String geClassValue = geClassJson.get(geclass).toArray()[0].toString();
+			int size = geClassJson.get("ge_class").size();
+			if (size >= geclassNum+1) {
+				String geClassValue = geClassJson.get("ge_class").toArray()[geclassNum].toString();
 				if (geClassValue.equals(geClassMap.toString())) {
 					geClassKeysPresent = true;
 
 				} else {
 					geClassKeysPresent = false;
 				}
+			} else {
+				geClassKeysPresent = true;
 			}
+		}else {
+			geClassKeysPresent = true;
 		}
 		return geClassKeysPresent;
 	}
 
 	private boolean isFindingsPresent(LinkedHashMap item, Object[] record) {
 		boolean findingsPresent = false;
-		if (record[10] != null) {
+		if (record[16] != null) {
 			Map<String, String> geClassJson = (Map<String, String>) item.get("properties");
 			if (geClassJson.containsKey("findings")) {
 				String findingsValue = geClassJson.get("findings").toString();
-				if (((String) record[10]).contains(findingsValue)) {
+				if (((String) record[16]).contains(findingsValue)) {
 					findingsPresent = true;
 				} else {
 					findingsPresent = false;
@@ -567,11 +589,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 
 	private boolean isIndicationPresent(LinkedHashMap item, Object[] record) {
 		boolean indicationPresent = false;
-		if (record[9] != null) {
+		if (record[15] != null) {
 			Map<String, String> geClassJson = (Map<String, String>) item.get("properties");
 			if (geClassJson.containsKey("indication")) {
 				String findingsValue = geClassJson.get("indication").toString();
-				if (((String) record[9]).contains(findingsValue)) {
+				if (((String) record[15]).contains(findingsValue)) {
 					indicationPresent = true;
 
 				} else {

@@ -132,7 +132,7 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         List result = dataCatalogDao.getAnnotationsIds( getForPointAnnotation());
@@ -145,7 +145,7 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation lineAnnotation = getForPointAnnotation();
@@ -159,7 +159,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,"test","[1105,616.3315508021391,2]",null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1,"test","[1105,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation lineAnnotation = getForPointAnnotation();
@@ -176,7 +176,7 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation rectAnnotation = getForPointAnnotation();
@@ -191,7 +191,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,1,1],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,1,1],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation rectAnnotation = getForPointAnnotation();
@@ -207,7 +207,7 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation ellipseAnnotation = getForPointAnnotation();
@@ -223,7 +223,7 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
+        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();
@@ -236,7 +236,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"large\"}",null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
+        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"large\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();
@@ -249,7 +249,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,"IMAGE",null,"TEST"};
+        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"TEST"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();

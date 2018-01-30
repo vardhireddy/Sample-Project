@@ -253,19 +253,27 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ApiResponse saveAnnotation(@Valid @RequestBody Annotation annotation) {
         ApiResponse apiResponse = null;
         try {
-            List<Integer> ids = dataCatalogService.getAnnotationsById(annotation);
-            if (ids != null && !ids.isEmpty()) {
-                logger.info("[In REST, Annotation exists so returning annotaion with id = " + ids + "]");
-                return apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                        ApplicationConstants.SUCCESS, ids.toArray()[0].toString());
-            }
-            else{
+            if (annotation.getId() != null) {
                 Annotation newAnnotation = annotationRepository.save(annotation);
-
-                logger.info("[In REST, Saving new annotaion with id = " + newAnnotation.getId() + "]");
+                logger.info("[In REST, updating annotation with id = " + newAnnotation.getId() + "]");
                 apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
                         ApplicationConstants.SUCCESS, newAnnotation.getId().toString());
+            } else {
+                List<Integer> ids = dataCatalogService.getAnnotationsById(annotation);
+                if (ids != null && !ids.isEmpty()) {
+
+                    logger.info("[In REST, Annotation exists so returning annotation with id = " + ids + "]");
+                    return apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
+                            ApplicationConstants.SUCCESS, ids.toArray()[0].toString());
+                } else {
+                    Annotation newAnnotation = annotationRepository.save(annotation);
+
+                    logger.info("[In REST, Saving new annotation with id = " + newAnnotation.getId() + "]");
+                    apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
+                            ApplicationConstants.SUCCESS, newAnnotation.getId().toString());
+                }
             }
+
         } catch (Exception e) {
             logger.error("Exception occured while calling save annotation ", e);
             apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.INTERNAL_SERVER_ERROR_CODE,
