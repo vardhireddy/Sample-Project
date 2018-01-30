@@ -408,7 +408,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public List<Integer> getAnnotationsIds(Annotation annotation) {
 		List<Integer> ids = new ArrayList<Integer>();
 		String queryString = getQueryStringForAnnotationIds(annotation);
-		Query q = em.createNativeQuery(queryString);
+		Query q = em.createNativeQuery(queryString); // NOSONAR
 		List<Object[]> objList = q.getResultList();
 		LinkedHashMap item = (LinkedHashMap) annotation.getItem();
 
@@ -480,11 +480,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		annotQueryBuilder.append(" AND ");
 		annotQueryBuilder.append(constructAnnotationWhereClause("image_set", annotation.getImageSetId().toString()));
 		annotQueryBuilder.append(" AND ");
-		annotQueryBuilder.append(constructAnnotationWhereClause("annotator_id", annotation.getAnnotatorId().toString()));
+		annotQueryBuilder.append(constructAnnotationWhereClause("annotator_id", annotation.getAnnotatorId()));
 		annotQueryBuilder.append(" AND ");
-		annotQueryBuilder.append(constructAnnotationWhereClause("annotation_tool", annotation.getAnnotationTool().toString()));
+		annotQueryBuilder.append(constructAnnotationWhereClause("annotation_tool", annotation.getAnnotationTool()));
 		annotQueryBuilder.append(" AND ");
-		annotQueryBuilder.append(constructAnnotationWhereClause("type", annotation.getType().toString()));
+		annotQueryBuilder.append(constructAnnotationWhereClause("type", annotation.getType()));
 		return GET_ITEM_INFO_BY_ANNOTATION + annotQueryBuilder;
 	}
 
@@ -518,7 +518,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					new TypeReference<Map<String, List>>() {
 					});
 
-			for (String key : dataJson.keySet()) {
+			for (Map.Entry<String, List<Long>> entry : dataJson.entrySet()) {
+				String key =entry.getKey();
 				if (dataJson.get(key).equals(resultMap.get(key))) {
 					dataKeysPresent = true;
 
@@ -573,7 +574,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		if (record[16] != null) {
 			Map<String, String> geClassJson = (Map<String, String>) item.get("properties");
 			if (geClassJson.containsKey("findings")) {
-				String findingsValue = geClassJson.get("findings").toString();
+				String findingsValue = geClassJson.get("findings");
 				if (((String) record[16]).contains(findingsValue)) {
 					findingsPresent = true;
 				} else {
@@ -592,7 +593,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		if (record[15] != null) {
 			Map<String, String> geClassJson = (Map<String, String>) item.get("properties");
 			if (geClassJson.containsKey("indication")) {
-				String findingsValue = geClassJson.get("indication").toString();
+				String findingsValue = geClassJson.get("indication");
 				if (((String) record[15]).contains(findingsValue)) {
 					indicationPresent = true;
 
