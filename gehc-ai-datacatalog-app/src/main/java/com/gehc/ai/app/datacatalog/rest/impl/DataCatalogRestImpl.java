@@ -261,10 +261,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             } else {
                 List<Integer> ids = dataCatalogService.getAnnotationsById(annotation);
                 if (ids != null && !ids.isEmpty()) {
+                    String idValue = ids.toArray()[0].toString();
 
                     logger.info("[In REST, Annotation exists so returning annotation with id = " + ids + "]");
                     return apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                            ApplicationConstants.SUCCESS, ids.toArray()[0].toString());
+                            ApplicationConstants.SUCCESS,idValue);
                 } else {
                     Annotation newAnnotation = annotationRepository.save(annotation);
 
