@@ -14,8 +14,10 @@ package com.gehc.ai.app.datacatalog.service;
 import java.util.List;
 import java.util.Map;
 
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 
 public interface IDataCatalogService {
     
@@ -33,6 +35,8 @@ public interface IDataCatalogService {
      */
     List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
     
-    List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst);  
+    List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst);
+
+    List<Integer> getAnnotationsById(Annotation annotation);
     
 }

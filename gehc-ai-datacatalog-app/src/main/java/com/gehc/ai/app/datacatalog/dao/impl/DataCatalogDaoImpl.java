@@ -22,10 +22,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import java.util.LinkedHashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 
 @Service
 @Component
@@ -51,6 +53,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	
 	public static final String GE_CLASS ="ge-class";
 	public static final String ABSENT ="absent";
+	public static final String RECT = "rect";
+	public static final String ELLIPSE = "ellipse";
+	public static final String LINE = "line";
+	public static final String POINT = "point";
 	
     public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
             + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
@@ -126,7 +132,26 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " FROM patient p inner join image_set im on im.patient_dbid = p.id  "
 			+ " inner join annotation an on an.image_set = im.id "
 			+ " WHERE im.id in (";
-			
+
+	private static final String GET_ITEM_INFO_BY_ANNOTATION = "SELECT id, "
+			+ " CAST(JSON_EXTRACT(item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(item, '$.data') as CHAR(10000)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[0]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[1]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[2]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[3]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[4]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[5]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[6]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[7]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[8]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[9]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[10]')) as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, '$.coord_sys') as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.indication')) as CHAR(5000)), "
+			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.findings')) as CHAR(10000)) "
+			+ "FROM annotation "
+			+ " WHERE ";
+
 	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
 	@Autowired
@@ -376,5 +401,216 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        logger.debug("Annotation lis size " + annotationByDSList.size());
 		}
 		return annotationByDSList;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> getAnnotationsIds(Annotation annotation) {
+		List<Integer> ids = new ArrayList<Integer>();
+		String queryString = getQueryStringForAnnotationIds(annotation);
+		Query q = em.createNativeQuery(queryString);
+		List<Object[]> objList = q.getResultList();
+		LinkedHashMap item = (LinkedHashMap) annotation.getItem();
+
+		if (null != objList && !objList.isEmpty()) {
+			objList.stream().forEach((record) -> {
+				ArrayList<String> types = getRectEllipseTypes();
+				ArrayList<String> otherTypes = getLinePointTypes();
+
+				try {
+					boolean dataKeysPresent = false;
+					//data key validation
+
+					if (types.contains(annotation.getType())) {
+						dataKeysPresent = isDataKeysPresent(item, record);
+					}
+					if (otherTypes.contains(annotation.getType())) {
+						dataKeysPresent = isDataKeysLinePointPresent(item, record);
+					}
+
+					//properties ge_class validation
+					boolean geClassKeysPresent = isAllGeClassKeysPresent(item, record);
+
+					//verify all records match
+					verifyAllRecordsExistInDb(annotation, ids, item, record, dataKeysPresent, geClassKeysPresent);
+
+				} catch (IOException e) {
+					logger.warn("Unable to verify if annotation present");
+
+				}
+
+			});
+		}
+
+		return ids;
+	}
+
+	private ArrayList<String> getLinePointTypes() {
+		ArrayList<String> otherTypes = new ArrayList<String>();
+		otherTypes.add(LINE);
+		otherTypes.add(POINT);
+		return otherTypes;
+	}
+
+	private ArrayList<String> getRectEllipseTypes() {
+		ArrayList<String> types = new ArrayList<String>();
+		types.add(RECT);
+		types.add(ELLIPSE);
+		return types;
+	}
+
+	private boolean isAllGeClassKeysPresent(LinkedHashMap item, Object[] record) throws IOException {
+		return (isGeClassKeysPresent(item, record, 0,3) &&
+				isGeClassKeysPresent(item, record, 1,4) &&
+				isGeClassKeysPresent(item, record, 2,5) &&
+				isGeClassKeysPresent(item, record, 3,6) &&
+				isGeClassKeysPresent(item, record, 4,7) &&
+				isGeClassKeysPresent(item, record, 5,8) &&
+				isGeClassKeysPresent(item, record, 6,9) &&
+				isGeClassKeysPresent(item, record, 7,10) &&
+				isGeClassKeysPresent(item, record, 8,11) &&
+				isGeClassKeysPresent(item, record, 9,12) &&
+				isGeClassKeysPresent(item, record, 10,13)
+		);
+	}
+
+	private String getQueryStringForAnnotationIds(Annotation annotation) {
+		StringBuilder annotQueryBuilder = new StringBuilder();
+		annotQueryBuilder.append(constructAnnotationWhereClause("org_id", annotation.getOrgId()));
+		annotQueryBuilder.append(" AND ");
+		annotQueryBuilder.append(constructAnnotationWhereClause("image_set", annotation.getImageSetId().toString()));
+		annotQueryBuilder.append(" AND ");
+		annotQueryBuilder.append(constructAnnotationWhereClause("annotator_id", annotation.getAnnotatorId().toString()));
+		annotQueryBuilder.append(" AND ");
+		annotQueryBuilder.append(constructAnnotationWhereClause("annotation_tool", annotation.getAnnotationTool().toString()));
+		annotQueryBuilder.append(" AND ");
+		annotQueryBuilder.append(constructAnnotationWhereClause("type", annotation.getType().toString()));
+		return GET_ITEM_INFO_BY_ANNOTATION + annotQueryBuilder;
+	}
+
+	private void verifyAllRecordsExistInDb(Annotation annotation, List<Integer> ids, LinkedHashMap item, Object[] record, boolean dataKeysPresent, boolean geClassKeysPresent) {
+		if (item.get("object_name") == null || item.get("object_name").equals(getReplace(record[1]))) {
+			if (item.get("coord_sys") == null || item.get("coord_sys").equals((String) getReplace(record[14]))) {
+				if ((!annotation.getType().equals("label") && dataKeysPresent) || (annotation.getType().equals("label") && geClassKeysPresent)) {
+					verifyIndicationFindingsPresentAndAddToIds(ids, item, record);
+				}
+			}
+
+		}
+	}
+
+	private void verifyIndicationFindingsPresentAndAddToIds(List<Integer> ids, LinkedHashMap item, Object[] record) {
+		boolean indicationPresent = isIndicationPresent(item, record);
+		if (indicationPresent) {
+			boolean findingsPresent = isFindingsPresent(item, record);
+			if (findingsPresent) {
+				logger.info("Annotation already exists so not saving");
+				ids.add((Integer) record[0]);
+			}
+		}
+	}
+
+	private boolean isDataKeysPresent(LinkedHashMap item, Object[] record) throws IOException {
+		boolean dataKeysPresent = false;
+		if (record[2] != null) {
+			Map<String, List<Long>> dataJson = (Map<String, List<Long>>) (item.get("data"));
+			Map<String, List> resultMap = new ObjectMapper().readValue((String) record[2],
+					new TypeReference<Map<String, List>>() {
+					});
+
+			for (String key : dataJson.keySet()) {
+				if (dataJson.get(key).equals(resultMap.get(key))) {
+					dataKeysPresent = true;
+
+				} else {
+					dataKeysPresent = false;
+				}
+			}
+		}
+		return dataKeysPresent;
+	}
+
+	private boolean isDataKeysLinePointPresent(LinkedHashMap item, Object[] record) {
+		boolean dataKeysPresent = false;
+		if (record[2] != null) {
+			if (item.get("data").toString().equals(record[2])) {
+				dataKeysPresent = true;
+
+			} else {
+				dataKeysPresent = false;
+			}
+		}
+		return dataKeysPresent;
+	}
+
+	private boolean isGeClassKeysPresent(LinkedHashMap item, Object[] record, int geclassNum, int recordNum) throws IOException {
+		boolean geClassKeysPresent = false;
+		if (record[recordNum] != null) {
+			Map<String, List<String>> geClassJson = (Map<String, List<String>>) item.get("properties");
+			Map<String, String> geClassMap = new ObjectMapper().readValue((String) record[recordNum],
+					new TypeReference<Map<String, String>>() {
+					});
+			int size = geClassJson.get("ge_class").size();
+			if (size >= geclassNum+1) {
+				String geClassValue = geClassJson.get("ge_class").toArray()[geclassNum].toString();
+				if (geClassValue.equals(geClassMap.toString())) {
+					geClassKeysPresent = true;
+
+				} else {
+					geClassKeysPresent = false;
+				}
+			} else {
+				geClassKeysPresent = true;
+			}
+		}else {
+			geClassKeysPresent = true;
+		}
+		return geClassKeysPresent;
+	}
+
+	private boolean isFindingsPresent(LinkedHashMap item, Object[] record) {
+		boolean findingsPresent = false;
+		if (record[16] != null) {
+			Map<String, String> geClassJson = (Map<String, String>) item.get("properties");
+			if (geClassJson.containsKey("findings")) {
+				String findingsValue = geClassJson.get("findings").toString();
+				if (((String) record[16]).contains(findingsValue)) {
+					findingsPresent = true;
+				} else {
+					findingsPresent = false;
+				}
+			}
+		} else {
+			findingsPresent = true;
+
+		}
+		return findingsPresent;
+	}
+
+	private boolean isIndicationPresent(LinkedHashMap item, Object[] record) {
+		boolean indicationPresent = false;
+		if (record[15] != null) {
+			Map<String, String> geClassJson = (Map<String, String>) item.get("properties");
+			if (geClassJson.containsKey("indication")) {
+				String findingsValue = geClassJson.get("indication").toString();
+				if (((String) record[15]).contains(findingsValue)) {
+					indicationPresent = true;
+
+				} else {
+					indicationPresent = false;
+				}
+
+			}
+		} else {
+			indicationPresent = true;
+		}
+		return indicationPresent;
+	}
+
+	private String getReplace(Object o) {
+		if (o != null) {
+			return o.toString().replace("\"", "");
+		}
+		return null;
 	}
 }

@@ -69,3 +69,11 @@ Given Delete annotation set data for Ids throws exception - DataSetUp Provided
 When Delete annotation set data for Ids throws exception
 Then Verify Delete annotation set data for Ids throws exception
 
+@test
+Scenario: Store an annotation set data when Annotation already exists should not save dupicate Annotation
+Meta: @automated
+Given Store an annotation set data Annotation already exists - DataSetUp Provided
+When Store an annotation set data  Annotation already exists
+Then Verify Store an annotation set data if Annotation already exists should not save duplicate Annotation and will return the annotation id
+
+

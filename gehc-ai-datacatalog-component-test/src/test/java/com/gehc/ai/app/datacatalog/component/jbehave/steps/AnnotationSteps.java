@@ -2,6 +2,7 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
@@ -45,9 +46,9 @@ public class AnnotationSteps {
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
     private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"v1\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"annotatorId\":\"123\",\"annotationTool\":\"Tool\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSetId\":1,\"item\":{}}]";
-
+    private DataCatalogDaoImpl dataCatalogDao;
     @Autowired
-    public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
+    public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
         this.mockMvc = mockMvc;
         this.studyRepository = studyRepository;
         this.patientRepository = patientRepository;
@@ -55,6 +56,7 @@ public class AnnotationSteps {
         this.annotationRepository = annotationRepository;
         this.commonSteps = commonSteps;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
+        this.dataCatalogDao =  dataCatalogDao;
     }
 
     @BeforeScenario
@@ -64,6 +66,7 @@ public class AnnotationSteps {
     
     @Given("Store an annotation set data - DataSetUp Provided")
     public void givenStoreAnAnnotationSetDataDataSetUpProvided() {
+        when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(null);
         when(annotationRepository.save(any(Annotation.class))).thenReturn(commonSteps.getAnnotation());
     }
     @When("Store an annotation set data")
@@ -83,6 +86,30 @@ public class AnnotationSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
+    @Given("Store an annotation set data Annotation already exists - DataSetUp Provided")
+    public void givenStoreAnAnnotationSetDataAnnotationAlreadyExistsDataSetUpProvided() {
+        List<Integer> ids = new ArrayList<Integer>();
+        ids.add(1);
+        when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(ids);
+
+    }
+    @When("Store an annotation set data  Annotation already exists")
+    public void whenStoreAnAnnotationSetDataExists() throws Exception {
+        Annotation annotation = commonSteps.getAnnotation();
+        annotation.setId(null);
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/annotation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(AnnotationToJSON(annotation))
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    @Then("Verify Store an annotation set data if Annotation already exists should not save duplicate Annotation and will return the annotation id")
+    public void thenVerifyStoreAnAnnotationSetDataIfAnnotationAlreadyExistsShouldNotSaveDuplicateAnnotationAndWillReturnTheAnnotationId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("1")));
+    }
+
     @Given("Get annotation set data by Imageset Id - DataSetUp Provided")
     public void givenAnnotationSetByImageSetId() throws Exception {
         List<Annotation> annotations = new ArrayList<Annotation>();
@@ -199,7 +226,7 @@ public class AnnotationSteps {
 
     @Given("Store an annotation set data for throwing exception - DataSetUp Provided")
     public void givenStoreAnAnnotationSetDataForThrowingExceptionDataSetUpProvided() {
-
+        when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(null);
         when(annotationRepository.save(any(Annotation.class))).thenThrow(Exception.class);
     }
 
