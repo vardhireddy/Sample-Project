@@ -13,7 +13,6 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
 
 import java.sql.Date;
 
@@ -49,7 +48,6 @@ public class AnnotationProperties {
     
     @Column(name="resource_name")
     @Size(max=500)
-    @Pattern(regexp = ENTITY_NAME)
     private String resourceName;
     public String getResourceName() {
 		return resourceName;
@@ -70,7 +68,6 @@ public class AnnotationProperties {
     
     @Column(name="created_by")
     @Size(max=200)
-    @Pattern(regexp = ENTITY_NAME)
     private String createdBy;
 
 	public Long getId() {

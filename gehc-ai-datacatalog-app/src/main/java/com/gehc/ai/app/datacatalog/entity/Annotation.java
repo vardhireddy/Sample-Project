@@ -34,8 +34,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.DESCRIPTION;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 /**
@@ -58,7 +56,6 @@ public class Annotation implements Serializable {
 
     @Column(name="schema_version")
     @Size(min=0, max=50)
-    @Pattern(regexp = ENTITY_NAME)
     private String schemaVersion;
 
     /**
@@ -74,13 +71,11 @@ public class Annotation implements Serializable {
      */
     @Column(name="annotator_id")
     @Size(min=1, max=255)
-    @Pattern(regexp = DESCRIPTION)
     @NotNull
     private String annotatorId;
 
     @Column(name="annotation_tool")
     @Size(min=0, max=255)
-    @Pattern(regexp = DESCRIPTION)
     private String annotationTool;
     /**
      * Date data was annotated. Should be left to database to provide.
@@ -92,7 +87,6 @@ public class Annotation implements Serializable {
 
     @Column(name="type")
     @Size(min=2, max=100)
-    @Pattern(regexp = DESCRIPTION)
     @NotNull
     private String type;
     
