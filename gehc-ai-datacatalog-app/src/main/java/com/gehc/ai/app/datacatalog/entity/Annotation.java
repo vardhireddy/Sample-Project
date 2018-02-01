@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ANNOTATION_TYPES;
 
 /**
  * @author 212071558
@@ -71,6 +72,7 @@ public class Annotation implements Serializable {
      */
     @Column(name="annotator_id")
     @Size(min=1, max=255)
+    @Pattern(regexp = UUID)
     @NotNull
     private String annotatorId;
 
@@ -87,10 +89,12 @@ public class Annotation implements Serializable {
 
     @Column(name="type")
     @Size(min=2, max=100)
+    @Pattern(regexp = ANNOTATION_TYPES)
     @NotNull
     private String type;
     
     @Column(name="image_set")
+    @NotNull
 	private Long imageSetId;
     
     public Long getImageSetId() {

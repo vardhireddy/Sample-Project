@@ -157,14 +157,14 @@ public class CommonSteps {
         Annotation annotation = new Annotation();
         annotation.setId(1L);
         annotation.setAnnotationDate(getDate());
-        annotation.setAnnotatorId("123");
+        annotation.setAnnotatorId("87654321-abcd-42ca-a317-4d408b98c500");
         annotation.setAnnotationTool("Tool");
         ImageSeries imageSeries =  getOneimageSeries();
         imageSeries.setId(1L);
         annotation.setImageSet(imageSeries);
        annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
-        annotation.setType("type");
+        annotation.setType("point");
         annotation.setSchemaVersion("v1");
         annotation.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         annotation.setImageSetId(1L);
@@ -182,7 +182,7 @@ public class CommonSteps {
 
        annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
-        annotation.setType("type");
+        annotation.setType("point");
         annotation.setSchemaVersion("1");
         return annotation;
     }

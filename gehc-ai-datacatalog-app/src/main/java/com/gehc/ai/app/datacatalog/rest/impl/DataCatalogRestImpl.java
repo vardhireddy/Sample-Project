@@ -13,6 +13,7 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ANNOTATION_TYPES;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -105,8 +106,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String INSTITUTION = "institution";
     public static final String EQUIPMENT = "equipment";
     public static final int ORG_ID_LENGTH = 255;
-    public static final int DATA_COLLECTION_ID_LENGTH = 11;
-    public static final int ANNOTATION_TYPE_LENGTH = 500;
 
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
@@ -637,6 +636,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("Datacollection id and annotation type is required to get annotation for a data collection")
                     .build());
+        }
+        else{
+        	String patternStrAnnotationType = ANNOTATION_TYPES;		
+	        Pattern patternAnnotationType = Pattern.compile(patternStrAnnotationType);		
+	        Matcher matcherAnnotationType = patternAnnotationType.matcher(annotationType);		
+	        boolean matchFoundAnnotationType = matcherAnnotationType.matches();		
+	        if (!matchFoundAnnotationType) {
+	            logger.debug("Datacollection id or annotation type is not valid");		
+	            throw new BadRequestException("Datacollection id or annotation type is not valid");		
+	       }
         }
         
         ResponseBuilder responseBuilder;

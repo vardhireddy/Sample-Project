@@ -22,6 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -48,6 +49,7 @@ public class AnnotationProperties {
     
     @Column(name="resource_name")
     @Size(max=500)
+    @NotNull
     private String resourceName;
     public String getResourceName() {
 		return resourceName;
@@ -61,6 +63,7 @@ public class AnnotationProperties {
      * Flexible JSON object to store classes
      */
     @Convert(converter = JsonConverter.class)
+    @NotNull
     private Object classes;
     
     @Column(name="created_date", columnDefinition="DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)

@@ -82,7 +82,6 @@ public class DataSet implements Serializable {
      * Flexible JSON object to store properties of data collection
      */
     @Convert(converter = JsonConverter.class)
-	@NotNull
     private Object properties; // NOSONAR
     
     public Object getProperties() {

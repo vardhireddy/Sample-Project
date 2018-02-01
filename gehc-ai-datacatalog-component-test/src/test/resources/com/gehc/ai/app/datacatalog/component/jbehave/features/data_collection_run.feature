@@ -179,3 +179,10 @@ Scenario: Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
 Given Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup
 When Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound
 Then verify Get Annotaition Ids by datacollectionId  When ImageSeriesNotFound
+
+@test
+Scenario: DataCatalog Raw Target Data with invalid annotationType- throws Exception
+Meta: @automated
+Given DataCatalog Raw Target Data with invalid annotationType
+When get DataCatalog Raw Target Data with invalid annotationType
+Then verify DataCatalog Raw Target Data with invalid annotationType- throws Exception

@@ -45,7 +45,7 @@ public class AnnotationSteps {
     private final CommonSteps commonSteps;
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
-    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"v1\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"annotatorId\":\"123\",\"annotationTool\":\"Tool\",\"annotationDate\":\"2017-03-31\",\"type\":\"type\",\"imageSetId\":1,\"item\":{}}]";
+    private String ANNOTATIONS = "[{\"id\":1,\"schemaVersion\":\"v1\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"annotatorId\":\"87654321-abcd-42ca-a317-4d408b98c500\",\"annotationTool\":\"Tool\",\"annotationDate\":\"2017-03-31\",\"type\":\"point\",\"imageSetId\":1,\"item\":{}}]";
     private DataCatalogDaoImpl dataCatalogDao;
     @Autowired
     public AnnotationSteps(MockMvc mockMvc, StudyRepository studyRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
@@ -86,6 +86,51 @@ public class AnnotationSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
+    
+    @Given("Store an annotation set data with invalid annotator id- Throws exception")
+    public void givenStoreAnAnnotationSetDataWithInvalidAnnotatorIdThrowsException() {
+    	when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(null);
+        when(annotationRepository.save(any(Annotation.class))).thenReturn(commonSteps.getAnnotation());
+    }
+
+
+    @When("Store an annotation set data with invalid annotator id")
+    public void whenStoreAnAnnotationSetDataWithInvalidAnnotatorId() throws Exception{
+    	Annotation annotation = commonSteps.getAnnotation();
+    	annotation.setAnnotatorId("123");
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/annotation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(AnnotationToJSON(annotation))
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    
+    @Given("Store an annotation set data with invalid annotation type- Throws exception")
+    public void givenStoreAnAnnotationSetDataWithInvalidAnnotationTypeThrowsException() {
+    	when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(null);
+        when(annotationRepository.save(any(Annotation.class))).thenReturn(commonSteps.getAnnotation());
+    }
+
+
+    @When("Store an annotation set data with invalid annotation type")
+    public void whenStoreAnAnnotationSetDataWithInvalidAnnotationType() throws Exception{
+    	Annotation annotation = commonSteps.getAnnotation();
+    	annotation.setType("123");
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/annotation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(AnnotationToJSON(annotation))
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    
+    @Then("Verify Store annotation set data throws exception")
+    public void thenVerifyStoreAnnotationSetDataThrowsException() throws Exception{
+    	retrieveResult.andExpect(status().isBadRequest());
+        retrieveResult.andExpect(content().string(containsString("")));
+    }
+
     @Given("Store an annotation set data Annotation already exists - DataSetUp Provided")
     public void givenStoreAnAnnotationSetDataAnnotationAlreadyExistsDataSetUpProvided() {
         List<Integer> ids = new ArrayList<Integer>();
