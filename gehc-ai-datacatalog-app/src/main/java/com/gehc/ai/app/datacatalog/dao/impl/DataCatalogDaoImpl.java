@@ -525,6 +525,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 
 				} else {
 					dataKeysPresent = false;
+					break;
 				}
 			}
 		}
