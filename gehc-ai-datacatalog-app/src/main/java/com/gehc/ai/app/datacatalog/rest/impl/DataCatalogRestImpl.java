@@ -637,16 +637,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     .entity("Datacollection id and annotation type is required to get annotation for a data collection")
                     .build());
         }
-        else{
-        	String patternStrAnnotationType = ANNOTATION_TYPES;		
-	        Pattern patternAnnotationType = Pattern.compile(patternStrAnnotationType);		
-	        Matcher matcherAnnotationType = patternAnnotationType.matcher(annotationType);		
-	        boolean matchFoundAnnotationType = matcherAnnotationType.matches();		
-	        if (!matchFoundAnnotationType) {
-	            logger.debug("Datacollection id or annotation type is not valid");		
-	            throw new BadRequestException("Datacollection id or annotation type is not valid");		
-	       }
-        }
         
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> annImgSetDCLst = null;

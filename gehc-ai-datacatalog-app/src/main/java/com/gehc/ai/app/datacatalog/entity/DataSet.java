@@ -51,7 +51,7 @@ public class DataSet implements Serializable {
     @Size(max=50)
 	private String schemaVersion;
     
-	@Size(min=3, max=200)
+	@Size(min=1, max=200)
 	@NotNull
 	private String name;
 
@@ -65,14 +65,15 @@ public class DataSet implements Serializable {
 	private String createdDate;
 
 	//private int imageSetsSize;
-	@Size(min=0, max=50)
+	@Size(min=1, max=50)
 	@Pattern(regexp = DATA_SET_TYPE)
 	@NotNull
     private String type;
 	
     @Column ( name = "org_id" )
-	@Size(min=0, max=255)
+	@Size(min=1, max=255)
 	@Pattern(regexp = UUID)
+    @NotNull
     private String orgId;
 
     @Column ( name = "created_by" )

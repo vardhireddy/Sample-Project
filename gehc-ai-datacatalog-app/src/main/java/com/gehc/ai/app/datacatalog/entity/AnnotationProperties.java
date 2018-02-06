@@ -45,10 +45,11 @@ public class AnnotationProperties {
     @Column(name="org_id")
     @Size(max=255)
     @Pattern(regexp = UUID)
+    @NotNull
     private String orgId;
     
     @Column(name="resource_name")
-    @Size(max=500)
+    @Size(min=1, max=500)
     @NotNull
     private String resourceName;
     public String getResourceName() {

@@ -304,48 +304,6 @@ public class DataCollectionSteps {
     		assert(throwable.toString().contains("Datacollection id or annotation type is not valid"));
     }
   
-    @Given("DataCatalog Raw Target Data with invalid annotationType")
-    public void givenDataCatalogRawTargetDataWithInvalidAnnotationType() {
-    	List<DataSet> dataSets = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
-        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
-
-
-        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
-        Annotation ann = commonSteps.getAnnotation();
-        HashMap item = new HashMap();
-        item.put("test","test");
-        ann.setItem(item);
-        List<Annotation> annotations = new ArrayList<Annotation>();
-        annotations.add(ann);
-        when(annotationRepository
-                .findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annotations);
-    }
-
-
-    @When("get DataCatalog Raw Target Data with invalid annotationType")
-    public void whenGetDataCatalogRawTargetDataWithInvalidAnnotationType() {
-    	try{
-        	retrieveResult = mockMvc.perform(
-                    get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test$%")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-            );
-        	}
-        	catch(Exception e){
-        		throwable = e;
-        	}
-    }
-
-
-    @Then("verify DataCatalog Raw Target Data with invalid annotationType- throws Exception")
-    public void thenVerifyDataCatalogRawTargetDataWithInvalidAnnotationTypeThrowsException() {
-    		assert(throwable.toString().contains("Datacollection id or annotation type is not valid"));
-    }
-
-
-
-    
     @Given("Retrieve Image Set with ID DataSetUp Provided")
     public void givenRetrieveImageSetWithIDDataSetUpProvided(){
         dataCollectionSetUpForImageSetwithData();

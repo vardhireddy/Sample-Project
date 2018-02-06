@@ -23,6 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 //import javax.validation.constraints.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -65,6 +66,7 @@ public class Annotation implements Serializable {
     @Column(name="org_id")
     @Size(min=0, max=255)
     @Pattern(regexp = UUID)
+    @NotNull
     private String orgId;
 
     /**
@@ -88,13 +90,12 @@ public class Annotation implements Serializable {
     private Date annotationDate;
 
     @Column(name="type")
-    @Size(min=2, max=100)
+    @Size(min=1, max=100)
     @Pattern(regexp = ANNOTATION_TYPES)
     @NotNull
     private String type;
     
     @Column(name="image_set")
-    @NotNull
 	private Long imageSetId;
     
     public Long getImageSetId() {
