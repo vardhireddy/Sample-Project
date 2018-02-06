@@ -88,7 +88,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  x.instance_count, x.equipment, x.patient_id "
 			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, im.series_instance_uid from patient p, image_set im "
 			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
-	
+	private static final String SUFFIX_IMG_SERIES_DATA_BY_FILTERS = "  order by X.id desc ";
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
 	
 	/*private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, an.id, an.type, "
@@ -253,6 +253,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		StringBuilder builder = new StringBuilder();
 		builder.append(GET_IMG_SERIES_DATA_BY_FILTERS);
 		builder.append(constructQuery(params));
+		builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
 		logger.debug("Query to get image series by filters = " + builder.toString());
 		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
