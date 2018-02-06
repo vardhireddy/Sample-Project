@@ -1,45 +1,55 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
-import com.gehc.ai.app.datacatalog.entity.*;
-import com.gehc.ai.app.datacatalog.repository.*;
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
+
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.jbehave.core.model.ExamplesTable;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
 
 @Component
@@ -165,7 +175,7 @@ public class DataCollectionSteps {
                 post("/api/v1/datacatalog/data-collection")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(defnToJSON(dataSet))
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
 
     }
@@ -173,7 +183,7 @@ public class DataCollectionSteps {
     @Then("verify Saving DataSet")
     public void verifySaveDatSet() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"123\",\"createdBy\":\"test\",\"properties\":{}}")));
+        retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"createdBy\":\"test\",\"properties\":{},\"imageSets\":[]}")));
     }
 
     @Given("Retrieve DataSet by Type DataSetUp Provided")
@@ -186,7 +196,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection?type=Annotation")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
 
     }
@@ -196,6 +206,31 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
+    
+    @Given("Return empty array list")
+    public void givenReturnEmptyArrayList() {
+    	dataCollectionSetUpByType();
+    }
+
+
+    @When("Get data collection by Type is not valid")
+    public void whenGetDataCollectionByTypeIsNotValid() throws Exception{
+    	retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection?type=test")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+
+    }
+
+
+    @Then("verify data collection by Type is not valid")
+    public void thenVerifyDataCollectionByTypeIsNotValid() throws Exception{
+    	retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
+
+
 
     @Given("DataCatalog Raw Target Data - DataSetUp Provided")
     public void givenDataCatalogRawTargetDataDataSetUpProvided() {
@@ -220,7 +255,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
     @Then("verify DataCatalog Raw Target Data")
@@ -229,9 +264,171 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("[{\"dcId\":\"1\",\"imId\":\"1\",\"annotationId\":\"1\",\"patientDbid\":\"1\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"annotationType\":\"type\",\"annotationItem\":{\"test\":\"test\"},\"annotatorId\":\"123\",\"annotationDate\":\"2017-03-31\"}]")));
 
     }
+    
+    @Given("DataCatalog Raw Target Data with invalid Id")
+    public void givenDataCatalogRawTargetDataWithInvalidId() {
+    	List<DataSet> dataSets = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
 
+
+        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
+        Annotation ann = commonSteps.getAnnotation();
+        HashMap item = new HashMap();
+        item.put("test","test");
+        ann.setItem(item);
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(ann);
+        when(annotationRepository
+                .findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annotations);
+    }
+
+
+    @When("get DataCatalog Raw Target Data with invalid Id")
+    public void whenGetDataCatalogRawTargetDataWithInvalidId() throws Exception{
+    	try{
+        	retrieveResult = mockMvc.perform(
+                    get("/api/v1/datacatalog/raw-target-data?id=test&annotationType=test")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+            );
+        	}
+        	catch(Exception e){
+        		throwable=e;
+        	}
+    }
+
+
+    @Then("verify DataCatalog Raw Target Data with invalid Id- throws Exception")
+    public void thenVerifyDataCatalogRawTargetDataWithInvalidIdThrowsException() throws Exception{
+    		assert(throwable.toString().contains("Datacollection id or annotation type is not valid"));
+    }
+    
+    @Given("DataCatalog Raw Target Data with long Id")
+    public void givenDataCatalogRawTargetDataWithLongId() {
+    	List<DataSet> dataSets = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
+
+
+        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
+        Annotation ann = commonSteps.getAnnotation();
+        HashMap item = new HashMap();
+        item.put("test","test");
+        ann.setItem(item);
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(ann);
+        when(annotationRepository
+                .findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annotations);
+    }
+
+
+    @When("get DataCatalog Raw Target Data with long Id")
+    public void whenGetDataCatalogRawTargetDataWithLongId() throws Exception {
+    	try{
+    		Long id = 1234567891102L;
+        	retrieveResult = mockMvc.perform(
+                    get("/api/v1/datacatalog/raw-target-data?id="+ id + "&annotationType=test")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+            );
+        	}
+        	catch(Exception e){
+        		throwable=e;
+        	}
+    }
+
+
+    @Then("verify DataCatalog Raw Target Data with long Id- throws Exception")
+    public void thenVerifyDataCatalogRawTargetDataWithLongIdThrowsException() throws Exception {
+    	assert(throwable.toString().contains("Datacollection id or annotation type is not valid"));
+    }
+    
+    @Given("DataCatalog Raw Target Data with long annotationType")
+    public void givenDataCatalogRawTargetDataWithLongAnnotationType() {
+    	List<DataSet> dataSets = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
+
+
+        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
+        Annotation ann = commonSteps.getAnnotation();
+        HashMap item = new HashMap();
+        item.put("test","test");
+        ann.setItem(item);
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(ann);
+        when(annotationRepository
+                .findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annotations);
+    }
+
+
+    @When("get DataCatalog Raw Target Data with long annotationType")
+    public void whenGetDataCatalogRawTargetDataWithLongAnnotationType() throws Exception {
+    	try{
+    		String type = "12345678-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-12345678-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-12345678-abcd-42ca-a317-4d408b98c500-4d408b98c500-abcd-42ca-a317-4d408b98c500_dsfhasdjfhjadshfjsdakjf_sdfjasdhfsadfsdfhtest_dsfjasdfjjasdhf......, djhfjdhsfj,jllajksdlajf,test 12345678-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-abcd-42ca-a317-4d408b98c500-12345678-abcd-42ca-a317-4d408b98c500-4d408b98c500-";
+        	retrieveResult = mockMvc.perform(
+                    get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=" + type)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+            );
+        	}
+        	catch(Exception e){
+        		throwable=e;
+        	}
+    }
+
+
+    @Then("verify DataCatalog Raw Target Data with long annotationType- throws Exception")
+    public void thenVerifyDataCatalogRawTargetDataWithLongAnnotationTypeThrowsException() throws Exception {
+    	assert(throwable.toString().contains("Datacollection id or annotation type is not valid"));
+    }
+
+
+    @Given("DataCatalog Raw Target Data with invalid annotationType")
+    public void givenDataCatalogRawTargetDataWithInvalidAnnotationType() {
+    	List<DataSet> dataSets = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
+
+
+        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
+        Annotation ann = commonSteps.getAnnotation();
+        HashMap item = new HashMap();
+        item.put("test","test");
+        ann.setItem(item);
+        List<Annotation> annotations = new ArrayList<Annotation>();
+        annotations.add(ann);
+        when(annotationRepository
+                .findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annotations);
+    }
+
+
+    @When("get DataCatalog Raw Target Data with invalid annotationType")
+    public void whenGetDataCatalogRawTargetDataWithInvalidAnnotationType() {
+    	try{
+        	retrieveResult = mockMvc.perform(
+                    get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test$%")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+            );
+        	}
+        	catch(Exception e){
+        		throwable = e;
+        	}
+    }
+
+
+    @Then("verify DataCatalog Raw Target Data with invalid annotationType- throws Exception")
+    public void thenVerifyDataCatalogRawTargetDataWithInvalidAnnotationTypeThrowsException() {
+    		assert(throwable.toString().contains("Datacollection id or annotation type is not valid"));
+    }
+
+
+
+    
     @Given("Retrieve Image Set with ID DataSetUp Provided")
-    public void givenRetrieveImageSetWithIDDataSetUpProvided() {
+    public void givenRetrieveImageSetWithIDDataSetUpProvided(){
         dataCollectionSetUpForImageSetwithData();
     }
 
@@ -240,13 +437,13 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/123/image-set")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
     @Then("verify data collection image-set details by its id")
     public void thenVerifyDataCollectionImagesetDetailsByItsId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]")));
+        retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]")));
     }
 
     @Given("Post DataCatalog with Org ID null DataSetUp Provided")
@@ -292,7 +489,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/raw-target-data?annotationType=test&id=")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );}
         catch(Exception e)
         {
@@ -314,7 +511,7 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=test")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
 
@@ -330,10 +527,22 @@ public class DataCollectionSteps {
         List<Object[]> countM =  getQueryList("modality");
         //anatomy
         List<Object[]> countA = getQueryList("anatomy");
-        //annotations
+        //annotation
         List<Object[]> countAnn = getQueryList("annotations");
+
+        //data_format
+        List<Object[]> countD = getQueryList("data_format");
+        //institution
+        List<Object[]> countI = getQueryList("institution");
+        //equipment
+        List<Object[]> countE = getQueryList("equipment");
+
+
         when(imageSeriesRepository.countAnatomy(anyString())).thenReturn(countA);
         when(imageSeriesRepository.countModality(anyString())).thenReturn(countM);
+        when(imageSeriesRepository.countDataFormat(anyString())).thenReturn(countD);
+        when(imageSeriesRepository.countInstitution(anyString())).thenReturn(countI);
+        when(imageSeriesRepository.countEquipment(anyString())).thenReturn(countE);
         when(annotationRepository.countAnnotationType(anyString())).thenReturn(countAnn);
     }
     @When("Get DataSet for Filters by OrgId")
@@ -341,37 +550,36 @@ public class DataCollectionSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-summary")
                         .contentType(MediaType.APPLICATION_JSON)
-                .param("modality","['CT', 'MR', 'DX']&anatomy=['Lung', 'Chest']")
-                .param("anatomy","['Lung', 'Chest']&geClass=[{\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]")
+                        .requestAttr("orgId","12345678-abcd-42ca-a317-4d408b98c500")
+               // .param("modality","['CT', 'MR', 'DX']&anatomy=['Lung', 'Chest']")
+
         );
     }
     @Then("verify DataSet for Filters by OrgId")
     public void thenVerifyDataSetForFiltersByOrgId() throws Exception {
-        retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"annotations\":{\"test\":1},\"modality\":{\"DX\":121,\"CR\":8082}}")));
+        retrieveResult.andExpect(content().string(containsString("{\"data_format\":{\"dataFormat\":1},\"institution\":{\"UCSF\":1},\"equipment\":{\"CT\":1},\"annotations\":{\"test\":1},\"modality\":{\"DX\":121,\"CR\":8082},\"anatomy\":{\"CHEST\":8203}}")));
     }
 
-    @Given("Retrieve DataSet for Filters by OrgId when Annotation count is null DataSetUp Provided")
+    @Given("Retrieve DataSet for Filters by OrgId when Annotation Absent DataSetUp Provided")
     public void givenRetrieveDataSetForFiltersByOrgIdWhenAnnotationCountIsNullDataSetUpProvided() {
-        //Modality
-        List<Object[]> countM =  getQueryList("modality");
-        //anatomy
-        List<Object[]> countA = getQueryList("anatomy");
-        when(imageSeriesRepository.countAnatomy(anyString())).thenReturn(countA);
-        when(imageSeriesRepository.countModality(anyString())).thenReturn(countM);
-        when(annotationRepository.countAnnotationType(anyString())).thenReturn(null);
+        List<Long> countAnn = new ArrayList<Long>();
+        countAnn.add(0,1L);
+        countAnn.add(1,2L);
+        when(imageSeriesRepository.countImgWithNoAnn(anyString())).thenReturn(countAnn);
     }
 
-    @When("Get DataSet for Filters by OrgId when Annotation count is null")
+    @When("Get DataSet for Filters by OrgId when Annotation Absent")
     public void whenGetDataSetForFiltersByOrgIdWhenAnnotationCountIsNull() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-summary")
-                        .contentType(MediaType.APPLICATION_JSON)
-                .requestAttr("orgId","123")
+                        .param("groupby","annotation-absent")
+                .requestAttr("orgId","12345678-abcd-42ca-a317-4d408b98c500")
+
         );
     }
-    @Then("verify DataSet for Filters by OrgId when Annotation count is null")
+    @Then("verify DataSet for Filters by OrgId when Annotation Absent")
     public void thenVerifyDataSetForFiltersByOrgIdWhenAnnotationCountIsNull() throws Exception {
-        retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"modality\":{\"DX\":121,\"CR\":8082}}")));
+        retrieveResult.andExpect(content().string(containsString("{\"annotation-absent\":1}")));
 
     }
 
@@ -422,7 +630,7 @@ public class DataCollectionSteps {
     @Given("Retrieve DataSummary for GE-Class")
     public void givenRetrieveDataSummaryGEClassdDataSetUpProvided() {
         Map resultSet = getMapForGEClassDataSummary();
-        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
     }
 
 
@@ -431,7 +639,7 @@ public class DataCollectionSteps {
     public void whenGetDataSummaryGEClass() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/ge-class-data-summary?modality=CT,DX&anatomy=Chest,Lung&annotations=label")
-                        .requestAttr("orgId","123")
+                        .requestAttr("orgId","12345678-abcd-42ca-a317-4d408b98c500")
                         .contentType(MediaType.APPLICATION_JSON)
         );
     }
@@ -439,11 +647,35 @@ public class DataCollectionSteps {
     public void thenVerifyDataSummaryGEClass() throws Exception {
         retrieveResult.andExpect(content().string(containsString("{\"modality\":{\"CHEST\":8203},\"anatomy\":{\"DX\":121,\"CR\":8082},\"annotations\":{\"test\":1}}")));
     }
+    
+    @Given("Retrieve DataSummary for GE-Class with invalid annotation type")
+    public void givenRetrieveDataSummaryForGEClassWithInvalidAnnotationType() {
+    	Map resultSet = getMapForGEClassDataSummary();
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
+    }
+
+
+    @When("Get DataSummary for GE-Class with invalid annotation type")
+    public void whenGetDataSummaryForGEClassWithInvalidAnnotationType() throws Exception{
+    	retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/ge-class-data-summary?modality=CT,DX&anatomy=Chest,Lung&annotations=label%^&&!")
+                        .requestAttr("orgId","12345678-abcd-42ca-a317-4d408b98c500")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+
+    @Then("verify DataSummary for GE-Class with invalid annotation type")
+    public void thenVerifyDataSummaryForGEClassWithInvalidAnnotationType() throws Exception{
+    	retrieveResult.andExpect(content().string(containsString("")));
+    }
+
+
 
     @Given("Retrieve DataSummary for GE-Class without org id")
     public void givenRetrieveDataSummaryGEClassdNoOrgIdDataSetUpProvided() {
         Map resultSet = getMapForGEClassDataSummary();
-        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString(),anyString())).thenReturn(resultSet);
+        when(dataCatalogDao.geClassDataSummary(anyMap(),anyString())).thenReturn(resultSet);
     }
 
 
@@ -460,6 +692,76 @@ public class DataCollectionSteps {
     public void thenVerifyDataSummaryGEClassNoOrgId() throws Exception {
         retrieveResult.andExpect(content().string(containsString("")));
     }
+    
+    @Given("Multiple Data Collections by ids")
+    public void givenMultipleDataCollectionsByIds() {
+    	 DataSet dateSet = new DataSet();
+         doNothing().when(dataSetRepository).delete(dateSet);
+    }
+    @When("Delete Data collection by ids API is called")
+    public void whenDeleteDataCollectionByIdsAPIIsCalled() throws Exception {
+    	 retrieveResult = mockMvc.perform(
+                 delete("/api/v1/datacatalog/data-collection/1")
+                         .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+         );
+    }
+    @Then("verify Data Collection by ids has been deleted")
+    public void thenVerifyDataCollectionByIdsHasBeenDeleted() throws Exception {
+    	retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("SUCCESS")));
+    }
+
+    @Given("Get Annotaition Ids by datacollectionId - Data Setup")
+    public void givenGetAnnotaitionIdsByDatacollectionIdDataSetup() {
+        List<DataSet> dataSet = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSet);
+        List<AnnotationDetails> annotationIds = new ArrayList<AnnotationDetails>();
+        AnnotationDetails annotation = new AnnotationDetails();
+        annotation.setAnnotationId(1L);
+        annotation.setAnnotationType("test");
+        annotation.setPatientId("1");
+        annotation.setGeClass("{}");
+        annotation.setData("{}");
+        annotation.setSeriesUID("SUID");
+        annotationIds.add(annotation);
+        when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(annotationIds);
+
+    }
+    @When("Get Annotaition Ids by datacollectionId is called")
+    public void whenGetAnnotaitionIdsByDatacollectionIdIsCalled() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/1/annotation")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    @Then("verify Get Annotaition Ids by datacollectionId")
+    public void thenVerifyGetAnnotaitionIdsByDatacollectionId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("[{\"patientId\":\"1\",\"seriesUID\":\"SUID\",\"annotationId\":1,\"annotationType\":\"test\",\"name\":null,\"coordSys\":null,\"maskURI\":null,\"maskOrigin\":null,\"maskFormat\":null,\"indication\":null,\"findings\":null,\"data\":\"{}\",\"instances\":null,\"geClass\":\"{}\",\"geClass1\":null,\"geClass2\":null,\"geClass3\":null,\"geClass4\":null,\"geClass5\":null,\"geClass6\":null,\"geClass7\":null,\"geClass8\":null,\"geClass9\":null,\"geClass10\":null}]"
+                )));
+
+    }
+
+    @Given("Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup")
+    public void givenGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFoundDataSetup() {
+        List<DataSet> dataSet = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
+        List<ImageSeries> imgSerIdLst = new ArrayList<ImageSeries>();
+        when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(imgSerIdLst);
+
+    }
+    @When("Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound")
+    public void whenGetAnnotaitionIdsByDatacollectionIdIsCalledWhenImageSeriesNotFound() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/1/annotation")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    @Then("verify Get Annotaition Ids by datacollectionId  When ImageSeriesNotFound")
+    public void thenVerifyGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFound() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("[]")));
+    }
+
 
     private Map getMapForGEClassDataSummary() {
         Map resultSet = new HashMap();
@@ -550,7 +852,7 @@ public class DataCollectionSteps {
         dataSets.add(dataSet);
 
         when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
-        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeries());
+        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
     }
 
     private DataSet getSaveDataSet() {
@@ -562,9 +864,10 @@ public class DataCollectionSteps {
         dataSet.setCreatedDate(dateInString);
         dataSet.setName("Test");
         dataSet.setProperties(new HashMap<String,String>());
-        dataSet.setOrgId("123");
+        dataSet.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         dataSet.setSchemaVersion("123");
         dataSet.setType("Annotation");
+        dataSet.setImageSets(new ArrayList());
         return dataSet;
     }
 
@@ -593,7 +896,22 @@ public class DataCollectionSteps {
            Object[]  annotations = new Object[] {
                    "test",1L};
            countM.add(0,annotations);
-        }
+        }else if(input.equals("data_format")){
+           Object[]  data_format = new Object[] {
+                  "dataFormat",1L};
+           countM.add(0,data_format);
+
+       }else if(input.equals("institution")){
+           Object[]  institution = new Object[] {
+                   "UCSF",1L};
+           countM.add(0,institution);
+
+       }else if(input.equals("equipment")){
+           Object[]  equipment = new Object[] {
+                   "CT",1L};
+           countM.add(0,equipment);
+
+    }
         return countM;
     }
 }

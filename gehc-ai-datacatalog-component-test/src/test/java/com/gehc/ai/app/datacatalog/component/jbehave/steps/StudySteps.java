@@ -233,6 +233,33 @@ public class StudySteps {
         assert(throwable.toString().contains("Missing study info"));
 
     }
+    
+    @Given("Save Study with Null PatientDbId - DataSetUp Provided")
+    public void givenSaveStudyWithNullPatientDbIdDataSetUpProvided() {
+    	List<Study> studyList = getStudy();
+        when(studyRepository.findByOrgIdAndStudyInstanceUid(anyString(),anyString())).thenReturn(studyList);
+        when(studyRepository.save(any(Study.class))).thenReturn(getStudy().get(0));
+    }
+
+
+    @When("save Study with Null PatientDbId")
+    public void whenSaveStudyWithNullPatientDbId() throws Exception{
+    	try{
+            retrieveResult = mockMvc.perform(
+                    post("/api/v1/datacatalog/study")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(studyToJSON(getNullPatientDbId()))
+
+            );}
+            catch(Exception e){
+                throwable = e;
+            }
+    }
+
+    @Then("verify Saving Study with Null PatientDbId")
+    public void thenVerifySavingStudyWithNullPatientDbId() throws Exception{
+    	assert(throwable.toString().contains("Missing patientDb id"));
+    }
 
     private String studyToJSON(Study study) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -332,6 +359,25 @@ public class StudySteps {
         study.setUploadBy("Test");
         study.setStudyInstanceUid(null);
         return study;
+    }
+    
+    private Study getNullPatientDbId(){
+    	 Study study = new Study();
+         study.setOrgId("10d5b4c5-e2bc-42ca-a317-4d408b98c3e3");
+         study.setPatientDbId(null);
+         study.setProperties(new Properties());
+         study.setReferringPhysician("John Doe");
+         study.setSchemaVersion("123");
+         study.setStudyDate("");
+         study.setStudyDescription("Test");
+         study.setStudyId("123");
+         study.setStudyTime("");
+         study.setStudyUrl("http://test");
+         Date date = getDate();
+         study.setUploadDate(date);
+         study.setUploadBy("Test");
+         study.setStudyInstanceUid(null);
+         return study;
     }
 
     private Date getDate() {

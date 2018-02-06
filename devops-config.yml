@@ -8,40 +8,40 @@ BasicVars:
    build_type: mvn
    package_type: docker
    artifact_version: 0.0
-   aws_region: us-east-1
-   aws_vpc_id: 752686809366
+   aws_region: us-west-2
+   aws_vpc_id: 039111045627
    finished_goods_repo: gehc-ai-datacatalog
-   additional_finished_goods_repo: 
-   aws_upload_files: 
+   additional_finished_goods_repo:
+   aws_upload_files:
    repo_url: https://github.build.ge.com/GEHC-AI/gehc-ai-datacatalog.git
-   custom_pre_commands: 
+   custom_pre_commands:
    custom_post_commands:
 
 
 DockerVars:
-   docker_additional_args: 
-   docker_additional_repo: 
-   dockerfile_location: 
+   docker_additional_args:
+   docker_additional_repo:
+   dockerfile_location:
 
 MvnVars:
    mvn_additional_args: -Pall
    mvn_deploy: false
-   mvn_deploy_additional_args: 
+   mvn_deploy_additional_args:
 
 NpmVars:
    node_version: 4.4.7
 
 LambdaVars:
-   aws_dev_lambda_name: 
-   aws_test_lambda_name: 
-   aws_prod_lambda_name: 
+   aws_dev_lambda_name:
+   aws_test_lambda_name:
+   aws_prod_lambda_name:
 
 KpiVars:
-   kpi_build_status_id: 
-   kpi_elapsed_time_id: 
+   kpi_build_status_id:
+   kpi_elapsed_time_id:
 
 SonarVars:
-   aws_run_sonar: false
+   aws_run_sonar: true
    sonar_additional_args: -P all
 
 TestingVars:
@@ -51,33 +51,32 @@ TestingVars:
    test_integration_command: mvn -q verify -P integration
 
 DevEnvVars:
-   aws_dev_cluster_name: prdge-lf-cluster-prdge-lf-LFCluster-14AHSE0IWV4FV
-   aws_dev_service_name: prdge-lf-DCService-1RA0OFNWSAABF-ECSService-LFDLJUNTT7I9
-   aws_dev_task_definition: prdge-lf-DCServiceDef-1WLQ3MO4H7BMB-TaskDefinition-1L0ELD4YDMBB3
+   aws_dev_cluster_name: dev-lf-cluster-dev-lf-LFCluster-1XYJNH6IDC34O
+   aws_dev_service_name: dev-lf-DCService-TIJ81WINN3Y2-ECSService-KSZG5UQEXUVY
+   aws_dev_task_definition: dev-lf-DCServiceDef-5XU9UA57LEMF-TaskDefinition-15MYPCWH2L97H
 
 TestEnvVars:
-   aws_test_cluster_name: 
-   aws_test_service_name: 
-   aws_test_task_definition: 
+   aws_test_cluster_name:
+   aws_test_service_name:
+   aws_test_task_definition:
 
 ProdEnvVars:
-   aws_prod_cluster_name: 
-   aws_prod_service_name: 
-   aws_prod_task_definition: 
+   aws_prod_cluster_name:
+   aws_prod_service_name:
+   aws_prod_task_definition:
 
 CloudFormationVars:
-   aws_dev_stack_name: 
-   aws_dev_stack_parameters: 
-   aws_test_stack_name: 
-   aws_test_stack_parameters: 
-   aws_prod_stack_name: 
-   aws_prod_stack_parameters: 
+   aws_dev_stack_name:
+   aws_dev_stack_parameters:
+   aws_test_stack_name:
+   aws_test_stack_parameters:
+   aws_prod_stack_name:
+   aws_prod_stack_parameters:
 
 DeployVars:
    update_lambda: false
    update_integration: false
    update_production: false
-   aws_deploy: true
    aws_update_task_and_service: true
    aws_update_task_only: false
    aws_update_service_only: false

@@ -33,6 +33,7 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     List<Annotation> findByImageSetIdIn(List<Long> imageSet);
     List<Annotation> findByImageSetIdInAndTypeIn(List<Long> imageSets, List<String> types);
     List<Annotation> findByImageSetInAndTypeIn(List<ImageSeries> imageSets, List<String> types);
+    List<Annotation> findByImageSetIdInAndOrgId( List<Long> imgSerIdLst, String orgId);
     @Override
     <S extends Annotation> S save(S entity);
     @Query("SELECT type as name, count(distinct imageSet) as count FROM Annotation where orgId=:orgId group by type")

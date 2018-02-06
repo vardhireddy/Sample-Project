@@ -14,23 +14,29 @@ package com.gehc.ai.app.datacatalog.service;
 import java.util.List;
 import java.util.Map;
 
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 
 public interface IDataCatalogService {
     
     /**
      * @param params
      * @param orgId
-     * @param type
      * @return
      */
-    Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId, String type);
+    Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId);
     
     /**
      * @param params
-     * @param imgSeriesLst
-     * @param typelst TODO
      * @return
+     * @throws Exception 
      */
-    List<ImageSeries> getImgSeries(Map<String, Object> params, List<ImageSeries> imgSeriesLst, List<String> typelst);
+    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
+    
+    List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst);
+
+    List<Integer> getAnnotationsById(Annotation annotation);
+    
 }

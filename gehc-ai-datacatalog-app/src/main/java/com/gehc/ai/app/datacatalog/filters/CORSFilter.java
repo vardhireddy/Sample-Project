@@ -14,6 +14,7 @@ package com.gehc.ai.app.datacatalog.filters;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.Filter;
@@ -40,6 +41,8 @@ public class CORSFilter implements Filter {
 
         HttpServletResponse response = (HttpServletResponse)res;
         HttpServletRequest request = (HttpServletRequest)req;
+        String traceId = request.getHeader("X-Amzn-Trace-Id");
+		MDC.put("amzn-trace-id", traceId);
         setHeaderIfNotPresent( response, "Access-Control-Allow-Origin", "*" );
         if ( request.getMethod().equalsIgnoreCase( "OPTIONS" ) ) {
             logger.debug( "Request [{}] : [{}]", request.getMethod(), request.getRequestURI() );
@@ -63,9 +66,7 @@ public class CORSFilter implements Filter {
     } // NOSONAR
 
     private void setHeaderIfNotPresent( HttpServletResponse response, String key, String value ) {
-        logger.debug( "Checking for header [{}]:[{}]", key, value );
         if ( !response.containsHeader( key ) ) {
-            logger.debug( "Header not present [{}]:[{}] : Setting Now", key, value );
             response.setHeader( key, value );
         }
     }

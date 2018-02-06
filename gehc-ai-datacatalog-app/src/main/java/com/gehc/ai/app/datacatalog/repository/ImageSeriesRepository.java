@@ -14,12 +14,17 @@ package com.gehc.ai.app.datacatalog.repository;
 
 import java.util.List;
 
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @RepositoryRestResource(collectionResourceRel = "image_set", path = "image_set")
 public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> {
@@ -81,4 +86,8 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     List<ImageSeries> findByOrgIdInAndDataFormatInAndInstitutionIn(List<String> orgId, List<String> dataFormat, List<String> institution);
     List<ImageSeries> findByOrgIdInAndDataFormatInAndEquipmentIn(List<String> orgId, List<String> dataFormat, List<String> equipment);
     List<ImageSeries> findByOrgIdInAndInstitutionInAndEquipmentIn(List<String> orgId, List<String> institution, List<String> equipment);
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    @Modifying
+    @Query("update ImageSeries i set i.institution=:institution where i.seriesInstanceUid in :seriesUIds")
+    void updateInstitution( @Param("institution") String institution, @Param("seriesUIds") String [] seriesUIds);
  }

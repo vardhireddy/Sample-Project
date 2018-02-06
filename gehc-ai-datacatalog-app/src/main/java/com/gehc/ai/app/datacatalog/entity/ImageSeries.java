@@ -27,11 +27,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+
 
 @Entity
 @JsonInclude(Include.NON_NULL)
@@ -44,23 +46,69 @@ public class ImageSeries implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
 	@Column(name = "schema_version")
+	@Size(max=50)
 	private String schemaVersion;
 	/**
 	 * The organization who owns the data.
 	 */
 	@Column(name = "org_id")
+	@Size(min=0, max=255)
 	private String orgId;
+	
+	@Size(min=0, max=50)
 	private String modality;
+	
+	@Size(min=0, max=50)
 	private String anatomy;
+	
 	@Column(name = "data_format")
+	@Size(min=0, max=50)
 	private String dataFormat;
+	
 	private String uri;
+	
 	@Column(name = "series_instance_uid")
+	@Size(min=0, max=255)
 	private String seriesInstanceUid;
+	
+	@Size(min=0, max=100)
 	private String description;
+	
+	@Size(min=0, max=100)
 	private String institution;
+	
+	@Size(min=0, max=255)
 	private String equipment;
+
+	@Size(min=0, max=255)
+	private String manufacturer;
+	
+	@Column(name = "image_type")
+	private String imageType;
+	
+	public String getImageType() {
+		return imageType;
+	}
+	public void setImageType(String imageType) {
+		this.imageType = imageType;
+	}
+	public String getView() {
+		return view;
+	}
+	public void setView(String view) {
+		this.view = view;
+	}
+	private String view;
+	
+	public String getManufacturer() {
+		return manufacturer;
+	}
+	public void setManufacturer(String manufacturer) {
+		this.manufacturer = manufacturer;
+	}
+	
 	@Column(name = "instance_count")
 	private int instanceCount;
 	@Convert(converter = JsonConverter.class)
@@ -70,6 +118,7 @@ public class ImageSeries implements Serializable {
 	 * the data uploaded by a specific person.
 	 */
 	@Column(name = "upload_by")
+	@Size(min=0, max=255)
 	private String uploadBy;
 	/**
 	 * Date data was uploaded into database. Should be left to database to
@@ -82,6 +131,7 @@ public class ImageSeries implements Serializable {
 	 */
 	@Column(name = "patient_dbid")
 	private Long patientDbId;
+	
 	@Column(name = "study_dbid")
 	private Long studyDbId;
 	
@@ -217,11 +267,15 @@ public class ImageSeries implements Serializable {
 		this.properties = properties;
 	} // NOSONAR
 	
-	
+	public ImageSeries() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
 			String uri, String seriesInstanceUid, String description, String institution, String equipment,
-			int instanceCount, Object properties, String uploadBy, Date uploadDate, Long patientDbId, Long studyDbId,
-			Patient patient, String acqDate, String acqTime) {
+			String manufacturer, String imageType, String view, int instanceCount, Object properties, String uploadBy,
+			Date uploadDate, Long patientDbId, Long studyDbId, Patient patient,
+			String acqDate, String acqTime) {
 		super();
 		this.id = id;
 		this.schemaVersion = schemaVersion;
@@ -234,6 +288,9 @@ public class ImageSeries implements Serializable {
 		this.description = description;
 		this.institution = institution;
 		this.equipment = equipment;
+		this.manufacturer = manufacturer;
+		this.imageType = imageType;
+		this.view = view;
 		this.instanceCount = instanceCount;
 		this.properties = properties;
 		this.uploadBy = uploadBy;
@@ -244,18 +301,15 @@ public class ImageSeries implements Serializable {
 		this.acqDate = acqDate;
 		this.acqTime = acqTime;
 	}
-	public ImageSeries() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 	@Override
 	public String toString() {
 		return "ImageSeries [id=" + id + ", schemaVersion=" + schemaVersion + ", orgId=" + orgId + ", modality="
 				+ modality + ", anatomy=" + anatomy + ", dataFormat=" + dataFormat + ", uri=" + uri
 				+ ", seriesInstanceUid=" + seriesInstanceUid + ", description=" + description + ", institution="
-				+ institution + ", equipment=" + equipment + ", instanceCount=" + instanceCount + ", properties="
-				+ properties + ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
-				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", acqDate=" + acqDate + ", acqTime=" + acqTime
-				+ "]";
+				+ institution + ", equipment=" + equipment + ", manufacturer=" + manufacturer + ", imageType="
+				+ imageType + ", view=" + view + ", instanceCount=" + instanceCount + ", properties=" + properties
+				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
+				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", acqDate="
+				+ acqDate + ", acqTime=" + acqTime + "]";
 	}
 }

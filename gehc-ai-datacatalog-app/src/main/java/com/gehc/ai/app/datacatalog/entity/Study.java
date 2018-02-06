@@ -12,7 +12,6 @@
 
 package com.gehc.ai.app.datacatalog.entity;
 
-import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 import java.sql.Date;
 
@@ -22,6 +21,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
+
+import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 /**
  * Created by 200014175 on 10/28/2016.
@@ -35,6 +37,7 @@ public class Study {
     public void setId(Long id) {this.id = id; }
 
     @Column(name="schema_version")
+    @Size(max=50)
     private String schemaVersion;
     public String getSchemaVersion() {
         return schemaVersion;
@@ -70,6 +73,7 @@ public class Study {
      * DICOM tag (0020,000D) - study instance UID, expected to be globally unique
      */
     @Column (name="study_instance_uid")
+    @Size(max=255)
     private String studyInstanceUid;
     public String getStudyInstanceUid() {
         return studyInstanceUid;
@@ -82,6 +86,7 @@ public class Study {
      * DICOM tag (0008,0020). Leaving date as string just as was obtained form DICOM, no attempt to parse.
      */
     @Column (name="study_date")
+    @Size(max=255)
     private String studyDate;
     public String getStudyDate() {
         return studyDate;
@@ -94,6 +99,7 @@ public class Study {
      * DICOM tag (0008,0030). Leaving time as string just as was obtained form DICOM, no attempt to parse.
      */
     @Column (name="study_time")
+    @Size(max=255)
     private String studyTime;
     public String getStudyTime() {
         return studyTime;
@@ -106,6 +112,7 @@ public class Study {
      * DICOM Study ID (0020,0010)
      */
     @Column (name="study_id")
+    @Size(max=255)
     private String studyId;
     public String getStudyId() {
         return studyId;
@@ -118,6 +125,7 @@ public class Study {
      * DICOM tag (0008,1030)
      */
     @Column (name="study_description")
+    @Size(max=100)
     private String studyDescription;
     public String getStudyDescription() {
         return studyDescription;
@@ -130,6 +138,7 @@ public class Study {
      * DICOM tag (0008, 0090)
      */
     @Column (name="referring_physician")
+    @Size(max=255)
     private String referringPhysician;
     public String getReferringPhysician() {
         return referringPhysician;
@@ -142,6 +151,7 @@ public class Study {
      * Obtained from the Cloud Object Store (COS)
      */
     @Column (name="study_url")
+    @Size(max=500)
     private String studyUrl;
     public String getStudyUrl() {
         return studyUrl;
@@ -154,6 +164,7 @@ public class Study {
      * The organization who owns or uploads the data. This could be an entry in an org database
      */
     @Column(name="org_id")
+    @Size(max=255)
     private String orgId;
     public String getOrgId() {
         return orgId;
@@ -182,6 +193,7 @@ public class Study {
     * An identifier for the one who uploaded the data. This allows to query for the data uploaded by a specific person.
     */
     @Column(name="upload_by")
+    @Size(max=255)
     private String uploadBy;
     public String getUploadBy() {
         return uploadBy;

@@ -29,6 +29,7 @@
         <sonar.exclusions>**/filters/JsonConverter.java,**/interceptor/DataCatalogInterceptor.java,**/constants/ApplicationConstants.java</sonar.exclusions>
         <sonar.coverage.exclusions>**/filters/JsonConverter.java,**/interceptor/DataCatalogInterceptor.java,**/constants/ApplicationConstants.java</sonar.coverage.exclusions>
         <rest.assured.version>2.3.3</rest.assured.version>
+        <validation-api.version>2.0.0.Final</validation-api.version>
     </properties>
    
    <dependencies>
@@ -94,10 +95,15 @@
 			<version>${rest.assured.version}</version>
 			<scope>test</scope>
 		</dependency>
-	  	<!--<dependency>-->
-			<!--<groupId>org.flywaydb</groupId>-->
-			<!--<artifactId>flyway-core</artifactId>-->
-		<!--</dependency>-->
+	  	<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+       <dependency>
+           <groupId>javax.validation</groupId>
+           <artifactId>validation-api</artifactId>
+           <version>${validation-api.version}</version>
+       </dependency>
   </dependencies>
 
     <build>
