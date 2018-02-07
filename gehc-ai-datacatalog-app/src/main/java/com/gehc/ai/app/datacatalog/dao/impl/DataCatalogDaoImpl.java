@@ -253,7 +253,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		StringBuilder builder = new StringBuilder();
 		builder.append(GET_IMG_SERIES_DATA_BY_FILTERS);
 		builder.append(constructQuery(params));
-		builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
+	//	builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
 		logger.debug("Query to get image series by filters = " + builder.toString());
 		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
