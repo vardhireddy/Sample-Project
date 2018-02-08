@@ -934,4 +934,35 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return annotationByDSList;
     }
+    
+    @Override
+    @RequestMapping(value = "/datacatalog/image-series/{id}", method = RequestMethod.DELETE)
+    public ApiResponse deleteImageSeries(@PathVariable String id) {
+        ApiResponse apiResponse = null;
+        ImageSeries imgSeries = new ImageSeries();
+        try {
+            if (null != id && id.length() > 0) {
+                String[] idStrings = id.split(",");
+                for (int i = 0; i < idStrings.length; i++) {
+                    imgSeries.setId(Long.valueOf(idStrings[i]));
+                    logger.debug("[-----Delete image series " + Long.valueOf(idStrings[i]) + "]");
+                    List<ImageSeries> imgSeriesLst = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
+                    if (!imgSeriesLst.isEmpty()) {
+                        logger.debug(" image series size " + imgSeriesLst.size());
+                        imageSeriesRepository.delete(imgSeriesLst.get(0));
+                    } else {
+                    	imageSeriesRepository.delete(imgSeries);
+                    }
+                    apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
+                            ApplicationConstants.SUCCESS, id);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Exception occured while calling delete image series ", e);
+            apiResponse = new ApiResponse(ApplicationConstants.FAILURE, ApplicationConstants.BAD_REQUEST_CODE,
+                    "Id does not exist", id);
+        }
+        return apiResponse;
+    }
+    
 }

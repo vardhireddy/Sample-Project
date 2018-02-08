@@ -16,6 +16,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.annotation.PathVariable;
+
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
@@ -254,4 +256,9 @@ public interface IDataCatalogRest {
      * @return
      */
     List<AnnotationDetails> getAnnotationsByDSId(Long id);
+    /**
+     * @param id
+     * @return
+     */
+    ApiResponse deleteImageSeries(String id);
 }
