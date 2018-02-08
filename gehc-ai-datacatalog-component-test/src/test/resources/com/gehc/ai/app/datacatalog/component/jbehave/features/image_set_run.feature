@@ -371,3 +371,17 @@ Scenario: Update institution by ImageSeries Ids
 Given Update institution by ImageSeries Ids - Data Setup
 When Update institution by ImageSeries Ids is called
 Then verify institution is updated
+
+@test
+Scenario: Delete imageset by id
+Meta: @automated
+Given  imageset by id
+When Delete imageset by id
+Then verify imageset by id has been deleted
+
+@test
+Scenario: Delete imageseries by id when not a imageSeriesList
+Meta: @automated
+Given imageseries by id when not a imageSeriesList
+When Delete imageseries by id when not a imageSeriesList
+Then verify imageseries by id when not a imageSeriesList

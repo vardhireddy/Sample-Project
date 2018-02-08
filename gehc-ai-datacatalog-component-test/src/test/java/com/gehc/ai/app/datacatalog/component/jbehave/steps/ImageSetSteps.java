@@ -1038,6 +1038,55 @@ public class ImageSetSteps {
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
 
+    @Given("imageset by id")
+    public void givenImagesetById() {
+        ImageSeries imgSeries = new ImageSeries();
+        List<ImageSeries> imgSeriesLst = new ArrayList<ImageSeries>();
+        ImageSeries imgSeries1 = commonSteps.getOneimageSeries();
+        imgSeries1.setId(1L);
+        imgSeriesLst.add(imgSeries1);
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSeriesLst);
+        doNothing().when(imageSeriesRepository).delete(imgSeriesLst.get(0));
+    }
+
+    @When("Delete imageset by id")
+    public void whenDeleteImagesetById() throws Exception {
+        retrieveResult = mockMvc.perform(
+                delete("/api/v1/datacatalog/image-set/1")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+
+    @Then("verify imageset by id has been deleted")
+    public void thenVerifyImagesetByIdHasBeenDeleted() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("SUCCESS")));
+    }
+
+    @Given("imageseries by id when not a imageSeriesList")
+    public void givenImageseriesByIdWhenNotAImageSeriesList() {
+        ImageSeries imgSeries = new ImageSeries();
+        List<ImageSeries> imgSeriesLst = new ArrayList<ImageSeries>();
+
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSeriesLst);
+        doNothing().when(imageSeriesRepository).delete(imgSeries);
+    }
+
+    @When("Delete imageseries by id when not a imageSeriesList")
+    public void whenDeleteImageseriesByIdWhenNotAImageSeriesList() throws Exception {
+        retrieveResult = mockMvc.perform(
+                delete("/api/v1/datacatalog/image-set/1")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+
+    @Then("verify imageseries by id when not a imageSeriesList")
+    public void thenVerifyImageseriesByIdWhenNotAImageSeriesList() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("SUCCESS")));
+    }
+
+
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(imageSeries);
