@@ -936,7 +936,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
     
     @Override
-    @RequestMapping(value = "/datacatalog/image-series/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.DELETE)
     public ApiResponse deleteImageSeries(@PathVariable String id) {
         ApiResponse apiResponse = null;
         ImageSeries imgSeries = new ImageSeries();
