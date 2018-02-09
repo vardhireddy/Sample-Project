@@ -1086,7 +1086,24 @@ public class ImageSetSteps {
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
 
+    @Given("Delete imageseries set data for Ids throws exception - DataSetUp Provided")
+    public void givenDeleteImageseriesSetDataForIdsThrowsExceptionDataSetUpProvided() {
+        // PENDING
+    }
 
+    @When("Delete imageseries set data for Ids throws exception")
+    public void whenDeleteImageseriesSetDataForIdsThrowsException() throws Exception {
+        retrieveResult = mockMvc.perform(
+                delete("/api/v1/datacatalog/image-set/ ")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+
+    @Then("Verify Delete imageseries set data for Ids throws exception")
+    public void thenVerifyDeleteImageseriesSetDataForIdsThrowsException() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("Id does not exist")));
+
+    }
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(imageSeries);

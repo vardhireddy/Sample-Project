@@ -385,3 +385,10 @@ Meta: @automated
 Given imageseries by id when not a imageSeriesList
 When Delete imageseries by id when not a imageSeriesList
 Then verify imageseries by id when not a imageSeriesList
+
+@test
+Scenario: Throw Exception while Delete imageseries set data for Ids
+Meta: @automated
+Given Delete imageseries set data for Ids throws exception - DataSetUp Provided
+When Delete imageseries set data for Ids throws exception
+Then Verify Delete imageseries set data for Ids throws exception
