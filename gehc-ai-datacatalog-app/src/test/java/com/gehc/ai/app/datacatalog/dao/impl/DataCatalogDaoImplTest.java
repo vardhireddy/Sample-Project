@@ -527,4 +527,42 @@ public class DataCatalogDaoImplTest {
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
     }
+    
+    @Test
+    public void testGetImgSeriesWithPatientByIds() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "DCM", null,null,1,null,null,null,null,null,null};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+      //  List<ImageSeries> imgSeriesWithPatient = getImageSeriesWithPatient();
+        List<Long> ids = new ArrayList<Long>();
+        ids.add(0, 1L);
+      //  ids.add(1, 2L);
+        List result = dataCatalogDao.getImgSeriesWithPatientByIds(ids);
+        assertEquals(result.toString(),getImageSeriesWithPatient().toString());
+    }
+    
+    private List<ImageSeries> getImageSeriesWithPatient() {
+        List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+        ImageSeries imgSeries = new ImageSeries();
+        Patient p = new Patient();
+        imgSeries.setId(1L);
+        imgSeries.setOrgId("4fac7976-e58b-472a-960b-42d7e3689f20");
+        imgSeries.setModality("DX");
+        imgSeries.setAnatomy("CHEST");
+        imgSeries.setDataFormat("DCM");
+       imgSeries.setSeriesInstanceUid(null);
+        imgSeries.setInstanceCount(1);
+       imgSeries.setEquipment(null);
+        p.setPatientId(null);
+        p.setAge(null);
+        p.setGender(null);
+       imgSeries.setPatient(p);
+       imgSeries.setUri(null);
+        imageSeriesList.add(imgSeries);
+        imgSeries.setProperties(null);
+        return imageSeriesList;
+    }
 }
