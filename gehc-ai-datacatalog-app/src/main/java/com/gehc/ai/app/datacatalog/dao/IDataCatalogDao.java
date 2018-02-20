@@ -37,4 +37,6 @@ public interface IDataCatalogDao {
     List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst);
 
     List<Integer> getAnnotationsIds(Annotation annotation);
+    
+    List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst);
 }

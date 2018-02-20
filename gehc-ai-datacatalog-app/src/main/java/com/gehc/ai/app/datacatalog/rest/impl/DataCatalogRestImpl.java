@@ -502,13 +502,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     for (int i = 0; i < imgSeries.size(); i++) {
                         imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
                     }
-                    return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
+                    return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
+                  //  return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
                 }
             }
         }
         return new ArrayList<ImageSeries>();
     }
-
+    
     /*
      * (non-Javadoc)
      *
@@ -578,8 +579,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return valueLst;
     }
-
-    private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
+    
+/*    private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
         logger.debug("In REST , patient for image series list");
         List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
         for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
@@ -594,7 +595,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             imgSerWithPatientLst.add(imageSeries);
         }
         return imgSerWithPatientLst;
-    }
+    }*/
 
     @Override
     @RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)

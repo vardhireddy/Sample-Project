@@ -152,6 +152,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "FROM annotation "
 			+ " WHERE ";
 
+	public static final String IMG_SER_PATIENT = "select im.id, im.org_id, im.modality, im.anatomy, im.data_format, im.series_instance_uid, im.institution, im.instance_count, im.equipment, "
+			+ " p.patient_id, p.age, p.gender, im.uri, CAST(im.properties as CHAR(10000)) "
+			+ " from patient p, image_set im where im.id in ( ";
+	public static final String IMG_SER_PATIENT_SUFFIX = " ) and p.org_id= im.org_id and p.id = im.patient_dbid order by p.patient_id ";
+	
 	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 	
 	@Autowired
@@ -616,4 +621,48 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 		return null;
 	}
+
+	@Override
+	public List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst) {
+		StringBuilder queryBuilder = new StringBuilder();
+		queryBuilder.append(IMG_SER_PATIENT);
+		for(Iterator<Long> iter = imgSerIdLst.iterator(); iter.hasNext();){
+			queryBuilder.append(iter.next());
+			if (iter.hasNext()) {
+				queryBuilder.append(",");
+			}
+		}
+		queryBuilder.append(IMG_SER_PATIENT_SUFFIX);
+		logger.debug("queryBuilder = "+ queryBuilder);
+		Query q = em.createNativeQuery(queryBuilder.toString());	// NOSONAR		
+		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+		List<Object[]> objList = q.getResultList();
+		if(null != objList && !objList.isEmpty()){		
+	        objList.stream().forEach((record) -> {
+	        	Patient p = new Patient();
+	        	ImageSeries imgSeries = new ImageSeries();
+	        	if (record[0] instanceof BigInteger){
+	        		imgSeries.setId(((BigInteger) record[0]).longValue());
+	        	}
+	        	imgSeries.setOrgId((String) record[1]);
+	        	imgSeries.setModality((String) record[2]);
+	        	imgSeries.setAnatomy((String) record[3]);
+	        	imgSeries.setDataFormat((String) record[4]);
+	        	imgSeries.setSeriesInstanceUid((String) record[5]);
+	        	imgSeries.setInstitution((String) record[6]);
+	        	imgSeries.setInstanceCount((int) record[7]);
+	        	imgSeries.setEquipment((String) record[8]);
+	        	p.setPatientId((String) record[9]);
+	        	p.setAge((String) record[10]);
+	        	p.setGender((String) record[11]);
+	        	imgSeries.setPatient(p);
+	        	imgSeries.setUri((String) record[12]);
+	        	imgSeries.setProperties((Object) getReplace(record[13]));
+	        	imageSeriesList.add(imgSeries);
+	        });     
+		}
+        logger.debug("Image series with patient, list size " + imageSeriesList.size());
+        return imageSeriesList;
+	}
+	
 }
