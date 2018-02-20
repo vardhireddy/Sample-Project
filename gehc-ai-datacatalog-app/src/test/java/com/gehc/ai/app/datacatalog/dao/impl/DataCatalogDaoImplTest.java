@@ -491,38 +491,38 @@ public class DataCatalogDaoImplTest {
         return params;
     }
 
-    //  @Test
+    @Test
     public void testConstructQueryWithSingleParam() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = "WHERE x.modality IN (\"CT\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\")";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
-    //  @Test
+    @Test
     public void testConstructQueryWithSingleParamMultipleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT,MR");
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = "WHERE x.modality IN (\"CT\", \"MR\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\", \"MR\")";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
-    //  @Test
+    @Test
     public void testConstructQueryWithMultipleParamSingleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         input.putAll(constructQueryParam("anatomy", "LUNG"));
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = "WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\")";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
     }
 
-    // @Test
+    @Test
     public void testConstructQueryWithMultipleParamMultipleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT,MR");
         input.putAll(constructQueryParam("anatomy", "LUNG,HEART"));
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = "WHERE x.modality IN (\"CT\", \"MR\") AND x.anatomy IN (\"LUNG\", \"HEART\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\", \"MR\") AND x.anatomy IN (\"LUNG\", \"HEART\")";
 
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
