@@ -162,6 +162,41 @@ When Get data collection by Type is not valid
 Then verify data collection by Type is not valid
 
 @test
+Scenario: DataCatalog Raw Target Data with invalid Id- throws Exception
+Meta: @automated
+Given DataCatalog Raw Target Data with invalid Id
+When get DataCatalog Raw Target Data with invalid Id
+Then verify DataCatalog Raw Target Data with invalid Id- throws Exception
+
+@test
+Scenario: DataCatalog Raw Target Data with long Id- throws Exception
+Meta: @automated
+Given DataCatalog Raw Target Data with long Id
+When get DataCatalog Raw Target Data with long Id
+Then verify DataCatalog Raw Target Data with long Id- throws Exception
+
+@test
+Scenario: DataCatalog Raw Target Data with long Id- throws Exception
+Meta: @automated
+Given DataCatalog Raw Target Data with long Id
+When get DataCatalog Raw Target Data with long Id
+Then verify DataCatalog Raw Target Data with long Id- throws Exception
+
+@test
+Scenario: DataCatalog Raw Target Data with invalid annotationType- throws Exception
+Meta: @automated
+Given DataCatalog Raw Target Data with invalid annotationType
+When get DataCatalog Raw Target Data with invalid annotationType
+Then verify DataCatalog Raw Target Data with invalid annotationType- throws Exception
+
+@test
+Scenario: DataCatalog Raw Target Data with long annotationType- throws Exception
+Meta: @automated
+Given DataCatalog Raw Target Data with long annotationType
+When get DataCatalog Raw Target Data with long annotationType
+Then verify DataCatalog Raw Target Data with long annotationType- throws Exception
+
+@test
 Scenario: Retrieve DataSummary for GE-Class with invalid annotation type
 Meta: @automated
 Given Retrieve DataSummary for GE-Class with invalid annotation type
@@ -170,6 +205,7 @@ Then verify DataSummary for GE-Class with invalid annotation type
 
 @test
 Scenario: Get Annotaition Ids by datacollectionId
+Meta: @automated
 Given Get Annotaition Ids by datacollectionId - Data Setup
 When Get Annotaition Ids by datacollectionId is called
 Then verify Get Annotaition Ids by datacollectionId
