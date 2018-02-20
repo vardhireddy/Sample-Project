@@ -56,4 +56,9 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	public List<Integer> getAnnotationsById(Annotation annotation) {
 		return dataCatalogDao.getAnnotationsIds(annotation);
 	}
+
+	@Override
+	public List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst) {
+		return dataCatalogDao.getImgSeriesWithPatientByIds(imgSerIdLst);
+	}
 }

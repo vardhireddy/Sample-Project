@@ -39,4 +39,5 @@ public interface IDataCatalogService {
 
     List<Integer> getAnnotationsById(Annotation annotation);
     
+    List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst);
 }

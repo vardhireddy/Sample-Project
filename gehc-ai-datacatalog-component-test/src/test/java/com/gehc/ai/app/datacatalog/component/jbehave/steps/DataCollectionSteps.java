@@ -429,7 +429,7 @@ public class DataCollectionSteps {
     
     @Given("Retrieve Image Set with ID DataSetUp Provided")
     public void givenRetrieveImageSetWithIDDataSetUpProvided(){
-        dataCollectionSetUpForImageSetwithData();
+    	dataCollectionSetUpForImageSetwithPatientData();
     }
 
     @When("Get data collection image-set details by its id")
@@ -855,6 +855,20 @@ public class DataCollectionSteps {
         when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
     }
 
+    
+    private void dataCollectionSetUpForImageSetwithPatientData() {
+        List<DataSet> dataSets = new ArrayList<DataSet>();
+        DataSet dataSet = new DataSet();
+        dataSet.setId(1L);
+        dataSet.setCreatedBy("test");
+        List testList = new ArrayList();
+        testList.add(1L);
+        dataSet.setImageSets(testList);
+        dataSets.add(dataSet);
+
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        when(dataCatalogDao.getImgSeriesWithPatientByIds(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
+    }
     private DataSet getSaveDataSet() {
         DataSet dataSet = new DataSet();
         dataSet.setId(1L);
