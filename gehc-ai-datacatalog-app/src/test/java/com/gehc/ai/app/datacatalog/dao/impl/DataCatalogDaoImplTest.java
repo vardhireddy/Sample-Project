@@ -9,6 +9,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -24,6 +25,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * Created by sowjanyanaidu on 9/5/17.
@@ -529,24 +531,28 @@ public class DataCatalogDaoImplTest {
 
     }
     
-   // @Test
+   @Test
     public void testGetImgSeriesWithPatientByIds() throws DataCatalogException {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "DCM", null,null,1,null,null,null,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}"};
+        Object[] propObj = new Object[]{"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}"};
+        Map<String,Object> prop = new HashMap<String,Object>();
+        List arr = new ArrayList();
+        arr.add("1.2.840.113619.2.418.4.8323328.1490372948.527858");
+        prop.put("instances", arr);
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "DCM", null,null,1,null,null,null,null,null,prop};
+
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
-        try {
-			when(mapper.readValue(anyString(), Object.class)).thenReturn("{\"name\": \"Pneumothorax\", \"value\": \"Small\"}");
+       /* try {
+			when(mapper.readValue(anyString(), new TypeReference<List<ImageSeries>>(){})).thenReturn("{\"name\": \"Pneumothorax\", \"value\": \"Small\"}");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-      //  List<ImageSeries> imgSeriesWithPatient = getImageSeriesWithPatient();
+		}*/
         List<Long> ids = new ArrayList<Long>();
         ids.add(0, 1L);
-      //  ids.add(1, 2L);
         List result = dataCatalogDao.getImgSeriesWithPatientByIds(ids);
         assertEquals(result.toString(),getImageSeriesWithPatient().toString());
     }
@@ -568,8 +574,9 @@ public class DataCatalogDaoImplTest {
         p.setGender(null);
        imgSeries.setPatient(p);
        imgSeries.setUri(null);
+       imgSeries.setProperties(null);
         imageSeriesList.add(imgSeries);
-        imgSeries.setProperties("{\"name\": \"Pneumothorax\", \"value\": \"Small\"}");
+       
         return imageSeriesList;
     }
 }
