@@ -9,6 +9,10 @@ Delete annotation set data for Ids
 Delete annotation set data for Ids with out org id
 Throw Exception while Storing an annotation set data
 Throw Exception while Delete annotation set data for Ids
+Store an annotation set data when Annotation already exists should not save dupicate Annotation
+Store annotation set data with invalid annotator id
+Store annotation set data with invalid annotation type
+Store new Annotation annotation
 
 @functional
 @crs_10731
@@ -89,3 +93,12 @@ Meta: @automated
 Given Store an annotation set data with invalid annotation type- Throws exception
 When Store an annotation set data with invalid annotation type
 Then Verify Store annotation set data throws exception
+
+@test
+Scenario: Store new Annotation annotation
+Meta: @automated
+Given Store new Annotationset data - DataSetUp Provided
+When Store new Annotation set data
+Then Verify Store new Annotation set data
+
+
