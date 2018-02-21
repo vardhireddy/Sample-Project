@@ -638,6 +638,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
 		List<Object[]> objList = q.getResultList();
 		if(null != objList && !objList.isEmpty()){		
+			ObjectMapper mapper = new ObjectMapper();
 	        objList.stream().forEach((record) -> {
 	        	Patient p = new Patient();
 	        	ImageSeries imgSeries = new ImageSeries();
@@ -657,12 +658,16 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	p.setGender((String) record[11]);
 	        	imgSeries.setPatient(p);
 	        	imgSeries.setUri((String) record[12]);
-	        	imgSeries.setProperties((Object) getReplace(record[13]));
+	        	try {
+					imgSeries.setProperties((Object) mapper.readValue(record[13].toString(), Object.class));
+				} catch (IOException e) {
+					// TODO throw the exception
+					e.printStackTrace();
+				}
 	        	imageSeriesList.add(imgSeries);
 	        });     
 		}
         logger.debug("Image series with patient, list size " + imageSeriesList.size());
         return imageSeriesList;
 	}
-	
 }
