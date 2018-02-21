@@ -72,6 +72,7 @@ public class AnnotationSteps {
     @When("Store an annotation set data")
     public void whenStoreAnAnnotationSetData() throws Exception {
         Annotation annotation = commonSteps.getAnnotation();
+        annotation.setId(null);
 
         retrieveResult = mockMvc.perform(
                 post("/api/v1/annotation")
