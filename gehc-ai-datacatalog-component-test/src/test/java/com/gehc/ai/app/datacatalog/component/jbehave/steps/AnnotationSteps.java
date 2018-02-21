@@ -332,6 +332,29 @@ public class AnnotationSteps {
 //        retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
+    @Given("Store new Annotationset data - DataSetUp Provided")
+    public void givenStoreNewAnnotationsetDataDataSetUpProvided() {
+        when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(null);
+        when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(null);
+        when(annotationRepository.save(any(Annotation.class))).thenReturn(commonSteps.getAnnotation());
+    }
+    @When("Store new Annotation set data")
+    public void whenStoreNewAnnotationSetData() throws Exception {
+        Annotation annotation = commonSteps.getAnnotation();
+        retrieveResult = mockMvc.perform(
+                post("/api/v1/annotation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(AnnotationToJSON(annotation))
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+    @Then("Verify Store new Annotation set data")
+    public void thenVerifyStoreNewAnnotationSetData() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("SUCCESS")));
+
+    }
+
     private String AnnotationToJSON(Annotation annotation) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(annotation);
