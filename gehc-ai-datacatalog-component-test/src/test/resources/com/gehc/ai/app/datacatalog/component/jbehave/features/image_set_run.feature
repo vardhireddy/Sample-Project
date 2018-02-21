@@ -339,55 +339,43 @@ When Get Image set based on filter criteria with Modality, Institution and Equip
 Then verify Image set based on filter  with Modality, Institution and Equipment
 
 
-@test
+@test_54809
 Scenario: Get Image set based on filter criteria with Institution name containing accepted special characters like comma
 Meta: @automated
 Given Get Image set based on filter criteria with Institution name containing accepted special characters- DataSetUp Provided
 When Get Image set based on filter criteria with Institution name containing accepted special characters
 Then verify Image set based on filter  with Institution name containing accepted special characters
 
-@test
+@test_54810
 Scenario: Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
 Meta: @automated
 Given Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes - DataSetUp Provided
 When Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
 Then verify Image set based on filter  with Equipment name containing accepted special characters like quotes and slashes
 
-#@test
-#Scenario: Get Image set based on filter criteria with ORG ID and Modality throws Service Exception
-#Meta: @automated
-#Given Get Image set based on filter criteria with ORG ID and Modality throws Service Exception - DataSetUp Provided
-#When Get Image set based on filter criteria with ORG ID and Modality throws Service Exception
-#Then verify Image set based on filter  with ORG ID and Modality throws Service Exception
-#
-#@test
-#Scenario: Get Image set based on filter criteria with filters null
-#Given Get Image set based on filter criteria with filters null
-#When Get Image set based on filter criteria with filters null
-#Then verify Image set based on filter with filters null
 
-@test
+@test_54811
 Scenario: Update institution by ImageSeries Ids
 Meta: @automated
 Given Update institution by ImageSeries Ids - Data Setup
 When Update institution by ImageSeries Ids is called
 Then verify institution is updated
 
-@test
+@test_54812
 Scenario: Delete imageset by id
 Meta: @automated
 Given  imageset by id
 When Delete imageset by id
 Then verify imageset by id has been deleted
 
-@test
+@test_54813
 Scenario: Delete imageseries by id when not a imageSeriesList
 Meta: @automated
 Given imageseries by id when not a imageSeriesList
 When Delete imageseries by id when not a imageSeriesList
 Then verify imageseries by id when not a imageSeriesList
 
-@test
+@test_54814
 Scenario: Throw Exception while Delete imageseries set data for Ids
 Meta: @automated
 Given Delete imageseries set data for Ids throws exception - DataSetUp Provided

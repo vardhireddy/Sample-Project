@@ -19,6 +19,10 @@ Retrieve DataSet group by ANNOTATIONS_ABSENT
 Retrieve DataSummary for GE-Class
 Retrieve DataSummary for GE-Class without org id
 Delete multiple Data Collections by ids
+Retrieve DataSet by Type return empty
+Retrieve DataSummary for GE-Class with invalid annotation type
+Get Annotaition Ids by datacollectionId
+Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
 
 @functional
 @crs_10733
@@ -154,28 +158,28 @@ Given  Multiple Data Collections by ids
 When Delete Data collection by ids API is called
 Then verify Data Collection by ids has been deleted
 
-@test
+@test_54805
 Scenario: Retrieve DataSet by Type return empty
 Meta: @automated
 Given Return empty array list
 When Get data collection by Type is not valid
 Then verify data collection by Type is not valid
 
-@test
+@test_54806
 Scenario: Retrieve DataSummary for GE-Class with invalid annotation type
 Meta: @automated
 Given Retrieve DataSummary for GE-Class with invalid annotation type
 When Get DataSummary for GE-Class with invalid annotation type
 Then verify DataSummary for GE-Class with invalid annotation type
 
-@test
+@test_54807
 Scenario: Get Annotaition Ids by datacollectionId
 Meta: @automated
 Given Get Annotaition Ids by datacollectionId - Data Setup
 When Get Annotaition Ids by datacollectionId is called
 Then verify Get Annotaition Ids by datacollectionId
 
-@test
+@test_54808
 Scenario: Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
 Meta: @automated
 Given Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup
