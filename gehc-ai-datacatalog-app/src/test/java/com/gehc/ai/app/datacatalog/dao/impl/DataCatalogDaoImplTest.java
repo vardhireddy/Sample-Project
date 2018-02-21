@@ -116,7 +116,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{"1", "SUID", 1, "test", "test", "test","test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","test","test","test","[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]"};
+        Object[] newObj = new Object[]{"1", "SUID", 1, "test", "test", "test", "test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "test", "test", "test", "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
@@ -126,7 +126,7 @@ public class DataCatalogDaoImplTest {
         List result = dataCatalogDao.getAnnotationsByDSId(ids);
         assertEquals(getAnnotationDetails().size(), result.size());
         assertEquals(getAnnotationDetails().toArray()[0].getClass(), result.toArray()[0].getClass());
-      //  assertEquals(getAnnotationDetails().toString(), result.toString());
+        //  assertEquals(getAnnotationDetails().toString(), result.toString());
     }
 
     @Test
@@ -135,11 +135,11 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "[1105.8823529411766,616.3315508021391,2]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
-        List result = dataCatalogDao.getAnnotationsIds( getForPointAnnotation());
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(getForPointAnnotation());
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -148,13 +148,13 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "[1105.8823529411766,616.3315508021391,2]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation lineAnnotation = getForPointAnnotation();
         lineAnnotation.setType("line");
-        List result = dataCatalogDao.getAnnotationsIds( lineAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(lineAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -162,15 +162,14 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,"test","[1105,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "[1105,616.3315508021391,2]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation lineAnnotation = getForPointAnnotation();
         lineAnnotation.setType("line");
-        List result = dataCatalogDao.getAnnotationsIds( lineAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(lineAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
-
 
 
     @Test
@@ -179,14 +178,14 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation rectAnnotation = getForPointAnnotation();
         rectAnnotation.setType("rect");
         getRectangleEllipseItemInfo(rectAnnotation);
-        List result = dataCatalogDao.getAnnotationsIds( rectAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(rectAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -194,14 +193,14 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,1,1],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "{\"xdir\":[511.7407407407409,1,1],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation rectAnnotation = getForPointAnnotation();
         rectAnnotation.setType("rect");
         getRectangleEllipseItemInfo(rectAnnotation);
-        List result = dataCatalogDao.getAnnotationsIds( rectAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(rectAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -210,14 +209,14 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation ellipseAnnotation = getForPointAnnotation();
         ellipseAnnotation.setType("ellipse");
         getRectangleEllipseItemInfo(ellipseAnnotation);
-        List result = dataCatalogDao.getAnnotationsIds( ellipseAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(ellipseAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -226,12 +225,12 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
+        Object[] newObj = new Object[]{1, null, null, "{\"name\": \"Pneumothorax\", \"value\": \"Small\"}", null, null, null, null, null, null, null, null, null, null, "IMAGE", null, "Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();
-        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(labelAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -239,12 +238,12 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"large\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
+        Object[] newObj = new Object[]{1, null, null, "{\"name\": \"Pneumothorax\", \"value\": \"large\"}", null, null, null, null, null, null, null, null, null, null, "IMAGE", null, "Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();
-        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(labelAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -252,30 +251,30 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"TEST"};
+        Object[] newObj = new Object[]{1, null, null, "{\"name\": \"Pneumothorax\", \"value\": \"Small\"}", null, null, null, null, null, null, null, null, null, null, "IMAGE", null, "TEST"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();
-        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(labelAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
 
     private Annotation getRectangleEllipseItemInfo(Annotation rectAnnotation) {
         LinkedHashMap item = new LinkedHashMap();
-        Map<String, List<Long>> dataMap = new HashMap<String, List<Long>>() ;
+        Map<String, List<Long>> dataMap = new HashMap<String, List<Long>>();
         ArrayList list1 = new ArrayList();
         list1.add(511.7407407407409);
         list1.add(0);
         list1.add(0);
-        dataMap.put("xdir",list1);
-        dataMap.put("ydir",list1);
-        dataMap.put("origin",list1);
+        dataMap.put("xdir", list1);
+        dataMap.put("ydir", list1);
+        dataMap.put("origin", list1);
 
         item.put("data", dataMap);
-        item.put("properties","{\"ge_class\":[]}");
-        item.put("coord_sys","IMAGE");
-        item.put("object_name","test");
+        item.put("properties", "{\"ge_class\":[]}");
+        item.put("coord_sys", "IMAGE");
+        item.put("object_name", "test");
         rectAnnotation.setItem(item);
         return rectAnnotation;
     }
@@ -311,12 +310,12 @@ public class DataCatalogDaoImplTest {
         ArrayList<Map> list = new ArrayList<Map>();
         Map map1 = new HashMap();
 
-        map1.put("name","Pneumothorax");
-        map1.put("value","Small");
+        map1.put("name", "Pneumothorax");
+        map1.put("value", "Small");
         list.add(map1);
         Map map2 = new HashMap();
-        map2.put("ge_class",list);
-        map2.put("findings","Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC");
+        map2.put("ge_class", list);
+        map2.put("findings", "Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC");
         geClassJson.put("properties", map2);
 
         annotation.setItem(geClassJson);
@@ -401,7 +400,7 @@ public class DataCatalogDaoImplTest {
         imgSerLst.add(imageSeries1);
         return imgSerLst;
     }
-    
+
     private List<AnnotationDetails> getAnnotationDetails() {
         List<AnnotationDetails> annotationDetails = new ArrayList<AnnotationDetails>();
         AnnotationDetails annotation = new AnnotationDetails();
@@ -530,33 +529,21 @@ public class DataCatalogDaoImplTest {
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
     }
-    
-   @Test
+
+    @Test
     public void testGetImgSeriesWithPatientByIds() throws DataCatalogException {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] propObj = new Object[]{"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}"};
-        Map<String,Object> prop = new HashMap<String,Object>();
-        List arr = new ArrayList();
-        arr.add("1.2.840.113619.2.418.4.8323328.1490372948.527858");
-        prop.put("instances", arr);
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "DCM", null,null,1,null,null,null,null,null,prop};
-
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "DCM", null, null, 1, null, null, null, null, null, "{\"name\": \"PTX\"}"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
-       /* try {
-			when(mapper.readValue(anyString(), new TypeReference<List<ImageSeries>>(){})).thenReturn("{\"name\": \"Pneumothorax\", \"value\": \"Small\"}");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
         List<Long> ids = new ArrayList<Long>();
         ids.add(0, 1L);
         List result = dataCatalogDao.getImgSeriesWithPatientByIds(ids);
-        assertEquals(result.toString(),getImageSeriesWithPatient().toString());
+        assertEquals(result.toString(), getImageSeriesWithPatient().toString());
     }
-    
+
     private List<ImageSeries> getImageSeriesWithPatient() {
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
         ImageSeries imgSeries = new ImageSeries();
@@ -566,17 +553,18 @@ public class DataCatalogDaoImplTest {
         imgSeries.setModality("DX");
         imgSeries.setAnatomy("CHEST");
         imgSeries.setDataFormat("DCM");
-       imgSeries.setSeriesInstanceUid(null);
+        imgSeries.setSeriesInstanceUid(null);
         imgSeries.setInstanceCount(1);
-       imgSeries.setEquipment(null);
+        imgSeries.setEquipment(null);
         p.setPatientId(null);
         p.setAge(null);
         p.setGender(null);
-       imgSeries.setPatient(p);
-       imgSeries.setUri(null);
-       imgSeries.setProperties(null);
+        imgSeries.setPatient(p);
+        imgSeries.setUri(null);
+        LinkedHashMap prop = new LinkedHashMap();
+        prop.put("name", "PTX");
+        imgSeries.setProperties(prop);
         imageSeriesList.add(imgSeries);
-       
         return imageSeriesList;
     }
 }
