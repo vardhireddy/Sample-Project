@@ -76,4 +76,16 @@ Given Store an annotation set data Annotation already exists - DataSetUp Provide
 When Store an annotation set data  Annotation already exists
 Then Verify Store an annotation set data if Annotation already exists should not save duplicate Annotation and will return the annotation id
 
+@test
+Scenario: Store annotation set data with invalid annotator id
+Meta: @automated
+Given Store an annotation set data with invalid annotator id- Throws exception
+When Store an annotation set data with invalid annotator id
+Then Verify Store annotation set data throws exception
 
+@test
+Scenario: Store annotation set data with invalid annotation type
+Meta: @automated
+Given Store an annotation set data with invalid annotation type- Throws exception
+When Store an annotation set data with invalid annotation type
+Then Verify Store annotation set data throws exception

@@ -12,9 +12,8 @@
 package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
-import static com.gehc.ai.app.common.constants.ValidationConstants.DIGIT;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+import static com.gehc.ai.app.common.constants.ValidationConstants.ANNOTATION_TYPES;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -107,8 +106,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String INSTITUTION = "institution";
     public static final String EQUIPMENT = "equipment";
     public static final int ORG_ID_LENGTH = 255;
-    public static final int DATA_COLLECTION_ID_LENGTH = 11;
-    public static final int ANNOTATION_TYPE_LENGTH = 500;
 
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
@@ -629,23 +626,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 : patientRepository.findByOrgId(request.getAttribute("orgId").toString());
     }
 
-    private void checkInvalidType(String id, String annotationType) {
-        String patternStrId = DIGIT;
-        Pattern patternId = Pattern.compile(patternStrId);
-        Matcher matcherId = patternId.matcher(id);
-        boolean matchFoundId = matcherId.matches();
-
-        String patternStrAnnotationType = ENTITY_NAME;
-        Pattern patternAnnotationType = Pattern.compile(patternStrAnnotationType);
-        Matcher matcherAnnotationType = patternAnnotationType.matcher(annotationType);
-        boolean matchFoundAnnotationType = matcherAnnotationType.matches();
-        if (!matchFoundAnnotationType || !matchFoundId || id.length() > DATA_COLLECTION_ID_LENGTH
-                || annotationType.length() > ANNOTATION_TYPE_LENGTH) {
-            logger.debug("Datacollection id or annotation type is not valid");
-            throw new BadRequestException("Datacollection id or annotation type is not valid");
-        }
-    }
-
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     @RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
@@ -657,9 +637,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity("Datacollection id and annotation type is required to get annotation for a data collection")
                     .build());
-        } else {
-            checkInvalidType(id, annotationType);
         }
+        
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> annImgSetDCLst = null;
         List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));

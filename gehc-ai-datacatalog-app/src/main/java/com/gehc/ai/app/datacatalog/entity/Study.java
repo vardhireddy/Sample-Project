@@ -13,6 +13,8 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+
 import java.sql.Date;
 
 import javax.persistence.Column;
@@ -21,6 +23,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
@@ -50,6 +54,7 @@ public class Study {
      * Patient table ID. Establishes a correlation with the patient table
      */
     @Column(name="patient_dbid")
+    @NotNull
     private Long patientDbId;
     public Long getPatientDbId() {
         return patientDbId;
@@ -164,7 +169,9 @@ public class Study {
      * The organization who owns or uploads the data. This could be an entry in an org database
      */
     @Column(name="org_id")
-    @Size(max=255)
+    @Size(min=1,max=255)
+    @Pattern(regexp = UUID)
+	@NotNull
     private String orgId;
     public String getOrgId() {
         return orgId;

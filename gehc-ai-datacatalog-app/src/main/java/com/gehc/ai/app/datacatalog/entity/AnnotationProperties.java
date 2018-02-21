@@ -13,7 +13,6 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ENTITY_NAME;
 
 import java.sql.Date;
 
@@ -23,6 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -45,11 +45,12 @@ public class AnnotationProperties {
     @Column(name="org_id")
     @Size(max=255)
     @Pattern(regexp = UUID)
+    @NotNull
     private String orgId;
     
     @Column(name="resource_name")
-    @Size(max=500)
-    @Pattern(regexp = ENTITY_NAME)
+    @Size(min=1, max=500)
+    @NotNull
     private String resourceName;
     public String getResourceName() {
 		return resourceName;
@@ -63,6 +64,7 @@ public class AnnotationProperties {
      * Flexible JSON object to store classes
      */
     @Convert(converter = JsonConverter.class)
+    @NotNull
     private Object classes;
     
     @Column(name="created_date", columnDefinition="DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
@@ -70,7 +72,6 @@ public class AnnotationProperties {
     
     @Column(name="created_by")
     @Size(max=200)
-    @Pattern(regexp = ENTITY_NAME)
     private String createdBy;
 
 	public Long getId() {
