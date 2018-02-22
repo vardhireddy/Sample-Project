@@ -125,7 +125,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(an.item, '$.coord_sys') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.indication')) as CHAR(5000)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.findings')) as CHAR(10000)), "
-			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(20000)),"
+			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(50000)),"
 			+ " CAST(JSON_EXTRACT(an.item, '$.origin') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.uri') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.format') as CHAR(500)) "
