@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import org.apache.commons.collections.ArrayStack;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
@@ -572,13 +573,16 @@ public class DataCollectionSteps {
     
     @Given("Multiple Data Collections by ids")
     public void givenMultipleDataCollectionsByIds() {
-    	 DataSet dateSet = new DataSet();
-         doNothing().when(dataSetRepository).delete(dateSet);
+    	 DataSet dataSet = new DataSet();
+    	 ArrayList dataSetArray = new ArrayList();
+        dataSetArray.add(dataSet);
+        when(dataSetRepository.findByIdAndOrgId(any(),any())).thenReturn(dataSetArray);
+         doNothing().when(dataSetRepository).delete(dataSet);
     }
     @When("Delete Data collection by ids API is called")
     public void whenDeleteDataCollectionByIdsAPIIsCalled() throws Exception {
     	 retrieveResult = mockMvc.perform(
-                 delete("/api/v1/datacatalog/data-collection/1")
+                 delete("/api/v1/datacatalog/data-collection/1,2")
                          .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
          );
     }
@@ -639,6 +643,26 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
+    @Given("Delete Data Collections by id")
+    public void givenDeleteDataCollectionsById() {
+
+        DataSet dataSet = new DataSet();
+        doNothing().when(dataSetRepository).delete(dataSet);
+    }
+
+    @When("Delete Data collection by id API is called")
+    public void whenDeleteDataCollectionByIdAPIIsCalled() throws Exception {
+        retrieveResult = mockMvc.perform(
+                delete("/api/v1/datacatalog/data-collection/1,2")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+
+    @Then("verify Data Collection by id has been deleted")
+    public void thenVerifyDataCollectionByIdHasBeenDeleted() throws Exception {
+            retrieveResult.andExpect(status().isOk());
+            retrieveResult.andExpect(content().string(containsString("SUCCESS")));
+    }
 
     private Map getMapForGEClassDataSummary() {
         Map resultSet = new HashMap();

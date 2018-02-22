@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -354,6 +355,33 @@ public class AnnotationSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
 
+    }
+
+    @Given("Delete annotation set data for multiple Ids - DataSetUp Provided")
+    public void givenDeleteAnnotationSetDataForMultipleIdsDataSetUpProvided() {
+        Annotation annotation = new Annotation();
+        ArrayList annArray = new ArrayList();
+        ArrayList array = new ArrayList();
+        array.add(1);
+        array.add(2);
+        annArray.add(annotation);
+        when(annotationRepository.findByIdIn(anyList())).thenReturn(annArray);
+        doNothing().when(annotationRepository).delete(annotation);
+    }
+
+    @When("Delete annotation set data for multiple Ids")
+    public void whenDeleteAnnotationSetDataForMultipleIds() throws Exception {
+        retrieveResult = mockMvc.perform(
+                delete("/api/v1/annotation/1,2")
+                        .contentType(MediaType.APPLICATION_JSON)
+
+        );
+    }
+
+    @Then("Verify Delete annotation set data for multiple Ids")
+    public void thenVerifyDeleteAnnotationSetDataForMultipleIds() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("SUCCESS")));
     }
 
     private String AnnotationToJSON(Annotation annotation) throws JsonProcessingException {

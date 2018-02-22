@@ -101,4 +101,11 @@ Given Store new Annotationset data - DataSetUp Provided
 When Store new Annotation set data
 Then Verify Store new Annotation set data
 
+@test
+Scenario: Delete annotation set data for multiple Ids
+Meta: @automated
+Given Delete annotation set data for multiple Ids - DataSetUp Provided
+When Delete annotation set data for multiple Ids
+Then Verify Delete annotation set data for multiple Ids
+
 

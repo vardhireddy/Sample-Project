@@ -185,3 +185,10 @@ Meta: @automated
 Given Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup
 When Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound
 Then verify Get Annotaition Ids by datacollectionId  When ImageSeriesNotFound
+
+@test
+Scenario: Delete Data Collection by id
+Meta: @automated
+Given  Delete Data Collections by id
+When Delete Data collection by id API is called
+Then verify Data Collection by id has been deleted
