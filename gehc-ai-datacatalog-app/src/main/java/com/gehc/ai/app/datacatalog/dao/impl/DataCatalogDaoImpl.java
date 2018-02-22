@@ -125,7 +125,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(an.item, '$.coord_sys') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.indication')) as CHAR(5000)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.findings')) as CHAR(10000)), "
-			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(10000)),"
+			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(20000)),"
 			+ " CAST(JSON_EXTRACT(an.item, '$.origin') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.uri') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.format') as CHAR(500)) "
@@ -134,7 +134,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " WHERE im.id in (";
 
 	private static final String GET_ITEM_INFO_BY_ANNOTATION = "SELECT id, "
-			+ " CAST(JSON_EXTRACT(item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(item, '$.data') as CHAR(10000)), "
+			+ " CAST(JSON_EXTRACT(item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(item, '$.data') as CHAR(20000)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[0]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[1]')) as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[2]')) as CHAR(500)), "
