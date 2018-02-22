@@ -125,7 +125,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(an.item, '$.coord_sys') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.indication')) as CHAR(5000)), "
 			+ " CAST(JSON_EXTRACT(item, CONCAT('$.properties.findings')) as CHAR(10000)), "
-			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(50000)),"
+			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(20000)),"
 			+ " CAST(JSON_EXTRACT(an.item, '$.origin') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.uri') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.format') as CHAR(500)) "
@@ -153,7 +153,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " WHERE ";
 
 	public static final String IMG_SER_PATIENT = "select im.id, im.org_id, im.modality, im.anatomy, im.data_format, im.series_instance_uid, im.institution, im.instance_count, im.equipment, "
-			+ " p.patient_id, p.age, p.gender, im.uri, CAST(im.properties as CHAR(10000)) "
+			+ " p.patient_id, p.age, p.gender, im.uri, CAST(im.properties as CHAR(20000)) "
 			+ " from patient p, image_set im where im.id in ( ";
 	public static final String IMG_SER_PATIENT_SUFFIX = " ) and p.org_id= im.org_id and p.id = im.patient_dbid order by p.patient_id ";
 	
