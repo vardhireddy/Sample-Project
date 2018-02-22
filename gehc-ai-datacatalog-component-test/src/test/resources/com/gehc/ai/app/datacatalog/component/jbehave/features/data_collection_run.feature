@@ -186,7 +186,7 @@ Given Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Se
 When Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound
 Then verify Get Annotaition Ids by datacollectionId  When ImageSeriesNotFound
 
-@test
+@test_54822
 Scenario: Delete Data Collection by id
 Meta: @automated
 Given  Delete Data Collections by id
