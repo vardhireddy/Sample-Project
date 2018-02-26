@@ -23,6 +23,7 @@ Retrieve DataSet by Type return empty
 Retrieve DataSummary for GE-Class with invalid annotation type
 Get Annotaition Ids by datacollectionId
 Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
+Delete Data Collection by id
 
 @functional
 @crs_10733
