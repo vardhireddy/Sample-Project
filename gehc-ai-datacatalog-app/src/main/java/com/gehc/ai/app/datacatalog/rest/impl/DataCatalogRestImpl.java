@@ -400,7 +400,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST)
-    public DataSet saveDataSet(@Valid @RequestBody DataSet d, HttpServletRequest request) {
+    public DataSet saveDataSet(@RequestBody DataSet d, HttpServletRequest request) {
         logger.info("[In REST, Creating new data collection, orgId = " + request.getAttribute("orgId") + "]");
         if (null != request.getAttribute("orgId")) {
             d.setOrgId(request.getAttribute("orgId").toString());
