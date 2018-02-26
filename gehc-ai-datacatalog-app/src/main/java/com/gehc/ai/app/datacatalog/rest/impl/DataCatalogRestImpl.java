@@ -576,23 +576,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return valueLst;
     }
-    
-/*    private List<ImageSeries> getPatientForImgSeriesLst(List<ImageSeries> imageSeriesLst) {
-        logger.debug("In REST , patient for image series list");
-        List<ImageSeries> imgSerWithPatientLst = new ArrayList<ImageSeries>();
-        for (Iterator<ImageSeries> imgSeriesItr = imageSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
-            ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-            if (null != imageSeries && null != imageSeries.getPatientDbId()) {
-                List<Patient> patientLst = patientRepository.findByIdAndOrgId(imageSeries.getPatientDbId(),
-                        imageSeries.getOrgId());
-                if (null != patientLst && !patientLst.isEmpty()) {
-                    imageSeries.setPatient(patientLst.get(0));
-                }
-            }
-            imgSerWithPatientLst.add(imageSeries);
-        }
-        return imgSerWithPatientLst;
-    }*/
 
     @Override
     @RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)
