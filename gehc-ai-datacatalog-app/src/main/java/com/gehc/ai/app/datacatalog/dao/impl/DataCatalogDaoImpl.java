@@ -278,8 +278,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	imgSeries.setInstitution((String) record[6]);
 	        	imgSeries.setInstanceCount((int) record[7]);
 	        	imgSeries.setEquipment((String) record[8]);
+	        	logger.debug(" Patient id " + (String) record[9]);
 	        	p.setPatientId((String) record[9]);
 	        	imgSeries.setPatient(p);
+	        	logger.debug(" Get Img Series id from Image Series " + imgSeries.getId());
+	        	logger.debug(" Get Patient id from Image Series " + imgSeries.getPatient().getPatientId());
 	        	imageSeriesList.add(imgSeries);
 	        });     
 	        logger.debug("Image series lis size " + imageSeriesList.size());
