@@ -27,6 +27,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -58,13 +59,16 @@ public class ImageSeries implements Serializable {
 	private String orgId;
 	
 	@Size(min=0, max=50)
+	@NotNull
 	private String modality;
 	
 	@Size(min=0, max=50)
+	@NotNull
 	private String anatomy;
 	
 	@Column(name = "data_format")
 	@Size(min=0, max=50)
+	@NotNull
 	private String dataFormat;
 	
 	private String uri;
@@ -77,9 +81,11 @@ public class ImageSeries implements Serializable {
 	private String description;
 	
 	@Size(min=0, max=100)
+	@NotNull
 	private String institution;
 	
 	@Size(min=0, max=255)
+	@NotNull
 	private String equipment;
 
 	@Size(min=0, max=255)
