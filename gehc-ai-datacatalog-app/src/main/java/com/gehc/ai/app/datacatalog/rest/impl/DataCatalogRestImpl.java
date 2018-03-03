@@ -247,7 +247,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/annotation", method = RequestMethod.POST)
-    public ApiResponse saveAnnotation(@RequestBody Annotation annotation) {
+    public ApiResponse saveAnnotation(@Valid @RequestBody Annotation annotation) {
         ApiResponse apiResponse = null;
         try {
             if (annotation.getId() != null) {

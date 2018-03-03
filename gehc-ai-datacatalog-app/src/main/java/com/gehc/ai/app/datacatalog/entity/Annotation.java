@@ -72,7 +72,7 @@ public class Annotation implements Serializable {
      */
     @Column(name="annotator_id")
     @Size(min=1, max=255)
-    @Pattern(regexp = UUID)
+ //   @Pattern(regexp = UUID)
     @NotNull
     private String annotatorId;
 

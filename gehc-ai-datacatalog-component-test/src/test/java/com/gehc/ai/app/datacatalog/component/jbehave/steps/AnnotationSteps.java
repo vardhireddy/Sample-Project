@@ -129,8 +129,8 @@ public class AnnotationSteps {
     
     @Then("Verify Store annotation set data throws exception")
     public void thenVerifyStoreAnnotationSetDataThrowsException() throws Exception{
-    	//retrieveResult.andExpect(status().isBadRequest());
-        //retrieveResult.andExpect(content().string(containsString("")));
+    	retrieveResult.andExpect(status().isBadRequest());
+        retrieveResult.andExpect(content().string(containsString("")));
     }
 
     @Given("Store an annotation set data Annotation already exists - DataSetUp Provided")
