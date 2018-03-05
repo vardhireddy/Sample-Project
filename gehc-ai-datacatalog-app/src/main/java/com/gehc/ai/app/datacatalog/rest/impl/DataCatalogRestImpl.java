@@ -876,17 +876,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return new ArrayList<Long>();
     }
 
-/*    @Override
-    @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
-    public List<Annotation> getAnnotationsByDSId(@PathVariable Long id, @QueryParam("orgId") String orgId) {
-        List<Annotation> annotationList = new ArrayList<Annotation>();
-        List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
-        if (!imgSerIdLst.isEmpty()) {
-            annotationList = annotationRepository.findByImageSetIdInAndOrgId(imgSerIdLst, orgId);
-        }
-        return annotationList;
-    }*/
-
     @Override
     @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
     public List<AnnotationDetails> getAnnotationsByDSId(@PathVariable Long id) {
