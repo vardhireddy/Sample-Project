@@ -1,4 +1,4 @@
-package com.gehc.ai.app.datacatalog.entity;
+package com.gehc.ai.app.datacatalog.serialization;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 @Component
 public class JsonDateSerializer extends JsonSerializer<Date> {
 
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss");
 
 	@Override
 	public void serialize(Date date, JsonGenerator gen, SerializerProvider provider)
