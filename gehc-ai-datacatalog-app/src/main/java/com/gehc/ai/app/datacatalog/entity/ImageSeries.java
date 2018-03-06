@@ -13,7 +13,7 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -26,13 +26,19 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 
 
@@ -126,12 +132,17 @@ public class ImageSeries implements Serializable {
 	@Column(name = "upload_by")
 	@Size(min=0, max=255)
 	private String uploadBy;
+
 	/**
 	 * Date data was uploaded into database. Should be left to database to
 	 * provide.
 	 */
-	@Column(name = "upload_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
+	@JsonSerialize(using=JsonDateSerializer.class)
+	@Column(name = "upload_date")
+	@JsonProperty(access = Access.READ_ONLY)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date uploadDate;
+
 	/**
 	 * Patient table ID. Establishes a correlation with the patient table
 	 */
@@ -260,11 +271,10 @@ public class ImageSeries implements Serializable {
 		this.uploadBy = uploadBy;
 	}
 	public Date getUploadDate() {
-		return new Date(uploadDate.getTime());
+		return uploadDate;
 	}
-	@JsonIgnore
 	public void setUploadDate(Date uploadDate) {
-		this.uploadDate = new Date(uploadDate.getTime());
+		this.uploadDate = uploadDate;
 	}
 	public Object getProperties() {
 		return properties;
@@ -300,7 +310,7 @@ public class ImageSeries implements Serializable {
 		this.instanceCount = instanceCount;
 		this.properties = properties;
 		this.uploadBy = uploadBy;
-		this.uploadDate = new Date(uploadDate.getTime());
+		this.uploadDate = uploadDate;
 		this.patientDbId = patientDbId;
 		this.studyDbId = studyDbId;
 		this.patient = patient;
@@ -318,4 +328,24 @@ public class ImageSeries implements Serializable {
 				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", acqDate="
 				+ acqDate + ", acqTime=" + acqTime + "]";
 	}
+	
+	/**
+	 * updates the update_date column with the current date for each newly 
+	 * created object
+	 */
+	@PrePersist
+	protected void onCreate() {
+		uploadDate = new Date();
+	}
+	
+	/**
+	 * updates the update_date column with the current date for each update 
+	 * on the object
+	 */
+	@PreUpdate
+	protected void onUpdate() {
+		uploadDate = new Date();
+	}
+	
+	
 }
