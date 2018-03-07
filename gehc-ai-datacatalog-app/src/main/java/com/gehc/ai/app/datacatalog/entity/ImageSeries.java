@@ -272,10 +272,10 @@ public class ImageSeries implements Serializable {
 		this.uploadBy = uploadBy;
 	}
 	public Date getUploadDate() {
-		return uploadDate;
+		return this.uploadDate;
 	}
 	public void setUploadDate(Date uploadDate) {
-		this.uploadDate = uploadDate;
+		this.uploadDate = (Date) uploadDate.clone();
 	}
 	public Object getProperties() {
 		return properties;
@@ -311,7 +311,7 @@ public class ImageSeries implements Serializable {
 		this.instanceCount = instanceCount;
 		this.properties = properties;
 		this.uploadBy = uploadBy;
-		this.uploadDate = uploadDate;
+		this.uploadDate = (Date) uploadDate.clone();
 		this.patientDbId = patientDbId;
 		this.studyDbId = studyDbId;
 		this.patient = patient;
