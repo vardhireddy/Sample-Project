@@ -68,7 +68,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public static final String POINT = "point";
 	public static final String FROM_DATE = "fromDate";
 	public static final String TO_DATE = "toDate";
-	
+
     public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
             + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
             + " FROM annotation JOIN ( SELECT  0 AS idx UNION "
@@ -96,8 +96,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "inner join patient p "
 			+ "on p.id = im.patient_dbid ";
 	
-	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  x.instance_count, x.equipment, x.patient_id "
-			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, im.series_instance_uid, im.upload_date from patient p, image_set im "
+	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  "
+			+ " x.instance_count, x.equipment, x.patient_id, x.properties "
+			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, "
+			+ " im.series_instance_uid, im.upload_date, CAST(im.properties as CHAR(20000)) properties from patient p, image_set im "
 			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
 	private static final String SUFFIX_IMG_SERIES_DATA_BY_FILTERS = "  order by x.patient_id ";
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
@@ -274,7 +276,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
 		List<Object[]> objList = q.getResultList();
-		if(null != objList && !objList.isEmpty()){		
+		if(null != objList && !objList.isEmpty()){
+			ObjectMapper mapper = new ObjectMapper();
 	        objList.stream().forEach((record) -> {
 	        	Patient p = new Patient();
 	        	ImageSeries imgSeries = new ImageSeries();
@@ -291,6 +294,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	imgSeries.setEquipment((String) record[8]);
 	        	p.setPatientId((String) record[9]);
 	        	imgSeries.setPatient(p);
+	        	try {
+					imgSeries.setProperties((Object) mapper.readValue(record[10].toString(), Object.class));
+				} catch (IOException e) {
+					// TODO throw the exception
+					e.printStackTrace();
+				}
 	        	imageSeriesList.add(imgSeries);
 	        });     
 	        logger.debug("Image series lis size " + imageSeriesList.size());
@@ -307,9 +316,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				geclassParams.put(GE_CLASS, params.get(GE_CLASS));
 				params.remove(GE_CLASS);
 			}
-			
+
 		params = checkDateFormat(params);
-		
+
 		boolean fromDatePresent = params.containsKey(FROM_DATE);
 		boolean toDatePresent = params.containsKey(TO_DATE);
 		if(fromDatePresent || toDatePresent){
@@ -319,8 +328,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			params.remove(FROM_DATE);
 			params.remove(TO_DATE);
 		}
-	
-			
+
+
 		StringBuilder builder = new StringBuilder();
 		if (params.size() > 0) {
 			if(params.containsKey(ANNOTATIONS)){
