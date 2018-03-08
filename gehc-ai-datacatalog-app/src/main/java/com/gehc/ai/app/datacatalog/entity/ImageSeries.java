@@ -272,7 +272,7 @@ public class ImageSeries implements Serializable {
 		this.uploadBy = uploadBy;
 	}
 	public Date getUploadDate() {
-		return this.uploadDate;
+		return (Date) this.uploadDate.clone();
 	}
 	public void setUploadDate(Date uploadDate) {
 		this.uploadDate = (Date) uploadDate.clone();
