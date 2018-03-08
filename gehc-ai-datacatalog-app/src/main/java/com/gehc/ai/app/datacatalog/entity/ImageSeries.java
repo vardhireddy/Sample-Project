@@ -275,7 +275,7 @@ public class ImageSeries implements Serializable {
 		if(this.uploadDate != null){
 			return (Date) this.uploadDate.clone();
 		}
-		return this.uploadDate;
+		return null;
 	}
 	public void setUploadDate(Date uploadDate) {
 		if(uploadDate != null){
