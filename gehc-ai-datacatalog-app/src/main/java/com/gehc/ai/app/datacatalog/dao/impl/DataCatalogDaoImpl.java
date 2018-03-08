@@ -16,17 +16,25 @@ import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +44,15 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
 
 @Service
 @Component
@@ -57,6 +66,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public static final String ELLIPSE = "ellipse";
 	public static final String LINE = "line";
 	public static final String POINT = "point";
+	public static final String FROM_DATE = "fromDate";
+	public static final String TO_DATE = "toDate";
 	
     public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
             + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
@@ -86,7 +97,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "on p.id = im.patient_dbid ";
 	
 	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  x.instance_count, x.equipment, x.patient_id "
-			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, im.series_instance_uid from patient p, image_set im "
+			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, im.series_instance_uid, im.upload_date from patient p, image_set im "
 			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
 	private static final String SUFFIX_IMG_SERIES_DATA_BY_FILTERS = "  order by x.patient_id ";
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
@@ -289,12 +300,27 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	
 	String constructQuery(Map<String, Object> params) {
 		boolean geclassPresent = false;
+		String dateRangeQuery = null;
 		Map<String, Object> geclassParams = new HashMap<String, Object>();
 			if(params.containsKey(GE_CLASS)){
 				geclassPresent = true;
 				geclassParams.put(GE_CLASS, params.get(GE_CLASS));
 				params.remove(GE_CLASS);
 			}
+			
+		params = checkDateFormat(params);
+		
+		boolean fromDatePresent = params.containsKey(FROM_DATE);
+		boolean toDatePresent = params.containsKey(TO_DATE);
+		if(fromDatePresent || toDatePresent){
+			if(fromDatePresent && toDatePresent){
+				dateRangeQuery = " and x.upload_date between \""+params.get(FROM_DATE)+"\" and \""+params.get(TO_DATE)+"\"";
+			}
+			params.remove(FROM_DATE);
+			params.remove(TO_DATE);
+		}
+	
+			
 		StringBuilder builder = new StringBuilder();
 		if (params.size() > 0) {
 			if(params.containsKey(ANNOTATIONS)){
@@ -319,12 +345,26 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				}
 			}
 		}
+		if(dateRangeQuery != null){
+			builder.append(dateRangeQuery);
+		}
 		if(geclassPresent){
 			builder.append(getGEClassQuery(geclassParams));
 		}
 		return builder.toString();
 	}
 	
+	private Map<String, Object> checkDateFormat(Map<String, Object> params) {
+
+		if(params.get(FROM_DATE)  != null && !(params.get(FROM_DATE).toString().contains(" "))){
+			params.put(FROM_DATE, params.get(FROM_DATE).toString().concat(" 00:00:00"));
+		}
+		if(params.get(TO_DATE)  != null && !(params.get(TO_DATE).toString().contains(" "))){
+			params.put(TO_DATE, params.get(TO_DATE).toString().concat(" 00:00:00"));
+		}
+		return params;
+	}
+
 	private String constructWhereClause(String param, String values) {
 		StringBuilder whereClause = new StringBuilder().append("x."+param + " IN (") ;
         whereClause.append(quoteValues(values));

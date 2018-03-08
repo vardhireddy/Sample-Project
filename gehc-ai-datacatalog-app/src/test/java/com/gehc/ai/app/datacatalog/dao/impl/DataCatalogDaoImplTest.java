@@ -513,8 +513,10 @@ public class DataCatalogDaoImplTest {
     public void testConstructQueryWithMultipleParamSingleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         input.putAll(constructQueryParam("anatomy", "LUNG"));
+        input.put("fromDate", "2017-12-14 19:00:00");
+        input.put("toDate", "2017-12-14 20:00:00");
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\") and x.upload_date between \"2017-12-14 19:00:00\" and \"2017-12-14 20:00:00\"";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
     }
