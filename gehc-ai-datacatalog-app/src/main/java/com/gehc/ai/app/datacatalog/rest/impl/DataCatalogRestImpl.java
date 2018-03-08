@@ -105,6 +105,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String DATA_FORMAT = "data_format";
     public static final String INSTITUTION = "institution";
     public static final String EQUIPMENT = "equipment";
+	public static final String FROM_DATE = "fromDate";
+	public static final String TO_DATE = "toDate";
     public static final int ORG_ID_LENGTH = 255;
 
     @Value("${coolidge.micro.inference.url}")
@@ -826,7 +828,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesByFilters(@RequestParam Map<String, Object> params) {
     	Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
-                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS));
+                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS, FROM_DATE, TO_DATE));
         ResponseBuilder responseBuilder;
         List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();
         try {
