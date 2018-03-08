@@ -77,7 +77,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test"};
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
     }
@@ -363,6 +363,9 @@ public class DataCatalogDaoImplTest {
 //        imgSeries.setManufacturer("test");
         imgSeries.setInstanceCount(1);
         imgSeries.setEquipment("GE XRAY");
+        LinkedHashMap prop = new LinkedHashMap();
+        prop.put("name", "PTX");
+        imgSeries.setProperties(prop);
 //        imgSeries.setImageType("test");
 //        imgSeries.setView("test");
         p.setPatientId("test");

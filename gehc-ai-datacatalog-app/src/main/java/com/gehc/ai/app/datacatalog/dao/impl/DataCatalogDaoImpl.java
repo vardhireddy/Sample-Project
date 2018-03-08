@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +36,15 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
 
 @Service
 @Component
@@ -85,8 +86,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "inner join patient p "
 			+ "on p.id = im.patient_dbid ";
 	
-	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  x.instance_count, x.equipment, x.patient_id "
-			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, im.series_instance_uid from patient p, image_set im "
+	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  "
+			+ " x.instance_count, x.equipment, x.patient_id, x.properties "
+			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, "
+			+ " im.series_instance_uid, CAST(im.properties as CHAR(20000)) properties from patient p, image_set im "
 			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
 	private static final String SUFFIX_IMG_SERIES_DATA_BY_FILTERS = "  order by x.patient_id ";
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
@@ -263,7 +266,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
 		List<Object[]> objList = q.getResultList();
-		if(null != objList && !objList.isEmpty()){		
+		if(null != objList && !objList.isEmpty()){	
+			ObjectMapper mapper = new ObjectMapper();
 	        objList.stream().forEach((record) -> {
 	        	Patient p = new Patient();
 	        	ImageSeries imgSeries = new ImageSeries();
@@ -280,6 +284,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	imgSeries.setEquipment((String) record[8]);
 	        	p.setPatientId((String) record[9]);
 	        	imgSeries.setPatient(p);
+	        	try {
+					imgSeries.setProperties((Object) mapper.readValue(record[10].toString(), Object.class));
+				} catch (IOException e) {
+					// TODO throw the exception
+					e.printStackTrace();
+				}
 	        	imageSeriesList.add(imgSeries);
 	        });     
 	        logger.debug("Image series lis size " + imageSeriesList.size());
