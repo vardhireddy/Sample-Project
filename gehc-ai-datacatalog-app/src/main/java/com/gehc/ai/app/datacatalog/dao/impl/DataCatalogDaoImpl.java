@@ -97,9 +97,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "on p.id = im.patient_dbid ";
 	
 	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  "
-			+ " x.instance_count, x.equipment, x.patient_id, x.properties "
+			+ " x.instance_count, x.equipment, x.patient_id, x.properties, x.upload_date "
 			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, "
-			+ " im.series_instance_uid, im.upload_date, CAST(im.properties as CHAR(20000)) properties from patient p, image_set im "
+			+ " im.series_instance_uid, CAST(im.properties as CHAR(20000)) properties, im.upload_date from patient p, image_set im "
 			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
 	private static final String SUFFIX_IMG_SERIES_DATA_BY_FILTERS = "  order by x.patient_id ";
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
@@ -300,6 +300,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					// TODO throw the exception
 					e.printStackTrace();
 				}
+	        	imgSeries.setUploadDate((Date)record[11]);
 	        	imageSeriesList.add(imgSeries);
 	        });     
 	        logger.debug("Image series lis size " + imageSeriesList.size());
