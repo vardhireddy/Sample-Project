@@ -287,8 +287,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	        	try {
 					imgSeries.setProperties((Object) mapper.readValue(record[10].toString(), Object.class));
 				} catch (IOException e) {
-					// TODO throw the exception
-					e.printStackTrace();
+					logger.error("Properties not avaialvle for image id "+ imgSeries.getId() + " for possible reason " + e);
 				}
 	        	imageSeriesList.add(imgSeries);
 	        });     
