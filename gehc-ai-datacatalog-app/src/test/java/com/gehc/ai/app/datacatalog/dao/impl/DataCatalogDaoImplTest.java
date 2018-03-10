@@ -62,6 +62,30 @@ public class DataCatalogDaoImplTest {
         GEClass[] expectedValue = new GEClass[0];
         assertEquals(expectedValue.getClass(), returnValue.getClass());
     }
+    
+    @Test
+    public void testGEClassesWithoutGEClass() {
+        Map geClass = getParamsMap();
+        geClass.remove("ge-class");
+        returnValue = dataCatalogDao.getGEClasses(geClass);
+        List expectedList = new ArrayList();
+        expectedList.add(1L);
+        expectedList.add(2L);
+        GEClass[] expectedValue = new GEClass[0];
+        assertEquals(expectedValue.getClass(), returnValue.getClass());
+    }
+    
+    @Test
+    public void testGEClassesThrowsException() {
+        Map geClass = getParamsMap();
+        geClass.put("ge-class", "[\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]");// {"name": "Pediatric", "value": "", "patient_outcome": "40"}]
+        returnValue = dataCatalogDao.getGEClasses(geClass);
+        List expectedList = new ArrayList();
+        expectedList.add(1L);
+        expectedList.add(2L);
+        GEClass[] expectedValue = new GEClass[0];
+        assertEquals(expectedValue.getClass(), returnValue.getClass());
+    }
 
     @Test
     public void testgeClassDataSummary() {
