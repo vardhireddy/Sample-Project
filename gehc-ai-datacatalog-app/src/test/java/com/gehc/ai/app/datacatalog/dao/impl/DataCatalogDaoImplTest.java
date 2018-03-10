@@ -72,6 +72,16 @@ public class DataCatalogDaoImplTest {
         assertEquals("{8082=CR, 121=DX}", result.toString());
 
     }
+    
+    @Test
+    public void testgeClassDataSummaryAnatomy() {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
+        when(query.getResultList()).thenReturn(getQueryList("anatomy"));
+        Map result = dataCatalogDao.geClassDataSummary(getMapForGEClassDataSummary(), "123");
+        assertEquals("{8203=CHEST}", result.toString());
+
+    }
 
     public void dataSetUp() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
