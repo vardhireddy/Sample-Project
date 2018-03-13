@@ -262,7 +262,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
                     logger.info("[In REST, Annotation exists so returning annotation with id = " + ids + "]");
                     apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                            ApplicationConstants.SUCCESS,idValue);
+                            ApplicationConstants.SUCCESS, idValue);
                 } else {
                     Annotation newAnnotation = annotationRepository.save(annotation);
 
@@ -418,10 +418,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ApiResponse apiResponse = null;
         logger.info("[In REST, update institution = " + u.getInstitution() + u.getSeriesUIds());
         try {
-            if (u.getSeriesUIds().length>0) {
+            if (u.getSeriesUIds().length > 0) {
                 imageSeriesRepository.updateInstitution(u.getInstitution(), u.getSeriesUIds());
                 apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                        ApplicationConstants.SUCCESS,convertStringArrayToString(u.getSeriesUIds(), ","));
+                        ApplicationConstants.SUCCESS, convertStringArrayToString(u.getSeriesUIds(), ","));
             }
         } catch (Exception e) {
             logger.error("Exception occured while updating institution ", e);
@@ -439,6 +439,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             sb.append(str).append(delimiter);
         return sb.substring(0, sb.length() - 1);
     }
+
     /*
      * (non-Javadoc)
      *
@@ -500,13 +501,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
                     }
                     return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
-                  //  return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
+                    //  return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
                 }
             }
         }
         return new ArrayList<ImageSeries>();
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -621,7 +622,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     .entity("Datacollection id and annotation type is required to get annotation for a data collection")
                     .build());
         }
-        
+
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> annImgSetDCLst = null;
         List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
@@ -816,7 +817,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return apiResponse;
     }
-    
+
     /*
      *   * (non-Javadoc)   *   * @see
      * com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()  
@@ -853,8 +854,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
 
-
-
     private List<Long> getImgSeriesIdsByDSId(@PathVariable Long id) {
         // Note: Coolidge is using this as well
         logger.debug("In REST , Get img series for DC id " + id);
@@ -882,11 +881,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         List<AnnotationDetails> annotationByDSList = new ArrayList<AnnotationDetails>();
         List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
         if (!imgSerIdLst.isEmpty()) {
-        	annotationByDSList = dataCatalogService.getAnnotationsByDSId(imgSerIdLst);
+            annotationByDSList = dataCatalogService.getAnnotationsByDSId(imgSerIdLst);
         }
         return annotationByDSList;
     }
-    
+
     @Override
     @RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.DELETE)
     public ApiResponse deleteImageSeries(@PathVariable String id) {
@@ -903,7 +902,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         logger.debug(" image series size " + imgSeriesLst.size());
                         imageSeriesRepository.delete(imgSeriesLst.get(0));
                     } else {
-                    	imageSeriesRepository.delete(imgSeries);
+                        imageSeriesRepository.delete(imgSeries);
                     }
                     apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
                             ApplicationConstants.SUCCESS, id);
