@@ -13,7 +13,6 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ANNOTATION_TYPES;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,7 +30,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -105,8 +103,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String DATA_FORMAT = "data_format";
     public static final String INSTITUTION = "institution";
     public static final String EQUIPMENT = "equipment";
-	public static final String FROM_DATE = "fromDate";
-	public static final String TO_DATE = "toDate";
+	public static final String DATE_FROM = "dateFrom";
+	public static final String DATE_TO = "dateTo";
     public static final int ORG_ID_LENGTH = 255;
 
     @Value("${coolidge.micro.inference.url}")
@@ -828,7 +826,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesByFilters(@RequestParam Map<String, Object> params) {
         Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
-                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS, FROM_DATE, TO_DATE));
+                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS, DATE_FROM, DATE_TO));
         ResponseBuilder responseBuilder;
         List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();
         try {

@@ -13,8 +13,8 @@
 package com.gehc.ai.app.datacatalog.serialization;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Component;
 
@@ -24,13 +24,13 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 @Component
-public class JsonDateSerializer extends JsonSerializer<Date> {
+public class JsonDateSerializer extends JsonSerializer<LocalDateTime> {
 
 	@Override
-	public void serialize(Date date, JsonGenerator gen, SerializerProvider provider)
+	public void serialize(LocalDateTime dateTime, JsonGenerator gen, SerializerProvider serializers)
 			throws IOException, JsonProcessingException {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String formattedDate = dateFormat.format(date);
-		gen.writeString(formattedDate);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		gen.writeString(formatter.format(dateTime));
+		
 	}
 }

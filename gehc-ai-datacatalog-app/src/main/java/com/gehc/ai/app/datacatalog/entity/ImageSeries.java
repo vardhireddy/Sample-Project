@@ -13,7 +13,7 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -29,8 +29,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -138,11 +136,10 @@ public class ImageSeries implements Serializable {
 	 * Date data was uploaded into database. Should be left to database to
 	 * provide.
 	 */
-	@JsonSerialize(using=JsonDateSerializer.class)
 	@Column(name = "upload_date")
 	@JsonProperty(access = Access.READ_ONLY)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date uploadDate;
+	@JsonSerialize(using=JsonDateSerializer.class)
+	private LocalDateTime uploadDate;
 
 	/**
 	 * Patient table ID. Establishes a correlation with the patient table
@@ -271,16 +268,11 @@ public class ImageSeries implements Serializable {
 	public void setUploadBy(String uploadBy) {
 		this.uploadBy = uploadBy;
 	}
-	public Date getUploadDate() {
-		if(this.uploadDate != null){
-			return (Date) this.uploadDate.clone();
-		}
-		return null;
+	public LocalDateTime getUploadDate() {
+		return this.uploadDate;
 	}
-	public void setUploadDate(Date uploadDate) {
-		if(uploadDate != null){
-			this.uploadDate = (Date) uploadDate.clone();
-		}
+	public void setUploadDate(LocalDateTime uploadDate) {
+		this.uploadDate = uploadDate;
 	}
 	public Object getProperties() {
 		return properties;
@@ -296,7 +288,7 @@ public class ImageSeries implements Serializable {
 	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
 			String uri, String seriesInstanceUid, String description, String institution, String equipment,
 			String manufacturer, String imageType, String view, int instanceCount, Object properties, String uploadBy,
-			Date uploadDate, Long patientDbId, Long studyDbId, Patient patient,
+			LocalDateTime uploadDate, Long patientDbId, Long studyDbId, Patient patient,
 			String acqDate, String acqTime) {
 		super();
 		this.id = id;
@@ -316,9 +308,7 @@ public class ImageSeries implements Serializable {
 		this.instanceCount = instanceCount;
 		this.properties = properties;
 		this.uploadBy = uploadBy;
-		if(uploadDate != null){
-			this.uploadDate = (Date) uploadDate.clone();
-		}
+		this.uploadDate = uploadDate;
 		this.patientDbId = patientDbId;
 		this.studyDbId = studyDbId;
 		this.patient = patient;
@@ -343,7 +333,7 @@ public class ImageSeries implements Serializable {
 	 */
 	@PrePersist
 	protected void onCreate() {
-		uploadDate = new Date();
+		uploadDate = LocalDateTime.now();
 	}
 	
 	/**
@@ -352,7 +342,7 @@ public class ImageSeries implements Serializable {
 	 */
 	@PreUpdate
 	protected void onUpdate() {
-		uploadDate = new Date();
+		uploadDate = LocalDateTime.now();
 	}
 	
 	

@@ -16,12 +16,11 @@ import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatterBuilder;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -62,8 +61,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public static final String ELLIPSE = "ellipse";
 	public static final String LINE = "line";
 	public static final String POINT = "point";
-	public static final String FROM_DATE = "fromDate";
-	public static final String TO_DATE = "toDate";
+	public static final String DATE_FROM = "dateFrom";
+	public static final String DATE_TO = "dateTo";
 
     public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
             + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
@@ -264,111 +263,120 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(GET_IMG_SERIES_DATA_BY_FILTERS);
-		builder.append(constructQuery(params));
-		builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
-		logger.debug("Query to get image series by filters = " + builder.toString());
-		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
-		List<Object[]> objList = q.getResultList();
-		if(null != objList && !objList.isEmpty()){
-			ObjectMapper mapper = new ObjectMapper();
-	        objList.stream().forEach((record) -> {
-	        	Patient p = new Patient();
-	        	ImageSeries imgSeries = new ImageSeries();
-	        	if (record[0] instanceof BigInteger){
-	        		imgSeries.setId(((BigInteger) record[0]).longValue());
-	        	}
-	        	imgSeries.setOrgId((String) record[1]);
-	        	imgSeries.setModality((String) record[2]);
-	        	imgSeries.setAnatomy((String) record[3]);
-	        	imgSeries.setDataFormat((String) record[4]);
-	        	imgSeries.setSeriesInstanceUid((String) record[5]);
-	        	imgSeries.setInstitution((String) record[6]);
-	        	imgSeries.setInstanceCount((int) record[7]);
-	        	imgSeries.setEquipment((String) record[8]);
-	        	p.setPatientId((String) record[9]);
-	        	imgSeries.setPatient(p);
-	        	try {
-					imgSeries.setProperties((Object) mapper.readValue(record[10].toString(), Object.class));
-				} catch (IOException e) {
-					// TODO throw the exception
-					e.printStackTrace();
-				}
-	        	imgSeries.setUploadDate((Date)record[11]);
-	        	imageSeriesList.add(imgSeries);
-	        });     
-	        logger.debug("Image series lis size " + imageSeriesList.size());
+		try{
+			StringBuilder builder = new StringBuilder();
+			builder.append(GET_IMG_SERIES_DATA_BY_FILTERS);
+			builder.append(constructQuery(params));
+			builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
+			logger.debug("Query to get image series by filters = " + builder.toString());
+			Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
+			
+			List<Object[]> objList = q.getResultList();
+			if(null != objList && !objList.isEmpty()){
+				ObjectMapper mapper = new ObjectMapper();
+		        objList.stream().forEach((record) -> {
+		        	Patient p = new Patient();
+		        	ImageSeries imgSeries = new ImageSeries();
+		        	if (record[0] instanceof BigInteger){
+		        		imgSeries.setId(((BigInteger) record[0]).longValue());
+		        	}
+		        	imgSeries.setOrgId((String) record[1]);
+		        	imgSeries.setModality((String) record[2]);
+		        	imgSeries.setAnatomy((String) record[3]);
+		        	imgSeries.setDataFormat((String) record[4]);
+		        	imgSeries.setSeriesInstanceUid((String) record[5]);
+		        	imgSeries.setInstitution((String) record[6]);
+		        	imgSeries.setInstanceCount((int) record[7]);
+		        	imgSeries.setEquipment((String) record[8]);
+		        	p.setPatientId((String) record[9]);
+		        	imgSeries.setPatient(p);
+		        	try {
+						imgSeries.setProperties((Object) mapper.readValue(record[10].toString(), Object.class));
+					} catch (IOException e) {
+						// TODO throw the exception
+						e.printStackTrace();
+					}
+		        	imgSeries.setUploadDate(((Timestamp)record[11]).toLocalDateTime());
+		        	imageSeriesList.add(imgSeries);
+		        });     
+		        logger.debug("Image series lis size " + imageSeriesList.size());
+			}
+		}catch(Exception e){
+			logger.error("Dao error while getImgSeriesByFilters", e);
+			throw e;
 		}
 		return imageSeriesList;
 	}
-	
+
 	String constructQuery(Map<String, Object> params) {
 		boolean geclassPresent = false;
 		String dateRangeQuery = null;
 		Map<String, Object> geclassParams = new HashMap<String, Object>();
+		StringBuilder builder = new StringBuilder();
+		try{
 			if(params.containsKey(GE_CLASS)){
 				geclassPresent = true;
 				geclassParams.put(GE_CLASS, params.get(GE_CLASS));
 				params.remove(GE_CLASS);
 			}
-
-		params = checkDateFormat(params);
-
-		boolean fromDatePresent = params.containsKey(FROM_DATE);
-		boolean toDatePresent = params.containsKey(TO_DATE);
-		if(fromDatePresent || toDatePresent){
-			if(fromDatePresent && toDatePresent){
-				dateRangeQuery = " and x.upload_date between \""+params.get(FROM_DATE)+"\" and \""+params.get(TO_DATE)+"\"";
+			if(params.containsKey(DATE_FROM) && params.containsKey(DATE_TO)){
+				String dateFrom = convertUserDateToDBDate(params.get(DATE_FROM));
+				String dateTo = convertUserDateToDBDate(params.get(DATE_TO));
+				dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
+				params.remove(DATE_FROM);
+				params.remove(DATE_TO);
 			}
-			params.remove(FROM_DATE);
-			params.remove(TO_DATE);
-		}
 
-
-		StringBuilder builder = new StringBuilder();
-		if (params.size() > 0) {
-			if(params.containsKey(ANNOTATIONS)){
-				if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
-					builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
-					builder.append(constructAnnotationWhereClause("type", params.get(ANNOTATIONS).toString()));
-					builder.append(" AND ");
+			if (params.size() > 0) {
+				if(params.containsKey(ANNOTATIONS)){
+					if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
+						builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
+						builder.append(constructAnnotationWhereClause("type", params.get(ANNOTATIONS).toString()));
+						builder.append(" AND ");
+					}else{
+						builder.append(ANNOTATION_ABSENT_QUERY);
+					}
 				}else{
-					builder.append(ANNOTATION_ABSENT_QUERY);
+					builder.append(" WHERE ");
 				}
-			}else{
-				builder.append(" WHERE ");
-			}
-			params.remove(ANNOTATIONS);
-			for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
-				Map.Entry<String, Object> entry = entries.next();
-				String key = entry.getKey();
-				String values = entry.getValue().toString();
-				builder.append(constructWhereClause(key,values));
-				if (entries.hasNext()) {
-					builder.append(" AND ");
+				params.remove(ANNOTATIONS);
+				for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
+					Map.Entry<String, Object> entry = entries.next();
+					String key = entry.getKey();
+					String values = entry.getValue().toString();
+					builder.append(constructWhereClause(key,values));
+					if (entries.hasNext()) {
+						builder.append(" AND ");
+					}
 				}
 			}
-		}
-		if(dateRangeQuery != null){
-			builder.append(dateRangeQuery);
-		}
-		if(geclassPresent){
-			builder.append(getGEClassQuery(geclassParams));
+			if(dateRangeQuery != null){
+				builder.append(dateRangeQuery);
+			}
+			if(geclassPresent){
+				builder.append(getGEClassQuery(geclassParams));
+			}
+		}catch(Exception e){
+			logger.error("Dao error while constructQuery", e);
+			throw e;
 		}
 		return builder.toString();
 	}
 	
-	private Map<String, Object> checkDateFormat(Map<String, Object> params) {
+	private String convertUserDateToDBDate(Object dateStr){
 
-		if(params.get(FROM_DATE)  != null && !(params.get(FROM_DATE).toString().contains(" "))){
-			params.put(FROM_DATE, params.get(FROM_DATE).toString().concat(" 00:00:00"));
+		DateTimeFormatter sourceFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		DateTimeFormatter targetFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime localtDateAndTime = null;
+		try{
+			localtDateAndTime = LocalDateTime.parse((String)dateStr, sourceFormat);
+		}catch(Exception e){
+			logger.error("Dao error while convertingDateFormats", e);
+			throw e;
 		}
-		if(params.get(TO_DATE)  != null && !(params.get(TO_DATE).toString().contains(" "))){
-			params.put(TO_DATE, params.get(TO_DATE).toString().concat(" 00:00:00"));
-		}
-		return params;
+		
+		return targetFormat.format(localtDateAndTime);
 	}
 
 	private String constructWhereClause(String param, String values) {

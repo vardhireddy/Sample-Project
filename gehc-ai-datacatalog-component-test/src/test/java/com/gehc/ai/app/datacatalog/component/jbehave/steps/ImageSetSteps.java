@@ -231,7 +231,28 @@ public class ImageSetSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
     }
+    
+    @Given("Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange - DataSetUp Provided")
+    public void givenImagesetImageBasedOnFilterCriteriaOrgIdModAnatomyDateRange() throws Exception {
+        List<ImageSeries> imgSeries = commonSteps.getImageSeries();
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+    }
 
+
+    @When("Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange")
+    public void getImagesetImageBasedOnFilterCriteriaOrgIdModAnatomyDateRange() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-series?org_id=61939267&modality=CT&anatomy=Lung&dateFrom=2017-12-14%2019:00:00&dateTo=2017-12-14%2020:00:00")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    @Then("verify Image set based on filter  with ORG ID , Modality, Anatomy and DateRange")
+    public void verifyImagesetImageBasedOnFilterCriteriaOrgIdModAnatomyDateRange() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+    
     @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();

@@ -5,6 +5,8 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -16,6 +18,14 @@ public class CommonSteps {
     public Date getDate() {
         String str = "2017-03-31";
         return Date.valueOf(str);
+    }
+    
+    public LocalDateTime getUploadDate() {
+        String str = "2017-03-31 00:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime localtDateAndTime = LocalDateTime.parse(str, formatter);
+		
+        return localtDateAndTime;
     }
 
     public Date getDateTime() {
@@ -35,7 +45,7 @@ public class CommonSteps {
         imageSeries.setEquipment("tem");
         imageSeries.setInstanceCount(1);
         imageSeries.setUploadBy("BDD");
-        imageSeries.setUploadDate(getDate());
+        imageSeries.setUploadDate(getUploadDate());
         imageSeries.setPatientDbId(1L);
         Map prop = new HashMap<String,String>();
         prop.put("test", "bdd");
@@ -63,7 +73,7 @@ public class CommonSteps {
         imageSeries.setEquipment("tem");
         imageSeries.setInstanceCount(1);
         imageSeries.setUploadBy("BDD");
-        imageSeries.setUploadDate(getDate());
+        imageSeries.setUploadDate(getUploadDate());
         imageSeries.setPatientDbId(1L);
         Map prop = new HashMap<String,String>();
         prop.put("test", "bdd");
@@ -102,7 +112,7 @@ public class CommonSteps {
         imageSeries.setEquipment("CT");
         imageSeries.setInstanceCount(1);
         imageSeries.setUploadBy("BDD");
-        imageSeries.setUploadDate(getDate());
+        imageSeries.setUploadDate(getUploadDate());
         imageSeries.setPatientDbId(1L);
         Map prop = new HashMap<String,String>();
         prop.put("test", "bdd");
