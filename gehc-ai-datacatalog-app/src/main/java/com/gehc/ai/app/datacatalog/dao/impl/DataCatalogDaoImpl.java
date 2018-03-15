@@ -270,8 +270,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			builder.append(constructQuery(params));
 			builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
 			logger.debug("Query to get image series by filters = " + builder.toString());
-			Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
-			
+			Query q = em.createNativeQuery(builder.toString());	// NOSONAR
+
 			List<Object[]> objList = q.getResultList();
 			if(null != objList && !objList.isEmpty()){
 				ObjectMapper mapper = new ObjectMapper();
@@ -294,12 +294,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		        	try {
 						imgSeries.setProperties((Object) mapper.readValue(record[10].toString(), Object.class));
 					} catch (IOException e) {
-						// TODO throw the exception
-						e.printStackTrace();
+                        logger.error("Properties not available for image id "+ imgSeries.getId() + e);
 					}
 		        	imgSeries.setUploadDate(((Timestamp)record[11]).toLocalDateTime());
 		        	imageSeriesList.add(imgSeries);
-		        });     
+		        });
 		        logger.debug("Image series lis size " + imageSeriesList.size());
 			}
 		}catch(Exception e){
@@ -308,7 +307,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 		return imageSeriesList;
 	}
-
+	
 	String constructQuery(Map<String, Object> params) {
 		boolean geclassPresent = false;
 		String dateRangeQuery = null;
@@ -375,7 +374,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			logger.error("Dao error while convertingDateFormats", e);
 			throw e;
 		}
-		
+
 		return targetFormat.format(localtDateAndTime);
 	}
 
