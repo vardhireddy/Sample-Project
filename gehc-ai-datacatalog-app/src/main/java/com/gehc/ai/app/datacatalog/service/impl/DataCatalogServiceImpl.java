@@ -14,13 +14,12 @@ package com.gehc.ai.app.datacatalog.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;

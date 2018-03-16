@@ -16,6 +16,9 @@ import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,7 +61,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public static final String ELLIPSE = "ellipse";
 	public static final String LINE = "line";
 	public static final String POINT = "point";
-	
+	public static final String DATE_FROM = "dateFrom";
+	public static final String DATE_TO = "dateTo";
+
     public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
             + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
             + " FROM annotation JOIN ( SELECT  0 AS idx UNION "
@@ -87,9 +92,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ "on p.id = im.patient_dbid ";
 	
 	private static final String GET_IMG_SERIES_DATA_BY_FILTERS = "  select distinct x.id, x.org_id, x.modality, x.anatomy, x.data_format, x.series_instance_uid, x.institution,  "
-			+ " x.instance_count, x.equipment, x.patient_id, x.properties "
+			+ " x.instance_count, x.equipment, x.patient_id, x.properties, x.upload_date "
 			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, "
-			+ " im.series_instance_uid, CAST(im.properties as CHAR(20000)) properties from patient p, image_set im "
+			+ " im.series_instance_uid, CAST(im.properties as CHAR(20000)) properties, im.upload_date from patient p, image_set im "
 			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
 	private static final String SUFFIX_IMG_SERIES_DATA_BY_FILTERS = "  order by x.patient_id ";
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
@@ -258,82 +263,126 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(GET_IMG_SERIES_DATA_BY_FILTERS);
-		builder.append(constructQuery(params));
-		builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
-		logger.debug("Query to get image series by filters = " + builder.toString());
-		Query q = em.createNativeQuery(builder.toString());	// NOSONAR		
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
-		List<Object[]> objList = q.getResultList();
-		if(null != objList && !objList.isEmpty()){	
-			ObjectMapper mapper = new ObjectMapper();
-	        objList.stream().forEach((record) -> {
-	        	Patient p = new Patient();
-	        	ImageSeries imgSeries = new ImageSeries();
-	        	if (record[0] instanceof BigInteger){
-	        		imgSeries.setId(((BigInteger) record[0]).longValue());
-	        	}
-	        	imgSeries.setOrgId((String) record[1]);
-	        	imgSeries.setModality((String) record[2]);
-	        	imgSeries.setAnatomy((String) record[3]);
-	        	imgSeries.setDataFormat((String) record[4]);
-	        	imgSeries.setSeriesInstanceUid((String) record[5]);
-	        	imgSeries.setInstitution((String) record[6]);
-	        	imgSeries.setInstanceCount((int) record[7]);
-	        	imgSeries.setEquipment((String) record[8]);
-	        	p.setPatientId((String) record[9]);
-	        	imgSeries.setPatient(p);
-	        	try {
-					imgSeries.setProperties((Object) mapper.readValue(record[10].toString(), Object.class));
-				} catch (IOException e) {
-					logger.error("Properties not available for image id "+ imgSeries.getId() + e);
-				}
-	        	imageSeriesList.add(imgSeries);
-	        });     
-	        logger.debug("Image series lis size " + imageSeriesList.size());
+		try{
+			StringBuilder builder = new StringBuilder();
+			builder.append(GET_IMG_SERIES_DATA_BY_FILTERS);
+			builder.append(constructQuery(params));
+			builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
+			logger.debug("Query to get image series by filters = " + builder.toString());
+			Query q = em.createNativeQuery(builder.toString());	// NOSONAR
+
+			List<Object[]> objList = q.getResultList();
+			if(null != objList && !objList.isEmpty()){
+				ObjectMapper mapper = new ObjectMapper();
+		        objList.stream().forEach((record) -> {
+		        	Patient p = new Patient();
+		        	ImageSeries imgSeries = new ImageSeries();
+		        	if (record[0] instanceof BigInteger){
+		        		imgSeries.setId(((BigInteger) record[0]).longValue());
+		        	}
+		        	imgSeries.setOrgId((String) record[1]);
+		        	imgSeries.setModality((String) record[2]);
+		        	imgSeries.setAnatomy((String) record[3]);
+		        	imgSeries.setDataFormat((String) record[4]);
+		        	imgSeries.setSeriesInstanceUid((String) record[5]);
+		        	imgSeries.setInstitution((String) record[6]);
+		        	imgSeries.setInstanceCount((int) record[7]);
+		        	imgSeries.setEquipment((String) record[8]);
+		        	p.setPatientId((String) record[9]);
+		        	imgSeries.setPatient(p);
+		        	try {
+						imgSeries.setProperties((Object) mapper.readValue(record[10].toString(), Object.class));
+					} catch (IOException e) {
+                        logger.error("Properties not available for image id "+ imgSeries.getId() + e);
+					}
+		        	imgSeries.setUploadDate(((Timestamp)record[11]).toLocalDateTime());
+		        	imageSeriesList.add(imgSeries);
+		        });
+		        logger.debug("Image series lis size " + imageSeriesList.size());
+			}
+		}catch(Exception e){
+			logger.error("Dao error while getImgSeriesByFilters", e);
+			throw e;
 		}
 		return imageSeriesList;
 	}
 	
 	String constructQuery(Map<String, Object> params) {
 		boolean geclassPresent = false;
+		String dateRangeQuery = null;
 		Map<String, Object> geclassParams = new HashMap<String, Object>();
+		StringBuilder builder = new StringBuilder();
+		try{
 			if(params.containsKey(GE_CLASS)){
 				geclassPresent = true;
 				geclassParams.put(GE_CLASS, params.get(GE_CLASS));
 				params.remove(GE_CLASS);
 			}
-		StringBuilder builder = new StringBuilder();
-		if (params.size() > 0) {
-			if(params.containsKey(ANNOTATIONS)){
-				if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
-					builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
-					builder.append(constructAnnotationWhereClause("type", params.get(ANNOTATIONS).toString()));
-					builder.append(" AND ");
+			if(params.containsKey(DATE_FROM) && params.containsKey(DATE_TO)){
+				String dateFrom = convertUserDateToDBDate(params.get(DATE_FROM));
+				String dateTo = convertUserDateToDBDate(params.get(DATE_TO));
+				if(dateFrom != null && dateTo != null){
+					dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
+				}
+				params.remove(DATE_FROM);
+				params.remove(DATE_TO);
+			}else if(params.containsKey(DATE_FROM)){
+				params.remove(DATE_FROM);
+			}else if(params.containsKey(DATE_TO)){
+				params.remove(DATE_TO);
+			}
+			if (params.size() > 0) {
+				if(params.containsKey(ANNOTATIONS)){
+					if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
+						builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
+						builder.append(constructAnnotationWhereClause("type", params.get(ANNOTATIONS).toString()));
+						builder.append(" AND ");
+					}else{
+						builder.append(ANNOTATION_ABSENT_QUERY);
+					}
 				}else{
-					builder.append(ANNOTATION_ABSENT_QUERY);
+					builder.append(" WHERE ");
 				}
-			}else{
-				builder.append(" WHERE ");
-			}
-			params.remove(ANNOTATIONS);
-			for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
-				Map.Entry<String, Object> entry = entries.next();
-				String key = entry.getKey();
-				String values = entry.getValue().toString();
-				builder.append(constructWhereClause(key,values));
-				if (entries.hasNext()) {
-					builder.append(" AND ");
+				params.remove(ANNOTATIONS);
+				for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
+					Map.Entry<String, Object> entry = entries.next();
+					String key = entry.getKey();
+					String values = entry.getValue().toString();
+					builder.append(constructWhereClause(key,values));
+					if (entries.hasNext()) {
+						builder.append(" AND ");
+					}
 				}
 			}
-		}
-		if(geclassPresent){
-			builder.append(getGEClassQuery(geclassParams));
+			if(dateRangeQuery != null){
+				builder.append(dateRangeQuery);
+			}
+			if(geclassPresent){
+				builder.append(getGEClassQuery(geclassParams));
+			}
+		}catch(Exception e){
+			logger.error("Dao error while constructQuery", e);
+			throw e;
 		}
 		return builder.toString();
 	}
 	
+	private String convertUserDateToDBDate(Object dateStr){
+
+		DateTimeFormatter sourceFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		DateTimeFormatter targetFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime localtDateAndTime = null;
+		try{
+			localtDateAndTime = LocalDateTime.parse((String)dateStr, sourceFormat);
+		}catch(Exception e){
+			logger.error("Dao error while converting Date Formats for "+dateStr, e);
+			return null;
+		}
+
+		return targetFormat.format(localtDateAndTime);
+	}
+
 	private String constructWhereClause(String param, String values) {
 		StringBuilder whereClause = new StringBuilder().append("x."+param + " IN (") ;
         whereClause.append(quoteValues(values));

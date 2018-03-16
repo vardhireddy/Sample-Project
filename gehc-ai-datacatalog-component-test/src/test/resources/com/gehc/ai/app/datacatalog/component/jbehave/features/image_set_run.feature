@@ -44,7 +44,7 @@ Get Image set based on filter criteria with Modality, DataFormat And Institution
 Get Image set based on filter criteria with Modality, Institution and Equipment
 Get Image set based on filter criteria with Institution name containing accepted special characters like comma
 Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
-
+Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange
 
   @functional
 @crs_10734
@@ -381,3 +381,10 @@ Meta: @automated
 Given Delete imageseries set data for Ids throws exception - DataSetUp Provided
 When Delete imageseries set data for Ids throws exception
 Then Verify Delete imageseries set data for Ids throws exception
+
+@test_54823
+Scenario: Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange
+Meta: @automated
+Given Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange - DataSetUp Provided
+When Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange
+Then verify Image set based on filter  with ORG ID , Modality, Anatomy and DateRange

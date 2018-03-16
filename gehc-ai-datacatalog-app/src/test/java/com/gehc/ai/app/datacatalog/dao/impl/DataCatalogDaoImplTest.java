@@ -11,6 +11,9 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javax.persistence.EntityManager;
@@ -43,6 +46,14 @@ public class DataCatalogDaoImplTest {
     @InjectMocks
     DataCatalogDaoImpl dataCatalogDao;
 
+    public LocalDateTime getUploadDate() {
+        String str = "2018-03-08 18:51:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime localtDateAndTime = LocalDateTime.parse(str, formatter);
+		
+        return localtDateAndTime;
+    }
+    
 /*    @Test
     public void testGetImageSeriesIdLst() {
         List returnList = dataCatalogDao.getImgSeriesIdLst(getImageSeries());
@@ -111,7 +122,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}"};
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}", new Timestamp(new Date("Thu Mar 08 18:51:30 PST 2018").getTime()) };
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
     }
@@ -121,7 +132,7 @@ public class DataCatalogDaoImplTest {
         dataSetUp();
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
-        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
@@ -143,7 +154,6 @@ public class DataCatalogDaoImplTest {
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
-
 
     @Test
     public void testgetDCByID() {
@@ -405,7 +415,7 @@ public class DataCatalogDaoImplTest {
         p.setPatientId("test");
 //        p.setAge("12");
 //        p.setGender("M");
-
+        imgSeries.setUploadDate(getUploadDate());
         imgSeries.setPatient(p);
         imageSeriesList.add(imgSeries);
         return imageSeriesList;
@@ -550,10 +560,22 @@ public class DataCatalogDaoImplTest {
     public void testConstructQueryWithMultipleParamSingleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         input.putAll(constructQueryParam("anatomy", "LUNG"));
+        input.put("dateFrom", "2017-12-14T19:00:00Z");
+        input.put("dateTo", "2017-12-14T20:00:00Z");
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\") and x.upload_date between \"2017-12-14 19:00:00\" and \"2017-12-14 20:00:00\"";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
+    }
+    
+    @Test
+    public void testConstructQueryWithInvalidDateFormat() {
+        Map<String, Object> input = constructQueryParam("modality", "CT");
+        input.put("dateFrom", "2017-12-14 19:00:00");
+        input.put("dateTo", "2017-12-14");
+        String result = dataCatalogDao.constructQuery(input);
+        String expectedResult = " WHERE x.modality IN (\"CT\")";
+        assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
     @Test
