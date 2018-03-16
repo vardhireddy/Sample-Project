@@ -47,7 +47,7 @@ public class DataCatalogDaoImplTest {
     DataCatalogDaoImpl dataCatalogDao;
 
     public LocalDateTime getUploadDate() {
-        String str = "2018-03-08 18:51:30";
+        String str = "2018-03-08 10:51:30";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime localtDateAndTime = LocalDateTime.parse(str, formatter);
 		
@@ -122,7 +122,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}", new Timestamp(new Date("Thu Mar 08 18:51:30 PST 2018").getTime()) };
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}", new Timestamp(new Date("Thu Mar 08 18:51:30 UTC 2018").getTime()) };
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
     }
