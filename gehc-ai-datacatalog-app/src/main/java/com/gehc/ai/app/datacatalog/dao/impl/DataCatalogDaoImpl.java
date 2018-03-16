@@ -325,8 +325,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
 				params.remove(DATE_FROM);
 				params.remove(DATE_TO);
+			}else if(params.containsKey(DATE_FROM)){
+				params.remove(DATE_FROM);
+			}else if(params.containsKey(DATE_TO)){
+				params.remove(DATE_TO);
 			}
-
 			if (params.size() > 0) {
 				if(params.containsKey(ANNOTATIONS)){
 					if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
