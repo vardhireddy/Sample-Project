@@ -242,7 +242,7 @@ public class ImageSetSteps {
     @When("Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange")
     public void getImagesetImageBasedOnFilterCriteriaOrgIdModAnatomyDateRange() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-series?org_id=61939267&modality=CT&anatomy=Lung&dateFrom=2017-12-14%2019:00:00&dateTo=2017-12-14%2020:00:00")
+                get("/api/v1/datacatalog/image-series?org_id=61939267&modality=CT&anatomy=Lung&dateFrom=2017-12-14T19:00:00Z&dateTo=2017-12-14T20:00:00Z")
                         .contentType(MediaType.APPLICATION_JSON)
         );
     }

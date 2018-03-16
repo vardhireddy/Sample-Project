@@ -27,7 +27,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -335,15 +334,4 @@ public class ImageSeries implements Serializable {
 	protected void onCreate() {
 		uploadDate = LocalDateTime.now();
 	}
-	
-	/**
-	 * updates the update_date column with the current date for each update 
-	 * on the object
-	 */
-	@PreUpdate
-	protected void onUpdate() {
-		uploadDate = LocalDateTime.now();
-	}
-	
-	
 }

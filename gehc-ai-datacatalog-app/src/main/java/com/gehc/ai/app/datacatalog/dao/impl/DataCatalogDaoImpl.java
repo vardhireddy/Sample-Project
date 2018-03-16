@@ -322,7 +322,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			if(params.containsKey(DATE_FROM) && params.containsKey(DATE_TO)){
 				String dateFrom = convertUserDateToDBDate(params.get(DATE_FROM));
 				String dateTo = convertUserDateToDBDate(params.get(DATE_TO));
-				dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
+				if(dateFrom != null && dateTo != null){
+					dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
+				}
 				params.remove(DATE_FROM);
 				params.remove(DATE_TO);
 			}else if(params.containsKey(DATE_FROM)){
@@ -374,8 +376,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		try{
 			localtDateAndTime = LocalDateTime.parse((String)dateStr, sourceFormat);
 		}catch(Exception e){
-			logger.error("Dao error while convertingDateFormats", e);
-			throw e;
+			logger.error("Dao error while converting Date Formats for "+dateStr, e);
+			return null;
 		}
 
 		return targetFormat.format(localtDateAndTime);

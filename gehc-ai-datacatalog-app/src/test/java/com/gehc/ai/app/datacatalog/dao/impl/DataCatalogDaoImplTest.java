@@ -155,7 +155,6 @@ public class DataCatalogDaoImplTest {
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
-
     @Test
     public void testgetDCByID() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
@@ -567,6 +566,16 @@ public class DataCatalogDaoImplTest {
         String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\") and x.upload_date between \"2017-12-14 19:00:00\" and \"2017-12-14 20:00:00\"";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
+    }
+    
+    @Test
+    public void testConstructQueryWithInvalidDateFormat() {
+        Map<String, Object> input = constructQueryParam("modality", "CT");
+        input.put("dateFrom", "2017-12-14 19:00:00");
+        input.put("dateTo", "2017-12-14");
+        String result = dataCatalogDao.constructQuery(input);
+        String expectedResult = " WHERE x.modality IN (\"CT\")";
+        assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
     @Test
