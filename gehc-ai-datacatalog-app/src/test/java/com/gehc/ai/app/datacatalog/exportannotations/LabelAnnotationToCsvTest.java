@@ -185,7 +185,7 @@ public class LabelAnnotationToCsvTest {
                         ColumnHeaderTypes.REQUIRED_ONLY,
                         "export-annotations-as-csv-test-files/valid-label-annotation-non-dicom-multiple-ge-classes-required-meta-data.json",
                         new String[]{"fileName", "spaceID", "annotationType", "label"},
-                        "\"file123.png\",\"space123\",\"label\",\"Cardiomegaly\"\n\"file123.png\",\"space123\",\"label\",\"Aorta Abnormalities\"\n"
+                        "\"file123.png\",\"\",\"label\",\"Cardiomegaly\"\n\"file123.png\",\"\",\"label\",\"Aorta Abnormalities\"\n"
                 }
         );
 
@@ -196,7 +196,7 @@ public class LabelAnnotationToCsvTest {
                         ColumnHeaderTypes.REQUIRED_ONLY,
                         "export-annotations-as-csv-test-files/valid-label-annotation-non-dicom-multiple-ge-classes-required-and-optional-meta-data.json",
                         new String[]{"fileName", "spaceID", "annotationType", "label"},
-                        "\"file123.png\",\"space123\",\"label\",\"Cardiomegaly\"\n\"file123.png\",\"space123\",\"label\",\"Aorta Abnormalities\"\n"
+                        "\"file123.png\",\"\",\"label\",\"Cardiomegaly\"\n\"file123.png\",\"\",\"label\",\"Aorta Abnormalities\"\n"
                 }
         );
 
@@ -207,7 +207,7 @@ public class LabelAnnotationToCsvTest {
                         ColumnHeaderTypes.REQUIRED_AND_OPTIONAL,
                         "export-annotations-as-csv-test-files/valid-label-annotation-non-dicom-multiple-ge-classes-required-and-optional-meta-data.json",
                         new String[]{"fileName", "spaceID", "annotationType", "label", "severity"},
-                        "\"file123.png\",\"space123\",\"label\",\"Cardiomegaly\",\"21\"\n\"file123.png\",\"space123\",\"label\",\"Aorta Abnormalities\",\"\"\n"
+                        "\"file123.png\",\"\",\"label\",\"Cardiomegaly\",\"21\"\n\"file123.png\",\"\",\"label\",\"Aorta Abnormalities\",\"\"\n"
                 }
         );
 
@@ -218,7 +218,7 @@ public class LabelAnnotationToCsvTest {
                         ColumnHeaderTypes.REQUIRED_AND_EXTRANEOUS,
                         "export-annotations-as-csv-test-files/valid-label-annotation-non-dicom-multiple-ge-classes-required-and-optional-meta-data.json",
                         new String[]{"fileName", "spaceID", "annotationType", "label", "coordSys", "data"},
-                        "\"file123.png\",\"space123\",\"label\",\"Cardiomegaly\",\"\",\"\"\n\"file123.png\",\"space123\",\"label\",\"Aorta Abnormalities\",\"\",\"\"\n"
+                        "\"file123.png\",\"\",\"label\",\"Cardiomegaly\",\"\",\"\"\n\"file123.png\",\"\",\"label\",\"Aorta Abnormalities\",\"\",\"\"\n"
                 }
         );
 
@@ -229,7 +229,7 @@ public class LabelAnnotationToCsvTest {
                         ColumnHeaderTypes.REQUIRED_AND_OPTIONAL_AND_EXTRANEOUS,
                         "export-annotations-as-csv-test-files/valid-label-annotation-non-dicom-multiple-ge-classes-required-and-optional-meta-data.json",
                         new String[]{"fileName", "spaceID", "annotationType", "label", "severity", "coordSys", "data"},
-                        "\"file123.png\",\"space123\",\"label\",\"Cardiomegaly\",\"21\",\"\",\"\"\n\"file123.png\",\"space123\",\"label\",\"Aorta Abnormalities\",\"\",\"\",\"\"\n"
+                        "\"file123.png\",\"\",\"label\",\"Cardiomegaly\",\"21\",\"\",\"\"\n\"file123.png\",\"\",\"label\",\"Aorta Abnormalities\",\"\",\"\",\"\"\n"
                 }
         );
 

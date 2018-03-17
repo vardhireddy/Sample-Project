@@ -1,7 +1,7 @@
 {
-  "patientId": "LIDC-IDRI-0006",
-  "fileName": "file123.png",
-  "spaceID": "space123",
+  "patientId": "file123.png",
+  "seriesUID": "file123.png/space123",
+  "imageSetFormat": "PNG",
   "annotationId": 77697,
   "annotationType": "label",
   "name": null,

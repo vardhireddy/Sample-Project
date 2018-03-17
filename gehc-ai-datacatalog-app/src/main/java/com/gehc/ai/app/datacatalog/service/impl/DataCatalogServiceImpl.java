@@ -11,19 +11,18 @@
  */
 package com.gehc.ai.app.datacatalog.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
+import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 @Component
@@ -48,7 +47,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) {
+	public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) throws IOException {
 		return dataCatalogDao.getAnnotationsByDSId(imgSerIdLst);
 	}
 

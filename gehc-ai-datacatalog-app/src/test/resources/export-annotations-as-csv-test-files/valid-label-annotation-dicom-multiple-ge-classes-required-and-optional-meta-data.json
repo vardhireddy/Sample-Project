@@ -1,6 +1,7 @@
 {
   "patientId": "LIDC-IDRI-0006",
   "seriesUID": "76255696-105e-47b6-a6c6-ab4d947b7e3e",
+  "imageSetFormat": "DCM",
   "annotationId": 77697,
   "annotationType": "label",
   "name": null,

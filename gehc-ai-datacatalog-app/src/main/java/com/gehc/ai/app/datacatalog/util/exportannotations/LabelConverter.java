@@ -13,6 +13,8 @@ package com.gehc.ai.app.datacatalog.util.exportannotations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.ImageSetAssociation;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.LabelAnnotation;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
@@ -59,11 +61,10 @@ public final class LabelConverter {
      * @param labelNode     A {@code JsonNode} representing a label annotation
      * @param columnHeaders The array of required column headers and optional column headers with aqt least one non-null value
      * @return A CSV {@code String}
-     * @throws CsvDataTypeMismatchException
-     * @throws CsvRequiredFieldEmptyException
-     * @throws IllegalArgumentException
+     * @throws CsvConversionException
+     * @throws InvalidAnnotationException
      */
-    public static final String convert(JsonNode labelNode, String[] columnHeaders) throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException, IllegalArgumentException {
+    public static final String convert(JsonNode labelNode, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
         // Create a CSV bean for each non-Null GE class
         List<LabelAnnotation> labelBeans = getLabelBeans(labelNode);
 
@@ -76,10 +77,13 @@ public final class LabelConverter {
         StatefulBeanToCsv<LabelAnnotation> beanWriter = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
 
         // Finally, write the beans to a CSV string
-        beanWriter.write(labelBeans);
-        String foo = writer.toString();
-        System.out.println(foo);
-        return foo;
+        try {
+            beanWriter.write(labelBeans);
+        } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+            throw new CsvConversionException(e.getMessage());
+        }
+
+        return writer.toString();
     }
 
     /**
@@ -88,9 +92,8 @@ public final class LabelConverter {
      * @param labelNode The label {@link JsonNode} that will be evaluated to see which optional columns have at least one non-null value
      * @return The {@code Set} of aggregated column headers
      */
-    public static Set<String> getColumnHeaders(JsonNode labelNode) {
+    public static Set<String> getColumnHeaders(JsonNode labelNode) throws InvalidAnnotationException {
         List<LabelAnnotation> labelBeans = getLabelBeans(labelNode);
-
         // First aggregate all optional columns that have at least one label with a non-null value
         Set<String> optionalColumnsWithValues = labelBeans.stream()
                 .map(label -> label.getOptionalColumnsWithValues())
@@ -128,10 +131,11 @@ public final class LabelConverter {
      * @param labelNode The {@code JsonNode} to convert
      * @return a {@code List} of {@code LabelAnnotation}s
      */
-    private static final List<LabelAnnotation> getLabelBeans(JsonNode labelNode) {
+    private static final List<LabelAnnotation> getLabelBeans(JsonNode labelNode) throws InvalidAnnotationException {
         List<Map.Entry<String, JsonNode>> geClasses = getGEClasses(labelNode);
         List<LabelAnnotation> labelBeans = new ArrayList<>();
-        geClasses.forEach(geClass -> {
+
+        for (Map.Entry<String, JsonNode> geClass : geClasses) {
             final LabelAnnotation labelBean;
 
             if (ImageSetAssociation.isAssociatedWithDicom(labelNode)) {
@@ -139,11 +143,11 @@ public final class LabelConverter {
             } else if (ImageSetAssociation.isAssociatedWithNonDicom(labelNode)) {
                 labelBean = createNonDicomLabel(labelNode, geClass);
             } else {
-                throw new IllegalArgumentException("The provided annotation does not map to either a DICOM or non-DICOM image set!");
+                throw new InvalidAnnotationException("The provided annotation does not map to either a DICOM or non-DICOM image set!");
             }
 
             labelBeans.add(labelBean);
-        });
+        }
 
         return labelBeans;
     }
@@ -172,8 +176,8 @@ public final class LabelConverter {
      * @return a new {@code LabelAnnotation}
      */
     private static final LabelAnnotation createNonDicomLabel(JsonNode labelNode, Map.Entry<String, JsonNode> geClass) {
-        final String fileName = labelNode.get("fileName").textValue();
-        final String spaceID = labelNode.get("spaceID").textValue();
+        final String fileName = labelNode.get("patientId").textValue();
+        final String spaceID = "";
         final Map<String, String> commonMetaData = getCommonMetaData(labelNode, geClass);
 
         return new LabelAnnotation(fileName, spaceID, commonMetaData.get("annotationType"), commonMetaData.get("name"), commonMetaData.get("value"), commonMetaData.get("indication"), commonMetaData.get("findings"));
@@ -213,7 +217,7 @@ public final class LabelConverter {
     /**
      * Returns an optional field of a GE class object if it exists.
      *
-     * @param labelNode       The label node to inspect.
+     * @param labelNode     The label node to inspect.
      * @param optionalField The optional field that is to be retrieved from the specified GE class object.
      * @return A {@code String} representation of the optional field if it exists; otherwise, {@code null}.
      */

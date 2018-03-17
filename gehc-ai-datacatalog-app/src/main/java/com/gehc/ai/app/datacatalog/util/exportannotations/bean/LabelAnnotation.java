@@ -127,22 +127,29 @@ public class LabelAnnotation extends Annotation {
 
     @Override
     public Set<String> getRequiredDicomColumns() {
-        Set<String> requiredDicomColumns = new LinkedHashSet<>();
-        requiredDicomColumns.addAll(super.getRequiredDicomColumns());
-        requiredDicomColumns.add("label");
-        return requiredDicomColumns;
+        return getRequiredColumns(super.getRequiredDicomColumns());
     }
 
     @Override
     public Set<String> getRequiredNonDicomColumns() {
+        return getRequiredColumns(super.getRequiredNonDicomColumns());
+    }
+
+    /**
+     * Returns the set of columns required by this {@code LabelAnnotation} and its parent.
+     *
+     * @param requiredParentColumns The columns required by this {@code LabelAnnotation}'s parent.
+     * @return a Set<String>
+     */
+    private Set<String> getRequiredColumns(Set<String> requiredParentColumns) {
         Set<String> requiredDicomColumns = new LinkedHashSet<>();
-        requiredDicomColumns.addAll(super.getRequiredNonDicomColumns());
+        requiredDicomColumns.addAll(requiredParentColumns);
         requiredDicomColumns.add("label");
         return requiredDicomColumns;
     }
 
     /**
-     * Returns the {@code Set} of optional columns that be used to describe a label.
+     * Returns the {@code Set} of optional columns that can be used to describe a label.
      * The returned set will only consist of those optional columns that have a non-null value.
      *
      * @return a {@code Set}

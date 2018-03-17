@@ -13,9 +13,9 @@ package com.gehc.ai.app.datacatalog.util.exportannotations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.Annotation;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,17 +49,20 @@ public final class CsvAnnotationExporter {
      *
      * @param json The JSON representation of one or more annotations
      * @return A CSV {@code String} representation of the input annotation(s)
-     * @throws IOException
-     * @throws CsvDataTypeMismatchException
-     * @throws CsvRequiredFieldEmptyException
-     * @throws IllegalArgumentException
+     * @throws InvalidAnnotationException If the JSON representation of any of the annotations is not well-formed
+     * @throws CsvConversionException     If the JSON representation of any of the annotations could not be successfully mapped to a corresponding CSV representation
      */
-    public static final String exportAsCsv(final String json) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException, IllegalArgumentException {
+    public static final String exportAsCsv(final String json) throws InvalidAnnotationException, CsvConversionException {
         final StringBuilder csvBuilder = new StringBuilder();
 
         // Parse the JSON string into a tree structure
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode arrNode = new ObjectMapper().readTree(json);
+        JsonNode arrNode;
+        try {
+            arrNode = new ObjectMapper().readTree(json);
+        } catch (IOException e) {
+            throw new InvalidAnnotationException(e.getMessage());
+        }
 
         // We expect to have an array of annotation JSON objects
         if (arrNode.isArray()) {
@@ -81,9 +84,10 @@ public final class CsvAnnotationExporter {
                 csvBuilder.append(convertedCsv);
             }
         } else {
-            //throw exception
+            throw new InvalidAnnotationException("The provided JSON representation of the annotation is not well-formed.");
         }
 
+        // Finally, return the aggregated CSV string
         return csvBuilder.toString();
     }
 

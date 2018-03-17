@@ -11,49 +11,6 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-import static com.gehc.ai.app.common.constants.ValidationConstants.ANNOTATION_TYPES;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-
-import org.hibernate.service.spi.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
@@ -68,7 +25,9 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
@@ -78,6 +37,49 @@ import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationExporter;
+import org.hibernate.service.spi.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 /**
  * @author 212071558
@@ -773,6 +775,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return filters;
     }
 
+    private List<AnnotationDetails> getAnnotationDetails(Long dataCollectionID) throws IOException {
+        List<AnnotationDetails> annotationByDSList = new ArrayList<>();
+        List<Long> imgSerIdLst = getImgSeriesIdsByDSId(dataCollectionID);
+
+        if (!imgSerIdLst.isEmpty()) {
+            annotationByDSList = dataCatalogService.getAnnotationsByDSId(imgSerIdLst);
+        }
+
+        return annotationByDSList;
+    }
+
     @Override
     @RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
     public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params,
@@ -877,13 +890,37 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
-    public List<AnnotationDetails> getAnnotationsByDSId(@PathVariable Long id) {
-        List<AnnotationDetails> annotationByDSList = new ArrayList<AnnotationDetails>();
-        List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
-        if (!imgSerIdLst.isEmpty()) {
-            annotationByDSList = dataCatalogService.getAnnotationsByDSId(imgSerIdLst);
+    public List<AnnotationDetails> getAnnotationsByDSId(@PathVariable Long id) throws IOException {
+        return getAnnotationDetails(id);
+    }
+
+    @Override
+    @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation/csv", method = RequestMethod.GET, produces = "text/csv")
+    public ResponseEntity<String> exportAnnotationsAsCsv(final HttpServletResponse response, @PathVariable Long id) {
+        logger.debug("Exporting annotations as CSV for data collection " + id);
+        response.setHeader("Content-Disposition", "attachment; filename=filename.csv");
+        response.setContentType("text/csv");
+
+        try {
+            // First get the annotation detail entities
+            List<AnnotationDetails> annotationByDSList = getAnnotationDetails(id);
+
+            // Convert the entities to their JSON representation.
+            // Note: We could use the entities directly, but its harder to iterate on the entities' properties
+            ObjectMapper objectMapper = new ObjectMapper();
+            String arrayToJson;
+            arrayToJson = objectMapper.writeValueAsString(annotationByDSList);
+
+            // Convert the JSON representation of the annotations to CSV
+            String csvResponse = CsvAnnotationExporter.exportAsCsv(arrayToJson);
+
+            // Finally return the response containing the CSV
+            return new ResponseEntity<String>(csvResponse, HttpStatus.OK);
+        } catch (IOException |InvalidAnnotationException | CsvConversionException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return annotationByDSList;
+
     }
 
     @Override

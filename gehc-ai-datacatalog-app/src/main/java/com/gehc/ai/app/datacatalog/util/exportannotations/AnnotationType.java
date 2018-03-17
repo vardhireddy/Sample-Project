@@ -13,8 +13,8 @@
 package com.gehc.ai.app.datacatalog.util.exportannotations;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 
 import java.util.Set;
 
@@ -26,12 +26,12 @@ import java.util.Set;
 public enum AnnotationType {
     LABEL() {
         @Override
-        public String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+        public String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
             return LabelConverter.convert(node, columnHeaders);
         }
 
         @Override
-        public Set<String> getColumnHeaders(JsonNode node) {
+        public Set<String> getColumnHeaders(JsonNode node) throws InvalidAnnotationException {
             return LabelConverter.getColumnHeaders(node);
         }
     },
@@ -119,18 +119,19 @@ public enum AnnotationType {
      * @param node          The annotation node to convert to CSV
      * @param columnHeaders The column headers that will be used to organize the records of the CSV output
      * @return The converted CSV {@code String}
-     * @throws CsvDataTypeMismatchException
-     * @throws CsvRequiredFieldEmptyException
+     * @throws InvalidAnnotationException If the provided {@code JsonNode} does not represent a well-formed annotation
+     * @throws CsvConversionException If the provided {@code JsonNode} could not be successfully mapped to a corresponding CSV representation
      */
-    public abstract String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException;
+    public abstract String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException;
 
     /**
      * Returns the set of required columns and optional columns for this {@code AnnotationType} which have at least one non-null value.
      *
      * @param node The annotation node that will be evaluated to determine which optional columns have at least one non-null value
      * @return a {@code Set}
+     * @throws InvalidAnnotationException If the provided {@code JsonNode} does not represent a well-formed annotation
      */
-    public abstract Set<String> getColumnHeaders(JsonNode node);
+    public abstract Set<String> getColumnHeaders(JsonNode node) throws InvalidAnnotationException;
 
     /**
      * Returns the JSON property that can be used to get an annotation object's type.

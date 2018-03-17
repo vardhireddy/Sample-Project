@@ -11,24 +11,26 @@
  */
 package com.gehc.ai.app.datacatalog.rest;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.bind.annotation.PathVariable;
-
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import org.springframework.http.ResponseEntity;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author 212071558
@@ -239,7 +241,7 @@ public interface IDataCatalogRest {
     ApiResponse deleteDataCollection(String ids, HttpServletRequest request);
 
     ApiResponse updateInstitutionByImageSeriesList(InstitutionSet u, HttpServletRequest request);
-    
+
     /**
      * @param params
      * @return
@@ -250,12 +252,27 @@ public interface IDataCatalogRest {
      * @param id
      * @return
      */
-   // List<Annotation> getAnnotationsByDSId(Long id, String orgId);
+    // List<Annotation> getAnnotationsByDSId(Long id, String orgId);
+
     /**
-     * @param id
-     * @return
+     * Exports the annotations of the specified data collection as a JSON string.
+     *
+     * @param id The ID of the collection whose annotations will be exported as a JSON string
+     * @return a {@code List} pf {@code AnnotationDetail}s that will be transformed to a JSON string
+     * @throws IOException If the JSON representation of any of the collection's annotations is not well-formed
      */
-    List<AnnotationDetails> getAnnotationsByDSId(Long id);
+    List<AnnotationDetails> getAnnotationsByDSId(Long id) throws IOException;
+
+    /**
+     * Exports the annotations of the specified data collection as a CSV string.
+     *
+     * @param id The ID of the collection whose annotations will be exported as a CSV string
+     * @return A {@code ResponseEntity<String>} where the body is the annotations formatted as a CSV string
+     * @throws InvalidAnnotationException If the JSON representation of any of the collection's annotations is not well-formed
+     * @throws CsvConversionException     If the JSON representation of any of the collection's annotations could not be successfully mapped to a corresponding CSV representation
+     */
+    ResponseEntity<String> exportAnnotationsAsCsv(HttpServletResponse response, Long id) throws InvalidAnnotationException, CsvConversionException;
+
     /**
      * @param id
      * @return

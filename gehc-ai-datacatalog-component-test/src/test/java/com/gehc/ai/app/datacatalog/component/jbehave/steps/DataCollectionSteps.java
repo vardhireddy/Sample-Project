@@ -1,5 +1,39 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.GEClass;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import org.jbehave.core.annotations.BeforeScenario;
+import org.jbehave.core.annotations.Given;
+import org.jbehave.core.annotations.Then;
+import org.jbehave.core.annotations.When;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
@@ -15,42 +49,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import org.apache.commons.collections.ArrayStack;
-import org.jbehave.core.annotations.BeforeScenario;
-import org.jbehave.core.annotations.Given;
-import org.jbehave.core.annotations.Then;
-import org.jbehave.core.annotations.When;
-import org.jbehave.core.model.ExamplesTable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
 
 @Component
@@ -601,15 +599,15 @@ public class DataCollectionSteps {
     }
 
     @Given("Get Annotaition Ids by datacollectionId - Data Setup")
-    public void givenGetAnnotaitionIdsByDatacollectionIdDataSetup() {
+    public void givenGetAnnotaitionIdsByDatacollectionIdDataSetup() throws Exception {
         List<DataSet> dataSet = getDataSetsWithImageSet();
         when(dataSetRepository.findById(anyLong())).thenReturn(dataSet);
         List<AnnotationDetails> annotationIds = new ArrayList<AnnotationDetails>();
         AnnotationDetails annotation = new AnnotationDetails();
         annotation.setAnnotationId(1L);
-        annotation.setAnnotationType("test");
+        annotation.setAnnotationType("label");
         annotation.setPatientId("1");
-        annotation.setGeClass("{}");
+        annotation.setGeClass(new GEClass("PTX", "Severe"));
         annotation.setData("{}");
         annotation.setSeriesUID("SUID");
         annotationIds.add(annotation);
@@ -627,14 +625,19 @@ public class DataCollectionSteps {
 
     @Then("verify Get Annotaition Ids by datacollectionId")
     public void thenVerifyGetAnnotaitionIdsByDatacollectionId() throws Exception {
-        retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[{\"patientId\":\"1\",\"seriesUID\":\"SUID\",\"annotationId\":1,\"annotationType\":\"test\",\"name\":null,\"coordSys\":null,\"maskURI\":null,\"maskOrigin\":null,\"maskFormat\":null,\"indication\":null,\"findings\":null,\"data\":\"{}\",\"instances\":null,\"geClass\":\"{}\",\"geClass1\":null,\"geClass2\":null,\"geClass3\":null,\"geClass4\":null,\"geClass5\":null,\"geClass6\":null,\"geClass7\":null,\"geClass8\":null,\"geClass9\":null,\"geClass10\":null}]"
-        )));
+        MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
+                MediaType.APPLICATION_JSON.getSubtype(),
+                Charset.forName("utf8")
+        );
+        retrieveResult.andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(content().json("[{\"patientId\":\"1\",\"seriesUID\":\"SUID\",\"annotationId\":1,\"annotationType\":\"label\",\"name\":null,\"coordSys\":null,\"maskURI\":null,\"maskOrigin\":null,\"maskFormat\":null,\"indication\":null,\"findings\":null,\"data\":\"{}\",\"instances\":null,\"geClass\":{\"name\":\"PTX\", \"value\":\"Severe\"},\"geClass1\":null,\"geClass2\":null,\"geClass3\":null,\"geClass4\":null,\"geClass5\":null,\"geClass6\":null,\"geClass7\":null,\"geClass8\":null,\"geClass9\":null,\"geClass10\":null}]"
+                ));
 
     }
 
     @Given("Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup")
-    public void givenGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFoundDataSetup() {
+    public void givenGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFoundDataSetup() throws Exception {
         List<DataSet> dataSet = getDataSetsWithImageSet();
         when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
         List<ImageSeries> imgSerIdLst = new ArrayList<ImageSeries>();
@@ -674,6 +677,63 @@ public class DataCollectionSteps {
     public void thenVerifyDataCollectionByIdHasBeenDeleted() throws Exception {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("SUCCESS")));
+    }
+
+    //////////////////////////////////////////
+    //
+    // Tests for exportAnnotationsAsCsv API //
+    //
+    //////////////////////////////////////////
+
+    @Given("a data collection contains one image set with at least one label annotation")
+    public void givenDataCollectionContainsOneImageSetWithLabelAndROI() throws Exception {
+        List<DataSet> dataSet = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(dataSet);
+
+        List<AnnotationDetails> annotationIds = new ArrayList<AnnotationDetails>();
+        AnnotationDetails annotation = new AnnotationDetails();
+        annotation.setAnnotationId(1L);
+        annotation.setAnnotationType("label");
+        annotation.setPatientId("file123.png");
+        annotation.setSeriesUID("file123.png/space123");
+        annotation.setImageSetFormat("PNG");
+        annotation.setGeClass(new GEClass("PTX", "Severe"));
+        annotationIds.add(annotation);
+
+        annotation = new AnnotationDetails();
+        annotation.setAnnotationId(1L);
+        annotation.setAnnotationType("label");
+        annotation.setPatientId("file456.png");
+        annotation.setSeriesUID("file456.png/space123");
+        annotation.setImageSetFormat("PNG");
+        annotation.setGeClass(new GEClass("Cardiomegaly", "Mild"));
+        annotationIds.add(annotation);
+
+        when(dataCatalogDao.getAnnotationsByDSId(anyList())).thenReturn(annotationIds);
+    }
+
+    @When("the API which exports a data collection's annotation as CSV is called")
+    public void whenExportAnnotationAsCsvAPICalled() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/1/annotation/csv")
+                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
+        );
+    }
+
+    @Then("the response's status code should be 200")
+    public void thenResponseCodeShouldBeOK() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+    }
+
+    @Then("the response's content type should be CSV")
+    public void thenResponseMediaTypeShouldBeCSV() throws Exception {
+        MediaType TEXT_CSV = new MediaType("text", "csv");
+        retrieveResult.andExpect(content().contentType(TEXT_CSV));
+    }
+
+    @Then("the response's body should contain the label annotations in a single CSV")
+    public void thenResponseBodyShouldContainCSV() throws Exception {
+        retrieveResult.andExpect(content().string("\"file123.png\",\"\",\"label\",\"PTX\",\"Severe\"\n\"file456.png\",\"\",\"label\",\"Cardiomegaly\",\"Mild\"\n"));
     }
 
     private Map getMapForGEClassDataSummary() {

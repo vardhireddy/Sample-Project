@@ -193,3 +193,12 @@ Meta: @automated
 Given  Delete Data Collections by id
 When Delete Data collection by id API is called
 Then verify Data Collection by id has been deleted
+
+@test
+Scenario: Export a data collection's annotations as CSV when the data collection contains one image set with at least one label annotation
+Meta: @automated
+Given a data collection contains one image set with at least one label annotation
+When the API which exports a data collection's annotation as CSV is called
+Then the response's status code should be 200
+Then the response's content type should be CSV
+Then the response's body should contain the label annotations in a single CSV
