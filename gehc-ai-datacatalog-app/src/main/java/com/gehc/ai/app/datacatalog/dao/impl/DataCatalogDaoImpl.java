@@ -319,32 +319,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 				geclassParams.put(GE_CLASS, params.get(GE_CLASS));
 				params.remove(GE_CLASS);
 			}
-			if(params.containsKey(DATE_FROM) && params.containsKey(DATE_TO)){
-				String dateFrom = convertUserDateToDBDate(params.get(DATE_FROM));
-				String dateTo = convertUserDateToDBDate(params.get(DATE_TO));
-				if(dateFrom != null && dateTo != null){
-					dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
-				}
-				params.remove(DATE_FROM);
-				params.remove(DATE_TO);
-			}else if(params.containsKey(DATE_FROM)){
-				params.remove(DATE_FROM);
-			}else if(params.containsKey(DATE_TO)){
-				params.remove(DATE_TO);
-			}
+			dateRangeQuery = buildDateRangeQuery(params);
 			if (params.size() > 0) {
-				if(params.containsKey(ANNOTATIONS)){
-					if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
-						builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
-						builder.append(constructAnnotationWhereClause("type", params.get(ANNOTATIONS).toString()));
-						builder.append(" AND ");
-					}else{
-						builder.append(ANNOTATION_ABSENT_QUERY);
-					}
-				}else{
-					builder.append(" WHERE ");
-				}
-				params.remove(ANNOTATIONS);
+				buildAnnotationQuery(params, builder);
+				
 				for (Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();entries.hasNext();) {
 					Map.Entry<String, Object> entry = entries.next();
 					String key = entry.getKey();
@@ -367,9 +345,45 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 		return builder.toString();
 	}
+
+	/**
+	 * @param params
+	 * @param dateRangeQuery
+	 * @return
+	 */
+	private String buildDateRangeQuery(Map<String, Object> params) {
+		String dateRangeQuery = null;
+		if(params.containsKey(DATE_FROM) || params.containsKey(DATE_TO)){
+			String dateFrom = convertUserDateToDBDate(params.get(DATE_FROM));
+			String dateTo = convertUserDateToDBDate(params.get(DATE_TO));
+			if(dateFrom != null && dateTo != null){
+				dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
+			}
+			params.remove(DATE_FROM);
+			params.remove(DATE_TO);
+		}
+		return dateRangeQuery;
+	}
+
+	private void buildAnnotationQuery(Map<String, Object> params, StringBuilder builder) {
+		if(params.containsKey(ANNOTATIONS)){
+			if(!ABSENT.equalsIgnoreCase(params.get(ANNOTATIONS).toString())){
+				builder.append(", annotation an where an.image_set = x.id and an.org_id = x.org_id and ");
+				builder.append(constructAnnotationWhereClause("type", params.get(ANNOTATIONS).toString()));
+				builder.append(" AND ");
+			}else{
+				builder.append(ANNOTATION_ABSENT_QUERY);
+			}
+			params.remove(ANNOTATIONS);
+		}else{
+			builder.append(" WHERE ");
+		}
+	}
 	
 	private String convertUserDateToDBDate(Object dateStr){
-
+		if(dateStr == null || !(dateStr instanceof String) || ((String)dateStr).isEmpty()){
+			return null;
+		}
 		DateTimeFormatter sourceFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		DateTimeFormatter targetFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime localtDateAndTime = null;
