@@ -38,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.datacatalog.serialization.JsonDateSerializer;
+import com.gehc.ai.app.datacatalog.serialization.LocalDateTimeAttributeConverter;
 
 
 @Entity
@@ -138,6 +139,7 @@ public class ImageSeries implements Serializable {
 	@Column(name = "upload_date")
 	@JsonProperty(access = Access.READ_ONLY)
 	@JsonSerialize(using=JsonDateSerializer.class)
+	@Convert(converter = LocalDateTimeAttributeConverter.class)
 	private LocalDateTime uploadDate;
 
 	/**
