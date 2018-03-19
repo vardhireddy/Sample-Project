@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.stubbing.answers.ThrowsException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -101,6 +102,18 @@ public class DataCatalogDaoImplTest {
     }
 
     @Test
+    public void testGEClassesThrowsException2() {
+        Map geClass = getParamsMap();
+        geClass.put("ge-class", "[{\"name\": }, {\"\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]");// {"name": "Pediatric", "value": "", "patient_outcome": "40"}]
+        returnValue = dataCatalogDao.getGEClasses(geClass);
+        List expectedList = new ArrayList();
+        expectedList.add(1L);
+        expectedList.add(2L);
+        GEClass[] expectedValue = new GEClass[0];
+        assertEquals(expectedValue.getClass(), returnValue.getClass());
+    }
+    
+    @Test
     public void testgeClassDataSummary() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
@@ -137,6 +150,31 @@ public class DataCatalogDaoImplTest {
         input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
+    }
+    
+    @Test(expected = Exception.class)
+    public void testgetImageSeriesByFiltersThrowsException() {
+       // dataSetUp();
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "LABEL"));
+        input.putAll(constructQueryParam("fromDate", "LABEL"));
+        List result = dataCatalogDao.getImgSeriesByFilters(input);
+    }
+    
+    @Test
+    public void testgetImageSeriesByFiltersWithNullProperties() {
+    	when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
+        List expectedList = new ArrayList();
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30") };
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "LABEL"));
+        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        assertEquals(getImageSeriesWithFiltersAndNullProperties().toString(), result.toString());
     }
 
     @Test
@@ -422,6 +460,33 @@ public class DataCatalogDaoImplTest {
         imageSeriesList.add(imgSeries);
         return imageSeriesList;
     }
+    
+    private List<ImageSeries> getImageSeriesWithFiltersAndNullProperties() {
+        List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+        ImageSeries imgSeries = new ImageSeries();
+        Patient p = new Patient();
+        imgSeries.setId(1L);
+        imgSeries.setOrgId("4fac7976-e58b-472a-960b-42d7e3689f20");
+        imgSeries.setModality("DX");
+        imgSeries.setAnatomy("CHEST");
+        imgSeries.setDataFormat("PNG");
+        imgSeries.setSeriesInstanceUid("12345");
+        imgSeries.setInstitution("UCSF");
+//        imgSeries.setManufacturer("test");
+        imgSeries.setInstanceCount(1);
+        imgSeries.setEquipment("GE XRAY");
+        LinkedHashMap prop = new LinkedHashMap();
+        imgSeries.setProperties(null);
+//        imgSeries.setImageType("test");
+//        imgSeries.setView("test");
+        p.setPatientId("test");
+//        p.setAge("12");
+//        p.setGender("M");
+        imgSeries.setUploadDate(getUploadDate());
+        imgSeries.setPatient(p);
+        imageSeriesList.add(imgSeries);
+        return imageSeriesList;
+    }
 
     private List<ImageSeries> getImageSeries() {
         List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
@@ -542,6 +607,22 @@ public class DataCatalogDaoImplTest {
         return params;
     }
 
+    @Test
+    public void testconvertUserDateToDBDateEmptyDateTo() {
+       Map<String, Object> input = constructQueryParam("modality", "CT");
+       input.putAll(constructQueryParam("anatomy", "LUNG"));
+       input.put("dateFrom", "2017-12-14T19:00:00Z");
+       input.put("dateTo", "");
+       String result = dataCatalogDao.constructQuery(input);
+       String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\")";
+       assertEquals("Param constructed in incorrect ", expectedResult, result);
+    }
+    
+    @Test(expected = Exception.class)
+    public void testConstructQueryThrowsException() {
+       dataCatalogDao.constructQuery(null);
+    }
+    
     @Test
     public void testConstructQueryWithSingleParam() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
