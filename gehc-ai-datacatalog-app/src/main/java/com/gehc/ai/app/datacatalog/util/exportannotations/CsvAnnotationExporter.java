@@ -76,6 +76,9 @@ public final class CsvAnnotationExporter {
             // Convert the set of columns headers to an array to accomodate OpenCSV API
             String[] columnHeadersArr = columnHeaders.stream().toArray(String[]::new);
 
+            // Then write the column headers as the first row of the CSV file
+            csvBuilder.append(String.join(",", columnHeadersArr) + "\n");
+
             // Second, write out each annotation JSON node as CSV using the above set of column headers
             List<Annotation> annotationBeans = new ArrayList<>();
             for (final JsonNode annotationNode : arrNode) {

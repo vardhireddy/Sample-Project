@@ -733,7 +733,7 @@ public class DataCollectionSteps {
 
     @Then("the response's body should contain the label annotations in a single CSV")
     public void thenResponseBodyShouldContainCSV() throws Exception {
-        retrieveResult.andExpect(content().string("\"file123.png\",\"\",\"label\",\"PTX\",\"Severe\"\n\"file456.png\",\"\",\"label\",\"Cardiomegaly\",\"Mild\"\n"));
+        retrieveResult.andExpect(content().string("fileName,spaceID,annotationType,label,severity\n\"file123.png\",\"\",\"label\",\"PTX\",\"Severe\"\n\"file456.png\",\"\",\"label\",\"Cardiomegaly\",\"Mild\"\n"));
     }
 
     private Map getMapForGEClassDataSummary() {
