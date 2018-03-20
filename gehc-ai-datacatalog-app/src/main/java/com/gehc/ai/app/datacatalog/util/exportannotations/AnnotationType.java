@@ -18,10 +18,10 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.Annotation;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.ImageSetAssociation;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.LabelAnnotation;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.RoiAnnotation;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.MultiPointRoiAnnotation;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.JsonToCsvBeanConverter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.LabelJsonToCsvBeanConverter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.RoiJsonToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.FreeformRoiJsonToCsvBeanConverter;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
@@ -54,12 +54,12 @@ public enum AnnotationType {
     POLYGON() {
         @Override
         public String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
-            return AnnotationType.convertJsonToCsv(node, columnHeaders, RoiJsonToCsvBeanConverter::new, RoiAnnotation.class);
+            return AnnotationType.convertJsonToCsv(node, columnHeaders, FreeformRoiJsonToCsvBeanConverter::new, MultiPointRoiAnnotation.class);
         }
 
         @Override
         public Set<String> getColumnHeaders(JsonNode node) throws InvalidAnnotationException {
-            return AnnotationType.getColumnHeaders(node, RoiJsonToCsvBeanConverter::new);
+            return AnnotationType.getColumnHeaders(node, FreeformRoiJsonToCsvBeanConverter::new);
         }
     };
 
@@ -98,6 +98,7 @@ public enum AnnotationType {
      * @param annotationNode        A {@code JsonNode} representing a annotation annotation
      * @param columnHeaders         The array of required column headers and optional column headers with aqt least one non-null value
      * @param beanConverterSupplier The supplier of the service which converts a {@code JsonNode} to a {@code List} of CSV beans
+     * @param beanClass             The bean {@link Class} to which the {@code JsonNode}'s contents will be converted
      * @return A CSV {@code String}
      * @throws CsvConversionException
      * @throws InvalidAnnotationException

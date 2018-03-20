@@ -1,5 +1,5 @@
 /*
- *  RoiAnnotationToCsvTest.java
+ *  FreeformRoiAnnotationToCsvTest.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -29,12 +29,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * {@code RoiAnnotationToCsvTest} evaluates the behavior of the {@link AnnotationType#convertJsonToCsv(JsonNode, String[])} API for ROI annotations.
+ * {@code FreeformRoiAnnotationToCsvTest} evaluates the behavior of the {@link AnnotationType#convertJsonToCsv(JsonNode, String[])} API for freeform ROI annotations
+ * such as {@link AnnotationType#POLYGON}.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
 @RunWith(Parameterized.class)
-public class RoiAnnotationToCsvTest {
+public class FreeformRoiAnnotationToCsvTest {
 
     private ImageSetType imageSetType;
     private RoiMetaDataTypes roiMetaDataTypes;
@@ -103,7 +104,7 @@ public class RoiAnnotationToCsvTest {
      * @param columnHeaders      The column headers to use when writing out to CSV
      * @param expectedOutput     The expected CSV output produced by the {@link AnnotationType#convertJsonToCsv(JsonNode, String[])} API
      */
-    public RoiAnnotationToCsvTest(
+    public FreeformRoiAnnotationToCsvTest(
             ImageSetType imageSetType,
             RoiMetaDataTypes roiMetaDataTypes,
             ColumnHeaderTypes columnHeaderTypes,

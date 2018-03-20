@@ -1,5 +1,5 @@
 /*
- *  RoiAnnotationColumnsTest.java
+ *  FreeformRoiAnnotationColumnsTest.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -31,19 +31,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * {@code RoiAnnotationColumnsTest} evaluates the behavior of the {@link AnnotationType#getColumnHeaders(JsonNode)} API for ROI annotations.
+ * {@code FreeformRoiAnnotationColumnsTest} evaluates the behavior of the {@link AnnotationType#getColumnHeaders(JsonNode)} API for freeform ROI annotations
+ * such as {@link AnnotationType#POLYGON}.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
 @RunWith(Parameterized.class)
-public class RoiAnnotationColumnsTest {
+public class FreeformRoiAnnotationColumnsTest {
 
     private ImageSetType imageSetType;
     private MetaDataTypes metaDataTypes;
     private String optionalMetaData;
     private String inputFile;
     private Set<String> expectedColumnHeaders;
-    
+
     private enum OptionalMetaData {
         NAME("ROI name");
 
@@ -63,12 +64,12 @@ public class RoiAnnotationColumnsTest {
      * Creates a new parameterized test case.
      *
      * @param imageSetType          The type of image set the label annotation is associated with
-     * @param metaDataTypes    The types of meta data included in the label annotation
+     * @param metaDataTypes         The types of meta data included in the label annotation
      * @param optionalMetaData      The optional meta data included by the label annotation
      * @param inputFile             The path of the input JSON file
      * @param expectedColumnHeaders The expected column headers produced by the {@link AnnotationType#getColumnHeaders(JsonNode)}API
      */
-    public RoiAnnotationColumnsTest(
+    public FreeformRoiAnnotationColumnsTest(
             ImageSetType imageSetType,
             MetaDataTypes metaDataTypes,
             String optionalMetaData,
