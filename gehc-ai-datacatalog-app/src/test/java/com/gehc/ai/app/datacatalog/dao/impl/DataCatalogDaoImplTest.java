@@ -677,7 +677,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "DCM", null, null, 1, null, null, null, null, null, "{\"name\": \"PTX\"}"};
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "DCM", null, null, 1, null, null, null, null, null, "{\"name\": \"PTX\"}", Timestamp.valueOf("2018-03-08 10:51:30")};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         List<Long> ids = new ArrayList<Long>();
@@ -706,6 +706,7 @@ public class DataCatalogDaoImplTest {
         LinkedHashMap prop = new LinkedHashMap();
         prop.put("name", "PTX");
         imgSeries.setProperties(prop);
+        imgSeries.setUploadDate(getUploadDate());
         imageSeriesList.add(imgSeries);
         return imageSeriesList;
     }
