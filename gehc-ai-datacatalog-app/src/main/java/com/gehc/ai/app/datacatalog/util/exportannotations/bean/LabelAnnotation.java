@@ -135,6 +135,15 @@ public class LabelAnnotation extends Annotation {
         return getRequiredColumns(super.getRequiredNonDicomColumns());
     }
 
+    @Override
+    public Set<String> getOptionalColumnsWithValues() {
+        Map<String, String> optionalColumnValues = new HashMap<>();
+        optionalColumnValues.put("severity", getSeverity());
+        optionalColumnValues.put("indication", getIndication());
+        optionalColumnValues.put("findings", getFindings());
+        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> nonNullEntry.getKey()).collect(Collectors.toSet());
+    }
+
     /**
      * Returns the set of columns required by this {@code LabelAnnotation} and its parent.
      *
@@ -146,20 +155,6 @@ public class LabelAnnotation extends Annotation {
         requiredDicomColumns.addAll(requiredParentColumns);
         requiredDicomColumns.add("label");
         return requiredDicomColumns;
-    }
-
-    /**
-     * Returns the {@code Set} of optional columns that can be used to describe a label.
-     * The returned set will only consist of those optional columns that have a non-null value.
-     *
-     * @return a {@code Set}
-     */
-    public Set<String> getOptionalColumnsWithValues() {
-        Map<String, String> optionalColumnValues = new HashMap<>();
-        optionalColumnValues.put("severity", getSeverity());
-        optionalColumnValues.put("indication", getIndication());
-        optionalColumnValues.put("findings", getFindings());
-        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> nonNullEntry.getKey()).collect(Collectors.toSet());
     }
 
 }

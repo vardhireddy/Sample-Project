@@ -77,20 +77,38 @@ public abstract class Annotation {
         this.annotationType = annotationType;
     }
 
-    protected Set<String> getRequiredDicomColumns() {
+    /**
+     * Returns the {@code Set} of columns required of an annotation that is associated with a DICOM image set.
+     *
+     * @return a {@code Set}
+     */
+    public Set<String> getRequiredDicomColumns() {
         Set<String> requiredDicomColumns = new LinkedHashSet<>();
         requiredDicomColumns.add("seriesUID");
         requiredDicomColumns.add("annotationType");
         return requiredDicomColumns;
     }
 
-    protected Set<String> getRequiredNonDicomColumns() {
+    /**
+     * Returns the {@code Set} of columns required of an annotation that is associated with a non-DICOM image set.
+     *
+     * @return a {@code Set}
+     */
+    public Set<String> getRequiredNonDicomColumns() {
         Set<String> requiredDicomColumns = new LinkedHashSet<>();
         requiredDicomColumns.add("fileName");
         requiredDicomColumns.add("spaceID");
         requiredDicomColumns.add("annotationType");
         return requiredDicomColumns;
     }
+
+    /**
+     * Returns the {@code Set} of optional columns that can be used to describe an annotation.
+     * The returned set will only consist of those optional columns that have a non-null value.
+     *
+     * @return a {@code Set}
+     */
+    public abstract Set<String> getOptionalColumnsWithValues();
 
     /////////////////////////
     //

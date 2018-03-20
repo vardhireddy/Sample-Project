@@ -13,7 +13,7 @@ package com.gehc.ai.app.datacatalog.exportannotations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.util.exportannotations.LabelConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.AnnotationType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * {@code LabelAnnotationToCsvTest} evaluates the behavior of the {@link LabelConverter#convert(JsonNode, String[])} API.
+ * {@code LabelAnnotationToCsvTest} evaluates the behavior of the {@link AnnotationType#convertJsonToCsv(JsonNode, String[])} API for {@link AnnotationType#LABEL}.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
@@ -101,7 +101,7 @@ public class LabelAnnotationToCsvTest {
      * @param columnHeaderTypes    The types of column headers that are expected to be included in the CSV output
      * @param inputFile            The path of the input JSON file that describes a label
      * @param columnHeaders        The column headers to use when writing out to CSV
-     * @param expectedOutput       The expected CSV output produced by the {@link LabelConverter#convert(JsonNode, String[])} API
+     * @param expectedOutput       The expected CSV output produced by the {@link AnnotationType#convertJsonToCsv(JsonNode, String[])} API
      */
     public LabelAnnotationToCsvTest(
             ImageSetType imageSetType,
@@ -246,7 +246,7 @@ public class LabelAnnotationToCsvTest {
         JsonNode validAnnotJson = mapper.readTree(VALID_ANNOT_JSON);
 
         // ACT
-        final String ACTUAL_CSV = LabelConverter.convert(validAnnotJson, columnHeaders);
+        final String ACTUAL_CSV = AnnotationType.LABEL.convertJsonToCsv(validAnnotJson, columnHeaders);
 
         // ASSERT
         assertThat(ACTUAL_CSV, is(equalTo(this.expectedOutput)));

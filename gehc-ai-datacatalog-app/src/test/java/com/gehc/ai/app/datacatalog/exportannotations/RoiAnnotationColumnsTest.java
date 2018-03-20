@@ -1,5 +1,5 @@
 /*
- *  LabelAnnotationColumnsTest.java
+ *  RoiAnnotationColumnsTest.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -31,23 +31,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * {@code LabelAnnotationColumnsTest} evaluates the behavior of the {@link AnnotationType#getColumnHeaders(JsonNode)} API for {@link AnnotationType#LABEL}.
+ * {@code RoiAnnotationColumnsTest} evaluates the behavior of the {@link AnnotationType#getColumnHeaders(JsonNode)} API for ROI annotations.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
 @RunWith(Parameterized.class)
-public class LabelAnnotationColumnsTest {
+public class RoiAnnotationColumnsTest {
 
     private ImageSetType imageSetType;
     private MetaDataTypes metaDataTypes;
     private String optionalMetaData;
     private String inputFile;
     private Set<String> expectedColumnHeaders;
-
+    
     private enum OptionalMetaData {
-        SEVERITY("severity"),
-        INDICATION("indication"),
-        FINDINGS("findings");
+        NAME("ROI name");
 
         private String name;
 
@@ -65,12 +63,12 @@ public class LabelAnnotationColumnsTest {
      * Creates a new parameterized test case.
      *
      * @param imageSetType          The type of image set the label annotation is associated with
-     * @param metaDataTypes         The types of meta data included in the label annotation
+     * @param metaDataTypes    The types of meta data included in the label annotation
      * @param optionalMetaData      The optional meta data included by the label annotation
      * @param inputFile             The path of the input JSON file
-     * @param expectedColumnHeaders The expected column headers produced by the {@link AnnotationType#getColumnHeaders(JsonNode)} API
+     * @param expectedColumnHeaders The expected column headers produced by the {@link AnnotationType#getColumnHeaders(JsonNode)}API
      */
-    public LabelAnnotationColumnsTest(
+    public RoiAnnotationColumnsTest(
             ImageSetType imageSetType,
             MetaDataTypes metaDataTypes,
             String optionalMetaData,
@@ -84,7 +82,7 @@ public class LabelAnnotationColumnsTest {
         this.expectedColumnHeaders = expectedColumnHeaders;
     }
 
-    @Parameters(name = "GIVEN that the label JSON is associated with a {0} image set AND each GE class contains {1} AND the optional meta data are {2}")
+    @Parameters(name = "GIVEN that the ROI JSON is associated with a {0} image set AND each ROI contains {1} AND the optional meta data are {2}")
     public static Collection<Object[]> getParams() {
         Collection<Object[]> params = new ArrayList<Object[]>();
 
@@ -93,8 +91,8 @@ public class LabelAnnotationColumnsTest {
                         ImageSetType.DICOM,
                         MetaDataTypes.REQUIRED_ONLY,
                         Arrays.toString(new OptionalMetaData[]{}),
-                        "export-annotations-as-csv-test-files/valid-label-annotation-dicom-required-columns.json",
-                        new LinkedHashSet<String>(Arrays.asList(new String[]{"seriesUID", "annotationType", "label"}))
+                        "export-annotations-as-csv-test-files/valid-roi-2d-annotation-dicom-required-columns.json",
+                        new LinkedHashSet<String>(Arrays.asList(new String[]{"seriesUID", "annotationType", "coordSys", "data", "localID"}))
                 }
         );
 
@@ -102,39 +100,9 @@ public class LabelAnnotationColumnsTest {
                 new Object[]{
                         ImageSetType.DICOM,
                         MetaDataTypes.REQUIRED_AND_OPTIONAL,
-                        Arrays.toString(new OptionalMetaData[]{OptionalMetaData.SEVERITY}),
-                        "export-annotations-as-csv-test-files/valid-label-annotation-dicom-required-columns-and-severity-column.json",
-                        new LinkedHashSet<String>(Arrays.asList(new String[]{"seriesUID", "annotationType", "label", "severity"}))
-                }
-        );
-
-        params.add(
-                new Object[]{
-                        ImageSetType.DICOM,
-                        MetaDataTypes.REQUIRED_AND_OPTIONAL,
-                        Arrays.toString(new OptionalMetaData[]{OptionalMetaData.INDICATION}),
-                        "export-annotations-as-csv-test-files/valid-label-annotation-dicom-required-columns-and-indication-column.json",
-                        new LinkedHashSet<String>(Arrays.asList(new String[]{"seriesUID", "annotationType", "label", "indication"}))
-                }
-        );
-
-        params.add(
-                new Object[]{
-                        ImageSetType.DICOM,
-                        MetaDataTypes.REQUIRED_AND_OPTIONAL,
-                        Arrays.toString(new OptionalMetaData[]{OptionalMetaData.FINDINGS}),
-                        "export-annotations-as-csv-test-files/valid-label-annotation-dicom-required-columns-and-findings-column.json",
-                        new LinkedHashSet<String>(Arrays.asList(new String[]{"seriesUID", "annotationType", "label", "findings"}))
-                }
-        );
-
-        params.add(
-                new Object[]{
-                        ImageSetType.DICOM,
-                        MetaDataTypes.REQUIRED_AND_OPTIONAL,
-                        Arrays.toString(new OptionalMetaData[]{OptionalMetaData.SEVERITY, OptionalMetaData.INDICATION, OptionalMetaData.FINDINGS}),
-                        "export-annotations-as-csv-test-files/valid-label-annotation-dicom-required-columns-and-severity-indication-findings-columns.json",
-                        new LinkedHashSet<String>(Arrays.asList(new String[]{"seriesUID", "annotationType", "label", "severity", "indication", "findings"}))
+                        Arrays.toString(new OptionalMetaData[]{OptionalMetaData.NAME}),
+                        "export-annotations-as-csv-test-files/valid-roi-2d-annotation-dicom-required-columns-and-name-column.json",
+                        new LinkedHashSet<String>(Arrays.asList(new String[]{"seriesUID", "annotationType", "coordSys", "data", "localID", "name"}))
                 }
         );
 
@@ -149,7 +117,7 @@ public class LabelAnnotationColumnsTest {
         JsonNode validAnnotJsonNode = mapper.readTree(validAnnotJson);
 
         // ACT
-        final Set<String> actualColumnHeaders = AnnotationType.LABEL.getColumnHeaders(validAnnotJsonNode);
+        final Set<String> actualColumnHeaders = AnnotationType.POLYGON.getColumnHeaders(validAnnotJsonNode);
 
         // ASSERT
         assertThat(actualColumnHeaders, is(this.expectedColumnHeaders));

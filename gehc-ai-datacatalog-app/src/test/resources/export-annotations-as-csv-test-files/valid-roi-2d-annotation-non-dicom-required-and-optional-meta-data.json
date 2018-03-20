@@ -1,0 +1,41 @@
+{
+  "patientId": "file123.png",
+  "seriesUID": "file123.png/space123",
+  "imageSetFormat": "PNG",
+  "annotationId": 77697,
+  "annotationType": "polygon",
+  "name": "Test ROI name",
+  "coordSys": "IMAGE",
+  "localID": "0",
+  "maskURI": null,
+  "maskOrigin": null,
+  "maskFormat": null,
+  "indication": null,
+  "findings": null,
+  "data": [
+    [
+      -1.2345,
+      6.789,
+      10.1112
+    ],
+    [
+      -1.2345,
+      6.789,
+      10.1112
+    ]
+  ],
+  "instances": [
+    "76255696-105e-47b6-a6c6-ab4d947b7e3e"
+  ],
+  "geClass": null,
+  "geClass1": null,
+  "geClass2": null,
+  "geClass3": null,
+  "geClass4": null,
+  "geClass5": null,
+  "geClass6": null,
+  "geClass7": null,
+  "geClass8": null,
+  "geClass9": null,
+  "geClass10": null
+}
