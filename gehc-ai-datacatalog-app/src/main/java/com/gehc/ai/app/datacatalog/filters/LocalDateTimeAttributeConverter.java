@@ -10,7 +10,7 @@
  * under which the software has been supplied.
  */
 
-package com.gehc.ai.app.datacatalog.serialization;
+package com.gehc.ai.app.datacatalog.filters;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

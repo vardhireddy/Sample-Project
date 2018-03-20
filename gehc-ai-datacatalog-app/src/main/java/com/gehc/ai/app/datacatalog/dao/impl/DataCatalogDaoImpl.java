@@ -161,7 +161,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " WHERE ";
 
 	public static final String IMG_SER_PATIENT = "select im.id, im.org_id, im.modality, im.anatomy, im.data_format, im.series_instance_uid, im.institution, im.instance_count, im.equipment, "
-			+ " p.patient_id, p.age, p.gender, im.uri, CAST(im.properties as CHAR(20000)) "
+			+ " p.patient_id, p.age, p.gender, im.uri, CAST(im.properties as CHAR(20000)), im.upload_date "
 			+ " from patient p, image_set im where im.id in ( ";
 	public static final String IMG_SER_PATIENT_SUFFIX = " ) and p.org_id= im.org_id and p.id = im.patient_dbid order by p.patient_id ";
 	
@@ -736,6 +736,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					// TODO throw the exception
 					e.printStackTrace();
 				}
+	        	imgSeries.setUploadDate(((Timestamp)record[14]).toLocalDateTime());
 	        	imageSeriesList.add(imgSeries);
 	        });     
 		}

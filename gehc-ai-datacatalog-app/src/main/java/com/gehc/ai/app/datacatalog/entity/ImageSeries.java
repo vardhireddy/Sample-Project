@@ -37,8 +37,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
-import com.gehc.ai.app.datacatalog.serialization.JsonDateSerializer;
-import com.gehc.ai.app.datacatalog.serialization.LocalDateTimeAttributeConverter;
+import com.gehc.ai.app.datacatalog.filters.JsonDateSerializer;
+import com.gehc.ai.app.datacatalog.filters.LocalDateTimeAttributeConverter;
 
 
 @Entity
