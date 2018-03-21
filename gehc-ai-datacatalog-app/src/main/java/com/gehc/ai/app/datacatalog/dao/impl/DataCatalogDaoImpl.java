@@ -357,8 +357,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			String dateFrom = convertUserDateToDBDate(params.get(DATE_FROM));
 			String dateTo = convertUserDateToDBDate(params.get(DATE_TO));
 			if(dateFrom != null && dateTo != null){
-				dateRangeQuery = " and x.upload_date between date_format(\""+dateFrom+"\", \"%Y-%m-%d %H:%i\") "
-						+ "and date_format(date_add(\""+dateTo+"\", INTERVAL 1 MINUTE), \"%Y-%m-%d %H:%i\")";
+				dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
 			}
 			params.remove(DATE_FROM);
 			params.remove(DATE_TO);
