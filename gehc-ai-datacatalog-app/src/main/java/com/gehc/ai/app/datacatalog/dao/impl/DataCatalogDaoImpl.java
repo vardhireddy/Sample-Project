@@ -352,8 +352,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	private String buildDateRangeQuery(Map<String, Object> params) {
 		String dateRangeQuery = null;
 		if(params.containsKey(DATE_FROM)){
-			dateRangeQuery = " and x.upload_date between \""+params.get(DATE_FROM)+"\" and \""+params.get(DATE_TO)+"\"";
-			params.remove(DATE_FROM);
+            dateRangeQuery = " and x.upload_date between date_format(\""+dateFrom+"\", \"%Y-%m-%d %H:%i\") "
+                    + "and date_format(date_add(\""+dateTo+"\", INTERVAL 1 MINUTE), \"%Y-%m-%d %H:%i\")";
+            params.remove(DATE_FROM);
 			params.remove(DATE_TO);
 		}
 		return dateRangeQuery;
@@ -373,7 +374,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			builder.append(" WHERE ");
 		}
 	}
-	
+
 	private String constructWhereClause(String param, String values) {
 		StringBuilder whereClause = new StringBuilder().append("x."+param + " IN (") ;
         whereClause.append(quoteValues(values));

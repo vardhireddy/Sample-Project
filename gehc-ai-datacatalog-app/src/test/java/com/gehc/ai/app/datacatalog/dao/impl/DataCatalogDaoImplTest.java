@@ -635,7 +635,7 @@ public class DataCatalogDaoImplTest {
         input.put("dateFrom", "2017-12-14 19:00:00");
         input.put("dateTo", "2017-12-14 20:00:00");
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\") and x.upload_date between \"2017-12-14 19:00:00\" and \"2017-12-14 20:00:00\"";
+        String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\") and x.upload_date between date_format(\"2017-12-14 19:00:00\", \"%Y-%m-%d %H:%i\") and date_format(date_add(\"2017-12-14 20:00:00\", INTERVAL 1 MINUTE), \"%Y-%m-%d %H:%i\")";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
     }
