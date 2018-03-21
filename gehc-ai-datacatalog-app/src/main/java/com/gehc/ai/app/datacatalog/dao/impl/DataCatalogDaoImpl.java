@@ -40,6 +40,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
@@ -59,8 +60,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public static final String ELLIPSE = "ellipse";
 	public static final String LINE = "line";
 	public static final String POINT = "point";
-	public static final String DATE_FROM = "dateFrom";
-	public static final String DATE_TO = "dateTo";
 
     public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
             + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
@@ -351,11 +350,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	 */
 	private String buildDateRangeQuery(Map<String, Object> params) {
 		String dateRangeQuery = null;
-		if(params.containsKey(DATE_FROM)){
-            dateRangeQuery = " and x.upload_date between date_format(\""+dateFrom+"\", \"%Y-%m-%d %H:%i\") "
-                    + "and date_format(date_add(\""+dateTo+"\", INTERVAL 1 MINUTE), \"%Y-%m-%d %H:%i\")";
-            params.remove(DATE_FROM);
-			params.remove(DATE_TO);
+		if(params.containsKey(ApplicationConstants.DATE_FROM)){
+            dateRangeQuery = " and x.upload_date between date_format(\""+params.get(ApplicationConstants.DATE_FROM)+"\", \"%Y-%m-%d %H:%i\") "
+                    + "and date_format(date_add(\""+params.get(ApplicationConstants.DATE_TO)+"\", INTERVAL 1 MINUTE), \"%Y-%m-%d %H:%i\")";
+            params.remove(ApplicationConstants.DATE_FROM);
+			params.remove(ApplicationConstants.DATE_TO);
 		}
 		return dateRangeQuery;
 	}

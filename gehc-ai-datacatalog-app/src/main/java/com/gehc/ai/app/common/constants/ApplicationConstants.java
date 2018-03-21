@@ -28,4 +28,6 @@ public final class ApplicationConstants {
     public static final String FAILURE = "FAILURE";
 	public static final String ANNOTATIONS = "annotations";
 	public static final String GE_CLASS = "ge-class";
+	public static final String DATE_FROM = "dateFrom";
+	public static final String DATE_TO = "dateTo";
 }

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 
@@ -16,89 +17,75 @@ import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
  */
 public class RequestValidator {
 
-	private final static String DATE_FROM = "dateFrom";
-	private final static String DATE_TO = "dateTo";
-	
 	public static void validateImageSeriesFilterParamMap(Map<String, Object> paramMap) throws DataCatalogException {
-		
-		
-    	StringBuilder stringBuilder = new StringBuilder();
-		if(paramMap.containsKey(DATE_FROM) && paramMap.containsKey(DATE_TO)){
+    	StringBuilder errorMessage = new StringBuilder();
+		if(paramMap.containsKey(ApplicationConstants.DATE_FROM) && paramMap.containsKey(ApplicationConstants.DATE_TO)){
 			try{
-				validateDateFromAndToDateContent(paramMap.get(DATE_FROM), paramMap.get(DATE_TO));
+				validateDateFromAndToDateContent(paramMap.get(ApplicationConstants.DATE_FROM), paramMap.get(ApplicationConstants.DATE_TO));
 				validateDateFromAndToDateFormat(paramMap);
 			}catch(DataCatalogException exception){
-				stringBuilder.append(exception.getMessage());
+				errorMessage.append(exception.getMessage());
 			}
-		}else if(paramMap.containsKey(DATE_FROM)){
-			stringBuilder.append(ErrorCodes.MISSING_DATE_TO.getErrorMessage());
-			paramMap.remove(DATE_FROM);
-    	}else if(paramMap.containsKey(DATE_TO)){
-			stringBuilder.append(ErrorCodes.MISSING_DATE_FROM.getErrorMessage());
-			paramMap.remove(DATE_TO);
+		}else if(paramMap.containsKey(ApplicationConstants.DATE_FROM)){
+			errorMessage.append(ErrorCodes.MISSING_DATE_TO.getErrorMessage());
+    	}else if(paramMap.containsKey(ApplicationConstants.DATE_TO)){
+			errorMessage.append(ErrorCodes.MISSING_DATE_FROM.getErrorMessage());
 		}
 		
-    	if(stringBuilder.length() > 0){
-    		throw new DataCatalogException(stringBuilder.toString());
+    	if(errorMessage.length() > 0){
+    		throw new DataCatalogException(errorMessage.toString());
     	}
 	}
 	
 	private static void validateDateFromAndToDateContent(Object dateFrom, Object dateTo) throws DataCatalogException {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder errorMessage = new StringBuilder();
 		
-		if(dateFrom == null || !(dateFrom instanceof String) || ((String)dateFrom).isEmpty()){
-			stringBuilder.append(ErrorCodes.MISSING_DATE_FROM_VALUE.getErrorMessage());
+		if(dateFrom == null || !(dateFrom instanceof String) || ((String)dateFrom).trim().isEmpty()){
+			errorMessage.append(ErrorCodes.MISSING_DATE_FROM_VALUE.getErrorMessage());
 		}
 		
-		if(dateTo == null || !(dateTo instanceof String) || ((String)dateTo).isEmpty()){
-			stringBuilder.append(ErrorCodes.MISSING_DATE_TO_VALUE.getErrorMessage());
+		if(dateTo == null || !(dateTo instanceof String) || ((String)dateTo).trim().isEmpty()){
+			errorMessage.append(ErrorCodes.MISSING_DATE_TO_VALUE.getErrorMessage());
 		}
 		
-		if(stringBuilder.length() > 0){
-    		throw new DataCatalogException(stringBuilder.toString());
+		if(errorMessage.length() > 0){
+    		throw new DataCatalogException(errorMessage.toString());
     	}
 		
 	}
 
 	private static void validateDateFromAndToDateFormat(Map<String, Object> paramMap) throws DataCatalogException{
 		
-		StringBuilder stringBuilder = new StringBuilder();
-		
+		StringBuilder errorMessage = new StringBuilder();
 		DateTimeFormatter sourceFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		DateTimeFormatter targetFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime dateAndTimeFrom = null;
 		LocalDateTime dateAndTimeTo = null;
 		
 		try{
-			dateAndTimeFrom = LocalDateTime.parse((String)paramMap.get(DATE_FROM), sourceFormat);
+			dateAndTimeFrom = LocalDateTime.parse((String)paramMap.get(ApplicationConstants.DATE_FROM), sourceFormat);
 		}catch(Exception exception){
-			stringBuilder.append(ErrorCodes.INVALID_DATE_FROM_FORMAT.getErrorMessage());
+			errorMessage.append(ErrorCodes.INVALID_DATE_FROM_FORMAT.getErrorMessage());
 		}
 		
 		try{
-			dateAndTimeTo = LocalDateTime.parse((String)paramMap.get(DATE_TO), sourceFormat);
+			dateAndTimeTo = LocalDateTime.parse((String)paramMap.get(ApplicationConstants.DATE_TO), sourceFormat);
 		}catch(Exception exception){
-			stringBuilder.append(ErrorCodes.INVALID_DATE_TO_FORMAT.getErrorMessage());
+			errorMessage.append(ErrorCodes.INVALID_DATE_TO_FORMAT.getErrorMessage());
 		}
 
-		if(stringBuilder.length() == 0){
+		if(errorMessage.length() == 0){
 			if(dateAndTimeFrom != null && dateAndTimeTo != null){
 				if(dateAndTimeTo.isBefore(dateAndTimeFrom)){
-					paramMap.remove(DATE_FROM);
-					paramMap.remove(DATE_TO);
-					stringBuilder.append(ErrorCodes.DATE_FROM_AFTER_DATE_TO.getErrorMessage());
-				}else{
-					paramMap.put(DATE_FROM, targetFormat.format(dateAndTimeFrom));
-					paramMap.put(DATE_TO, targetFormat.format(dateAndTimeTo));
+					errorMessage.append(ErrorCodes.DATE_FROM_AFTER_DATE_TO.getErrorMessage());
 				}
 			}else{
-				paramMap.remove(DATE_FROM);
-				paramMap.remove(DATE_TO);
+				errorMessage.append(ErrorCodes.INVALID_DATE_FROM_FORMAT.getErrorMessage());
+				errorMessage.append(ErrorCodes.INVALID_DATE_TO_FORMAT.getErrorMessage());
 			}
 		}
 		
-		if(stringBuilder.length() > 0){
-    		throw new DataCatalogException(stringBuilder.toString());
+		if(errorMessage.length() > 0){
+    		throw new DataCatalogException(errorMessage.toString());
     	}
 		
 	}

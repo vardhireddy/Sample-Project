@@ -826,14 +826,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesByFilters(@RequestParam Map<String, Object> params) {
-        Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
-                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS, DATE_FROM, DATE_TO));
-        
-        try{
+    	
+    	try{
         	RequestValidator.validateImageSeriesFilterParamMap(params);
         }catch(DataCatalogException exception){
         	throw new WebApplicationException(exception.getLocalizedMessage());
         }
+        Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
+                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS, DATE_FROM, DATE_TO));
         
         ResponseBuilder responseBuilder;
         List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();
