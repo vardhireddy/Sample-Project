@@ -67,6 +67,7 @@ import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
@@ -827,6 +828,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List<ImageSeries> getImgSeriesByFilters(@RequestParam Map<String, Object> params) {
         Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
                 SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS, DATE_FROM, DATE_TO));
+        
+        try{
+        	RequestValidator.validateImageSeriesFilterParamMap(params);
+        }catch(DataCatalogException exception){
+        	throw new WebApplicationException(exception.getLocalizedMessage());
+        }
+        
         ResponseBuilder responseBuilder;
         List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();
         try {
@@ -852,10 +860,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return (List<ImageSeries>) responseBuilder.build().getEntity();
     }
 
-
-
-
-    private List<Long> getImgSeriesIdsByDSId(@PathVariable Long id) {
+	private List<Long> getImgSeriesIdsByDSId(@PathVariable Long id) {
         // Note: Coolidge is using this as well
         logger.debug("In REST , Get img series for DC id " + id);
         List<DataSet> dsLst = new ArrayList<DataSet>();

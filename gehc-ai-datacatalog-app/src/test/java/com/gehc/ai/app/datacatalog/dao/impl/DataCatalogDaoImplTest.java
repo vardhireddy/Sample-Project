@@ -606,17 +606,6 @@ public class DataCatalogDaoImplTest {
         params.put(key, values);
         return params;
     }
-
-    @Test
-    public void testconvertUserDateToDBDateEmptyDateTo() {
-       Map<String, Object> input = constructQueryParam("modality", "CT");
-       input.putAll(constructQueryParam("anatomy", "LUNG"));
-       input.put("dateFrom", "2017-12-14T19:00:00Z");
-       input.put("dateTo", "");
-       String result = dataCatalogDao.constructQuery(input);
-       String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\")";
-       assertEquals("Param constructed in incorrect ", expectedResult, result);
-    }
     
     @Test(expected = Exception.class)
     public void testConstructQueryThrowsException() {
@@ -643,22 +632,12 @@ public class DataCatalogDaoImplTest {
     public void testConstructQueryWithMultipleParamSingleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         input.putAll(constructQueryParam("anatomy", "LUNG"));
-        input.put("dateFrom", "2017-12-14T19:00:00Z");
-        input.put("dateTo", "2017-12-14T20:00:00Z");
+        input.put("dateFrom", "2017-12-14 19:00:00");
+        input.put("dateTo", "2017-12-14 20:00:00");
         String result = dataCatalogDao.constructQuery(input);
         String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\") and x.upload_date between \"2017-12-14 19:00:00\" and \"2017-12-14 20:00:00\"";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
-    }
-    
-    @Test
-    public void testConstructQueryWithInvalidDateFormat() {
-        Map<String, Object> input = constructQueryParam("modality", "CT");
-        input.put("dateFrom", "2017-12-14 19:00:00");
-        input.put("dateTo", "2017-12-14");
-        String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = " WHERE x.modality IN (\"CT\")";
-        assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
     @Test

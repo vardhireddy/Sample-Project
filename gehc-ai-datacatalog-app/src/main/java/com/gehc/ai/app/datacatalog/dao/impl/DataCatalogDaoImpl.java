@@ -17,8 +17,6 @@ import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -353,12 +351,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	 */
 	private String buildDateRangeQuery(Map<String, Object> params) {
 		String dateRangeQuery = null;
-		if(params.containsKey(DATE_FROM) || params.containsKey(DATE_TO)){
-			String dateFrom = convertUserDateToDBDate(params.get(DATE_FROM));
-			String dateTo = convertUserDateToDBDate(params.get(DATE_TO));
-			if(dateFrom != null && dateTo != null){
-				dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
-			}
+		if(params.containsKey(DATE_FROM)){
+			dateRangeQuery = " and x.upload_date between \""+params.get(DATE_FROM)+"\" and \""+params.get(DATE_TO)+"\"";
 			params.remove(DATE_FROM);
 			params.remove(DATE_TO);
 		}
@@ -380,23 +374,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 	}
 	
-	private String convertUserDateToDBDate(Object dateStr){
-		if(dateStr == null || !(dateStr instanceof String) || ((String)dateStr).isEmpty()){
-			return null;
-		}
-		DateTimeFormatter sourceFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		DateTimeFormatter targetFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime localtDateAndTime = null;
-		try{
-			localtDateAndTime = LocalDateTime.parse((String)dateStr, sourceFormat);
-		}catch(Exception e){
-			logger.error("Dao error while converting Date Formats for "+dateStr, e);
-			return null;
-		}
-
-		return targetFormat.format(localtDateAndTime);
-	}
-
 	private String constructWhereClause(String param, String values) {
 		StringBuilder whereClause = new StringBuilder().append("x."+param + " IN (") ;
         whereClause.append(quoteValues(values));
