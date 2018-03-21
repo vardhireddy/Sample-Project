@@ -17,6 +17,8 @@ import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,6 +62,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	public static final String ELLIPSE = "ellipse";
 	public static final String LINE = "line";
 	public static final String POINT = "point";
+	public static final String DATE_FROM = "dateFrom";
+	public static final String DATE_TO = "dateTo";
 
     public static final String GE_CLASS_COUNTS_PREFIX = "SELECT count(distinct image_set) as image_count, CAST(single_class as CHAR(500)) FROM ( "
             + " SELECT image_set, JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) AS single_class "
@@ -350,11 +354,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	 */
 	private String buildDateRangeQuery(Map<String, Object> params) {
 		String dateRangeQuery = null;
-		if(params.containsKey(ApplicationConstants.DATE_FROM)){
-            dateRangeQuery = " and x.upload_date between date_format(\""+params.get(ApplicationConstants.DATE_FROM)+"\", \"%Y-%m-%d %H:%i\") "
-                    + "and date_format(date_add(\""+params.get(ApplicationConstants.DATE_TO)+"\", INTERVAL 1 MINUTE), \"%Y-%m-%d %H:%i\")";
+		if(params.containsKey(DATE_FROM)){
+            dateRangeQuery = " and x.upload_date between \""+params.get(ApplicationConstants.DATE_FROM)+"\" and \""+params.get(ApplicationConstants.DATE_TO)+"\"";
             params.remove(ApplicationConstants.DATE_FROM);
-			params.remove(ApplicationConstants.DATE_TO);
+            params.remove(ApplicationConstants.DATE_TO);
 		}
 		return dateRangeQuery;
 	}
