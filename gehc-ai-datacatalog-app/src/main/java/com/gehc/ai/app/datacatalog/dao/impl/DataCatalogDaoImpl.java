@@ -42,6 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
@@ -353,14 +354,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	 */
 	private String buildDateRangeQuery(Map<String, Object> params) {
 		String dateRangeQuery = null;
-		if(params.containsKey(DATE_FROM) || params.containsKey(DATE_TO)){
-			String dateFrom = convertUserDateToDBDate(params.get(DATE_FROM));
-			String dateTo = convertUserDateToDBDate(params.get(DATE_TO));
-			if(dateFrom != null && dateTo != null){
-				dateRangeQuery = " and x.upload_date between \""+dateFrom+"\" and \""+dateTo+"\"";
-			}
-			params.remove(DATE_FROM);
-			params.remove(DATE_TO);
+		if(params.containsKey(DATE_FROM)){
+            dateRangeQuery = " and x.upload_date between \""+params.get(ApplicationConstants.DATE_FROM)+"\" and \""+params.get(ApplicationConstants.DATE_TO)+"\"";
+            params.remove(ApplicationConstants.DATE_FROM);
+            params.remove(ApplicationConstants.DATE_TO);
 		}
 		return dateRangeQuery;
 	}
@@ -378,23 +375,6 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}else{
 			builder.append(" WHERE ");
 		}
-	}
-	
-	private String convertUserDateToDBDate(Object dateStr){
-		if(dateStr == null || !(dateStr instanceof String) || ((String)dateStr).isEmpty()){
-			return null;
-		}
-		DateTimeFormatter sourceFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		DateTimeFormatter targetFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime localtDateAndTime = null;
-		try{
-			localtDateAndTime = LocalDateTime.parse((String)dateStr, sourceFormat);
-		}catch(Exception e){
-			logger.error("Dao error while converting Date Formats for "+dateStr, e);
-			return null;
-		}
-
-		return targetFormat.format(localtDateAndTime);
 	}
 
 	private String constructWhereClause(String param, String values) {
