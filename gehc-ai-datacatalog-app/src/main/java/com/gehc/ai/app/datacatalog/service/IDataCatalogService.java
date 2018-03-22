@@ -12,10 +12,10 @@
 package com.gehc.ai.app.datacatalog.service;
 
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +35,7 @@ public interface IDataCatalogService {
      */
     List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
     
-    List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) throws IOException;
+    List<AnnotationJson> getAnnotationDetailsByImageSeriesIDs(List<Long> imgSerIdLst) throws InvalidAnnotationException;
 
     List<Integer> getAnnotationsById(Annotation annotation);
     

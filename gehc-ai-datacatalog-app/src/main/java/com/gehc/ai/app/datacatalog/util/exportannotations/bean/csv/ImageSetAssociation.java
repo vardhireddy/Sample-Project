@@ -9,7 +9,7 @@
  *  with the terms and conditions stipulated in the agreement/contract
  *  under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.util.exportannotations.bean;
+package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;

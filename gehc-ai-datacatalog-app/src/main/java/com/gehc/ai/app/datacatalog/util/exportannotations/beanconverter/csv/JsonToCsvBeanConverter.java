@@ -9,11 +9,11 @@
  *  with the terms and conditions stipulated in the agreement/contract
  *  under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter;
+package com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.Annotation;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.AnnotationCsv;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public interface JsonToCsvBeanConverter<T extends Annotation> {
+public interface JsonToCsvBeanConverter<T extends AnnotationCsv> {
 
     /**
      * Returns the provided {@link JsonNode} as a {@code List} of {@code Annotation}s.

@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
@@ -38,6 +37,7 @@ import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationExporter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -775,12 +775,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return filters;
     }
 
-    private List<AnnotationDetails> getAnnotationDetails(Long dataCollectionID) throws IOException {
-        List<AnnotationDetails> annotationByDSList = new ArrayList<>();
+    private List<AnnotationJson> getAnnotationDetails(Long dataCollectionID) throws InvalidAnnotationException {
+        List<AnnotationJson> annotationByDSList = new ArrayList<>();
         List<Long> imgSerIdLst = getImgSeriesIdsByDSId(dataCollectionID);
 
         if (!imgSerIdLst.isEmpty()) {
-            annotationByDSList = dataCatalogService.getAnnotationsByDSId(imgSerIdLst);
+            annotationByDSList = dataCatalogService.getAnnotationDetailsByImageSeriesIDs(imgSerIdLst);
         }
 
         return annotationByDSList;
@@ -890,7 +890,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
-    public List<AnnotationDetails> getAnnotationsByDSId(@PathVariable Long id) throws IOException {
+    public List<AnnotationJson> getAnnotationsByDSId(@PathVariable Long id) throws InvalidAnnotationException {
         return getAnnotationDetails(id);
     }
 
@@ -903,7 +903,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         try {
             // First get the annotation detail entities
-            List<AnnotationDetails> annotationByDSList = getAnnotationDetails(id);
+            List<AnnotationJson> annotationByDSList = getAnnotationDetails(id);
 
             // Convert the entities to their JSON representation.
             // Note: We could use the entities directly, but its harder to iterate on the entities' properties

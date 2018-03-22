@@ -9,29 +9,25 @@
  *  with the terms and conditions stipulated in the agreement/contract
  *  under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter;
+package com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.ImageSetAssociation;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.LabelAnnotation;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ImageSetAssociation;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.LabelAnnotationCsv;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * {@code LabelJsonToCsvBeanConverter} converts a JSON representation of a label annotation to a corresponding bean(s) representation.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class LabelJsonToCsvBeanConverter implements JsonToCsvBeanConverter {
+public class LabelJsonToCsvBeanConverter implements JsonToCsvBeanConverter<LabelAnnotationCsv> {
 
     /**
      * Creates a new {@code LabelJsonToCsvBeanConverter}.
@@ -52,13 +48,13 @@ public class LabelJsonToCsvBeanConverter implements JsonToCsvBeanConverter {
      * @return a {@code List} of {@code LabelAnnotation} beans
      */
     @Override
-    public List<LabelAnnotation> getAnnotationBeans(JsonNode labelNode) throws InvalidAnnotationException {
+    public List<LabelAnnotationCsv> getAnnotationBeans(JsonNode labelNode) throws InvalidAnnotationException {
 
-        List<Map.Entry<String, JsonNode>> geClasses = getGEClasses(labelNode);
-        List<LabelAnnotation> labelBeans = new ArrayList<>();
+        ArrayNode geClasses = (ArrayNode) labelNode.get("geClasses");
+        List<LabelAnnotationCsv> labelBeans = new ArrayList<>();
 
-        for (Map.Entry<String, JsonNode> geClass : geClasses) {
-            final LabelAnnotation labelBean;
+        for (JsonNode geClass : geClasses) {
+            final LabelAnnotationCsv labelBean;
 
             if (ImageSetAssociation.isAssociatedWithDicom(labelNode)) {
                 labelBean = createDicomLabel(labelNode, geClass);
@@ -88,11 +84,11 @@ public class LabelJsonToCsvBeanConverter implements JsonToCsvBeanConverter {
      * @param geClass   The specific GE class for which this {@code LabelAnnotation} is being created.  This should contain information such as the label's name, severity, indication, and findings.
      * @return a new {@code LabelAnnotation}
      */
-    private static LabelAnnotation createDicomLabel(JsonNode labelNode, Map.Entry<String, JsonNode> geClass) {
+    private static LabelAnnotationCsv createDicomLabel(JsonNode labelNode, JsonNode geClass) {
         final String seriesUID = labelNode.get("seriesUID").textValue();
         final Map<String, String> commonMetaData = getCommonMetaData(labelNode, geClass);
 
-        return new LabelAnnotation(seriesUID, commonMetaData.get("annotationType"), commonMetaData.get("name"), commonMetaData.get("value"), commonMetaData.get("indication"), commonMetaData.get("findings"));
+        return new LabelAnnotationCsv(seriesUID, commonMetaData.get("annotationType"), commonMetaData.get("name"), commonMetaData.get("value"), commonMetaData.get("indication"), commonMetaData.get("findings"));
     }
 
     /**
@@ -103,12 +99,12 @@ public class LabelJsonToCsvBeanConverter implements JsonToCsvBeanConverter {
      * @param geClass   The specific GE class for which this {@code LabelAnnotation} is being created.  This should contain information such as the label's name, severity, indication, and findings.
      * @return a new {@code LabelAnnotation}
      */
-    private static LabelAnnotation createNonDicomLabel(JsonNode labelNode, Map.Entry<String, JsonNode> geClass) {
-        final String fileName = labelNode.get("patientId").textValue();
+    private static LabelAnnotationCsv createNonDicomLabel(JsonNode labelNode, JsonNode geClass) {
+        final String fileName = labelNode.get("patientID").textValue();
         final String spaceID = "";
         final Map<String, String> commonMetaData = getCommonMetaData(labelNode, geClass);
 
-        return new LabelAnnotation(fileName, spaceID, commonMetaData.get("annotationType"), commonMetaData.get("name"), commonMetaData.get("value"), commonMetaData.get("indication"), commonMetaData.get("findings"));
+        return new LabelAnnotationCsv(fileName, spaceID, commonMetaData.get("annotationType"), commonMetaData.get("name"), commonMetaData.get("value"), commonMetaData.get("indication"), commonMetaData.get("findings"));
     }
 
     /**
@@ -118,51 +114,26 @@ public class LabelJsonToCsvBeanConverter implements JsonToCsvBeanConverter {
      * @param geClass   The object that defines GE class specific information
      * @return a {@code Map} where the key is the meta-data property and the value is that property's value
      */
-    private static Map<String, String> getCommonMetaData(JsonNode labelNode, Map.Entry<String, JsonNode> geClass) {
+    private static Map<String, String> getCommonMetaData(JsonNode labelNode, JsonNode geClass) {
         Map<String, String> commonMetaData = new HashMap<>();
-        commonMetaData.put("name", geClass.getValue().get("name").textValue());
+        commonMetaData.put("name", geClass.get("name").textValue());
         commonMetaData.put("annotationType", labelNode.get("annotationType").textValue());
-        commonMetaData.put("value", getOptionalFieldFromGEClass(geClass, "value"));
-        commonMetaData.put("indication", getOptionalFieldFromLabelNode(labelNode, "indication"));
-        commonMetaData.put("findings", getOptionalFieldFromLabelNode(labelNode, "findings"));
+        commonMetaData.put("value", getOptionalField(geClass, "value"));
+        commonMetaData.put("indication", getOptionalField(labelNode, "indication"));
+        commonMetaData.put("findings", getOptionalField(labelNode, "findings"));
 
         return commonMetaData;
     }
 
     /**
-     * Returns the non-null GE class child nodes of the provided node.
+     * Returns an optional field if it exists.
      *
-     * @param node The parent {@code JsonNode} to inspect.
-     * @return a {@code List} of GE classes
-     */
-    private static List<Map.Entry<String, JsonNode>> getGEClasses(JsonNode node) {
-        Iterator<Map.Entry<String, JsonNode>> objPropIterator = node.fields();
-        Iterable<Map.Entry<String, JsonNode>> objPropIterable = () -> objPropIterator;
-        Stream<Map.Entry<String, JsonNode>> objectProperties = StreamSupport.stream(objPropIterable.spliterator(), false);
-        return objectProperties.filter(entry -> entry.getKey().contains("geClass") && !(entry.getValue() instanceof NullNode)).collect(Collectors.toList());
-    }
-
-    /**
-     * Returns an optional field of a GE class object if it exists.
-     *
-     * @param labelNode     The label node to inspect.
-     * @param optionalField The optional field that is to be retrieved from the specified GE class object.
+     * @param node          The node to inspect.
+     * @param optionalField The optional field that is to be retrieved from provided node.
      * @return A {@code String} representation of the optional field if it exists; otherwise, {@code null}.
      */
-    private static String getOptionalFieldFromLabelNode(JsonNode labelNode, String optionalField) {
-        JsonNode fieldValue = labelNode.get(optionalField);
-        return fieldValue != null ? fieldValue.textValue() : null;
-    }
-
-    /**
-     * Returns an optional field of a GE class object if it exists.
-     *
-     * @param geClass       The GE class object to inspect.
-     * @param optionalField The optional field that is to be retrieved from the specified GE class object.
-     * @return A {@code String} representation of the optional field if it exists; otherwise, {@code null}.
-     */
-    private static String getOptionalFieldFromGEClass(Map.Entry<String, JsonNode> geClass, String optionalField) {
-        JsonNode fieldValue = geClass.getValue().get(optionalField);
+    private static String getOptionalField(JsonNode node, String optionalField) {
+        JsonNode fieldValue = node.get(optionalField);
         return fieldValue != null ? fieldValue.textValue() : null;
     }
 

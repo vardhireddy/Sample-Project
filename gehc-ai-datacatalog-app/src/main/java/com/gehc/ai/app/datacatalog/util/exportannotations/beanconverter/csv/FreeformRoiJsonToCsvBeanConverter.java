@@ -9,13 +9,13 @@
  *  with the terms and conditions stipulated in the agreement/contract
  *  under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter;
+package com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.MultiPointRoiAnnotation;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.ImageSetAssociation;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.RoiAnnotation;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.MultiPointRoiAnnotationCsv;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ImageSetAssociation;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.RoiAnnotationCsv;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class FreeformRoiJsonToCsvBeanConverter implements JsonToCsvBeanConverter {
+public class FreeformRoiJsonToCsvBeanConverter implements JsonToCsvBeanConverter<RoiAnnotationCsv> {
 
     /**
      * Creates a new {@code FreeformRoiJsonToCsvBeanConverter}.
@@ -48,10 +48,10 @@ public class FreeformRoiJsonToCsvBeanConverter implements JsonToCsvBeanConverter
      * @return a {@code List} of {@code RoiAnnotation} beans
      */
     @Override
-    public List<RoiAnnotation> getAnnotationBeans(JsonNode roiNode) throws InvalidAnnotationException {
-        List<RoiAnnotation> roiBeans = new ArrayList<>();
+    public List<RoiAnnotationCsv> getAnnotationBeans(JsonNode roiNode) throws InvalidAnnotationException {
+        List<RoiAnnotationCsv> roiBeans = new ArrayList<>();
 
-        final RoiAnnotation roiBean;
+        final RoiAnnotationCsv roiBean;
 
         if (ImageSetAssociation.isAssociatedWithDicom(roiNode)) {
             roiBean = createDicomRoi(roiNode);
@@ -79,11 +79,11 @@ public class FreeformRoiJsonToCsvBeanConverter implements JsonToCsvBeanConverter
      * @return a new {@code RoiAnnotation}
      * @throws InvalidAnnotationException if the provided JSON representation contains coordinates that are not represented as an array of double values
      */
-    private static MultiPointRoiAnnotation createDicomRoi(JsonNode roiNode) throws InvalidAnnotationException {
+    private static MultiPointRoiAnnotationCsv createDicomRoi(JsonNode roiNode) throws InvalidAnnotationException {
         final String seriesUID = roiNode.get("seriesUID").textValue();
         final Map<String, Object> commonMetaData = getCommonMetaData(roiNode);
 
-        return new MultiPointRoiAnnotation(
+        return new MultiPointRoiAnnotationCsv(
                 seriesUID,
                 (String) commonMetaData.get("annotationType"),
                 (String) commonMetaData.get("coordSys"),
@@ -100,12 +100,12 @@ public class FreeformRoiJsonToCsvBeanConverter implements JsonToCsvBeanConverter
      * @return a new {@code RoiAnnotation}
      * @throws InvalidAnnotationException if the provided JSON representation contains coordinates that are not represented as an array of double values
      */
-    private static MultiPointRoiAnnotation createNonDicomRoi(JsonNode roiNode) throws InvalidAnnotationException {
-        final String fileName = roiNode.get("patientId").textValue();
+    private static MultiPointRoiAnnotationCsv createNonDicomRoi(JsonNode roiNode) throws InvalidAnnotationException {
+        final String fileName = roiNode.get("patientID").textValue();
         final String spaceID = "";
         final Map<String, Object> commonMetaData = getCommonMetaData(roiNode);
 
-        return new MultiPointRoiAnnotation(
+        return new MultiPointRoiAnnotationCsv(
                 fileName,
                 spaceID,
                 (String) commonMetaData.get("annotationType"),

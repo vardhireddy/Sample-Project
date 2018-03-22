@@ -13,7 +13,6 @@ package com.gehc.ai.app.datacatalog.rest;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
@@ -24,6 +23,7 @@ import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
@@ -252,16 +252,16 @@ public interface IDataCatalogRest {
      * @param id
      * @return
      */
-    // List<Annotation> getAnnotationsByDSId(Long id, String orgId);
+    // List<Annotation> getAnnotationDetailsByImageSetIDs(Long id, String orgId);
 
     /**
      * Exports the annotations of the specified data collection as a JSON string.
      *
      * @param id The ID of the collection whose annotations will be exported as a JSON string
      * @return a {@code List} pf {@code AnnotationDetail}s that will be transformed to a JSON string
-     * @throws IOException If the JSON representation of any of the collection's annotations is not well-formed
+     * @throws InvalidAnnotationException if the JSON representation of any of the collection's annotations is not well-formed
      */
-    List<AnnotationDetails> getAnnotationsByDSId(Long id) throws IOException;
+    List<AnnotationJson> getAnnotationsByDSId(Long id) throws InvalidAnnotationException;
 
     /**
      * Exports the annotations of the specified data collection as a CSV string.

@@ -20,10 +20,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
-import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.util.exportannotations.AnnotationType;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.GEClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
@@ -109,7 +112,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " WHERE JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL and im.id in (";*/
 
     private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, im.data_format, an.id, an.type, "
-            + " CAST(JSON_EXTRACT(an.item, '$.object_name') as CHAR(500)), CAST(JSON_EXTRACT(an.item, '$.data') as CHAR(10000)), "
+            + " CAST(JSON_EXTRACT(an.item, '$.object_name') as CHAR(500)), "
+            + " CAST(JSON_EXTRACT(an.item, '$.object_id') as CHAR(500)), "
+            + " CAST(JSON_EXTRACT(an.item, '$.data') as CHAR(10000)), "
             + " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[0]')) as CHAR(500)), "
             + " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[1]')) as CHAR(500)), "
             + " CAST(JSON_EXTRACT(item, CONCAT('$.properties.ge_class[2]')) as CHAR(500)), "
@@ -358,10 +363,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     }
 
     @Override
-    public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) throws IOException {
+    public List<AnnotationJson> getAnnotationDetailsByImageSetIDs(List<Long> imageSetIDList) throws InvalidAnnotationException {
         StringBuilder builder = new StringBuilder();
         builder.append(GET_ANNOTATION_INFO_BY_IMG_SERIES);
-        for (Iterator<Long> iter = imgSerIdLst.iterator(); iter.hasNext(); ) {
+        for (Iterator<Long> iter = imageSetIDList.iterator(); iter.hasNext(); ) {
             builder.append(iter.next());
             if (iter.hasNext()) {
                 builder.append(",");
@@ -370,62 +375,44 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         builder.append(")");
         logger.debug("Query to get annotation = " + builder.toString());
         Query q = em.createNativeQuery(builder.toString());    // NOSONAR
-        List<AnnotationDetails> annotationByDSList = new ArrayList<>();
+
+        // For result meta data that is composed of a single value, create a map for indicating which index maps to which result meta data
+        Map<String, Integer> resultIndexMap = new HashMap<>();
+        resultIndexMap.put("patientID", 0);
+        resultIndexMap.put("seriesUID", 1);
+        resultIndexMap.put("imageSetFormat", 2);
+        resultIndexMap.put("annotationID", 3);
+        resultIndexMap.put("annotationType", 4);
+        resultIndexMap.put("roiName", 5);
+        resultIndexMap.put("roiLocalID", 6);
+        resultIndexMap.put("roiData", 7);
+        resultIndexMap.put("coordSys", 19);
+        resultIndexMap.put("indication", 20);
+        resultIndexMap.put("findings", 21);
+        resultIndexMap.put("instances", 22);
+        resultIndexMap.put("maskOrigin", 23);
+        resultIndexMap.put("maskURI", 24);
+        resultIndexMap.put("maskFormat", 25);
+
+        // For result meta data that is composed of multiple values, create a map for indicating which indices map to which aggregate result meta data
+        Map<String, Integer[]> resultIndiciesMap = new HashMap<>();
+        resultIndiciesMap.put("geClasses", new Integer[]{8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18});
+
+        List<AnnotationJson> annotationDetails = new ArrayList<>();
         List<Object[]> objList = q.getResultList();
         ObjectMapper mapper = new ObjectMapper();
         if (null != objList && !objList.isEmpty()) {
             for (Object[] record : objList) {
-                // Create a new entity to represent this annotation
-                AnnotationDetails annotationByDS = new AnnotationDetails();
-
-                // Populate the entity with the appropriate values
-                annotationByDS.setPatientId((String) record[0]);
-                annotationByDS.setSeriesUID((String) record[1]);
-                annotationByDS.setImageSetFormat((String) record[2]);
-                if (record[2] instanceof Integer) {
-                    annotationByDS.setAnnotationId(((Integer) record[3]).longValue());
-                }
-                annotationByDS.setAnnotationType((String) record[4]);
-                annotationByDS.setName((String) record[5]);
-                annotationByDS.setData((Object) record[6]);
-                annotationByDS.setGeClass(toGEClass(mapper, record[7]));
-                annotationByDS.setGeClass1(toGEClass(mapper, record[8]));
-                annotationByDS.setGeClass2(toGEClass(mapper, record[9]));
-                annotationByDS.setGeClass3(toGEClass(mapper, record[10]));
-                annotationByDS.setGeClass4(toGEClass(mapper, record[11]));
-                annotationByDS.setGeClass5(toGEClass(mapper, record[12]));
-                annotationByDS.setGeClass6(toGEClass(mapper, record[13]));
-                annotationByDS.setGeClass7(toGEClass(mapper, record[14]));
-                annotationByDS.setGeClass8(toGEClass(mapper, record[15]));
-                annotationByDS.setGeClass9(toGEClass(mapper, record[16]));
-                annotationByDS.setGeClass10(toGEClass(mapper, record[17]));
-                annotationByDS.setCoordSys((String) record[18]);
-                annotationByDS.setIndication((String) record[19]);
-                annotationByDS.setFindings((String) record[20]);
-                annotationByDS.setInstances((Object) record[21]);
-                annotationByDS.setMaskOrigin((Object) record[22]);
-                annotationByDS.setMaskURI((String) record[23]);
-                annotationByDS.setMaskFormat((String) record[24]);
-
-                // Finally, add this entity to the global list of entities
-                annotationByDSList.add(annotationByDS);
+                String annotationTypeAsStr = (String) record[4];
+                AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
+                AnnotationJson dbResultAsJson = annotationType.convertDBResultToJson(record, resultIndexMap, resultIndiciesMap);
+                annotationDetails.add(dbResultAsJson);
             }
 
-            logger.debug("Annotation list size " + annotationByDSList.size());
+            logger.debug("Annotation list size " + annotationDetails.size());
         }
-        return annotationByDSList;
-    }
 
-    /**
-     * Converts the provided {@code} Object representation of a GE class into its entity representation.
-     *
-     * @param mapper  The {@link ObjectMapper} that will be used to convert the {@code Object} representation into the entity representation.
-     * @param geClass The {@code} Object representation of the GE class to be converted
-     * @return The entity representation i.e. {@link GEClass}
-     * @throws IOException if the {@code Object representation} of the GE class does not encode a JSON string
-     */
-    private static GEClass toGEClass(ObjectMapper mapper, Object geClass) throws IOException {
-        return (GEClass) mapper.readValue(geClass.toString(), GEClass.class);
+        return annotationDetails;
     }
 
     @SuppressWarnings("unchecked")

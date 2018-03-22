@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.Annotation;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.AnnotationCsv;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public final class CsvAnnotationExporter {
             csvBuilder.append(String.join(",", columnHeadersArr) + "\n");
 
             // Second, write out each annotation JSON node as CSV using the above set of column headers
-            List<Annotation> annotationBeans = new ArrayList<>();
+            List<AnnotationCsv> annotationCsvBeans = new ArrayList<>();
             for (final JsonNode annotationNode : arrNode) {
                 AnnotationType annotationType = getAnnotationType(annotationNode);
                 String convertedCsv = annotationType.convertJsonToCsv(annotationNode, columnHeadersArr);

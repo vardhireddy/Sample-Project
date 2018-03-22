@@ -37,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author andrew.c.wong@ge.com (212069153)
  */
 @RunWith(Parameterized.class)
-public class FreeformRoiAnnotationColumnsTest {
+public class FreeformRoiAnnotationCsvColumnsTest {
 
     private ImageSetType imageSetType;
     private MetaDataTypes metaDataTypes;
@@ -69,7 +69,7 @@ public class FreeformRoiAnnotationColumnsTest {
      * @param inputFile             The path of the input JSON file
      * @param expectedColumnHeaders The expected column headers produced by the {@link AnnotationType#getColumnHeaders(JsonNode)}API
      */
-    public FreeformRoiAnnotationColumnsTest(
+    public FreeformRoiAnnotationCsvColumnsTest(
             ImageSetType imageSetType,
             MetaDataTypes metaDataTypes,
             String optionalMetaData,

@@ -1,33 +1,22 @@
 {
-  "patientId": "file123.png",
+  "patientID": "file123.png",
   "seriesUID": "file123.png/space123",
   "imageSetFormat": "PNG",
   "annotationId": 77697,
   "annotationType": "label",
-  "name": null,
-  "coordSys": null,
-  "maskURI": null,
-  "maskOrigin": null,
-  "maskFormat": null,
   "indication": "\"Mild cardiomegaly unchanged. Stable superior mediastinal contour with tortuous aorta. Normal pulmonary vascularity. Unchanged elevated right hemidiaphragm with minimal right base subsegmental atelectasis. Minimal XXXX left basal airspace opacity. Unchanged blunting of the right lateral costophrenic XXXX, scarring versus XXXX effusion. No pneumothorax. No acute osseous findings.\"",
   "findings": "\"Minimal XXXX left base atelectasis/infiltrate. Otherwise, stable exam.\"",
-  "data": null,
   "instances": [
     "76255696-105e-47b6-a6c6-ab4d947b7e3e"
   ],
-  "geClass": {
-    "name": "Cardiomegaly"
-  },
-  "geClass1": {
-    "name": "Aorta Abnormalities"
-  },
-  "geClass2": null,
-  "geClass3": null,
-  "geClass4": null,
-  "geClass5": null,
-  "geClass6": null,
-  "geClass7": null,
-  "geClass8": null,
-  "geClass9": null,
-  "geClass10": null
+  "geClasses": [
+    {
+      "name": "Cardiomegaly",
+      "value": null
+    },
+    {
+      "name": "Aorta Abnormalities",
+      "value": null
+    }
+  ]
 }

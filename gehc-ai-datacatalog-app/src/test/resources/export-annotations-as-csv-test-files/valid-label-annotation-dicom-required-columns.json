@@ -1,33 +1,20 @@
 {
-  "patientId": "LIDC-IDRI-0006",
+  "patientID": "LIDC-IDRI-0006",
   "seriesUID": "76255696-105e-47b6-a6c6-ab4d947b7e3e",
   "imageSetFormat": "DCM",
   "annotationId": 77697,
   "annotationType": "label",
-  "name": null,
-  "coordSys": null,
-  "maskURI": null,
-  "maskOrigin": null,
-  "maskFormat": null,
   "indication": null,
   "findings": null,
-  "data": null,
   "instances": [
     "76255696-105e-47b6-a6c6-ab4d947b7e3e"
   ],
-  "geClass": {
-    "name": "Cardiomegaly"
-  },
-  "geClass1": {
-    "name": "Aorta Abnormalities"
-  },
-  "geClass2": null,
-  "geClass3": null,
-  "geClass4": null,
-  "geClass5": null,
-  "geClass6": null,
-  "geClass7": null,
-  "geClass8": null,
-  "geClass9": null,
-  "geClass10": null
+  "geClasses": [
+    {
+      "name": "Cardiomegaly"
+    },
+    {
+      "name": "Aorta Abnormalities"
+    }
+  ]
 }

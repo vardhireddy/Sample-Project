@@ -9,12 +9,14 @@
  * with the terms and conditions stipulated in the agreement/contract
  * under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.entity;
+package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * {@code GEClass} is entity that represents a GE class label annotation.
+ *
+ * @author andrew.c.wong@ge.com (212069153)
  */
 public class GEClass {
     /**
@@ -30,8 +32,8 @@ public class GEClass {
     /**
      * Creates a new {@code GEClass} entity.
      *
-     * @param name            The name of the GE class
-     * @param value           The value of the GE class
+     * @param name  The name of the GE class
+     * @param value The value of the GE class
      */
     public GEClass(@JsonProperty("name") String name, @JsonProperty("value") String value) {
         this.name = name;
@@ -54,4 +56,33 @@ public class GEClass {
         this.value = value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        // Auto-generated
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof GEClass)) {
+            return false;
+        }
+
+        GEClass geClass = (GEClass) o;
+        if (getName() != null ? !getName().equals(geClass.getName()) : geClass.getName() != null) {
+            return false;
+        }
+        return getValue() != null ? getValue().equals(geClass.getValue()) : geClass.getValue() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        // Auto-generated
+        int result = getName() != null ? getName().hashCode() : 0;
+        result = 31 * result + (getValue() != null ? getValue().hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return name + ": " + value;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- *  LabelAnnotation.java
+ *  LabelAnnotationCsv.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -9,7 +9,7 @@
  *  with the terms and conditions stipulated in the agreement/contract
  *  under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.util.exportannotations.bean;
+package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -19,11 +19,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * {@code LabelAnnotation} is a bean representing a label annotation as CSV.
+ * {@code LabelAnnotationCsv} is a bean representing a label annotation as CSV.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class LabelAnnotation extends Annotation {
+public class LabelAnnotationCsv extends AnnotationCsv {
 
     private static final String[] REQUIRED_COLUMNS = new String[]{"label"};
 
@@ -36,24 +36,24 @@ public class LabelAnnotation extends Annotation {
     private String indication;
 
     /**
-     * Creates a new {@code LabelAnnotation} that is associated with a DICOM image set.
+     * Creates a new {@code LabelAnnotationCsv} that is associated with a DICOM image set.
      *
-     * @param seriesUID           (Required) The series instance UID of the DICOM data to which this {@code LabelAnnotation} is associated.
+     * @param seriesUID           (Required) The series instance UID of the DICOM data to which this {@code LabelAnnotationCsv} is associated.
      * @param annotationTypeAsStr (Required) The string representation of the label annotation type
      * @param label               (Required) The label value (e.g. "Pneumothorax")
      * @param severity            (Optional) The severity of the specified label.  For example, if the label is 'Pneumothorax', then the severity could be 'TRACE'.
      * @param indication          (Optional) The indication associated with the specified label.  For example, if the label is 'Pneumothorax', then an indication could be 'Motor Vehicle Accident'.
      * @param findings            (Optional) The findings associated with the specified label such as a radiologist's notes
      */
-    public LabelAnnotation(String seriesUID, String annotationTypeAsStr, String label, String severity, String indication, String findings) {
+    public LabelAnnotationCsv(String seriesUID, String annotationTypeAsStr, String label, String severity, String indication, String findings) {
         super(seriesUID, annotationTypeAsStr);
         setUp(label, severity, indication, findings);
     }
 
     /**
-     * Creates a new {@code LabelAnnotation} that is associated with a non-DICOM image set.
+     * Creates a new {@code LabelAnnotationCsv} that is associated with a non-DICOM image set.
      *
-     * @param fileName            (Required) The original file name of the non-DICOM image to which this {@code LabelAnnotation} is associated
+     * @param fileName            (Required) The original file name of the non-DICOM image to which this {@code LabelAnnotationCsv} is associated
      * @param spaceID             (Required) The S3 space ID where the non-DICOM image is stored
      * @param annotationTypeAsStr (Required) The string representation of the label annotation type
      * @param label               (Required) The label value (e.g. "Pneumothorax")
@@ -61,13 +61,13 @@ public class LabelAnnotation extends Annotation {
      * @param indication          (Optional) The indication associated with the specified label.  For example, if the label is 'Pneumothorax', then an indication could be 'Motor Vehicle Accident'.
      * @param findings            (Optional) The findings associated with the specified label such as a radiologist's notes
      */
-    public LabelAnnotation(String fileName, String spaceID, String annotationTypeAsStr, String label, String severity, String findings, String indication) {
+    public LabelAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String label, String severity, String findings, String indication) {
         super(fileName, spaceID, annotationTypeAsStr);
         setUp(label, severity, indication, findings);
     }
 
     /**
-     * Initializes instance fields that are specific to the {@code LabelAnnotation}.
+     * Initializes instance fields that are specific to the {@code LabelAnnotationCsv}.
      *
      * @param label      (Required) The label value
      * @param severity   (Optional) The severity of the specified label
@@ -145,9 +145,9 @@ public class LabelAnnotation extends Annotation {
     }
 
     /**
-     * Returns the set of columns required by this {@code LabelAnnotation} and its parent.
+     * Returns the set of columns required by this {@code LabelAnnotationCsv} and its parent.
      *
-     * @param requiredParentColumns The columns required by this {@code LabelAnnotation}'s parent.
+     * @param requiredParentColumns The columns required by this {@code LabelAnnotationCsv}'s parent.
      * @return a Set<String>
      */
     private Set<String> getRequiredColumns(Set<String> requiredParentColumns) {

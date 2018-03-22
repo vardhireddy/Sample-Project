@@ -15,13 +15,16 @@ package com.gehc.ai.app.datacatalog.util.exportannotations;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.Annotation;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.ImageSetAssociation;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.LabelAnnotation;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.MultiPointRoiAnnotation;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.JsonToCsvBeanConverter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.LabelJsonToCsvBeanConverter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.FreeformRoiJsonToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.AnnotationCsv;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ImageSetAssociation;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.LabelAnnotationCsv;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.MultiPointRoiAnnotationCsv;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.FreeformRoiJsonToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.JsonToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.LabelJsonToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.FreeformRoiDBResultToJsonConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.LabelDBResultToJsonConverter;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
@@ -31,6 +34,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -42,8 +46,13 @@ import java.util.function.Supplier;
 public enum AnnotationType {
     LABEL() {
         @Override
+        public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException {
+            return new LabelDBResultToJsonConverter().getJson(result, resultIndexMap, resultIndiciesMap);
+        }
+
+        @Override
         public String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
-            return AnnotationType.convertJsonToCsv(node, columnHeaders, LabelJsonToCsvBeanConverter::new, LabelAnnotation.class);
+            return AnnotationType.convertJsonToCsv(node, columnHeaders, LabelJsonToCsvBeanConverter::new, LabelAnnotationCsv.class);
         }
 
         @Override
@@ -53,8 +62,13 @@ public enum AnnotationType {
     },
     POLYGON() {
         @Override
+        public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException {
+            return new FreeformRoiDBResultToJsonConverter().getJson(result, resultIndexMap, resultIndiciesMap);
+        }
+
+        @Override
         public String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
-            return AnnotationType.convertJsonToCsv(node, columnHeaders, FreeformRoiJsonToCsvBeanConverter::new, MultiPointRoiAnnotation.class);
+            return AnnotationType.convertJsonToCsv(node, columnHeaders, FreeformRoiJsonToCsvBeanConverter::new, MultiPointRoiAnnotationCsv.class);
         }
 
         @Override
@@ -62,6 +76,16 @@ public enum AnnotationType {
             return AnnotationType.getColumnHeaders(node, FreeformRoiJsonToCsvBeanConverter::new);
         }
     };
+
+    /**
+     * Converts the provided DB result record into a bean representation that can be written as JSON.
+     *
+     * @param result            The result record to convert
+     * @param resultIndexMap    A mapping of a result meta data to its index in the result record.
+     * @param resultIndiciesMap A mapping of a result meta data to its indices in the result record.
+     * @return an {@link AnnotationJson}
+     */
+    public abstract AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException;
 
     /**
      * Converts the provided {@link JsonNode} representation of an annotation to a CSV representation that is ingestable by the Learning Factory.
@@ -92,6 +116,12 @@ public enum AnnotationType {
         return "annotationType";
     }
 
+    ///////////////////////////////////////////////
+    //
+    // Helpers for converting annotations to CSV //
+    //
+    ///////////////////////////////////////////////
+
     /**
      * Converts the provided {@link JsonNode} representation of a annotation annotation to a CSV representation that is ingestable by the Learning Factory.
      *
@@ -105,19 +135,19 @@ public enum AnnotationType {
      */
     private final static String convertJsonToCsv(JsonNode annotationNode, String[] columnHeaders, Supplier<JsonToCsvBeanConverter> beanConverterSupplier, Class beanClass) throws InvalidAnnotationException, CsvConversionException {
         // Create a single CSV bean
-        List<Annotation> annotationBeans = beanConverterSupplier.get().getAnnotationBeans(annotationNode);
+        List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(annotationNode);
 
         // Initialize the CSV writer with the appropriate CSV bean and column headers
-        ColumnPositionMappingStrategy<Annotation> strategy = new ColumnPositionMappingStrategy<>();
+        ColumnPositionMappingStrategy<AnnotationCsv> strategy = new ColumnPositionMappingStrategy<>();
         strategy.setType(beanClass);
         strategy.setColumnMapping(columnHeaders);
 
         StringWriter writer = new StringWriter();
-        StatefulBeanToCsv<Annotation> beanWriter = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
+        StatefulBeanToCsv<AnnotationCsv> beanWriter = new StatefulBeanToCsvBuilder(writer).withMappingStrategy(strategy).build();
 
         // Finally, write the beans to a CSV string
         try {
-            beanWriter.write(annotationBeans);
+            beanWriter.write(annotationCsvBeans);
         } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
             throw new CsvConversionException(e.getMessage());
         }
@@ -134,10 +164,10 @@ public enum AnnotationType {
      * @throws InvalidAnnotationException
      */
     private final static Set<String> getColumnHeaders(JsonNode annotationNode, Supplier<JsonToCsvBeanConverter> beanConverterSupplier) throws InvalidAnnotationException {
-        List<Annotation> annotationBeans = beanConverterSupplier.get().getAnnotationBeans(annotationNode);
+        List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(annotationNode);
 
         // First aggregate all optional columns that have at least one annotation with a non-null value
-        Set<String> optionalColumnsWithValues = annotationBeans.stream()
+        Set<String> optionalColumnsWithValues = annotationCsvBeans.stream()
                 .map(annotationBean -> annotationBean.getOptionalColumnsWithValues())
                 .reduce(new HashSet<String>(), (aggregateSet, currentSet) -> {
                     // Take the union of all optional columns with values
@@ -148,9 +178,9 @@ public enum AnnotationType {
         // Next add those optional columns to the required columns
         Set<String> requiredColumns;
         if (ImageSetAssociation.isAssociatedWithDicom(annotationNode)) {
-            requiredColumns = annotationBeans.get(0).getRequiredDicomColumns();
+            requiredColumns = annotationCsvBeans.get(0).getRequiredDicomColumns();
         } else if (ImageSetAssociation.isAssociatedWithNonDicom(annotationNode)) {
-            requiredColumns = annotationBeans.get(0).getRequiredNonDicomColumns();
+            requiredColumns = annotationCsvBeans.get(0).getRequiredNonDicomColumns();
         } else {
             throw new IllegalArgumentException("The provided annotation node is not associated with either DICOM or non-DICOM data");
         }

@@ -24,6 +24,8 @@ Retrieve DataSummary for GE-Class with invalid annotation type
 Get Annotaition Ids by datacollectionId
 Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
 Delete Data Collection by id
+Export a data collection's annotations as CSV when the data collection contains one image set with at least one <annotationType> annotation
+Export a data collection's annotations as CSV when the data collection contains one image set with at least two different types of annotations
 
 @functional
 @crs_10733
@@ -195,10 +197,24 @@ When Delete Data collection by id API is called
 Then verify Data Collection by id has been deleted
 
 @test
-Scenario: Export a data collection's annotations as CSV when the data collection contains one image set with at least one label annotation
+Scenario Outline: Export a data collection's annotations as CSV when the data collection contains one image set with at least one <annotationType> annotation
 Meta: @automated
-Given a data collection contains one image set with at least one label annotation
-When the API which exports a data collection's annotation as CSV is called
+Given a data collection contains one image set with at least one <annotationType> annotation
+When the API which exports a data collection's annotations as CSV is called
 Then the response's status code should be 200
 Then the response's content type should be CSV
-Then the response's body should contain the label annotations in a single CSV
+Then the response's body should contain the <annotationType> annotations in a single CSV
+
+Examples:
+|annotationType|
+|label|
+|polygon|
+
+@test
+Scenario: Export a data collection's annotations as CSV when the data collection contains one image set with at least two different types of annotations
+Meta: @automated
+Given a data collection contains one image set with at least two annotation types
+When the API which exports a data collection's annotations as CSV is called
+Then the response's status code should be 200
+Then the response's content type should be CSV
+Then the response's body should contain the annotations for all annotation types in a single CSV

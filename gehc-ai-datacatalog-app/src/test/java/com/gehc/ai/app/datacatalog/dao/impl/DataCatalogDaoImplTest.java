@@ -2,11 +2,10 @@ package com.gehc.ai.app.datacatalog.dao.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
-import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.GEClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -108,25 +107,6 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
-    }
-
-
-    @Test
-    public void testgetDCByID() throws Exception {
-        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
-        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
-        List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{"1", "SUID", "DCM", 1, "test", "test", "test", "{\"name\":\"Foreign Bodies\",\"value\":\"Absent\"},{\"name\":\"Calcification\"}", "{}","{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "test", "test", "test", "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]"};
-        expectedList.add(newObj);
-        when(query.getResultList()).thenReturn(expectedList);
-        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
-        List<Long> ids = new ArrayList<Long>();
-        ids.add(0, 1L);
-        ids.add(1, 2L);
-        List result = dataCatalogDao.getAnnotationsByDSId(ids);
-        assertEquals(getAnnotationDetails().size(), result.size());
-        assertEquals(getAnnotationDetails().toArray()[0].getClass(), result.toArray()[0].getClass());
-        //  assertEquals(getAnnotationDetails().toString(), result.toString());
     }
 
     @Test
@@ -399,38 +379,6 @@ public class DataCatalogDaoImplTest {
         imgSerLst.add(imageSeries);
         imgSerLst.add(imageSeries1);
         return imgSerLst;
-    }
-
-    private List<AnnotationDetails> getAnnotationDetails() {
-        List<AnnotationDetails> annotationDetails = new ArrayList<AnnotationDetails>();
-        AnnotationDetails annotation = new AnnotationDetails();
-        annotation.setPatientId("1");
-        annotation.setSeriesUID("SUID");
-        annotation.setImageSetFormat("DCM");
-        annotation.setAnnotationId(1L);
-        annotation.setAnnotationType("test");
-        annotation.setName("test");
-        annotation.setMaskURI("test");
-        annotation.setMaskFormat("test");
-        annotation.setMaskOrigin("{}");
-        annotation.setGeClass(new GEClass("Foreign Bodies", "Absent"));
-        annotation.setGeClass1(new GEClass("Calcification", null));
-        annotation.setGeClass2(new GEClass(null, null));
-        annotation.setGeClass3(new GEClass(null, null));
-        annotation.setGeClass4(new GEClass(null, null));
-        annotation.setGeClass5(new GEClass(null, null));
-        annotation.setGeClass6(new GEClass(null, null));
-        annotation.setGeClass7(new GEClass(null, null));
-        annotation.setGeClass8(new GEClass(null, null));
-        annotation.setGeClass9(new GEClass(null, null));
-        annotation.setGeClass10(new GEClass(null, null));
-        annotation.setFindings("test");
-        annotation.setIndication("test");
-        annotation.setCoordSys("test");
-        annotation.setData("{}");
-        annotation.setInstances("[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]");
-        annotationDetails.add(annotation);
-        return annotationDetails;
     }
 
     private Map getMapForGEClassDataSummary() {

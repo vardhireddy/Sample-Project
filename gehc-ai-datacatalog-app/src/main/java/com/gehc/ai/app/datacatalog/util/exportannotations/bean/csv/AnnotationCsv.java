@@ -1,5 +1,5 @@
 /*
- *  Annotation.java
+ *  AnnotationCsv.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -9,22 +9,22 @@
  *  with the terms and conditions stipulated in the agreement/contract
  *  under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.util.exportannotations.bean;
+package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
 /**
- * An {@code Annotation} stores clinically significant meta data pertaining to a specific image set.
- * There are many types of {@code Annotation}s, each of which has its own kinds of meta data.  Therefore,
- * each {@code Annotation} <b>must declare its annotation type</b> in order to establish the kinds of required and optional
- * meta data that it can store.  Additionally, an {@code Annotation} can be associated with either a DICOM or non-DICOM image set.
- * Therefore, an {@code Annotation} must be constructed with either a DICOM or non-DICOM image set association.
+ * An {@code AnnotationCsv} is a CSV representation of an annotation.  It stores clinically significant meta data pertaining
+ * to a specific image set.  There are many types of {@code AnnotationCsv}s, each of which has its own kinds of meta data.  Therefore,
+ * each {@code AnnotationCsv} <b>must declare its annotation type</b> in order to establish the kinds of required and optional
+ * meta data that it can store.  Additionally, an {@code AnnotationCsv} can be associated with either a DICOM or non-DICOM image set.
+ * Therefore, an {@code AnnotationCsv} must be constructed with either a DICOM or non-DICOM image set association.
  *
  * @see com.gehc.ai.app.datacatalog.util.exportannotations.AnnotationType
  */
-public abstract class Annotation {
+public abstract class AnnotationCsv {
 
     ///////////////////////////////////////////
     //
@@ -53,25 +53,25 @@ public abstract class Annotation {
     private String spaceID;
 
     /**
-     * Creates a new {@code Annotation} that is associated with a DICOM image set.
+     * Creates a new {@code AnnotationCsv} that is associated with a DICOM image set.
      *
      * @param seriesUID      The series instance UID of the DICOM data to which this annotation is associated
      * @param annotationType This annotation's type. {@link com.gehc.ai.app.datacatalog.util.exportannotations.AnnotationType}
-     * @return a new {@code Annotation}
+     * @return a new {@code AnnotationCsv}
      */
-    public Annotation(String seriesUID, String annotationType) {
+    public AnnotationCsv(String seriesUID, String annotationType) {
         this.seriesUID = seriesUID;
         this.annotationType = Objects.requireNonNull(annotationType);
     }
 
     /**
-     * Creates a new {@code Annotation} that is associated with a non-DICOM image set.
+     * Creates a new {@code AnnotationCsv} that is associated with a non-DICOM image set.
      *
      * @param fileName       The original file name of the non-DICOM image to which this annotation is associated
      * @param spaceID        The S3 space ID where the non-DICOM is stored
      * @param annotationType This annotation's type
      */
-    public Annotation(String fileName, String spaceID, String annotationType) {
+    public AnnotationCsv(String fileName, String spaceID, String annotationType) {
         this.fileName = fileName;
         this.spaceID = spaceID;
         this.annotationType = annotationType;

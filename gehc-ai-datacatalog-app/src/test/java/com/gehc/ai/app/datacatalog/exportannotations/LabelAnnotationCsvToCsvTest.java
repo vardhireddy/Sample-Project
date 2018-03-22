@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author andrew.c.wong@ge.com (212069153)
  */
 @RunWith(Parameterized.class)
-public class LabelAnnotationToCsvTest {
+public class LabelAnnotationCsvToCsvTest {
 
     private ImageSetType imageSetType;
     private GEClassMetaDataTypes geClassMetaDataTypes;
@@ -103,7 +103,7 @@ public class LabelAnnotationToCsvTest {
      * @param columnHeaders        The column headers to use when writing out to CSV
      * @param expectedOutput       The expected CSV output produced by the {@link AnnotationType#convertJsonToCsv(JsonNode, String[])} API
      */
-    public LabelAnnotationToCsvTest(
+    public LabelAnnotationCsvToCsvTest(
             ImageSetType imageSetType,
             GEClassMetaDataTypes geClassMetaDataTypes,
             ColumnHeaderTypes columnHeaderTypes,

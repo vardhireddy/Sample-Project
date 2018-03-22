@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author andrew.c.wong@ge.com (212069153)
  */
 @RunWith(Parameterized.class)
-public class FreeformRoiAnnotationToCsvTest {
+public class FreeformRoiAnnotationCsvToCsvTest {
 
     private ImageSetType imageSetType;
     private RoiMetaDataTypes roiMetaDataTypes;
@@ -104,7 +104,7 @@ public class FreeformRoiAnnotationToCsvTest {
      * @param columnHeaders      The column headers to use when writing out to CSV
      * @param expectedOutput     The expected CSV output produced by the {@link AnnotationType#convertJsonToCsv(JsonNode, String[])} API
      */
-    public FreeformRoiAnnotationToCsvTest(
+    public FreeformRoiAnnotationCsvToCsvTest(
             ImageSetType imageSetType,
             RoiMetaDataTypes roiMetaDataTypes,
             ColumnHeaderTypes columnHeaderTypes,
