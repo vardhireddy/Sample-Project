@@ -9,9 +9,15 @@
  * with the terms and conditions stipulated in the agreement/contract
  * under which the software has been supplied.
  */
-package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
+package com.gehc.ai.app.datacatalog.util.exportannotations.bean;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@code GEClass} is entity that represents a GE class label annotation.
@@ -19,6 +25,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author andrew.c.wong@ge.com (212069153)
  */
 public class GEClass {
+    /**
+     * {@link ObjectMapper} to use when converting an {@code Object} reprsentation into its {@code GEClass} bean representation.
+     */
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     /**
      * The name of this GE class (e.g. "Pneumothorax")
      */
@@ -84,5 +95,41 @@ public class GEClass {
     @Override
     public String toString() {
         return name + ": " + value;
+    }
+
+    /**
+     * Converts the provided {@code} Object representation of a GE class into its bean representation.
+     *
+     * @param geClass The {@code} Object representation of the GE class to be converted
+     * @return The bean representation i.e. {@link GEClass}
+     * @throws InvalidAnnotationException if the {@code Object representation} of the GE class does not encode a JSON string
+     */
+    public static GEClass toGEClass(Object geClass) throws InvalidAnnotationException {
+        try {
+            return (GEClass) mapper.readValue(geClass.toString(), GEClass.class);
+        } catch (IOException e) {
+            throw new InvalidAnnotationException(e.getMessage());
+        }
+    }
+
+    /**
+     * Converts the provided DB result record, which contains GE class definitions, into a list of {@code GEClass} beans.
+     *
+     * @param result         The DB result record which contains GE class definitions
+     * @param geClassIndices The array of indices which indicate where in the result record all the GE class definitions can be found
+     * @return a {@code List} of {@code GEClass} beans
+     * @throws InvalidAnnotationException
+     */
+    public static List<GEClass> toGEClasses(Object[] result, Integer[] geClassIndices) throws InvalidAnnotationException {
+        // Extract the individual GE classes and aggregate them in a list.  Only include non-null values.
+        List<GEClass> geClasses = new ArrayList<>();
+
+        for (Integer index : geClassIndices) {
+            if (result[index] != null) {
+                geClasses.add(GEClass.toGEClass(result[index]));
+            }
+        }
+
+        return geClasses;
     }
 }

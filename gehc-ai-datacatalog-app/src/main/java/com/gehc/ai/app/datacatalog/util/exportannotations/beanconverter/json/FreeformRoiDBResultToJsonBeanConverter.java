@@ -1,5 +1,5 @@
 /*
- *  FreeformRoiDBResultToJsonConverter.java
+ *  FreeformRoiDBResultToJsonBeanConverter.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -23,18 +23,18 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * {@code FreeformRoiDBResultToJsonConverter} converts a DB result record which describes a freeform ROI into a bean that encapsulates its JSON representation.
+ * {@code LabelDBResultToJsonBeanConverter} converts a DB result record which describes a freeform ROI into a bean that encapsulates its JSON representation.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class FreeformRoiDBResultToJsonConverter implements DBResultToJsonConverter<FreeformRoiAnnotationJson> {
+public class FreeformRoiDBResultToJsonBeanConverter implements DBResultToJsonBeanConverter<FreeformRoiAnnotationJson> {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Creates a new {@code LabelDBResultToJsonConverter}.
      */
-    public FreeformRoiDBResultToJsonConverter() {
+    public FreeformRoiDBResultToJsonBeanConverter() {
 
     }
 

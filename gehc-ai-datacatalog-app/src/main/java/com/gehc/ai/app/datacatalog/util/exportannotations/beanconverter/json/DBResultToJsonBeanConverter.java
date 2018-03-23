@@ -1,5 +1,5 @@
 /*
- *  DBResultToJsonConverter.java
+ *  DBResultToJsonBeanConverter.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -22,7 +22,7 @@ import java.util.Map;
  * @param <T> The type of {@link AnnotationJson} bean that will be returned by this converter.
  * @author andrew.c.wong@ge.com (212069153)
  */
-public interface DBResultToJsonConverter<T extends AnnotationJson> {
+public interface DBResultToJsonBeanConverter<T extends AnnotationJson> {
 
     /**
      * Converts the provided DB result into a bean that encapsulates its JSON representation.

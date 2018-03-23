@@ -1,5 +1,5 @@
 /*
- *  JsonToCsvBeanConverter.java
+ *  DBResultToCsvBeanConverter.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -16,23 +16,26 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.AnnotationCsv;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * The {@code JsonToCsvBeanConverter} interface should be implemented by those classes which intend to convert a
+ * The {@code DBResultToCsvBeanConverter} interface should be implemented by those classes which intend to convert a
  * {@link JsonNode} into a {@code List} of beans each of which encapsulates the CSV representation of an annotation.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public interface JsonToCsvBeanConverter<T extends AnnotationCsv> {
+public interface DBResultToCsvBeanConverter<T extends AnnotationCsv> {
 
     /**
-     * Returns the provided {@link JsonNode} as a {@code List} of {@code Annotation}s.
+     * Returns the provided DB result record, which describes an annotation, as a {@code List} of {@code AnnotationCsv}s.
      *
-     * @param node The {@code JsonNode} to convert
-     * @return a {@code List} of {@code Annotation}s
+     * @param result            The DB result record, which describes an annotation, to convert
+     * @param resultIndexMap    A mapping of a result meta data to its index in the result record.
+     * @param resultIndiciesMap A mapping of a result meta data to its indices in the result record.
+     * @return a {@code List} of {@code AnnotationCsv}s
      * @throws InvalidAnnotationException if the provided {@code JsonNode} represents an annotation that does not have
      *                                    the expected properties or property values
      */
-    List<T> getAnnotationBeans(JsonNode node) throws InvalidAnnotationException;
+    List<T> getAnnotationBeans(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException;
 
 }

@@ -20,11 +20,11 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ImageSetAssoc
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.LabelAnnotationCsv;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.MultiPointRoiAnnotationCsv;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.FreeformRoiJsonToCsvBeanConverter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.JsonToCsvBeanConverter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.LabelJsonToCsvBeanConverter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.FreeformRoiDBResultToJsonConverter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.LabelDBResultToJsonConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.DBResultToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.FreeformRoiDBResultToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.LabelDBResultToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.FreeformRoiDBResultToJsonBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.LabelDBResultToJsonBeanConverter;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
@@ -32,7 +32,7 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 import java.io.StringWriter;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,75 +46,71 @@ import java.util.function.Supplier;
 public enum AnnotationType {
     LABEL() {
         @Override
-        public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException {
-            return new LabelDBResultToJsonConverter().getJson(result, resultIndexMap, resultIndiciesMap);
+        public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+            return new LabelDBResultToJsonBeanConverter().getJson(result, resultIndexMap, resultIndicesMap);
         }
 
         @Override
-        public String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
-            return AnnotationType.convertJsonToCsv(node, columnHeaders, LabelJsonToCsvBeanConverter::new, LabelAnnotationCsv.class);
+        public String convertDBResultToCsv(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
+            return AnnotationType.convertDBResultToCsv(result, resultIndexMap, resultIndicesMap, columnHeaders, LabelDBResultToCsvBeanConverter::new, LabelAnnotationCsv.class);
         }
 
         @Override
-        public Set<String> getColumnHeaders(JsonNode node) throws InvalidAnnotationException {
-            return AnnotationType.getColumnHeaders(node, LabelJsonToCsvBeanConverter::new);
+        public Set<String> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+            return AnnotationType.getColumnHeaders(result, resultIndexMap, resultIndicesMap, LabelDBResultToCsvBeanConverter::new);
         }
     },
     POLYGON() {
         @Override
-        public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException {
-            return new FreeformRoiDBResultToJsonConverter().getJson(result, resultIndexMap, resultIndiciesMap);
+        public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+            return new FreeformRoiDBResultToJsonBeanConverter().getJson(result, resultIndexMap, resultIndicesMap);
         }
 
         @Override
-        public String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
-            return AnnotationType.convertJsonToCsv(node, columnHeaders, FreeformRoiJsonToCsvBeanConverter::new, MultiPointRoiAnnotationCsv.class);
+        public String convertDBResultToCsv(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
+            return AnnotationType.convertDBResultToCsv(result, resultIndexMap, resultIndicesMap, columnHeaders, FreeformRoiDBResultToCsvBeanConverter::new, MultiPointRoiAnnotationCsv.class);
         }
 
         @Override
-        public Set<String> getColumnHeaders(JsonNode node) throws InvalidAnnotationException {
-            return AnnotationType.getColumnHeaders(node, FreeformRoiJsonToCsvBeanConverter::new);
+        public Set<String> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+            return AnnotationType.getColumnHeaders(result, resultIndexMap, resultIndicesMap, FreeformRoiDBResultToCsvBeanConverter::new);
         }
     };
 
     /**
-     * Converts the provided DB result record into a bean representation that can be written as JSON.
+     * Converts the provided DB result record, which describes an annotation, into a bean representation that can be written as JSON.
      *
-     * @param result            The result record to convert
-     * @param resultIndexMap    A mapping of a result meta data to its index in the result record.
-     * @param resultIndiciesMap A mapping of a result meta data to its indices in the result record.
+     * @param result           The DB result record, which describes an annotation, to convert
+     * @param resultIndexMap   A mapping of a result meta data to its index in the result record.
+     * @param resultIndicesMap A mapping of a result meta data to its indices in the result record.
      * @return an {@link AnnotationJson}
+     * @throws InvalidAnnotationException if the provided result record does not represent a well-formed annotation
      */
-    public abstract AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException;
+    public abstract AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException;
 
     /**
-     * Converts the provided {@link JsonNode} representation of an annotation to a CSV representation that is ingestable by the Learning Factory.
+     * Converts the provided DB result record, which describes an annotation, into a CSV representation that is ingestable by the Learning Factory.
      *
-     * @param node          The annotation node to convert to CSV
-     * @param columnHeaders The column headers that will be used to organize the records of the CSV output
+     * @param result           The DB result record, which describes an annotation, to convert to CSV
+     * @param columnHeaders    The column headers that will be used to organize the records of the CSV output
+     * @param resultIndexMap   A mapping of a result meta data to its index in the result record.
+     * @param resultIndicesMap A mapping of a result meta data to its indices in the result record.
      * @return The converted CSV {@code String}
-     * @throws InvalidAnnotationException If the provided {@code JsonNode} does not represent a well-formed annotation
-     * @throws CsvConversionException     If the provided {@code JsonNode} could not be successfully mapped to a corresponding CSV representation
+     * @throws InvalidAnnotationException if the provided result record does not represent a well-formed annotation
+     * @throws CsvConversionException     if the provided result record could not be successfully mapped to a corresponding CSV representation
      */
-    public abstract String convertJsonToCsv(JsonNode node, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException;
+    public abstract String convertDBResultToCsv(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException;
 
     /**
      * Returns the set of required columns and optional columns for this {@code AnnotationType} which have at least one non-null value.
      *
-     * @param node The annotation node that will be evaluated to determine which optional columns have at least one non-null value
+     * @param result           The DB result record, which describes an annotation, to convert to CSV
+     * @param resultIndexMap   A mapping of a result meta data to its index in the result record.
+     * @param resultIndicesMap A mapping of a result meta data to its indices in the result record.
      * @return a {@code Set}
      * @throws InvalidAnnotationException If the provided {@code JsonNode} does not represent a well-formed annotation
      */
-    public abstract Set<String> getColumnHeaders(JsonNode node) throws InvalidAnnotationException;
-
-    /**
-     * Returns the JSON property that can be used to get an annotation object's type.
-     *
-     * @return The JSON property as a {@code String}
-     */
-    public static String getJsonProperty() {
-        return "annotationType";
-    }
+    public abstract Set<String> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException;
 
     ///////////////////////////////////////////////
     //
@@ -125,17 +121,18 @@ public enum AnnotationType {
     /**
      * Converts the provided {@link JsonNode} representation of a annotation annotation to a CSV representation that is ingestable by the Learning Factory.
      *
-     * @param annotationNode        A {@code JsonNode} representing a annotation annotation
+     * @param result                The DB result record which describes an annotation
      * @param columnHeaders         The array of required column headers and optional column headers with aqt least one non-null value
      * @param beanConverterSupplier The supplier of the service which converts a {@code JsonNode} to a {@code List} of CSV beans
      * @param beanClass             The bean {@link Class} to which the {@code JsonNode}'s contents will be converted
      * @return A CSV {@code String}
-     * @throws CsvConversionException
-     * @throws InvalidAnnotationException
+     * @throws InvalidAnnotationException if the provided result record does not represent a well-formed annotation
+     * @throws CsvConversionException     if the provided result record could not be successfully mapped to a corresponding CSV representation
      */
-    private final static String convertJsonToCsv(JsonNode annotationNode, String[] columnHeaders, Supplier<JsonToCsvBeanConverter> beanConverterSupplier, Class beanClass) throws InvalidAnnotationException, CsvConversionException {
+    private final static String convertDBResultToCsv(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, String[] columnHeaders, Supplier<DBResultToCsvBeanConverter> beanConverterSupplier, Class beanClass) throws InvalidAnnotationException, CsvConversionException {
+
         // Create a single CSV bean
-        List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(annotationNode);
+        List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(result, resultIndexMap, resultIndicesMap);
 
         // Initialize the CSV writer with the appropriate CSV bean and column headers
         ColumnPositionMappingStrategy<AnnotationCsv> strategy = new ColumnPositionMappingStrategy<>();
@@ -158,18 +155,18 @@ public enum AnnotationType {
     /**
      * Returns the aggregation of required column headers and optional column headers that have values.
      *
-     * @param annotationNode        The annotation {@link JsonNode} that will be evaluated to see which optional columns have at least one non-null value
+     * @param result                The DB result record, which describes an annotation, that will be evaluated to see which optional columns have at least one non-null value
      * @param beanConverterSupplier The supplier of the service which converts a {@code JsonNode} to a {@code List} of CSV beans
      * @return The {@code Set} of aggregated column headers
      * @throws InvalidAnnotationException
      */
-    private final static Set<String> getColumnHeaders(JsonNode annotationNode, Supplier<JsonToCsvBeanConverter> beanConverterSupplier) throws InvalidAnnotationException {
-        List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(annotationNode);
+    private final static Set<String> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, Supplier<DBResultToCsvBeanConverter> beanConverterSupplier) throws InvalidAnnotationException {
+        List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(result, resultIndexMap, resultIndicesMap);
 
         // First aggregate all optional columns that have at least one annotation with a non-null value
         Set<String> optionalColumnsWithValues = annotationCsvBeans.stream()
                 .map(annotationBean -> annotationBean.getOptionalColumnsWithValues())
-                .reduce(new HashSet<String>(), (aggregateSet, currentSet) -> {
+                .reduce(new LinkedHashSet<String>(), (aggregateSet, currentSet) -> {
                     // Take the union of all optional columns with values
                     aggregateSet.addAll(currentSet);
                     return aggregateSet;
@@ -177,9 +174,10 @@ public enum AnnotationType {
 
         // Next add those optional columns to the required columns
         Set<String> requiredColumns;
-        if (ImageSetAssociation.isAssociatedWithDicom(annotationNode)) {
+        int imageSetFormatIndex = resultIndexMap.get("imageSetFormat");
+        if (ImageSetAssociation.isAssociatedWithDicom(result, imageSetFormatIndex)) {
             requiredColumns = annotationCsvBeans.get(0).getRequiredDicomColumns();
-        } else if (ImageSetAssociation.isAssociatedWithNonDicom(annotationNode)) {
+        } else if (ImageSetAssociation.isAssociatedWithNonDicom(result, imageSetFormatIndex)) {
             requiredColumns = annotationCsvBeans.get(0).getRequiredNonDicomColumns();
         } else {
             throw new IllegalArgumentException("The provided annotation node is not associated with either DICOM or non-DICOM data");

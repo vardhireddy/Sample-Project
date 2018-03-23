@@ -11,7 +11,7 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -61,7 +61,7 @@ public class LabelAnnotationCsv extends AnnotationCsv {
      * @param indication          (Optional) The indication associated with the specified label.  For example, if the label is 'Pneumothorax', then an indication could be 'Motor Vehicle Accident'.
      * @param findings            (Optional) The findings associated with the specified label such as a radiologist's notes
      */
-    public LabelAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String label, String severity, String findings, String indication) {
+    public LabelAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String label, String severity, String indication, String findings) {
         super(fileName, spaceID, annotationTypeAsStr);
         setUp(label, severity, indication, findings);
     }
@@ -77,8 +77,8 @@ public class LabelAnnotationCsv extends AnnotationCsv {
     private void setUp(String label, String severity, String indication, String findings) {
         this.label = Objects.requireNonNull(label);
         this.severity = severity;
-        this.findings = findings;
         this.indication = indication;
+        this.findings = findings;
     }
 
     /////////////////////////
@@ -137,11 +137,11 @@ public class LabelAnnotationCsv extends AnnotationCsv {
 
     @Override
     public Set<String> getOptionalColumnsWithValues() {
-        Map<String, String> optionalColumnValues = new HashMap<>();
+        Map<String, String> optionalColumnValues = new LinkedHashMap<>();
         optionalColumnValues.put("severity", getSeverity());
         optionalColumnValues.put("indication", getIndication());
         optionalColumnValues.put("findings", getFindings());
-        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> nonNullEntry.getKey()).collect(Collectors.toSet());
+        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> nonNullEntry.getKey()).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**

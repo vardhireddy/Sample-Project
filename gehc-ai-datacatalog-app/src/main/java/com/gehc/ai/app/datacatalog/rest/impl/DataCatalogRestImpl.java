@@ -36,7 +36,6 @@ import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
-import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationExporter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -775,17 +774,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return filters;
     }
 
-    private List<AnnotationJson> getAnnotationDetails(Long dataCollectionID) throws InvalidAnnotationException {
-        List<AnnotationJson> annotationByDSList = new ArrayList<>();
-        List<Long> imgSerIdLst = getImgSeriesIdsByDSId(dataCollectionID);
-
-        if (!imgSerIdLst.isEmpty()) {
-            annotationByDSList = dataCatalogService.getAnnotationDetailsByImageSeriesIDs(imgSerIdLst);
-        }
-
-        return annotationByDSList;
-    }
-
     @Override
     @RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
     public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params,
@@ -891,34 +879,33 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation", method = RequestMethod.GET)
     public List<AnnotationJson> getAnnotationsByDSId(@PathVariable Long id) throws InvalidAnnotationException {
-        return getAnnotationDetails(id);
+        List<AnnotationJson> annotationByDSList = new ArrayList<>();
+        List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
+
+        annotationByDSList = dataCatalogService.getAnnotationDetailsByImageSetIDs(imgSerIdLst);
+
+        return annotationByDSList;
     }
 
     @Override
-    @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation/csv", method = RequestMethod.GET, produces = "text/csv")
+    @RequestMapping(value = "/datacatalog/data-collection/{id}/annotation/csv", method = RequestMethod.GET)
     public ResponseEntity<String> exportAnnotationsAsCsv(final HttpServletResponse response, @PathVariable Long id) {
         logger.debug("Exporting annotations as CSV for data collection " + id);
         response.setHeader("Content-Disposition", "attachment; filename=filename.csv");
         response.setContentType("text/csv");
 
         try {
-            // First get the annotation detail entities
-            List<AnnotationJson> annotationByDSList = getAnnotationDetails(id);
+            // Get all image set IDs for the provided data collection ID
+            List<Long> imgSerIdLst = getImgSeriesIdsByDSId(id);
 
-            // Convert the entities to their JSON representation.
-            // Note: We could use the entities directly, but its harder to iterate on the entities' properties
-            ObjectMapper objectMapper = new ObjectMapper();
-            String arrayToJson;
-            arrayToJson = objectMapper.writeValueAsString(annotationByDSList);
-
-            // Convert the JSON representation of the annotations to CSV
-            String csvResponse = CsvAnnotationExporter.exportAsCsv(arrayToJson);
+            // Get the annotation details as CSV for all retrieved image set IDs
+            String csvResponse = csvResponse = dataCatalogService.getAnnotationDetailsAsCsvByImageSetIDs(imgSerIdLst);
 
             // Finally return the response containing the CSV
             return new ResponseEntity<String>(csvResponse, HttpStatus.OK);
-        } catch (IOException |InvalidAnnotationException | CsvConversionException e) {
+        } catch (InvalidAnnotationException | CsvConversionException e) {
             logger.error(e.getMessage());
-            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

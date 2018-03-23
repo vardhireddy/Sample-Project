@@ -11,6 +11,8 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
 
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -23,19 +25,27 @@ public class LabelAnnotationJson extends AnnotationJson {
 
     private List<GEClass> geClasses;
 
+    private String indication;
+
+    private String findings;
+
     /**
      * Creates a new {@code LabelAnnotationJson}.
      *
-     * @param patientID      The ID of the patient to which this annotation is associated
-     * @param seriesUID      The series instance UID of the DICOM data to which this annotation is associated
-     * @param imageSetFormat The data format of the image set to which this annotation is associated
-     * @param annotationID   The database assigned number that uniquely identifies this annotation
-     * @param annotationType This annotation's type
-     * @param geClasses      The GE classes that describe this label annotation
+     * @param patientID      (Required) The ID of the patient to which this annotation is associated
+     * @param seriesUID      (Required) The series instance UID of the DICOM data to which this annotation is associated
+     * @param imageSetFormat (Required) The data format of the image set to which this annotation is associated
+     * @param annotationID   (Required) The database assigned number that uniquely identifies this annotation
+     * @param annotationType (Required) This annotation's type
+     * @param geClasses      (Required) The GE classes that describe this label annotation
+     * @param indication     (Optional) An indication associated with the provided GE classes
+     * @param findings       (Optional) General notes associated with the provided GE classes
      */
-    public LabelAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType, List<GEClass> geClasses) {
+    public LabelAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType, List<GEClass> geClasses, String indication, String findings) {
         super(patientID, seriesUID, imageSetFormat, annotationID, annotationType);
         this.geClasses = Objects.requireNonNull(geClasses);
+        this.indication = indication;
+        this.findings = findings;
     }
 
     /////////////////////////
@@ -52,25 +62,51 @@ public class LabelAnnotationJson extends AnnotationJson {
         this.geClasses = geClasses;
     }
 
+    public String getIndication() {
+        return indication;
+    }
+
+    public void setIndication(String indication) {
+        this.indication = indication;
+    }
+
+    public String getFindings() {
+        return findings;
+    }
+
+    public void setFindings(String findings) {
+        this.findings = findings;
+    }
+
     @Override
     public boolean equals(Object o) {
-        // Auto-generated
         if (this == o) {
             return true;
         }
         if (!(o instanceof LabelAnnotationJson)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
 
         LabelAnnotationJson that = (LabelAnnotationJson) o;
 
-        return getGeClasses().equals(that.getGeClasses());
+        if (getGeClasses() != null ? !getGeClasses().equals(that.getGeClasses()) : that.getGeClasses() != null) {
+            return false;
+        }
+        if (getIndication() != null ? !getIndication().equals(that.getIndication()) : that.getIndication() != null) {
+            return false;
+        }
+        return getFindings() != null ? getFindings().equals(that.getFindings()) : that.getFindings() == null;
     }
 
     @Override
     public int hashCode() {
-        // Auto-generated
-        return getGeClasses().hashCode();
+        int result = super.hashCode();
+        result = 31 * result + (getGeClasses() != null ? getGeClasses().hashCode() : 0);
+        result = 31 * result + (getIndication() != null ? getIndication().hashCode() : 0);
+        result = 31 * result + (getFindings() != null ? getFindings().hashCode() : 0);
+        return result;
     }
-
 }

@@ -10,16 +10,12 @@ import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.FreeformRoi;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.FreeformRoiAnnotationJson;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.LabelAnnotationJson;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
-import org.jbehave.core.annotations.Alias;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
-import org.jbehave.core.annotations.Named;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.core.StringContains.containsString;
@@ -613,7 +608,7 @@ public class DataCollectionSteps {
         List<GEClass> geClasses = new ArrayList<>();
         geClasses.add(new GEClass("Foreign Bodies", "Absent"));
         geClasses.add(new GEClass("Calcification", null));
-        AnnotationJson annotation = new LabelAnnotationJson("1", "SUID", "DCM", 1L, "label", geClasses);
+        AnnotationJson annotation = new LabelAnnotationJson("1", "SUID", "DCM", 1L, "label", geClasses, "Test indication", "Test findings");
 
         annotationDetails.add(annotation);
         when(dataCatalogDao.getAnnotationDetailsByImageSetIDs(anyList())).thenReturn(annotationDetails);
@@ -637,7 +632,7 @@ public class DataCollectionSteps {
 
         retrieveResult.andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-                .andExpect(content().json("[{\"patientID\":\"1\",\"seriesUID\":\"SUID\",\"imageSetFormat\":\"DCM\",\"annotationID\":1,\"annotationType\":\"label\", \"geClasses\":[{\"name\":\"Foreign Bodies\", \"value\":\"Absent\"},{\"name\":\"Calcification\", \"value\":null}]}]"
+                .andExpect(content().json("[{\"patientID\":\"1\",\"seriesUID\":\"SUID\",\"imageSetFormat\":\"DCM\",\"annotationID\":1,\"annotationType\":\"label\",\"indication\":\"Test indication\",\"findings\":\"Test findings\", \"geClasses\":[{\"name\":\"Foreign Bodies\", \"value\":\"Absent\"},{\"name\":\"Calcification\", \"value\":null}]}]"
                 ));
 
     }
@@ -648,7 +643,6 @@ public class DataCollectionSteps {
         when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
         List<ImageSeries> imgSerIdLst = new ArrayList<ImageSeries>();
         when(dataCatalogDao.getAnnotationDetailsByImageSetIDs(anyList())).thenReturn(imgSerIdLst);
-
     }
 
     @When("Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound")
@@ -691,193 +685,37 @@ public class DataCollectionSteps {
     //
     ///////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    ////
-    //// Preconditions for exporting annotation details of a single annotation type //
-    ////
-    //////////////////////////////////////////////////////////////////////////////////
-
-    @Given("a data collection contains one image set with at least one $annotationType annotation")
-    @Alias("a data collection contains one image set with at least one <annotationType> annotation")
-    public void givenDataCollectionContainsOneImageSetWithSingleType(@Named("annotationType") String annotationType) throws Exception {
+    @Given("a data collection contains at least one image set and each image set contains at least one annotation")
+    public void givenDataCollectionContainsOneImageSet() throws Exception {
         List<DataSet> mockDataSet = getDataSetsWithImageSet();
         when(dataSetRepository.findById(anyLong())).thenReturn(mockDataSet);
 
-        List<AnnotationJson> mockAnnotationDetails = AnnotationType.valueOf(annotationType.toUpperCase(Locale.ENGLISH)).getMockAnnotationDetails();
-        when(dataCatalogDao.getAnnotationDetailsByImageSetIDs(anyList())).thenReturn(mockAnnotationDetails);
+        when(dataCatalogDao.getAnnotationDetailsAsCsvByImageSetIDs(anyList())).thenReturn("mockColumn\n\"mockValue\"");
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////
-    ////
-    //// Preconditions for exporting annotation details of multiple annotation types //
-    ////
-    ///////////////////////////////////////////////////////////////////////////////////
-
-    @Given("a data collection contains one image set with at least two annotation types")
-    public void givenDataCollectionContainsOneImageSetWithMultipleTypes() throws Exception {
-        List<DataSet> mockDataSet = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(mockDataSet);
-
-        List<AnnotationJson> mockAnnotationDetails = new ArrayList<>();
-        mockAnnotationDetails.addAll(AnnotationType.LABEL.getMockAnnotationDetails());
-        mockAnnotationDetails.addAll(AnnotationType.POLYGON.getMockAnnotationDetails());
-        when(dataCatalogDao.getAnnotationDetailsByImageSetIDs(anyList())).thenReturn(mockAnnotationDetails);
-    }
-
-    ////////////////////////////////////////////
-    ////
-    //// Export API to call for all scenarios //
-    ////
-    ////////////////////////////////////////////
 
     @When("the API which exports a data collection's annotations as CSV is called")
-    public void whenExportAnnotationAsCsvAPICalledForSingleType() throws Exception {
+    public void whenExportAnnotationAsCsvAPICalled() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/1/annotation/csv")
                         .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
-    ////
-    //// Assertions for exporting annotation details of multiple a single annotation types //
-    ////
-    /////////////////////////////////////////////////////////////////////////////////////////
-
-    @Then("the response's body should contain the $annotationType annotations in a single CSV")
-    @Alias("the response's body should contain the <annotationType> annotations in a single CSV")
-    public void thenResponseBodyShouldContainCSVForSingleType(@Named("annotationType") String annotationType) throws Exception {
-        String expectedCsv = AnnotationType.valueOf(annotationType.toUpperCase(Locale.ENGLISH)).getExpectedCsv();
-        retrieveResult.andExpect(content().string(expectedCsv));
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
-    ////
-    //// Assertions for exporting annotation details of multiple annotation types //
-    ////
-    ////////////////////////////////////////////////////////////////////////////////
-
-    @Then("the response's body should contain the annotations for all annotation types in a single CSV")
-    public void thenResponseBodyShouldContainCSVForMultipleTypes() throws Exception {
-        String expectedCsv = "fileName,spaceID,annotationType,label,severity,coordSys,data,localID,name\n\"file123.png\",\"\",\"label\",\"PTX\",\"Severe\",\"\",\"\",\"\",\"\"\n\"file456.png\",\"\",\"label\",\"Cardiomegaly\",\"Mild\",\"\",\"\",\"\",\"\"\n\"file123.png\",\"\",\"polygon\",\"\",\"\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112]]\",\"0\",\"ROI name 1\"\n\"file123.png\",\"\",\"polygon\",\"\",\"\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112]]\",\"1\",\"ROI name 2\"\n";
-        retrieveResult.andExpect(content().string(expectedCsv));
-    }
-
-    /////////////////////////////////////////////////////////////////////
-    ////
-    //// Assertions for exporting annotation details for all scenarios //
-    ////
-    /////////////////////////////////////////////////////////////////////
-
     @Then("the response's status code should be 200")
-    public void thenResponseCodeShouldBeOKForSingleType() throws Exception {
+    public void thenResponseCodeShouldBeOK() throws Exception {
         retrieveResult.andExpect(status().isOk());
     }
 
     @Then("the response's content type should be CSV")
-    public void thenResponseMediaTypeShouldBeCSVForSingleType() throws Exception {
+    public void thenResponseMediaTypeShouldBeCSV() throws Exception {
         MediaType TEXT_CSV = new MediaType("text", "csv");
         retrieveResult.andExpect(content().contentType(TEXT_CSV));
     }
 
-    ////////////////////
-    //
-    // Helper methods //
-    //
-    ////////////////////
-
-    private enum AnnotationType {
-        LABEL() {
-            @Override
-            public List<AnnotationJson> getMockAnnotationDetails() {
-                List<AnnotationJson> mockAnnotationDetails = new ArrayList<>();
-
-                // Create mock annotation 1
-                List<GEClass> geClasses = new ArrayList<>();
-                geClasses.add(new GEClass("PTX", "Severe"));
-                AnnotationJson annotation = new LabelAnnotationJson("file123.png", "file123.png/space123", "PNG", 1L, "label", geClasses);
-                mockAnnotationDetails.add(annotation);
-
-                // Create mock annotation 2
-                geClasses = new ArrayList<>();
-                geClasses.add(new GEClass("Cardiomegaly", "Mild"));
-                annotation = new LabelAnnotationJson("file456.png", "file456.png/space123", "PNG", 2L, "label", geClasses);
-                mockAnnotationDetails.add(annotation);
-
-                return mockAnnotationDetails;
-            }
-
-            @Override
-            public String getExpectedCsv() {
-                return "fileName,spaceID,annotationType,label,severity\n\"file123.png\",\"\",\"label\",\"PTX\",\"Severe\"\n\"file456.png\",\"\",\"label\",\"Cardiomegaly\",\"Mild\"\n";
-            }
-        },
-        POLYGON() {
-            @Override
-            public List<AnnotationJson> getMockAnnotationDetails() {
-                List<AnnotationJson> mockAnnotationDetails = new ArrayList<>();
-
-                List<List<Double>> coords = new ArrayList<>();
-                // Create mock annotation 1
-                List<Double> coord = new ArrayList<>();
-                coord.add(-1.2345);
-                coord.add(6.789);
-                coord.add(10.1112);
-                coords.add(coord);
-
-                coord = new ArrayList<>();
-                coord.add(-1.2345);
-                coord.add(6.789);
-                coord.add(10.1112);
-                coords.add(coord);
-
-                coord = new ArrayList<>();
-                coord.add(-1.2345);
-                coord.add(6.789);
-                coord.add(10.1112);
-                coords.add(coord);
-
-                AnnotationJson annotation = new FreeformRoiAnnotationJson("file123.png", "file123.png/space123", "PNG", 1L, FreeformRoi.POLYGON, "IMAGE", coords, "0", "ROI name 1");
-                mockAnnotationDetails.add(annotation);
-
-                // Create mock annotation 2
-                coords = new ArrayList<>();
-                coord = new ArrayList<>();
-                coord.add(-1.2345);
-                coord.add(6.789);
-                coord.add(10.1112);
-                coords.add(coord);
-
-                coord = new ArrayList<>();
-                coord.add(-1.2345);
-                coord.add(6.789);
-                coord.add(10.1112);
-                coords.add(coord);
-
-                coord = new ArrayList<>();
-                coord.add(-1.2345);
-                coord.add(6.789);
-                coord.add(10.1112);
-                coords.add(coord);
-
-                annotation = new FreeformRoiAnnotationJson("file123.png", "file123.png/space123", "PNG", 2L, FreeformRoi.POLYGON, "IMAGE", coords, "1", "ROI name 2");
-                mockAnnotationDetails.add(annotation);
-
-                return mockAnnotationDetails;
-            }
-
-            @Override
-            public String getExpectedCsv() {
-                return "fileName,spaceID,annotationType,coordSys,data,localID,name\n\"file123.png\",\"\",\"polygon\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112]]\",\"0\",\"ROI name 1\"\n\"file123.png\",\"\",\"polygon\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112]]\",\"1\",\"ROI name 2\"\n";
-            }
-        };
-
-        abstract List<AnnotationJson> getMockAnnotationDetails();
-
-        abstract String getExpectedCsv();
-
+    @Then("the response's body should contain a string")
+    public void thenResponseBodyShouldContainCSVForMultipleTypes() throws Exception {
+        retrieveResult.andExpect(content().string("mockColumn\n\"mockValue\""));
     }
-
 
     private Map getMapForGEClassDataSummary() {
         Map resultSet = new HashMap();

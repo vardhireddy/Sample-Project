@@ -14,6 +14,7 @@ package com.gehc.ai.app.datacatalog.service.impl;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
@@ -47,8 +48,13 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public List<AnnotationJson> getAnnotationDetailsByImageSeriesIDs(List<Long> imgSerIdLst) throws InvalidAnnotationException {
+	public List<AnnotationJson> getAnnotationDetailsByImageSetIDs(List<Long> imgSerIdLst) throws InvalidAnnotationException {
 		return dataCatalogDao.getAnnotationDetailsByImageSetIDs(imgSerIdLst);
+	}
+
+	@Override
+	public String getAnnotationDetailsAsCsvByImageSetIDs(List<Long> imgSerIdLst) throws InvalidAnnotationException, CsvConversionException {
+		return dataCatalogDao.getAnnotationDetailsAsCsvByImageSetIDs(imgSerIdLst);
 	}
 
 	@Override

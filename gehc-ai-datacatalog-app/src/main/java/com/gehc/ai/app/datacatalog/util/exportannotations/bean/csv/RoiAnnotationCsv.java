@@ -12,7 +12,7 @@
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -124,9 +124,9 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
 
     @Override
     public Set<String> getOptionalColumnsWithValues() {
-        Map<String, String> optionalColumnValues = new HashMap<>();
+        Map<String, String> optionalColumnValues = new LinkedHashMap<>();
         optionalColumnValues.put("name", getName());
-        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> nonNullEntry.getKey()).collect(Collectors.toSet());
+        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> nonNullEntry.getKey()).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**

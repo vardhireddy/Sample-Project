@@ -22,10 +22,12 @@ import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.AnnotationType;
+import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationDetailsExporter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.JsonAnnotationDetailsExporter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.GEClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
@@ -364,6 +365,19 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
     @Override
     public List<AnnotationJson> getAnnotationDetailsByImageSetIDs(List<Long> imageSetIDList) throws InvalidAnnotationException {
+        QueryResults annotationDetailsFromDB = getAnnotationDetailsFromDB(imageSetIDList);
+
+        return JsonAnnotationDetailsExporter.exportAsJson(annotationDetailsFromDB.getDbResults(), annotationDetailsFromDB.getResultIndexMap(),  annotationDetailsFromDB.getResultIndicesMap());
+    }
+
+    @Override
+    public String getAnnotationDetailsAsCsvByImageSetIDs(List<Long> imageSetIDList) throws InvalidAnnotationException, CsvConversionException{
+        QueryResults annotationDetailsFromDB = getAnnotationDetailsFromDB(imageSetIDList);
+
+        return CsvAnnotationDetailsExporter.exportAsCsv(annotationDetailsFromDB.getDbResults(), annotationDetailsFromDB.getResultIndexMap(),  annotationDetailsFromDB.getResultIndicesMap());
+    }
+
+    private QueryResults getAnnotationDetailsFromDB(List<Long> imageSetIDList) {
         StringBuilder builder = new StringBuilder();
         builder.append(GET_ANNOTATION_INFO_BY_IMG_SERIES);
         for (Iterator<Long> iter = imageSetIDList.iterator(); iter.hasNext(); ) {
@@ -395,24 +409,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         resultIndexMap.put("maskFormat", 25);
 
         // For result meta data that is composed of multiple values, create a map for indicating which indices map to which aggregate result meta data
-        Map<String, Integer[]> resultIndiciesMap = new HashMap<>();
-        resultIndiciesMap.put("geClasses", new Integer[]{8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18});
+        Map<String, Integer[]> resultIndicesMap = new HashMap<>();
+        resultIndicesMap.put("geClasses", new Integer[]{8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18});
 
-        List<AnnotationJson> annotationDetails = new ArrayList<>();
-        List<Object[]> objList = q.getResultList();
-        ObjectMapper mapper = new ObjectMapper();
-        if (null != objList && !objList.isEmpty()) {
-            for (Object[] record : objList) {
-                String annotationTypeAsStr = (String) record[4];
-                AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
-                AnnotationJson dbResultAsJson = annotationType.convertDBResultToJson(record, resultIndexMap, resultIndiciesMap);
-                annotationDetails.add(dbResultAsJson);
-            }
-
-            logger.debug("Annotation list size " + annotationDetails.size());
-        }
-
-        return annotationDetails;
+        return new QueryResults(q.getResultList(), resultIndexMap, resultIndicesMap);
     }
 
     @SuppressWarnings("unchecked")
