@@ -606,8 +606,8 @@ public class DataCollectionSteps {
 
         List<AnnotationJson> annotationDetails = new ArrayList<>();
         List<GEClass> geClasses = new ArrayList<>();
-        geClasses.add(new GEClass("Foreign Bodies", "Absent"));
-        geClasses.add(new GEClass("Calcification", null));
+        geClasses.add(new GEClass("Foreign Bodies", "Absent", null));
+        geClasses.add(new GEClass("Calcification", null, null));
         AnnotationJson annotation = new LabelAnnotationJson("1", "SUID", "DCM", 1L, "label", geClasses, "Test indication", "Test findings");
 
         annotationDetails.add(annotation);
