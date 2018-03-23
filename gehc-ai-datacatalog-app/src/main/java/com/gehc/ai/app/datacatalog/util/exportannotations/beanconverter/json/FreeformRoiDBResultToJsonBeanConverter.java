@@ -45,7 +45,7 @@ public class FreeformRoiDBResultToJsonBeanConverter implements DBResultToJsonBea
                 (String) result[resultIndexMap.get("patientID")],
                 (String) result[resultIndexMap.get("seriesUID")],
                 (String) result[resultIndexMap.get("imageSetFormat")],
-                (Long) result[resultIndexMap.get("annotationID")],
+                (Long) ((Integer) result[resultIndexMap.get("annotationID")]).longValue(),
                 FreeformRoi.valueOf(((String) result[resultIndexMap.get("annotationType")]).toUpperCase(Locale.ENGLISH)),
                 (String) result[resultIndexMap.get("coordSys")],
                 toCoordsList(result[resultIndexMap.get("roiData")]),

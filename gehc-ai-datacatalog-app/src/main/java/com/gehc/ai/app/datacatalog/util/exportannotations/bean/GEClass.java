@@ -41,14 +41,21 @@ public class GEClass {
     private String value;
 
     /**
+     * (Deprecated) The patient outcome associated with the GE class.
+     */
+    private String patientOutcome;
+
+    /**
      * Creates a new {@code GEClass} entity.
      *
-     * @param name  The name of the GE class
-     * @param value The value of the GE class
+     * @param name           The name of the GE class
+     * @param value          The value of the GE class
+     * @param patientOutcome (Deprecated) The patient outcome associated with the GE class.
      */
-    public GEClass(@JsonProperty("name") String name, @JsonProperty("value") String value) {
+    public GEClass(@JsonProperty("name") String name, @JsonProperty("value") String value, @JsonProperty("patient_outcome") String patientOutcome) {
         this.name = name;
         this.value = value;
+        this.patientOutcome = patientOutcome;
     }
 
     public String getName() {

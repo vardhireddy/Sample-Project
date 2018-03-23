@@ -252,7 +252,7 @@ public class GetAnnotationDetailsTest {
                 String indication = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "Test indication" : null;
                 String findings = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "Test findings" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, "label", null, null, null, "{\"name\":\"Foreign Bodies\"" + severity + "}", "{\"name\":\"Calcification\"}", null, null, null, null, null, null, null, null, null, null, indication, findings, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "label", null, null, null, "{\"name\":\"Foreign Bodies\"" + severity + "}", "{\"name\":\"Calcification\"}", null, null, null, null, null, null, null, null, null, null, indication, findings, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
 
                 mockDBResults.add(newObj);
                 return mockDBResults;
@@ -268,8 +268,8 @@ public class GetAnnotationDetailsTest {
                 String findings = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "Test findings" : null;
 
                 List<GEClass> geClasses = new ArrayList<>();
-                geClasses.add(new GEClass("Foreign Bodies", severity));
-                geClasses.add(new GEClass("Calcification", null));
+                geClasses.add(new GEClass("Foreign Bodies", severity, null));
+                geClasses.add(new GEClass("Calcification", null, null));
 
                 AnnotationJson annotation = new LabelAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, "label", geClasses, indication, findings);
                 annotationDetails.add(annotation);
@@ -295,7 +295,7 @@ public class GetAnnotationDetailsTest {
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, "polygon", roiName, "0", "[[-1.2345,6.789,10.1112],[-1.2345,6.789,10.1112],[-1.2345,6.789,10.1112]]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "polygon", roiName, "0", "[[-1.2345,6.789,10.1112],[-1.2345,6.789,10.1112],[-1.2345,6.789,10.1112]]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }

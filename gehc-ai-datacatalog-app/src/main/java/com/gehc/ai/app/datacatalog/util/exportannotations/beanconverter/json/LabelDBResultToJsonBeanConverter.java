@@ -43,7 +43,7 @@ public class LabelDBResultToJsonBeanConverter implements DBResultToJsonBeanConve
                 (String) result[resultIndexMap.get("patientID")],
                 (String) result[resultIndexMap.get("seriesUID")],
                 (String) result[resultIndexMap.get("imageSetFormat")],
-                (Long) result[resultIndexMap.get("annotationID")],
+                (Long) ((Integer) result[resultIndexMap.get("annotationID")]).longValue(),
                 (String) result[resultIndexMap.get("annotationType")],
                 geClasses,
                 (String) result[resultIndexMap.get("indication")],
