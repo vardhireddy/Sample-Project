@@ -11,22 +11,23 @@
  */
 package com.gehc.ai.app.datacatalog.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
+import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 @Component
-public class DataCatalogServiceImpl implements IDataCatalogService{
+public class DataCatalogServiceImpl implements IDataCatalogService {
 
 	@Autowired
 	private IDataCatalogDao dataCatalogDao;
@@ -47,8 +48,13 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) {
-		return dataCatalogDao.getAnnotationsByDSId(imgSerIdLst);
+	public List<AnnotationJson> getAnnotationDetailsByImageSetIDs(List<Long> imgSerIdLst) throws InvalidAnnotationException {
+		return dataCatalogDao.getAnnotationDetailsByImageSetIDs(imgSerIdLst);
+	}
+
+	@Override
+	public String getAnnotationDetailsAsCsvByImageSetIDs(List<Long> imgSerIdLst) throws InvalidAnnotationException, CsvConversionException {
+		return dataCatalogDao.getAnnotationDetailsAsCsvByImageSetIDs(imgSerIdLst);
 	}
 
 	@Override

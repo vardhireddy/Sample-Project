@@ -24,6 +24,7 @@ Retrieve DataSummary for GE-Class with invalid annotation type
 Get Annotaition Ids by datacollectionId
 Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
 Delete Data Collection by id
+Export a data collection's annotations as CSV when the data collection contains at least one image set and each image set contains at least one annotation
 
 @functional
 @crs_10733
@@ -193,3 +194,12 @@ Meta: @automated
 Given  Delete Data Collections by id
 When Delete Data collection by id API is called
 Then verify Data Collection by id has been deleted
+
+@test
+Scenario: Export a data collection's annotations as CSV when the data collection contains at least one image set and each image set contains at least one annotation
+Meta: @automated
+Given a data collection contains at least one image set and each image set contains at least one annotation
+When the API which exports a data collection's annotations as CSV is called
+Then the response's status code should be 200
+Then the response's content type should be CSV
+Then the response's body should contain a string
