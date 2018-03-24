@@ -126,34 +126,34 @@ public class LabelAnnotationCsv extends AnnotationCsv {
     //////////////////////////////////////////////////
 
     @Override
-    public Set<String> getRequiredDicomColumns() {
+    public Set<ColumnHeader> getRequiredDicomColumns() {
         return getRequiredColumns(super.getRequiredDicomColumns());
     }
 
     @Override
-    public Set<String> getRequiredNonDicomColumns() {
+    public Set<ColumnHeader> getRequiredNonDicomColumns() {
         return getRequiredColumns(super.getRequiredNonDicomColumns());
     }
 
     @Override
-    public Set<String> getOptionalColumnsWithValues() {
+    public Set<ColumnHeader> getOptionalColumnsWithValues() {
         Map<String, String> optionalColumnValues = new LinkedHashMap<>();
         optionalColumnValues.put("severity", getSeverity());
         optionalColumnValues.put("indication", getIndication());
         optionalColumnValues.put("findings", getFindings());
-        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> nonNullEntry.getKey()).collect(Collectors.toCollection(LinkedHashSet::new));
+        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> new ColumnHeader(nonNullEntry.getKey(), 1)).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
      * Returns the set of columns required by this {@code LabelAnnotationCsv} and its parent.
      *
      * @param requiredParentColumns The columns required by this {@code LabelAnnotationCsv}'s parent.
-     * @return a Set<String>
+     * @return a Set<ColumnHeader>
      */
-    private Set<String> getRequiredColumns(Set<String> requiredParentColumns) {
-        Set<String> requiredDicomColumns = new LinkedHashSet<>();
+    private Set<ColumnHeader> getRequiredColumns(Set<ColumnHeader> requiredParentColumns) {
+        Set<ColumnHeader> requiredDicomColumns = new LinkedHashSet<>();
         requiredDicomColumns.addAll(requiredParentColumns);
-        requiredDicomColumns.add("label");
+        requiredDicomColumns.add(new ColumnHeader("label", 1));
         return requiredDicomColumns;
     }
 

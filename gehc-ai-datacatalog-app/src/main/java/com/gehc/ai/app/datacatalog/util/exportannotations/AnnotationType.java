@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.AnnotationCsv;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ColumnHeader;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ImageSetAssociation;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.LabelAnnotationCsv;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.MultiPointRoiAnnotationCsv;
@@ -56,7 +57,7 @@ public enum AnnotationType {
         }
 
         @Override
-        public Set<String> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+        public Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
             return AnnotationType.getColumnHeaders(result, resultIndexMap, resultIndicesMap, LabelDBResultToCsvBeanConverter::new);
         }
     },
@@ -72,7 +73,7 @@ public enum AnnotationType {
         }
 
         @Override
-        public Set<String> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+        public Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
             return AnnotationType.getColumnHeaders(result, resultIndexMap, resultIndicesMap, FreeformRoiDBResultToCsvBeanConverter::new);
         }
     };
@@ -110,7 +111,7 @@ public enum AnnotationType {
      * @return a {@code Set}
      * @throws InvalidAnnotationException If the provided {@code JsonNode} does not represent a well-formed annotation
      */
-    public abstract Set<String> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException;
+    public abstract Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException;
 
     ///////////////////////////////////////////////
     //
@@ -158,22 +159,22 @@ public enum AnnotationType {
      * @param result                The DB result record, which describes an annotation, that will be evaluated to see which optional columns have at least one non-null value
      * @param beanConverterSupplier The supplier of the service which converts a {@code JsonNode} to a {@code List} of CSV beans
      * @return The {@code Set} of aggregated column headers
-     * @throws InvalidAnnotationException
+     * @throws InvalidAnnotationException if the provided result record does not represent a well-formed annotation
      */
-    private final static Set<String> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, Supplier<DBResultToCsvBeanConverter> beanConverterSupplier) throws InvalidAnnotationException {
+    private final static Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, Supplier<DBResultToCsvBeanConverter> beanConverterSupplier) throws InvalidAnnotationException {
         List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(result, resultIndexMap, resultIndicesMap);
 
         // First aggregate all optional columns that have at least one annotation with a non-null value
-        Set<String> optionalColumnsWithValues = annotationCsvBeans.stream()
+        Set<ColumnHeader> optionalColumnsWithValues = annotationCsvBeans.stream()
                 .map(annotationBean -> annotationBean.getOptionalColumnsWithValues())
-                .reduce(new LinkedHashSet<String>(), (aggregateSet, currentSet) -> {
+                .reduce(new LinkedHashSet<ColumnHeader>(), (aggregateSet, currentSet) -> {
                     // Take the union of all optional columns with values
                     aggregateSet.addAll(currentSet);
                     return aggregateSet;
                 });
 
         // Next add those optional columns to the required columns
-        Set<String> requiredColumns;
+        Set<ColumnHeader> requiredColumns;
         int imageSetFormatIndex = resultIndexMap.get("imageSetFormat");
         if (ImageSetAssociation.isAssociatedWithDicom(result, imageSetFormatIndex)) {
             requiredColumns = annotationCsvBeans.get(0).getRequiredDicomColumns();

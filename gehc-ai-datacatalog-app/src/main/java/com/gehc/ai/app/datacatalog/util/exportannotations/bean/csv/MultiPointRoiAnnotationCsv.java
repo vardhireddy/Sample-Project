@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
 
-    private static final String[] REQUIRED_COLUMNS = new String[]{"data"};
+    private static final ColumnHeader[] REQUIRED_COLUMNS = new ColumnHeader[]{new ColumnHeader("data", 1)};
 
     private List<List<Double>> data;
 
@@ -92,30 +92,30 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
     /////////////////////////////////////////////////
 
     @Override
-    public Set<String> getRequiredDicomColumns() {
+    public Set<ColumnHeader> getRequiredDicomColumns() {
         return getRequiredColumns(super.getRequiredDicomColumns());
     }
 
     @Override
-    public Set<String> getRequiredNonDicomColumns() {
+    public Set<ColumnHeader> getRequiredNonDicomColumns() {
         return getRequiredColumns(super.getRequiredNonDicomColumns());
     }
 
     @Override
-    public Set<String> getOptionalColumnsWithValues() {
+    public Set<ColumnHeader> getOptionalColumnsWithValues() {
         Map<String, String> optionalColumnValues = new HashMap<>();
         optionalColumnValues.put("name", getName());
-        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> nonNullEntry.getKey()).collect(Collectors.toSet());
+        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> new ColumnHeader(nonNullEntry.getKey(), 1)).collect(Collectors.toSet());
     }
 
     /**
      * Returns the set of columns required by this {@code MultiPointRoiAnnotation} and its parent.
      *
      * @param requiredParentColumns The columns required by this {@code MultiPointRoiAnnotation}'s parent.
-     * @return a Set<String>
+     * @return a Set<ColumnHeader>
      */
-    private static Set<String> getRequiredColumns(Set<String> requiredParentColumns) {
-        Set<String> requiredColumns = new LinkedHashSet<>();
+    private static Set<ColumnHeader> getRequiredColumns(Set<ColumnHeader> requiredParentColumns) {
+        Set<ColumnHeader> requiredColumns = new LinkedHashSet<>();
         requiredColumns.addAll(requiredParentColumns);
         Arrays.stream(REQUIRED_COLUMNS).forEach(requiredColumn -> requiredColumns.add(requiredColumn));
         return requiredColumns;

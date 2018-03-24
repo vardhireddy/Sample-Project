@@ -14,7 +14,6 @@ package com.gehc.ai.app.datacatalog.util.exportannotations;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.AnnotationCsv;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * {@code CsvAnnotationDetailsExporter} exports DB result records, which describe annotations, as a CSV string.
@@ -58,26 +58,21 @@ public final class CsvAnnotationDetailsExporter {
 
         final int annotationTypeIndex = resultIndexMap.get("annotationType");
 
-        // First, determine the set of columns headers to be used when producing the single CSV string.
-        // The set will include, for all annotation types, the required column headers and optional column headers that have at least one non-null value
-        Set<String> columnHeaders = new LinkedHashSet<>();
-        for (final Object[] result : results) {
-            AnnotationType annotationType = getAnnotationType(result, annotationTypeIndex);
-            columnHeaders.addAll(annotationType.getColumnHeaders(result, resultIndexMap, resultIndicesMap));
-        }
-        // Convert the set of columns headers to an array to accomodate OpenCSV API
-        String[] columnHeadersArr = columnHeaders.stream().toArray(String[]::new);
+        // First, determine the set of column headers to be used when producing the single CSV string.
+        // The set will include, for all annotation types, the required column headers and optional column headers that have at least one non-null value.
+        // The column headers will be sorted by priority.
+        String[] columHeaders = getOrderedColumnHeaders(results, annotationTypeIndex, resultIndexMap, resultIndicesMap);
 
         // Then write the column headers as the first row of the CSV file
-        csvBuilder.append(String.join(",", columnHeadersArr) + "\n");
+        csvBuilder.append(String.join(",", columHeaders) + "\n");
 
-        // Second, write out each annotation JSON node as CSV using the above set of column headers
-        List<AnnotationCsv> annotationCsvBeans = new ArrayList<>();
+        // Then, write out each annotation as CSV using the above set of column headers
         for (final Object[] result : results) {
             AnnotationType annotationType = getAnnotationType(result, annotationTypeIndex);
-            String convertedCsv = annotationType.convertDBResultToCsv(result, resultIndexMap, resultIndicesMap, columnHeadersArr);
+            String convertedCsv = annotationType.convertDBResultToCsv(result, resultIndexMap, resultIndicesMap, columHeaders);
             csvBuilder.append(convertedCsv);
         }
+
         // Finally, return the aggregated CSV string
         return csvBuilder.toString();
     }
@@ -98,6 +93,36 @@ public final class CsvAnnotationDetailsExporter {
     private static AnnotationType getAnnotationType(Object[] result, int annotationTypeIndex) {
         String annotationTypeAsStr = (String) result[annotationTypeIndex];
         return AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
+    }
+
+    private static String[] getOrderedColumnHeaders(List<Object[]> results, int annotationTypeIndex, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+        // Group column headers by their priority.  Use a TreeMap to automatically sort headers by priority.
+        Map<Integer, Set<String>> orderedColumnHeaders = new TreeMap<>();
+
+        for (final Object[] result : results) {
+            AnnotationType annotationType = getAnnotationType(result, annotationTypeIndex);
+
+            // Retrieve the necessary column headers for this annotation
+            annotationType.getColumnHeaders(result, resultIndexMap, resultIndicesMap).stream()
+                    .forEach(columnHeader -> {
+                        // If a map already has a set defined for this header's priority, just add the header's name to the set
+                        if (orderedColumnHeaders.containsKey(columnHeader.getPriority())) {
+                            orderedColumnHeaders.get(columnHeader.getPriority()).add(columnHeader.getName());
+                        } else {
+                            // Otherwise, create a new set for this priority and then add the header's name to the newly created set
+                            Set<String> columnNames = new LinkedHashSet<>();
+                            columnNames.add(columnHeader.getName());
+                            orderedColumnHeaders.put(columnHeader.getPriority(), columnNames);
+                        }
+                    });
+        }
+
+        // Create an ordered list of column headers simply by iterating through the TreeMap
+        List<String> columnHeaders = new ArrayList<>();
+        orderedColumnHeaders.entrySet().forEach(columnHeadersEntry -> columnHeaders.addAll(columnHeadersEntry.getValue()));
+
+        // Convert the set of columns headers to an array to accomodate OpenCSV API
+        return columnHeaders.stream().toArray(String[]::new);
     }
 
 }

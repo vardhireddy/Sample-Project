@@ -82,10 +82,10 @@ public abstract class AnnotationCsv {
      *
      * @return a {@code Set}
      */
-    public Set<String> getRequiredDicomColumns() {
-        Set<String> requiredDicomColumns = new LinkedHashSet<>();
-        requiredDicomColumns.add("seriesUID");
-        requiredDicomColumns.add("annotationType");
+    public Set<ColumnHeader> getRequiredDicomColumns() {
+        Set<ColumnHeader> requiredDicomColumns = new LinkedHashSet<>();
+        requiredDicomColumns.add(new ColumnHeader("seriesUID", 0));
+        requiredDicomColumns.add(new ColumnHeader("annotationType", 1));
         return requiredDicomColumns;
     }
 
@@ -94,11 +94,11 @@ public abstract class AnnotationCsv {
      *
      * @return a {@code Set}
      */
-    public Set<String> getRequiredNonDicomColumns() {
-        Set<String> requiredDicomColumns = new LinkedHashSet<>();
-        requiredDicomColumns.add("fileName");
-        requiredDicomColumns.add("spaceID");
-        requiredDicomColumns.add("annotationType");
+    public Set<ColumnHeader> getRequiredNonDicomColumns() {
+        Set<ColumnHeader> requiredDicomColumns = new LinkedHashSet<>();
+        requiredDicomColumns.add(new ColumnHeader("fileName", 0));
+        requiredDicomColumns.add(new ColumnHeader("spaceID", 0));
+        requiredDicomColumns.add(new ColumnHeader("annotationType", 1));
         return requiredDicomColumns;
     }
 
@@ -108,7 +108,7 @@ public abstract class AnnotationCsv {
      *
      * @return a {@code Set}
      */
-    public abstract Set<String> getOptionalColumnsWithValues();
+    public abstract Set<ColumnHeader> getOptionalColumnsWithValues();
 
     /////////////////////////
     //
