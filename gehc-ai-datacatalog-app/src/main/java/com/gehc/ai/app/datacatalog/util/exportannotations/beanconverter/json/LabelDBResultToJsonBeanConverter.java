@@ -25,13 +25,6 @@ import java.util.Map;
  */
 public class LabelDBResultToJsonBeanConverter implements DBResultToJsonBeanConverter<LabelAnnotationJson> {
 
-    /**
-     * Creates a new {@code LabelDBResultToJsonBeanConverter}.
-     */
-    public LabelDBResultToJsonBeanConverter() {
-
-    }
-
     @Override
     public LabelAnnotationJson getJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException {
 

@@ -13,6 +13,7 @@ package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
 
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +44,7 @@ public class LabelAnnotationJson extends AnnotationJson {
      */
     public LabelAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType, List<GEClass> geClasses, String indication, String findings) {
         super(patientID, seriesUID, imageSetFormat, annotationID, annotationType);
-        this.geClasses = Objects.requireNonNull(geClasses);
+        this.geClasses = Collections.unmodifiableList(Objects.requireNonNull(geClasses));
         this.indication = indication;
         this.findings = findings;
     }
@@ -59,7 +60,7 @@ public class LabelAnnotationJson extends AnnotationJson {
     }
 
     public void setGeClasses(List<GEClass> geClasses) {
-        this.geClasses = geClasses;
+        this.geClasses = Collections.unmodifiableList(Objects.requireNonNull(geClasses));
     }
 
     public String getIndication() {
@@ -80,10 +81,11 @@ public class LabelAnnotationJson extends AnnotationJson {
 
     @Override
     public boolean equals(Object o) {
+        // Auto-generated
         if (this == o) {
             return true;
         }
-        if (!(o instanceof LabelAnnotationJson)) {
+        if (!(o.getClass() == this.getClass())) {
             return false;
         }
         if (!super.equals(o)) {
@@ -92,17 +94,18 @@ public class LabelAnnotationJson extends AnnotationJson {
 
         LabelAnnotationJson that = (LabelAnnotationJson) o;
 
-        if (getGeClasses() != null ? !getGeClasses().equals(that.getGeClasses()) : that.getGeClasses() != null) {
+        if ((getGeClasses() != null) ? (!getGeClasses().equals(that.getGeClasses())) : (that.getGeClasses() != null)) {
             return false;
         }
-        if (getIndication() != null ? !getIndication().equals(that.getIndication()) : that.getIndication() != null) {
+        if ((getIndication() != null) ? (!getIndication().equals(that.getIndication())) : (that.getIndication() != null)) {
             return false;
         }
-        return getFindings() != null ? getFindings().equals(that.getFindings()) : that.getFindings() == null;
+        return (getFindings() != null) ? (getFindings().equals(that.getFindings())) : (that.getFindings() == null);
     }
 
     @Override
     public int hashCode() {
+        // Auto-generated
         int result = super.hashCode();
         result = 31 * result + (getGeClasses() != null ? getGeClasses().hashCode() : 0);
         result = 31 * result + (getIndication() != null ? getIndication().hashCode() : 0);

@@ -41,8 +41,9 @@ public class GEClass {
     private String value;
 
     /**
-     * (Deprecated) The patient outcome associated with the GE class.
+     * The patient outcome associated with the GE class.
      */
+    @Deprecated
     private String patientOutcome;
 
     /**
@@ -52,7 +53,7 @@ public class GEClass {
      * @param value          The value of the GE class
      * @param patientOutcome (Deprecated) The patient outcome associated with the GE class.
      */
-    public GEClass(@JsonProperty("name") String name, @JsonProperty("value") String value, @JsonProperty("patient_outcome") String patientOutcome) {
+    public GEClass(@JsonProperty("name") String name, @JsonProperty("value") String value, @JsonProperty("patient_outcome") @Deprecated String patientOutcome) {
         this.name = name;
         this.value = value;
         this.patientOutcome = patientOutcome;
@@ -74,28 +75,35 @@ public class GEClass {
         this.value = value;
     }
 
+    @Deprecated
+    public String getPatientOutcome() {
+        return patientOutcome;
+    }
+
+    @Deprecated
+    public void setPatientOutcome(String patientOutcome) {
+        this.patientOutcome = patientOutcome;
+    }
+
     @Override
     public boolean equals(Object o) {
         // Auto-generated
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof GEClass)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o.getClass() == this.getClass())) return false;
 
         GEClass geClass = (GEClass) o;
-        if (getName() != null ? !getName().equals(geClass.getName()) : geClass.getName() != null) {
-            return false;
-        }
-        return getValue() != null ? getValue().equals(geClass.getValue()) : geClass.getValue() == null;
+
+        if (!getName().equals(geClass.getName())) return false;
+        if (getValue() != null ? (!getValue().equals(geClass.getValue())) : (geClass.getValue() != null)) return false;
+        return (getPatientOutcome() != null) ? (getPatientOutcome().equals(geClass.getPatientOutcome())) : (geClass.getPatientOutcome() == null);
     }
 
     @Override
     public int hashCode() {
         // Auto-generated
-        int result = getName() != null ? getName().hashCode() : 0;
+        int result = getName().hashCode();
         result = 31 * result + (getValue() != null ? getValue().hashCode() : 0);
+        result = 31 * result + (getPatientOutcome() != null ? getPatientOutcome().hashCode() : 0);
         return result;
     }
 

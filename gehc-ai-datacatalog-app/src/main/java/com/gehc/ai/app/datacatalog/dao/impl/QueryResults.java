@@ -11,6 +11,7 @@
  */
 package com.gehc.ai.app.datacatalog.dao.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class QueryResults {
     private Map<String, Integer[]> resultIndicesMap;
 
     public QueryResults(List<Object[]> dbResults, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) {
-        this.dbResults = dbResults;
+        this.dbResults = Collections.unmodifiableList(dbResults);
         this.resultIndexMap = resultIndexMap;
         this.resultIndicesMap = resultIndicesMap;
     }

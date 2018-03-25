@@ -64,7 +64,8 @@ public final class CsvAnnotationDetailsExporter {
         String[] columHeaders = getOrderedColumnHeaders(results, annotationTypeIndex, resultIndexMap, resultIndicesMap);
 
         // Then write the column headers as the first row of the CSV file
-        csvBuilder.append(String.join(",", columHeaders) + "\n");
+        csvBuilder.append(String.join(",", columHeaders));
+        csvBuilder.append("\n");
 
         // Then, write out each annotation as CSV using the above set of column headers
         for (final Object[] result : results) {
