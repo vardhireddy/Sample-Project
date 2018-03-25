@@ -65,14 +65,14 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
     public boolean equals(Object o) {
         // Auto-generated
         if (this == o) return true;
-        if (!(o instanceof RoiAnnotationJson)) return false;
+        if (!(o.getClass() == this.getClass())) return false;
         if (!super.equals(o)) return false;
 
         RoiAnnotationJson that = (RoiAnnotationJson) o;
 
         if (!getCoordSys().equals(that.getCoordSys())) return false;
         if (!getLocalID().equals(that.getLocalID())) return false;
-        return getName() != null ? getName().equals(that.getName()) : that.getName() == null;
+        return (getName() != null) ? (getName().equals(that.getName())) : (that.getName() == null);
     }
 
     @Override

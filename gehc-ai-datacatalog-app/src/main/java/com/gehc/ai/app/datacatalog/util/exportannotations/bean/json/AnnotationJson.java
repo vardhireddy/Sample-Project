@@ -98,7 +98,7 @@ public abstract class AnnotationJson {
     public boolean equals(Object o) {
         // Auto-generated
         if (this == o) return true;
-        if (!(o instanceof AnnotationJson)) return false;
+        if (!(o.getClass() == this.getClass())) return false;
 
         AnnotationJson that = (AnnotationJson) o;
 

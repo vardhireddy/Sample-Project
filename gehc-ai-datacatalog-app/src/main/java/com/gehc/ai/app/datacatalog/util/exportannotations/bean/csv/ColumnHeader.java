@@ -52,7 +52,7 @@ public class ColumnHeader {
      *                 A higher priority column header which appear more leftward than a comparitively lower priority column header.
      *                 A <b>lower</b> number indicates a <b>higher</b> priority.
      */
-    public void setPriority(int priority) {
+    public final void setPriority(int priority) {
         if (priority < 0) {
             throw new IllegalArgumentException("The priority must be an integer greater than or equal to 0");
         }

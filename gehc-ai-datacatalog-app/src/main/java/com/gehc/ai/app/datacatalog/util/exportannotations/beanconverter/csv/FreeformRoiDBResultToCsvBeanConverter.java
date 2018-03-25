@@ -31,13 +31,6 @@ import java.util.Map;
  */
 public class FreeformRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConverter<RoiAnnotationCsv> {
 
-    /**
-     * Creates a new {@code FreeformRoiDBResultToCsvBeanConverter}.
-     */
-    public FreeformRoiDBResultToCsvBeanConverter() {
-
-    }
-
     ////////////////
     //
     // Public API //

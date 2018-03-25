@@ -11,8 +11,10 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * {@code FreeformRoiAnnotationJson} is a bean representing an annotation that is a freeform ROI (e.g. polygon or contour).
@@ -33,7 +35,7 @@ public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
      */
     public FreeformRoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, FreeformRoi annotationType, String coordSys, List<List<Double>> data, String localID, String name) {
         super(patientID, seriesUID, imageSetFormat, annotationID, annotationType.toString().toLowerCase(Locale.ENGLISH), coordSys, localID, name);
-        this.data = data;
+        this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 
     /////////////////////////
@@ -47,7 +49,7 @@ public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
     }
 
     public void setData(List<List<Double>> data) {
-        this.data = data;
+        this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 
     @Override
@@ -56,7 +58,7 @@ public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof FreeformRoiAnnotationJson)) {
+        if (!(o.getClass() == this.getClass())) {
             return false;
         }
 

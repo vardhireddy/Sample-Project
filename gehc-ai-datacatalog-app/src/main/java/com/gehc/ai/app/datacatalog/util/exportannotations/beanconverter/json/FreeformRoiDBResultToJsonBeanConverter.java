@@ -31,13 +31,6 @@ public class FreeformRoiDBResultToJsonBeanConverter implements DBResultToJsonBea
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    /**
-     * Creates a new {@code LabelDBResultToJsonConverter}.
-     */
-    public FreeformRoiDBResultToJsonBeanConverter() {
-
-    }
-
     @Override
     public FreeformRoiAnnotationJson getJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndiciesMap) throws InvalidAnnotationException {
 

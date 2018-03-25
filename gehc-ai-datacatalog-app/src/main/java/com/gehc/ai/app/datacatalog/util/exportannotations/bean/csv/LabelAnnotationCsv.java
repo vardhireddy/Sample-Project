@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
  */
 public class LabelAnnotationCsv extends AnnotationCsv {
 
-    private static final String[] REQUIRED_COLUMNS = new String[]{"label"};
-
     private String label;
 
     private String severity;

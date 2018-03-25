@@ -29,7 +29,7 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
     private static final ColumnHeader[] REQUIRED_COLUMNS = new ColumnHeader[]{
             new ColumnHeader("coordSys", 1),
             new ColumnHeader("data", 1),
-            new ColumnHeader("localID", 1)
+            new ColumnHeader("localID", 1),
     };
 
     private String coordSys;

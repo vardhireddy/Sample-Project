@@ -12,6 +12,7 @@
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -43,7 +44,7 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
      */
     public MultiPointRoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, String coordSys, List<List<Double>> data, String localID, String name) {
         super(seriesUID, annotationTypeAsStr, coordSys, localID, name);
-        setUp(data);
+        this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 
     /**
@@ -59,16 +60,7 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
      */
     public MultiPointRoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String coordSys, List<List<Double>> data, String localID, String name) {
         super(fileName, spaceID, annotationTypeAsStr, coordSys, localID, name);
-        setUp(data);
-    }
-
-    /**
-     * Initializes instance fields that are specific to the {@code MultiPointRoiAnnotation}.
-     *
-     * @param data (Required) The array of data points that comprise the ROI.
-     */
-    private void setUp(List<List<Double>> data) {
-        this.data = Objects.requireNonNull(data);
+        this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 
     /////////////////////////

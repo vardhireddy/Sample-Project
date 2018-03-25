@@ -28,13 +28,6 @@ import java.util.Map;
  */
 public class LabelDBResultToCsvBeanConverter implements DBResultToCsvBeanConverter<LabelAnnotationCsv> {
 
-    /**
-     * Creates a new {@code LabelDBResultToCsvBeanConverter}.
-     */
-    public LabelDBResultToCsvBeanConverter() {
-
-    }
-
     ////////////////
     //
     // Public API //
