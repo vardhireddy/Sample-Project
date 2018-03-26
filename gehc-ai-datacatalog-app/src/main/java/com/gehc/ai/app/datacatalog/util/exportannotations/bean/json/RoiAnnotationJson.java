@@ -52,7 +52,7 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null && this != null) return false;
+        if (o == null) return false;
         if (!(o instanceof RoiAnnotationJson)) return false;
 
         RoiAnnotationJson that = (RoiAnnotationJson) o;

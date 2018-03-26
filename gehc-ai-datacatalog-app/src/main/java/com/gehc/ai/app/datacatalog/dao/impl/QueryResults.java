@@ -35,7 +35,7 @@ public class QueryResults {
     }
 
     public List<Object[]> getDbResults() {
-        return dbResults;
+        return Collections.unmodifiableList(dbResults);
     }
 
     public Map<String, Integer> getResultIndexMap() {
