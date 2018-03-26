@@ -32,7 +32,7 @@ public abstract class AnnotationCsv {
     //
     ///////////////////////////////////////////
 
-    private String annotationType;
+    private final String annotationType;
 
     ////////////////////////////////////////////////////////////////////////////
     //
@@ -55,26 +55,26 @@ public abstract class AnnotationCsv {
     /**
      * Creates a new {@code AnnotationCsv} that is associated with a DICOM image set.
      *
-     * @param seriesUID      The series instance UID of the DICOM data to which this annotation is associated
-     * @param annotationType This annotation's type. {@link com.gehc.ai.app.datacatalog.util.exportannotations.AnnotationType}
+     * @param seriesUID      (Required) The series instance UID of the DICOM data to which this annotation is associated
+     * @param annotationType (Required) This annotation's type. {@link com.gehc.ai.app.datacatalog.util.exportannotations.AnnotationType}
      * @return a new {@code AnnotationCsv}
      */
     public AnnotationCsv(String seriesUID, String annotationType) {
-        this.seriesUID = seriesUID;
+        this.seriesUID = Objects.requireNonNull(seriesUID);
         this.annotationType = Objects.requireNonNull(annotationType);
     }
 
     /**
      * Creates a new {@code AnnotationCsv} that is associated with a non-DICOM image set.
      *
-     * @param fileName       The original file name of the non-DICOM image to which this annotation is associated
-     * @param spaceID        The S3 space ID where the non-DICOM is stored
-     * @param annotationType This annotation's type
+     * @param fileName       (Required) The original file name of the non-DICOM image to which this annotation is associated
+     * @param spaceID        (Required) The S3 space ID where the non-DICOM is stored
+     * @param annotationType (Required) This annotation's type
      */
     public AnnotationCsv(String fileName, String spaceID, String annotationType) {
-        this.fileName = fileName;
-        this.spaceID = spaceID;
-        this.annotationType = annotationType;
+        this.fileName = Objects.requireNonNull(fileName);
+        this.spaceID = Objects.requireNonNull(spaceID);
+        this.annotationType = Objects.requireNonNull(annotationType);
     }
 
     /**
@@ -110,42 +110,26 @@ public abstract class AnnotationCsv {
      */
     public abstract Set<ColumnHeader> getOptionalColumnsWithValues();
 
-    /////////////////////////
+    /////////////
     //
-    // Getters and setters //
+    // Getters //
     //
-    /////////////////////////
+    /////////////
 
     public String getAnnotationType() {
         return annotationType;
-    }
-
-    public void setAnnotationType(String annotationType) {
-        this.annotationType = annotationType;
     }
 
     public String getSeriesUID() {
         return seriesUID;
     }
 
-    public void setSeriesUID(String seriesUID) {
-        this.seriesUID = seriesUID;
-    }
-
     public String getFileName() {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
     public String getSpaceID() {
         return spaceID;
-    }
-
-    public void setSpaceID(String spaceID) {
-        this.spaceID = spaceID;
     }
 
 }

@@ -13,13 +13,10 @@ package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * {@code MultiPointRoiAnnotation} is a bean representing an annotation that is a multi-point ROI (e.g. line, rectangle, ellipse, polygon or contour).
@@ -30,7 +27,7 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
 
     private static final ColumnHeader[] REQUIRED_COLUMNS = new ColumnHeader[]{new ColumnHeader("data", 1)};
 
-    private List<List<Double>> data;
+    private final List<List<Double>> data;
 
     /**
      * Creates a new {@code MultiPointRoiAnnotation} that is associated with a DICOM image set.
@@ -73,10 +70,6 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
         return data;
     }
 
-    public void setData(List<List<Double>> data) {
-        this.data = data;
-    }
-
     /////////////////////////////////////////////////
     //
     // APIs for defining CSV column set for an ROI //
@@ -91,13 +84,6 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
     @Override
     public Set<ColumnHeader> getRequiredNonDicomColumns() {
         return getRequiredColumns(super.getRequiredNonDicomColumns());
-    }
-
-    @Override
-    public Set<ColumnHeader> getOptionalColumnsWithValues() {
-        Map<String, String> optionalColumnValues = new HashMap<>();
-        optionalColumnValues.put("name", getName());
-        return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> new ColumnHeader(nonNullEntry.getKey(), 1)).collect(Collectors.toSet());
     }
 
     /**

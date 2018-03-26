@@ -18,11 +18,11 @@ package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
  */
 public abstract class RoiAnnotationJson extends AnnotationJson {
 
-    private String coordSys;
+    private final String coordSys;
 
-    private String localID;
+    private final String localID;
 
-    private String name;
+    private final String name;
 
     public RoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType, String coordSys, String localID, String name) {
         super(patientID, seriesUID, imageSetFormat, annotationID, annotationType);
@@ -41,35 +41,24 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
         return coordSys;
     }
 
-    public void setCoordSys(String coordSys) {
-        this.coordSys = coordSys;
-    }
-
     public String getLocalID() {
         return localID;
-    }
-
-    public void setLocalID(String localID) {
-        this.localID = localID;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public boolean equals(Object o) {
-        // Auto-generated
         if (this == o) return true;
-        if (!(o.getClass() == this.getClass())) return false;
-        if (!super.equals(o)) return false;
+        if (o == null && this != null) return false;
+        if (!(o instanceof RoiAnnotationJson)) return false;
 
         RoiAnnotationJson that = (RoiAnnotationJson) o;
 
+        if (!that.canEqual(this)) return false;
+        if (!super.equals(that)) return false;
         if (!getCoordSys().equals(that.getCoordSys())) return false;
         if (!getLocalID().equals(that.getLocalID())) return false;
         return (getName() != null) ? (getName().equals(that.getName())) : (that.getName() == null);
@@ -83,5 +72,10 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
         result = 31 * result + getLocalID().hashCode();
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public boolean canEqual(Object other) {
+        return (other instanceof RoiAnnotationJson);
     }
 }

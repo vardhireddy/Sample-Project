@@ -24,20 +24,20 @@ import java.util.Objects;
  */
 public abstract class AnnotationJson {
 
-    private String patientID;
-    private String annotationType;
-    private String imageSetFormat;
-    private String seriesUID;
-    private Long annotationID;
+    private final String patientID;
+    private final String annotationType;
+    private final String imageSetFormat;
+    private final String seriesUID;
+    private final Long annotationID;
 
     /**
      * Creates a new {@code AnnotationJson} that is associated with a DICOM image set.
      *
-     * @param patientID      The ID of the patient to which this annotation is associated
-     * @param seriesUID      The series instance UID of the DICOM data to which this annotation is associated
-     * @param imageSetFormat The data format of the image set to which this annotation is associated
-     * @param annotationID   The database assigned number that uniquely identifies this annotation
-     * @param annotationType This annotation's type
+     * @param patientID      (Required) The ID of the patient to which this annotation is associated
+     * @param seriesUID      (Required) The series instance UID of the DICOM data to which this annotation is associated
+     * @param imageSetFormat (Required) The data format of the image set to which this annotation is associated
+     * @param annotationID   (Required) The database assigned number that uniquely identifies this annotation
+     * @param annotationType (Required) This annotation's type
      * @return a new {@code AnnotationJson}
      */
     public AnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType) {
@@ -58,50 +58,41 @@ public abstract class AnnotationJson {
         return annotationType;
     }
 
-    public void setAnnotationType(String annotationType) {
-        this.annotationType = annotationType;
-    }
-
     public String getSeriesUID() {
         return seriesUID;
-    }
-
-    public void setSeriesUID(String seriesUID) {
-        this.seriesUID = seriesUID;
     }
 
     public String getPatientID() {
         return patientID;
     }
 
-    public void setPatientID(String patientID) {
-        this.patientID = patientID;
-    }
-
     public String getImageSetFormat() {
         return imageSetFormat;
-    }
-
-    public void setImageSetFormat(String imageSetFormat) {
-        this.imageSetFormat = imageSetFormat;
     }
 
     public Long getAnnotationID() {
         return annotationID;
     }
 
-    public void setAnnotationID(Long annotationID) {
-        this.annotationID = annotationID;
+    /**
+     * Returns whether if it is possible for provided object to potentially equal an instance of {@code AnnotationJson}.
+     *
+     * @param other The object} to evaluate
+     * @return {@code true} if it possible for the provided object to potentially equal an instance of {@code AnnotationJson}; otherwise, {@code false}
+     */
+    public boolean canEqual(Object other) {
+        return (other instanceof AnnotationJson);
     }
 
     @Override
     public boolean equals(Object o) {
-        // Auto-generated
         if (this == o) return true;
-        if (!(o.getClass() == this.getClass())) return false;
+        if (o == null && this != null) return false;
+        if (!(o instanceof AnnotationJson)) return false;
 
         AnnotationJson that = (AnnotationJson) o;
 
+        if (!that.canEqual(this)) return false;
         if (!getPatientID().equals(that.getPatientID())) return false;
         if (!getAnnotationType().equals(that.getAnnotationType())) return false;
         if (!getImageSetFormat().equals(that.getImageSetFormat())) return false;
@@ -111,7 +102,6 @@ public abstract class AnnotationJson {
 
     @Override
     public int hashCode() {
-        // Auto-generated
         int result = getPatientID().hashCode();
         result = 31 * result + getAnnotationType().hashCode();
         result = 31 * result + getImageSetFormat().hashCode();

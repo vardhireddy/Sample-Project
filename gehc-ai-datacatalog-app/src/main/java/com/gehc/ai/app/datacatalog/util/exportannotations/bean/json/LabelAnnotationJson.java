@@ -22,13 +22,13 @@ import java.util.Objects;
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class LabelAnnotationJson extends AnnotationJson {
+public final class LabelAnnotationJson extends AnnotationJson {
 
-    private List<GEClass> geClasses;
+    private final List<GEClass> geClasses;
 
-    private String indication;
+    private final String indication;
 
-    private String findings;
+    private final String findings;
 
     /**
      * Creates a new {@code LabelAnnotationJson}.
@@ -59,57 +59,41 @@ public class LabelAnnotationJson extends AnnotationJson {
         return geClasses;
     }
 
-    public void setGeClasses(List<GEClass> geClasses) {
-        this.geClasses = Collections.unmodifiableList(Objects.requireNonNull(geClasses));
-    }
-
     public String getIndication() {
         return indication;
-    }
-
-    public void setIndication(String indication) {
-        this.indication = indication;
     }
 
     public String getFindings() {
         return findings;
     }
 
-    public void setFindings(String findings) {
-        this.findings = findings;
-    }
-
     @Override
-    public boolean equals(Object o) {
-        // Auto-generated
-        if (this == o) {
-            return true;
-        }
-        if (!(o.getClass() == this.getClass())) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null && this != null) return false;
+        if (!(o instanceof LabelAnnotationJson)) return false;
 
         LabelAnnotationJson that = (LabelAnnotationJson) o;
 
-        if ((getGeClasses() != null) ? (!getGeClasses().equals(that.getGeClasses())) : (that.getGeClasses() != null)) {
+        if (!that.canEqual(this)) return false;
+        if (!super.equals(that)) return false;
+        if (!getGeClasses().equals(that.getGeClasses())) return false;
+        if ((getIndication() != null) ? (!getIndication().equals(that.getIndication())) : (that.getIndication() != null))
             return false;
-        }
-        if ((getIndication() != null) ? (!getIndication().equals(that.getIndication())) : (that.getIndication() != null)) {
-            return false;
-        }
         return (getFindings() != null) ? (getFindings().equals(that.getFindings())) : (that.getFindings() == null);
     }
 
     @Override
-    public int hashCode() {
-        // Auto-generated
+    public final int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (getGeClasses() != null ? getGeClasses().hashCode() : 0);
+        result = 31 * result + getGeClasses().hashCode();
         result = 31 * result + (getIndication() != null ? getIndication().hashCode() : 0);
         result = 31 * result + (getFindings() != null ? getFindings().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public final boolean canEqual(Object other) {
+        return (other instanceof LabelAnnotationJson);
     }
 }

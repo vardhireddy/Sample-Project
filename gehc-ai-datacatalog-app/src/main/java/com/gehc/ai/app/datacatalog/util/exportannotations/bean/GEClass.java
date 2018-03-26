@@ -18,13 +18,14 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * {@code GEClass} is entity that represents a GE class label annotation.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class GEClass {
+public final class GEClass {
     /**
      * {@link ObjectMapper} to use when converting an {@code Object} reprsentation into its {@code GEClass} bean representation.
      */
@@ -33,28 +34,31 @@ public class GEClass {
     /**
      * The name of this GE class (e.g. "Pneumothorax")
      */
-    private String name;
+    private final String name;
 
     /**
      * The value describing this GE class (e.g. "Severe")
      */
-    private String value;
+    private final String value;
 
     /**
      * The patient outcome associated with the GE class.
+     *
+     * @deprecated The patient outcome is no longer supported because this attribute only applies to a particular institution's
+     * data and therefore is not extensible to other institution's data
      */
     @Deprecated
-    private String patientOutcome;
+    private final String patientOutcome;
 
     /**
      * Creates a new {@code GEClass} entity.
      *
-     * @param name           The name of the GE class
-     * @param value          The value of the GE class
-     * @param patientOutcome (Deprecated) The patient outcome associated with the GE class.
+     * @param name           (Required) The name of the GE class
+     * @param value          (Optional)The value of the GE class
+     * @param patientOutcome (Optional)(Deprecated) The patient outcome associated with the GE class.
      */
     public GEClass(@JsonProperty("name") String name, @JsonProperty("value") String value, @JsonProperty("patient_outcome") @Deprecated String patientOutcome) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         this.value = value;
         this.patientOutcome = patientOutcome;
     }
@@ -63,32 +67,26 @@ public class GEClass {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
+    /**
+     * Gets the patient outcome.
+     *
+     * @deprecated The patient outcome is no longer supported because this attribute only applies to a particular institution's
+     * data and therefore is not extensible to other institution's data
+     */
     @Deprecated
     public String getPatientOutcome() {
         return patientOutcome;
     }
 
-    @Deprecated
-    public void setPatientOutcome(String patientOutcome) {
-        this.patientOutcome = patientOutcome;
-    }
-
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         // Auto-generated
         if (this == o) return true;
+        if (o == null && this != null) return false;
         if (!(o.getClass() == this.getClass())) return false;
 
         GEClass geClass = (GEClass) o;
@@ -99,7 +97,7 @@ public class GEClass {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         // Auto-generated
         int result = getName().hashCode();
         result = 31 * result + (getValue() != null ? getValue().hashCode() : 0);
