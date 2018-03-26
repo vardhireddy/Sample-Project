@@ -86,7 +86,7 @@ public final class GEClass {
     public final boolean equals(Object o) {
         // Auto-generated
         if (this == o) return true;
-        if (o == null && this != null) return false;
+        if (o == null) return false;
         if (!(o.getClass() == this.getClass())) return false;
 
         GEClass geClass = (GEClass) o;

@@ -67,7 +67,7 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
     /////////////////////////
 
     public List<List<Double>> getData() {
-        return data;
+        return Collections.unmodifiableList(data);
     }
 
     /////////////////////////////////////////////////

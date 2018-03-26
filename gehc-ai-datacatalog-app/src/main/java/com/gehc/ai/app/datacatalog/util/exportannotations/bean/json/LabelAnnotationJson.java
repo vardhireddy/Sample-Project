@@ -56,7 +56,7 @@ public final class LabelAnnotationJson extends AnnotationJson {
     /////////////////////////
 
     public List<GEClass> getGeClasses() {
-        return geClasses;
+        return Collections.unmodifiableList(geClasses);
     }
 
     public String getIndication() {
@@ -70,7 +70,7 @@ public final class LabelAnnotationJson extends AnnotationJson {
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null && this != null) return false;
+        if (o == null) return false;
         if (!(o instanceof LabelAnnotationJson)) return false;
 
         LabelAnnotationJson that = (LabelAnnotationJson) o;

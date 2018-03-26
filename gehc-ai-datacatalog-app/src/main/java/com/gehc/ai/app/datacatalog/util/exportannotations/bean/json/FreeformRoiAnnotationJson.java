@@ -45,13 +45,13 @@ public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
     /////////////////////////
 
     public List<List<Double>> getData() {
-        return data;
+        return Collections.unmodifiableList(data);
     }
 
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null && this != null) return false;
+        if (o == null) return false;
         if (!(o instanceof FreeformRoiAnnotationJson)) return false;
 
         FreeformRoiAnnotationJson that = (FreeformRoiAnnotationJson) o;
