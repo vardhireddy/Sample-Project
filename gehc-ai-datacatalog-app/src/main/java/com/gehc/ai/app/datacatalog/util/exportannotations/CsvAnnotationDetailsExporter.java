@@ -50,10 +50,17 @@ public final class CsvAnnotationDetailsExporter {
      * @param resultIndexMap   A mapping of single-valued result meta data to their index in the result record.
      * @param resultIndicesMap A mapping of multi-valued result meta data to their indices in the result record.
      * @return A CSV {@code String} representation of the input annotation(s)
-     * @throws InvalidAnnotationException If the JSON representation of any of the annotations is not well-formed
-     * @throws CsvConversionException     If the JSON representation of any of the annotations could not be successfully mapped to a corresponding CSV representation
+     * @throws InvalidAnnotationException if at least one of the annotations described the DB result record is not a well-formed annotation
+     * @throws CsvConversionException     if at least one of the annotations described the DB result record could not be successfully mapped to a corresponding CSV representation
      */
     public static final String exportAsCsv(List<Object[]> results, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException, CsvConversionException {
+        // Toll-gate checks
+        if (null == results) {
+            throw new InvalidAnnotationException("There are no annotation details to export.");
+        }
+
+        // Toll gates passed! Begin exporting the annotation details as CSV
+
         StringBuilder csvBuilder = new StringBuilder();
 
         final int annotationTypeIndex = resultIndexMap.get("annotationType");
@@ -96,6 +103,21 @@ public final class CsvAnnotationDetailsExporter {
         return AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
     }
 
+    /**
+     * <p>Returns the column headers to be used when exporting the annotation details as CSV.  The column headers will be
+     * ordered based on their defined priority.
+     * </p>
+     * <p>
+     * (See {@link com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ColumnHeader} for more on header priority)
+     * </p>
+     *
+     * @param results             The DB result records which describe annotations
+     * @param annotationTypeIndex The index in the result record that defines the annotation type
+     * @param resultIndexMap      A mapping of single-valued result meta data to their index in the result record.
+     * @param resultIndicesMap    A mapping of multi-valued result meta data to their indices in the result record.
+     * @return An array of column headers ordered by their priority.
+     * @throws InvalidAnnotationException if at least one of the annotations described the DB result record is not a well-formed annotation
+     */
     private static String[] getOrderedColumnHeaders(List<Object[]> results, int annotationTypeIndex, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
         // Group column headers by their priority.  Use a TreeMap to automatically sort headers by priority.
         Map<Integer, Set<String>> orderedColumnHeaders = new TreeMap<>();

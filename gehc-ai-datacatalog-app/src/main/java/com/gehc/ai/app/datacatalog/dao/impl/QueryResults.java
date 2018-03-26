@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class QueryResults {
 
-    private List<Object[]> dbResults;
+    private final List<Object[]> dbResults;
 
     private Map<String, Integer> resultIndexMap;
 

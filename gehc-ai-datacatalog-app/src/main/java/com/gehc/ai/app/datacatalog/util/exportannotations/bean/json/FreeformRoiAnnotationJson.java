@@ -23,7 +23,7 @@ import java.util.Objects;
  */
 public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
 
-    private List<List<Double>> data;
+    private final List<List<Double>> data;
 
     /**
      * Creates a new {@code FreeformRoiAnnotationJson}.
@@ -48,29 +48,30 @@ public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
         return data;
     }
 
-    public void setData(List<List<Double>> data) {
-        this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
-    }
-
     @Override
-    public boolean equals(Object o) {
-        // Auto-generated
-        if (this == o) {
-            return true;
-        }
-        if (!(o.getClass() == this.getClass())) {
-            return false;
-        }
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null && this != null) return false;
+        if (!(o instanceof FreeformRoiAnnotationJson)) return false;
 
         FreeformRoiAnnotationJson that = (FreeformRoiAnnotationJson) o;
+        if (!that.canEqual(this)) return false;
+        if (!super.equals(that)) return false;
 
         return getData().equals(that.getData());
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         // Auto-generated
-        return getData().hashCode();
+        int result = super.hashCode();
+        result = 31 * result + getData().hashCode();
+        return result;
+    }
+
+    @Override
+    public final boolean canEqual(Object other) {
+        return (other instanceof FreeformRoiAnnotationJson);
     }
 
 }

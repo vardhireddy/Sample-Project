@@ -79,42 +79,26 @@ public class LabelAnnotationCsv extends AnnotationCsv {
         this.findings = findings;
     }
 
-    /////////////////////////
+    /////////////
     //
-    // Getters and setters //
+    // Getters //
     //
-    /////////////////////////
+    /////////////
 
     public String getLabel() {
         return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 
     public String getSeverity() {
         return severity;
     }
 
-    public void setSeverity(String severity) {
-        this.severity = severity;
-    }
-
     public String getFindings() {
         return findings;
     }
 
-    public void setFindings(String findings) {
-        this.findings = findings;
-    }
-
     public String getIndication() {
         return indication;
-    }
-
-    public void setIndication(String indication) {
-        this.indication = indication;
     }
 
     //////////////////////////////////////////////////

@@ -43,15 +43,20 @@ public final class JsonAnnotationDetailsExporter {
      * @throws InvalidAnnotationException if at least one of the annotations described the DB result record is not a well-formed annotation
      */
     public static final List<AnnotationJson> exportAsJson(List<Object[]> results, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+        // Toll-gate checks
+        if (null == results) {
+            throw new InvalidAnnotationException("There are no annotation details to export.");
+        }
+
+        // Toll gates passed!  Begin exporting the annotation details as JSON
+
         List<AnnotationJson> annotationDetails = new ArrayList<>();
 
-        if (null != results && !results.isEmpty()) {
-            for (final Object[] result : results) {
-                String annotationTypeAsStr = (String) result[resultIndexMap.get("annotationType")];
-                AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
-                AnnotationJson dbResultAsJson = annotationType.convertDBResultToJson(result, resultIndexMap, resultIndicesMap);
-                annotationDetails.add(dbResultAsJson);
-            }
+        for (final Object[] result : results) {
+            String annotationTypeAsStr = (String) result[resultIndexMap.get("annotationType")];
+            AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
+            AnnotationJson dbResultAsJson = annotationType.convertDBResultToJson(result, resultIndexMap, resultIndicesMap);
+            annotationDetails.add(dbResultAsJson);
         }
 
         return annotationDetails;
