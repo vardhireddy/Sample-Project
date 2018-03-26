@@ -32,6 +32,9 @@ import java.util.Set;
  * @author andrew.c.wong@ge.com (212069153)
  */
 enum AnnotationType {
+    /**
+     * A textual label that describes a medical image.
+     */
     LABEL() {
         @Override
         public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
@@ -48,7 +51,32 @@ enum AnnotationType {
             return CsvConversionTemplates.getColumnHeaders(result, resultIndexMap, resultIndicesMap, LabelDBResultToCsvBeanConverter::new);
         }
     },
+    /**
+     * A freeform ROI that is composed of multiple vertices whereby the vertices are connected by straight line segments.
+     */
     POLYGON() {
+        @Override
+        public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+            return new FreeformRoiDBResultToJsonBeanConverter().getJson(result, resultIndexMap, resultIndicesMap);
+        }
+
+        @Override
+        public String convertDBResultToCsv(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
+            return CsvConversionTemplates.convertDBResultToCsv(result, resultIndexMap, resultIndicesMap, columnHeaders, FreeformRoiDBResultToCsvBeanConverter::new, MultiPointRoiAnnotationCsv.class);
+        }
+
+        @Override
+        public Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+            return CsvConversionTemplates.getColumnHeaders(result, resultIndexMap, resultIndicesMap, FreeformRoiDBResultToCsvBeanConverter::new);
+        }
+    },
+    /**
+     * A freeform ROI that is composed of multiple vertices whereby the vertices are connected by straight line segments.
+     *
+     * @deprecated This annotation type's name is a misnomer; it implies that two vertices are connected by a curve.  Therefore, use {@link #POLYGON} instead
+     */
+    @Deprecated
+    CONTOUR() {
         @Override
         public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
             return new FreeformRoiDBResultToJsonBeanConverter().getJson(result, resultIndexMap, resultIndicesMap);
@@ -96,7 +124,7 @@ enum AnnotationType {
      * @param resultIndexMap   A mapping of a result meta data to its index in the result record.
      * @param resultIndicesMap A mapping of a result meta data to its indices in the result record.
      * @return a {@code Set}
-     * @throws InvalidAnnotationException If the provided {@code JsonNode} does not represent a well-formed annotation
+     * @throws InvalidAnnotationException If the provided DB result record does not represent a well-formed annotation
      */
     public abstract Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException;
 

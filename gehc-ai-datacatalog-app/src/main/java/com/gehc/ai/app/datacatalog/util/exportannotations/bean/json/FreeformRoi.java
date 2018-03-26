@@ -17,5 +17,15 @@ package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
  * @author andrew.c.wong@ge.com (212069153)
  */
 public enum FreeformRoi {
-    POLYGON, CONTOUR
+    /**
+     * A freeform ROI that is composed of multiple vertices whereby the vertices are connected by straight line segments.
+     */
+    POLYGON,
+    /**
+     * A freeform ROI that is composed of multiple vertices whereby the vertices are connected by straight line segments.
+     *
+     * @deprecated This annotation type's name is a misnomer; it implies that two vertices are connected by a curve.  Therefore, use {@link #POLYGON} instead
+     */
+    @Deprecated
+    CONTOUR
 }
