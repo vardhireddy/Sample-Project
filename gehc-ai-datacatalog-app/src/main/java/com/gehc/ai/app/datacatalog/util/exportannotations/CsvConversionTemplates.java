@@ -51,9 +51,10 @@ final class CsvConversionTemplates {
      * Converts the provided DB result record, which describes an annotation, to a CSV representation that is ingestable by the Learning Factory.
      *
      * @param result                The DB result record which describes an annotation
-     * @param columnHeaders         The array of required column headers and optional column headers with aqt least one non-null value
-     * @param beanConverterSupplier The supplier of the service which converts a {@code JsonNode} to a {@code List} of CSV beans
-     * @param beanClass             The bean {@link Class} to which the {@code JsonNode}'s contents will be converted
+     * @param columnHeaders         The array of column headers to write out to the CSV string.  The array should include the
+     *                              required column headers and optional column headers with at least one non-null value
+     * @param beanConverterSupplier The supplier of the service which converts a DB result record to a {@code List} of CSV beans
+     * @param beanClass             The bean {@link Class} to which the DB result record's contents will be converted
      * @return A CSV {@code String}
      * @throws InvalidAnnotationException if the provided result record does not represent a well-formed annotation
      * @throws CsvConversionException     if the provided result record could not be successfully mapped to a corresponding CSV representation
@@ -84,8 +85,9 @@ final class CsvConversionTemplates {
     /**
      * Returns the aggregation of required column headers and optional column headers that have values.
      *
-     * @param result                The DB result record, which describes an annotation, that will be evaluated to see which optional columns have at least one non-null value
-     * @param beanConverterSupplier The supplier of the service which converts a {@code JsonNode} to a {@code List} of CSV beans
+     * @param result                The DB result record, which describes an annotation, that will be evaluated to see
+     *                              which optional columns have at least one non-null value
+     * @param beanConverterSupplier The supplier of the service which converts a DB result record to a {@code List} of CSV beans
      * @return The {@code Set} of aggregated column headers
      * @throws InvalidAnnotationException if the provided result record does not represent a well-formed annotation
      */

@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -295,7 +296,7 @@ public class GetAnnotationDetailsTest {
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "polygon", roiName, "0", "[[-1.2345,6.789,10.1112],[-1.2345,6.789,10.1112],[-1.2345,6.789,10.1112]]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "polygon", roiName, "0", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -305,16 +306,10 @@ public class GetAnnotationDetailsTest {
                 List<AnnotationJson> annotationDetails = new ArrayList<>();
 
                 // Create three mock coordinates
-                final int NUM_MOCK_COORDS = 3;
                 List<List<Double>> coords = new ArrayList<>();
-
-                for (int i = 0; i < NUM_MOCK_COORDS; i++) {
-                    List<Double> coord = new ArrayList<>();
-                    coord.add(-1.2345);
-                    coord.add(6.789);
-                    coord.add(10.1112);
-                    coords.add(coord);
-                }
+                coords.add(createMockCoord(new Double[]{-1.2345, 6.789, 10.1112}));
+                coords.add(createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213}));
+                coords.add(createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314}));
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
@@ -330,7 +325,47 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"polygon\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112], [-1.2345, 6.789, 10.1112]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"polygon\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+            }
+        },
+        CONTOUR() {
+            @Override
+            public List<Object[]> getMockDBResults(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                List<Object[]> mockDBResults = new ArrayList<>();
+
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "contour", roiName, "0", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                mockDBResults.add(newObj);
+                return mockDBResults;
+            }
+
+            @Override
+            List<AnnotationJson> getExpectedAnnotDetailsAsJson(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                List<AnnotationJson> annotationDetails = new ArrayList<>();
+
+                // Create three mock coordinates
+                List<List<Double>> coords = new ArrayList<>();
+                coords.add(createMockCoord(new Double[]{-1.2345, 6.789, 10.1112}));
+                coords.add(createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213}));
+                coords.add(createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314}));
+
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+
+                AnnotationJson annotation = new FreeformRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, FreeformRoi.CONTOUR, "IMAGE", coords, "0", roiName);
+                annotationDetails.add(annotation);
+                return annotationDetails;
+            }
+
+            @Override
+            String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"contour\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
             }
         };
 
@@ -339,6 +374,22 @@ public class GetAnnotationDetailsTest {
         abstract List<AnnotationJson> getExpectedAnnotDetailsAsJson(ImageSetType imageSetType, MetaDataTypes metaDataTypes);
 
         abstract String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes);
+    }
+
+    /////////////
+    //
+    // Helpers //
+    //
+    /////////////
+
+    /**
+     * Returns the provided array of {@code Double}s as a {@code List} of {@code Double}s
+     *
+     * @param coordElements The array {@code Double}s to convert
+     * @return a {@code List} of {@code Double}s
+     */
+    private static List<Double> createMockCoord(Double[] coordElements) {
+        return new ArrayList<Double>(Arrays.asList(coordElements));
     }
 
     ////////////////
