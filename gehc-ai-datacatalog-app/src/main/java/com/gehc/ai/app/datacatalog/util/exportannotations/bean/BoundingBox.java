@@ -23,7 +23,7 @@ import java.util.Objects;
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public final class BoundingBox {
+public class BoundingBox {
 
     private final List<Double> xDir;
 
@@ -58,15 +58,22 @@ public final class BoundingBox {
 
     @Override
     public boolean equals(Object o) {
-        // Auto-generated
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+
+        if (o == null) {
+            return false;
+        }
+
+        if (!(o instanceof BoundingBox)) {
             return false;
         }
 
         BoundingBox that = (BoundingBox) o;
+        if (!that.canEqual(this)) {
+            return false;
+        }
 
         if (!getxDir().equals(that.getxDir())) {
             return false;
@@ -79,10 +86,19 @@ public final class BoundingBox {
 
     @Override
     public int hashCode() {
-        // Auto-generated
         int result = getxDir().hashCode();
         result = 31 * result + getyDir().hashCode();
         result = 31 * result + getOrigin().hashCode();
         return result;
+    }
+
+    /**
+     * Returns whether if it is possible for provided object to potentially equal an instance of {@code BoundingBox}.
+     *
+     * @param other The object} to evaluate
+     * @return {@code true} if it possible for the provided object to potentially equal an instance of {@code BoundingBox}; otherwise, {@code false}
+     */
+    public boolean canEqual(Object other) {
+        return other instanceof BoundingBox;
     }
 }

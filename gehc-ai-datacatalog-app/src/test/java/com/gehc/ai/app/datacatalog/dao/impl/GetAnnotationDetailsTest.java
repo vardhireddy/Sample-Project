@@ -1,12 +1,15 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.BoundingBox;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.BoundingCube;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.BoundingBoxAnnotationJson;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.BoundingBoxType;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.FreeformRoiType;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.BoundingCubeAnnotationJson;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.BoundingCubeType;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.FreeformRoiAnnotationJson;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.FreeformRoiType;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.LabelAnnotationJson;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -488,6 +491,88 @@ public class GetAnnotationDetailsTest {
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
                 return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipse\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+            }
+        },
+        BOX() {
+            @Override
+            public List<Object[]> getMockDBResults(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                List<Object[]> mockDBResults = new ArrayList<>();
+
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "box", roiName, "\"0\"", "{\"xDir\":[-1.2345,6.789,10.1112],\"yDir\":[-2.3456, 7.8901, 11.1213],\"zDir\":[-3.4567, 8.9102, 12.1314],\"origin\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                mockDBResults.add(newObj);
+                return mockDBResults;
+            }
+
+            @Override
+            List<AnnotationJson> getExpectedAnnotDetailsAsJson(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                List<AnnotationJson> annotationDetails = new ArrayList<>();
+
+                // Create four mock coordinates
+                List<Double> xDir = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
+                List<Double> yDir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
+                List<Double> zDir = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
+                List<Double> origin = createMockCoord(new Double[]{-4.5678, 9.1011, 13.1415});
+                BoundingCube boundingCube = new BoundingCube(xDir, yDir, zDir, origin);
+
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+
+                AnnotationJson annotation = new BoundingCubeAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingCubeType.BOX, "IMAGE", boundingCube, "0", roiName);
+                annotationDetails.add(annotation);
+                return annotationDetails;
+            }
+
+            @Override
+            String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"box\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + roiName + "\n";
+            }
+        },
+        ELLIPSOID() {
+            @Override
+            public List<Object[]> getMockDBResults(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                List<Object[]> mockDBResults = new ArrayList<>();
+
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipsoid", roiName, "\"0\"", "{\"xDir\":[-1.2345,6.789,10.1112],\"yDir\":[-2.3456, 7.8901, 11.1213],\"zDir\":[-3.4567, 8.9102, 12.1314],\"origin\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                mockDBResults.add(newObj);
+                return mockDBResults;
+            }
+
+            @Override
+            List<AnnotationJson> getExpectedAnnotDetailsAsJson(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                List<AnnotationJson> annotationDetails = new ArrayList<>();
+
+                // Create four mock coordinates
+                List<Double> xDir = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
+                List<Double> yDir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
+                List<Double> zDir = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
+                List<Double> origin = createMockCoord(new Double[]{-4.5678, 9.1011, 13.1415});
+                BoundingCube boundingCube = new BoundingCube(xDir, yDir, zDir, origin);
+
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+
+                AnnotationJson annotation = new BoundingCubeAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingCubeType.ELLIPSOID, "IMAGE", boundingCube, "0", roiName);
+                annotationDetails.add(annotation);
+                return annotationDetails;
+            }
+
+            @Override
+            String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipsoid\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + roiName + "\n";
             }
         };
 

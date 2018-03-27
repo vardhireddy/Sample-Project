@@ -4,18 +4,18 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 /**
- * [@code BoundingBoxTest} evaluates the behavior of {@link BoundingBox}.
+ * [@code BoundingCubeTest} evaluates the behavior of {@link BoundingCube}.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class BoundingBoxTest {
+public class BoundingCubeTest {
 
     @Test
     public void equalsContract() {
         EqualsVerifier
-                .forClass(BoundingBox.class)
-                .withNonnullFields("xDir","yDir","origin")
-                .withRedefinedSubclass(BoundingCube.class)
+                .forClass(BoundingCube.class)
+                .withNonnullFields("xDir", "yDir", "zDir", "origin")
+                .withRedefinedSuperclass()
                 .verify();
     }
 

@@ -1,5 +1,5 @@
 /*
- *  BoundingBoxAnnotationJson.java
+ *  BoundingCubeAnnotationJson.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -11,18 +11,18 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
 
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.BoundingBox;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.BoundingCube;
 
 import java.util.Locale;
 
 /**
- * {@code BoundingBoxAnnotationJson} is a bean representing an annotation that is a bounding box ROI (e.g. rectangle or ellipse).
+ * {@code BoundingCubeAnnotationJson} is a bean representing an annotation that is a bounding cube ROI (e.g. box or ellipsoid).
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class BoundingBoxAnnotationJson extends RoiAnnotationJson {
+public class BoundingCubeAnnotationJson extends RoiAnnotationJson {
 
-    private final BoundingBox data;
+    private final BoundingCube data;
 
     /**
      * Creates a new {@code BoundingBoxJson} .
@@ -32,7 +32,7 @@ public class BoundingBoxAnnotationJson extends RoiAnnotationJson {
      * @param imageSetFormat The data format of the image set to which this annotation is associated
      * @param annotationType This annotation's type
      */
-    public BoundingBoxAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, BoundingBoxType annotationType, String coordSys, BoundingBox data, String localID, String name) {
+    public BoundingCubeAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, BoundingCubeType annotationType, String coordSys, BoundingCube data, String localID, String name) {
         super(patientID, seriesUID, imageSetFormat, annotationID, annotationType.toString().toLowerCase(Locale.ENGLISH), coordSys, localID, name);
         this.data = data;
     }
@@ -43,7 +43,7 @@ public class BoundingBoxAnnotationJson extends RoiAnnotationJson {
     //
     /////////////
 
-    public BoundingBox getData() {
+    public BoundingCube getData() {
         return data;
     }
 
@@ -51,9 +51,9 @@ public class BoundingBoxAnnotationJson extends RoiAnnotationJson {
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (!(o instanceof BoundingBoxAnnotationJson)) return false;
+        if (!(o instanceof BoundingCubeAnnotationJson)) return false;
 
-        BoundingBoxAnnotationJson that = (BoundingBoxAnnotationJson) o;
+        BoundingCubeAnnotationJson that = (BoundingCubeAnnotationJson) o;
         if (!that.canEqual(this)) return false;
         if (!super.equals(that)) return false;
 
@@ -70,7 +70,7 @@ public class BoundingBoxAnnotationJson extends RoiAnnotationJson {
 
     @Override
     public final boolean canEqual(Object other) {
-        return (other instanceof BoundingBoxAnnotationJson);
+        return (other instanceof BoundingCubeAnnotationJson);
     }
 
 }
