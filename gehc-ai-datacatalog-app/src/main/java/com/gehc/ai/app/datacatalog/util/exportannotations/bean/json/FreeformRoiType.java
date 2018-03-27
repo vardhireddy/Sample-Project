@@ -18,6 +18,10 @@ package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
  */
 public enum FreeformRoiType {
     /**
+     * A 2D line segment
+     */
+    LINE,
+    /**
      * A freeform ROI that is composed of multiple vertices whereby the vertices are connected by straight line segments.
      */
     POLYGON,

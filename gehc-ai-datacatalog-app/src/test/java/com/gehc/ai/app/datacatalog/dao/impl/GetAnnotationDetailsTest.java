@@ -291,6 +291,45 @@ public class GetAnnotationDetailsTest {
                 return imageSetType.getCsvColumnHeaders() + ",annotationType,label" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"label\",\"Foreign Bodies\"" + optionalValuesForFirstAnnot + "\n" + imageSetType.getCsvColumnValues() + ",\"label\",\"Calcification\"" + optionalValuesForSecondAnnot + "\n";
             }
         },
+        LINE() {
+            @Override
+            public List<Object[]> getMockDBResults(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                List<Object[]> mockDBResults = new ArrayList<>();
+
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "line", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                mockDBResults.add(newObj);
+                return mockDBResults;
+            }
+
+            @Override
+            List<AnnotationJson> getExpectedAnnotDetailsAsJson(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                List<AnnotationJson> annotationDetails = new ArrayList<>();
+
+                // Create two mock coordinates to represent a line segment
+                List<List<Double>> coords = new ArrayList<>();
+                coords.add(createMockCoord(new Double[]{-1.2345, 6.789, 10.1112}));
+                coords.add(createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213}));
+
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+
+                AnnotationJson annotation = new FreeformRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, FreeformRoiType.LINE, "IMAGE", coords, "0", roiName);
+                annotationDetails.add(annotation);
+                return annotationDetails;
+            }
+
+            @Override
+            String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
+                // Set optional fields based on the defined meta data type spec
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"line\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213]]\",\"0\"" + roiName + "\n";
+            }
+        },
         POLYGON() {
             @Override
             public List<Object[]> getMockDBResults(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
