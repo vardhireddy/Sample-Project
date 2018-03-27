@@ -250,8 +250,8 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String severity = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"value\":\"Absent\"" : "";
-                String indication = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "Test indication" : null;
-                String findings = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "Test findings" : null;
+                String indication = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"Test indication\"" : null;
+                String findings = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"Test findings\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "label", null, null, null, "{\"name\":\"Foreign Bodies\"" + severity + "}", "{\"name\":\"Calcification\"}", null, null, null, null, null, null, null, null, null, null, indication, findings, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
 
@@ -294,9 +294,9 @@ public class GetAnnotationDetailsTest {
                 List<Object[]> mockDBResults = new ArrayList<>();
 
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "polygon", roiName, "0", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "polygon", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -334,9 +334,9 @@ public class GetAnnotationDetailsTest {
                 List<Object[]> mockDBResults = new ArrayList<>();
 
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "contour", roiName, "0", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "contour", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
