@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
+
 /**
  * {@code LabelDBResultToCsvBeanConverter} converts a DB result record, which describes a label annotation, to a corresponding CSV bean(s) representation.
  *
@@ -37,8 +39,8 @@ public class LabelDBResultToCsvBeanConverter implements DBResultToCsvBeanConvert
     /**
      * Returns the provided DB result record, which describes a label annotation, as a {@code List} of {@code LabelAnnotationCsv} beans.
      *
-     * @param result            The DB result record, which describes a label annotation, to convert
-     * @param resultIndexMap    A mapping of a result meta data to its index in the result record
+     * @param result           The DB result record, which describes a label annotation, to convert
+     * @param resultIndexMap   A mapping of a result meta data to its index in the result record
      * @param resultIndicesMap A mapping of a result meta data to its indices in the result record
      * @return a {@code List} of {@code LabelAnnotationCsv} beans
      */
@@ -82,8 +84,9 @@ public class LabelDBResultToCsvBeanConverter implements DBResultToCsvBeanConvert
      * @param resultIndexMap A mapping of a result meta data to its index in the result record
      * @param geClass        The specific GE class for which this {@code LabelAnnotationCsv} is being created.  This should contain information such as the label's name and value
      * @return a new {@code LabelAnnotationCsv}
+     * @throws InvalidAnnotationException if one of the label's attributes is expected to be a JSON string (e.g. indication or findings )but is not
      */
-    private static LabelAnnotationCsv createDicomLabel(Object[] result, Map<String, Integer> resultIndexMap, GEClass geClass) {
+    private static LabelAnnotationCsv createDicomLabel(Object[] result, Map<String, Integer> resultIndexMap, GEClass geClass) throws InvalidAnnotationException {
         final String seriesUID = (String) result[resultIndexMap.get("seriesUID")];
         final Map<String, String> commonMetaData = getCommonMetaData(result, resultIndexMap, geClass);
 
@@ -98,8 +101,9 @@ public class LabelDBResultToCsvBeanConverter implements DBResultToCsvBeanConvert
      * @param resultIndexMap A mapping of a result meta data to its index in the result record
      * @param geClass        The specific GE class for which this {@code LabelAnnotationCsv} is being created.  This should contain information such as the label's name and value.
      * @return a new {@code LabelAnnotationCsv}
+     * @throws InvalidAnnotationException if one of the label's attributes is expected to be a JSON string (e.g. indication or findings )but is not
      */
-    private static LabelAnnotationCsv createNonDicomLabel(Object[] result, Map<String, Integer> resultIndexMap, GEClass geClass) {
+    private static LabelAnnotationCsv createNonDicomLabel(Object[] result, Map<String, Integer> resultIndexMap, GEClass geClass) throws InvalidAnnotationException {
         // For non-DICOM files which do not actually have a patient ID associated with them, the convention is to use the original file name as the patient ID
         final String fileName = (String) result[resultIndexMap.get("patientID")];
         final String spaceID = "";
@@ -115,14 +119,15 @@ public class LabelDBResultToCsvBeanConverter implements DBResultToCsvBeanConvert
      * @param resultIndexMap A mapping of a result meta data to its index in the result record
      * @param geClass        The object that defines GE class specific information
      * @return a {@code Map} where the key is the meta-data property and the value is that property's value
+     * @throws InvalidAnnotationException if one of the label's attributes is expected to be a JSON string (e.g. indication or findings )but is not
      */
-    private static Map<String, String> getCommonMetaData(Object[] result, Map<String, Integer> resultIndexMap, GEClass geClass) {
+    private static Map<String, String> getCommonMetaData(Object[] result, Map<String, Integer> resultIndexMap, GEClass geClass) throws InvalidAnnotationException {
         Map<String, String> commonMetaData = new HashMap<>();
         commonMetaData.put("name", geClass.getName());
         commonMetaData.put("annotationType", (String) result[resultIndexMap.get("annotationType")]);
         commonMetaData.put("value", geClass.getValue());
-        commonMetaData.put("indication", (String) result[resultIndexMap.get("indication")]);
-        commonMetaData.put("findings", (String) result[resultIndexMap.get("findings")]);
+        commonMetaData.put("indication", mapToString(result[resultIndexMap.get("indication")]));
+        commonMetaData.put("findings", mapToString(result[resultIndexMap.get("findings")]));
 
         return commonMetaData;
     }

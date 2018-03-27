@@ -18,6 +18,8 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.LabelAnnotat
 import java.util.List;
 import java.util.Map;
 
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
+
 /**
  * {@code LabelDBResultToJsonBeanConverter} converts a DB result record which describes a label into a bean that encapsulates its JSON representation.
  *
@@ -39,9 +41,12 @@ public class LabelDBResultToJsonBeanConverter implements DBResultToJsonBeanConve
                 (Long) ((Integer) result[resultIndexMap.get("annotationID")]).longValue(),
                 (String) result[resultIndexMap.get("annotationType")],
                 geClasses,
-                (String) result[resultIndexMap.get("indication")],
-                (String) result[resultIndexMap.get("findings")]
+                mapToString(result[resultIndexMap.get("indication")]),
+                mapToString(result[resultIndexMap.get("findings")])
         );
+
     }
 
 }
+
+

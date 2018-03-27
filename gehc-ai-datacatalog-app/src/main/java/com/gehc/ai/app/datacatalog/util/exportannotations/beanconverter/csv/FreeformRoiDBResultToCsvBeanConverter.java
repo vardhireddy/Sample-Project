@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
+
 /**
  * {@code FreeformRoiDBResultToCsvBeanConverter} converts a DB result record, which describes a freeform ROI annotation, to its corresponding CSV bean(s) representation.
  *
@@ -129,9 +131,9 @@ public class FreeformRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanC
     private static Map<String, Object> getCommonMetaData(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
         Map<String, Object> commonMetaData = new HashMap<>();
         commonMetaData.put("annotationType", (String) result[resultIndexMap.get("annotationType")]);
-        commonMetaData.put("coordSys", (String) result[resultIndexMap.get("coordSys")]);
-        commonMetaData.put("localID", (String) result[resultIndexMap.get("roiLocalID")]);
-        commonMetaData.put("name", (String) result[resultIndexMap.get("roiName")]);
+        commonMetaData.put("coordSys", mapToString( result[resultIndexMap.get("coordSys")]));
+        commonMetaData.put("localID", mapToString( result[resultIndexMap.get("roiLocalID")]));
+        commonMetaData.put("name", mapToString( result[resultIndexMap.get("roiName")]));
         commonMetaData.put("data", toCoordsList(result[resultIndexMap.get("roiData")]));
 
         return commonMetaData;

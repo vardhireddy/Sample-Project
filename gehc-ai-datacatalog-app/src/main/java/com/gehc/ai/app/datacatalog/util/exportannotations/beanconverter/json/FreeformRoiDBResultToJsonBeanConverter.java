@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
+
 /**
  * {@code LabelDBResultToJsonBeanConverter} converts a DB result record which describes a freeform ROI into a bean that encapsulates its JSON representation.
  *
@@ -40,10 +42,10 @@ public class FreeformRoiDBResultToJsonBeanConverter implements DBResultToJsonBea
                 (String) result[resultIndexMap.get("imageSetFormat")],
                 (Long) ((Integer) result[resultIndexMap.get("annotationID")]).longValue(),
                 FreeformRoi.valueOf(((String) result[resultIndexMap.get("annotationType")]).toUpperCase(Locale.ENGLISH)),
-                (String) result[resultIndexMap.get("coordSys")],
+                mapToString(result[resultIndexMap.get("coordSys")]),
                 toCoordsList(result[resultIndexMap.get("roiData")]),
-                (String) result[resultIndexMap.get("roiLocalID")],
-                (String) result[resultIndexMap.get("roiName")]
+                mapToString( result[resultIndexMap.get("roiLocalID")]),
+                mapToString(result[resultIndexMap.get("roiName")])
         );
     }
 
