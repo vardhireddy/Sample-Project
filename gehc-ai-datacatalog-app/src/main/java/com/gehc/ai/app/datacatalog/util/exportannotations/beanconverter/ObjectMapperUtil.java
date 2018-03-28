@@ -12,10 +12,12 @@
 
 package com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * {@code ObjectMapperUtil} provides utility for mapping JSON strings to their {@code Object} representations.
@@ -36,6 +38,21 @@ public class ObjectMapperUtil {
     public static String mapToString(Object strObj) throws InvalidAnnotationException {
         try {
             return strObj != null ? (String) mapper.readValue(strObj.toString(), String.class) : (String) strObj;
+        } catch (IOException e) {
+            throw new InvalidAnnotationException("The provided annotation property, " + strObj + ", was expected to be a JSON string but was not.");
+        }
+    }
+
+    /**
+     * Maps a JSON string that only represents a list of double values to a corresponding {@link List<Double>} representation.
+     *
+     * @param strObj The {@code Object} which encapsulates the JSON string
+     * @return a {@code List<Double>}
+     * @throws InvalidAnnotationException if the provided {@code Object} does not encapsulate a JSON string
+     */
+    public static List<Double> mapToListOfDoubles(Object strObj) throws InvalidAnnotationException {
+        try {
+            return strObj != null ? (List<Double>) mapper.readValue(strObj.toString(), new TypeReference<List<Double>>() {}) : (List<Double>) strObj;
         } catch (IOException e) {
             throw new InvalidAnnotationException("The provided annotation property, " + strObj + ", was expected to be a JSON string but was not.");
         }

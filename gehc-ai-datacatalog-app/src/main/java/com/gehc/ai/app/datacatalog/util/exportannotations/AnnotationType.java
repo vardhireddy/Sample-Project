@@ -17,6 +17,7 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ColumnHeader;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.LabelAnnotationCsv;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.MultiPointRoiAnnotationCsv;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.PointRoiAnnotationCsv;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.BoundingBoxDataConverter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.BoundingCubeDataConverter;
@@ -24,10 +25,12 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.DBRe
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.FreeformRoiDataConverter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.LabelDBResultToCsvBeanConverter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.MultiPointRoiDBResultToCsvBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv.PointRoiDBResultToCsvBeanConverter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.BoundingBoxDBResultToJsonBeanConverter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.BoundingCubeDBResultToJsonBeanConverter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.FreeformRoiDBResultToJsonBeanConverter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.LabelDBResultToJsonBeanConverter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.json.PointRoiDBResultToJsonBeanConverter;
 
 import java.util.Map;
 import java.util.Set;
@@ -143,6 +146,25 @@ enum AnnotationType {
         public Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
             Supplier<DBResultToCsvBeanConverter> converterSupplier = () -> new MultiPointRoiDBResultToCsvBeanConverter(BoundingBoxDataConverter::new);
             return CsvConversionTemplates.getColumnHeaders(result, resultIndexMap, resultIndicesMap, converterSupplier);
+        }
+    },
+    /**
+     * A point ROI
+     */
+    POINT() {
+        @Override
+        public AnnotationJson convertDBResultToJson(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+            return new PointRoiDBResultToJsonBeanConverter().getJson(result, resultIndexMap, resultIndicesMap);
+        }
+
+        @Override
+        public String convertDBResultToCsv(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, String[] columnHeaders) throws InvalidAnnotationException, CsvConversionException {
+            return CsvConversionTemplates.convertDBResultToCsv(result, resultIndexMap, resultIndicesMap, columnHeaders, PointRoiDBResultToCsvBeanConverter::new, PointRoiAnnotationCsv.class);
+        }
+
+        @Override
+        public Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap) throws InvalidAnnotationException {
+            return CsvConversionTemplates.getColumnHeaders(result, resultIndexMap, resultIndicesMap, PointRoiDBResultToCsvBeanConverter::new);
         }
     },
     /**
