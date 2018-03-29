@@ -11,9 +11,9 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -29,6 +29,8 @@ import java.util.TreeMap;
  * @author andrew.c.wong@ge.com (212069153)
  */
 public final class CsvAnnotationDetailsExporter {
+
+    private static final Logger logger = Logger.getLogger(CsvAnnotationDetailsExporter.class);
 
     /**
      * Prevents the {@code CsvAnnotationDetailsExporter} class from being instantiated.
@@ -76,9 +78,15 @@ public final class CsvAnnotationDetailsExporter {
 
         // Then, write out each annotation as CSV using the above set of column headers
         for (final Object[] result : results) {
-            AnnotationType annotationType = getAnnotationType(result, annotationTypeIndex);
-            String convertedCsv = annotationType.convertDBResultToCsv(result, resultIndexMap, resultIndicesMap, columHeaders);
-            csvBuilder.append(convertedCsv);
+            String annotationTypeAsStr = (String) result[annotationTypeIndex];
+
+            if (AnnotationType.contains(annotationTypeAsStr)) {
+                AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
+                String convertedCsv = annotationType.convertDBResultToCsv(result, resultIndexMap, resultIndicesMap, columHeaders);
+                csvBuilder.append(convertedCsv);
+            } else {
+                logger.debug("Skipping DB result since it describes an annotation of an unsupported type: " + annotationTypeAsStr);
+            }
         }
 
         // Finally, return the aggregated CSV string
@@ -90,18 +98,6 @@ public final class CsvAnnotationDetailsExporter {
     // Helpers //
     //
     /////////////
-
-    /**
-     * Returns the {@link AnnotationType} associated with the provided annotation {@link JsonNode}.
-     *
-     * @param result              The DB result to extract the annotation type from
-     * @param annotationTypeIndex The index in the result record that defines the annotation type
-     * @return the associated {@code AnnotationType} if it exists; otherwise, {@code null}.
-     */
-    private static AnnotationType getAnnotationType(Object[] result, int annotationTypeIndex) {
-        String annotationTypeAsStr = (String) result[annotationTypeIndex];
-        return AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
-    }
 
     /**
      * <p>Returns the column headers to be used when exporting the annotation details as CSV.  The column headers will be
@@ -123,21 +119,26 @@ public final class CsvAnnotationDetailsExporter {
         Map<Integer, Set<String>> orderedColumnHeaders = new TreeMap<>();
 
         for (final Object[] result : results) {
-            AnnotationType annotationType = getAnnotationType(result, annotationTypeIndex);
+            String annotationTypeAsStr = (String) result[annotationTypeIndex];
 
-            // Retrieve the necessary column headers for this annotation
-            annotationType.getColumnHeaders(result, resultIndexMap, resultIndicesMap).stream()
-                    .forEach(columnHeader -> {
-                        // If a map already has a set defined for this header's priority, just add the header's name to the set
-                        if (orderedColumnHeaders.containsKey(columnHeader.getPriority())) {
-                            orderedColumnHeaders.get(columnHeader.getPriority()).add(columnHeader.getName());
-                        } else {
-                            // Otherwise, create a new set for this priority and then add the header's name to the newly created set
-                            Set<String> columnNames = new LinkedHashSet<>();
-                            columnNames.add(columnHeader.getName());
-                            orderedColumnHeaders.put(columnHeader.getPriority(), columnNames);
-                        }
-                    });
+            if (AnnotationType.contains(annotationTypeAsStr)) {
+                AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
+                // Retrieve the necessary column headers for this annotation
+                annotationType.getColumnHeaders(result, resultIndexMap, resultIndicesMap).stream()
+                        .forEach(columnHeader -> {
+                            // If a map already has a set defined for this header's priority, just add the header's name to the set
+                            if (orderedColumnHeaders.containsKey(columnHeader.getPriority())) {
+                                orderedColumnHeaders.get(columnHeader.getPriority()).add(columnHeader.getName());
+                            } else {
+                                // Otherwise, create a new set for this priority and then add the header's name to the newly created set
+                                Set<String> columnNames = new LinkedHashSet<>();
+                                columnNames.add(columnHeader.getName());
+                                orderedColumnHeaders.put(columnHeader.getPriority(), columnNames);
+                            }
+                        });
+            } else {
+                logger.debug("Skipping DB result since it describes an annotation of an unsupported type: " + annotationTypeAsStr);
+            }
         }
 
         // Create an ordered list of column headers simply by iterating through the TreeMap

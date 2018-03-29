@@ -232,6 +232,22 @@ enum AnnotationType {
     };
 
     /**
+     * Returns whether provided string maps to an instance of {@code AnnotationType}.
+     *
+     * @param test The string to evaluate
+     * @return {@code true} if the provided string has an associated {@code AnnotationType} instance; otherwise, false
+     */
+    public static boolean contains(String test) {
+        for (AnnotationType annotType : AnnotationType.values()) {
+            if (annotType.name().equalsIgnoreCase(test)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Converts the provided DB result record, which describes an annotation, into a bean representation that can be written as JSON.
      *
      * @param result           The DB result record, which describes an annotation, to convert
