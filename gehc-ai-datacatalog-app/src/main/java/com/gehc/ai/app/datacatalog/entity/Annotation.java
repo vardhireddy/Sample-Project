@@ -93,7 +93,16 @@ public class Annotation implements Serializable {
     @NotNull
     private String type;
     
-    @Column(name="image_set")
+    @Column(name="upload_id")
+	private Long uploadId;
+    
+    public Long getUploadId() {
+		return uploadId;
+	}
+	public void setUploadId(Long uploadId) {
+		this.uploadId = uploadId;
+	}
+	@Column(name="image_set")
 	private Long imageSetId;
     
     public Long getImageSetId() {

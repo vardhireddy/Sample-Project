@@ -22,14 +22,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
 @Configuration
 @Component
-public class DataCatalogServiceImpl implements IDataCatalogService{
+public class DataCatalogServiceImpl implements IDataCatalogService {
 
 	@Autowired
 	private IDataCatalogDao dataCatalogDao;
@@ -50,8 +52,13 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst) {
-		return dataCatalogDao.getAnnotationsByDSId(imgSerIdLst);
+	public List<AnnotationJson> getAnnotationDetailsByImageSetIDs(List<Long> imgSerIdLst) throws InvalidAnnotationException {
+		return dataCatalogDao.getAnnotationDetailsByImageSetIDs(imgSerIdLst);
+	}
+
+	@Override
+	public String getAnnotationDetailsAsCsvByImageSetIDs(List<Long> imgSerIdLst) throws InvalidAnnotationException, CsvConversionException {
+		return dataCatalogDao.getAnnotationDetailsAsCsvByImageSetIDs(imgSerIdLst);
 	}
 
 	@Override
@@ -65,10 +72,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	}
 
 	@Override
-	public long uploadContract(List<MultipartFile> contractFiles, Contract contract) {
+	public Long uploadContract(List<MultipartFile> contractFiles, Contract contract) {
 		List<String> uris = uploadFileToS3(contractFiles);
 		contract.setUri(uris);
-		
+
 		return dataCatalogDao.ingestContractDetails(contract);
 	}
 
@@ -81,7 +88,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 
 	@Override
 	public Contract getContract(Long contractId) {
-		
+
 		return dataCatalogDao.getContractDetails(contractId);
 	}
 }

@@ -1,113 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.gehc</groupId>
-    <artifactId>gehc-ai-datacatalog-component-test</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+	<groupId>com.gehc</groupId>
+	<artifactId>gehc-ai-datacatalog-component-test</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
-    <name>datacatalog component test</name>
-    <description>datacatalog app Component Test for the AWS deployment</description>
+	<name>datacatalog component test</name>
+	<description>datacatalog app Component Test for the AWS deployment</description>
 
-    <parent>
-        <groupId>com.gehc</groupId>
-        <artifactId>gehc-ai-datacatalog</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>com.gehc</groupId>
+		<artifactId>gehc-ai-datacatalog</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-    <properties>
-        <jbehave.version>4.0.5</jbehave.version>
-        <jbehave-site-resources.version>3.3</jbehave-site-resources.version>
-        <h2.version>1.4.193</h2.version>
-    </properties>
+	<properties>
+		<jbehave.version>4.0.5</jbehave.version>
+		<jbehave-site-resources.version>3.3</jbehave-site-resources.version>
+		<h2.version>1.4.193</h2.version>
+	</properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.gehc</groupId>
-            <artifactId>gehc-ai-datacatalog-app</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jbehave</groupId>
-            <artifactId>jbehave-core</artifactId>
-            <version>${jbehave.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jbehave</groupId>
-            <artifactId>jbehave-gherkin</artifactId>
-            <version>${jbehave.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jbehave</groupId>
-            <artifactId>jbehave-spring</artifactId>
-            <version>${jbehave.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jbehave.site</groupId>
-            <artifactId>jbehave-site-resources</artifactId>
-            <version>${jbehave-site-resources.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.jbehave</groupId>
-            <artifactId>jbehave-core</artifactId>
-            <version>${jbehave.version}</version>
-            <classifier>resources</classifier>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>com.gehc</groupId>
+			<artifactId>gehc-ai-datacatalog-app</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jbehave</groupId>
+			<artifactId>jbehave-core</artifactId>
+			<version>${jbehave.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jbehave</groupId>
+			<artifactId>jbehave-gherkin</artifactId>
+			<version>${jbehave.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jbehave</groupId>
+			<artifactId>jbehave-spring</artifactId>
+			<version>${jbehave.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jbehave.site</groupId>
+			<artifactId>jbehave-site-resources</artifactId>
+			<version>${jbehave-site-resources.version}</version>
+			<type>zip</type>
+		</dependency>
+		<dependency>
+			<groupId>org.jbehave</groupId>
+			<artifactId>jbehave-core</artifactId>
+			<version>${jbehave.version}</version>
+			<classifier>resources</classifier>
+			<type>zip</type>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.codecentric</groupId>
+			<artifactId>jbehave-junit-runner</artifactId>
+			<version>1.2.0</version>
+			<scope>test</scope>
+		</dependency>
 
-    </dependencies>
+	</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>**/features/*.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<includes>
+							<include>**/features/*.java</include>
+						</includes>
+					</configuration>
+				</plugin>
 
-            <plugin>
-                <groupId>org.jbehave</groupId>
-                <artifactId>jbehave-maven-plugin</artifactId>
-                <version>${jbehave.version}</version>
-                <executions>
-                    <execution>
-                        <id>unpack-view-resources</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>unpack-view-resources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <!-- The destination file for the code coverage report has to be set
-                                  to the same value in the parent pom and in each module pom. Then JaCoCo will
-                                  add up information in the same report, so that, it will give the cross-module
-                                  code coverage. -->
-                    <destFile>${project.basedir}/../target/jacoco.exec</destFile>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+				<plugin>
+					<groupId>org.jbehave</groupId>
+					<artifactId>jbehave-maven-plugin</artifactId>
+					<version>${jbehave.version}</version>
+					<executions>
+						<execution>
+							<id>unpack-view-resources</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>unpack-view-resources</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<configuration>
+						<!-- The destination file for the code coverage report has to be set 
+							to the same value in the parent pom and in each module pom. Then JaCoCo will 
+							add up information in the same report, so that, it will give the cross-module 
+							code coverage. -->
+						<destFile>${project.basedir}/../target/jacoco.exec</destFile>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>

@@ -254,18 +254,6 @@ public class RequestValidatorTest {
 	}
 	
 	/**
-	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#testvalidateContractAndParseMetadata(List<Multipart>,MultipartFile)}.
-	 */
-	@Test
-	public void testvalidateContractAndParseMetadataInavlidJsonFormat() throws DataCatalogException{
-		thrown.expect(DataCatalogException.class);
-		thrown.expectMessage(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage());
-		
-		getContractFiles("metadata_failure_invalid_json_format.json","contract_success.pdf");
-		RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
-	}
-	
-	/**
 	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#validateContractId()}.
 	 */
 	@Test

@@ -141,7 +141,16 @@ public class ImageSeries implements Serializable {
 	@JsonSerialize(using=JsonDateSerializer.class)
 	@Convert(converter = LocalDateTimeAttributeConverter.class)
 	private LocalDateTime uploadDate;
+	
+    @Column(name="upload_id")
+	private Long uploadId;
 
+	public Long getUploadId() {
+		return uploadId;
+	}
+	public void setUploadId(Long uploadId) {
+		this.uploadId = uploadId;
+	}
 	/**
 	 * Patient table ID. Establishes a correlation with the patient table
 	 */

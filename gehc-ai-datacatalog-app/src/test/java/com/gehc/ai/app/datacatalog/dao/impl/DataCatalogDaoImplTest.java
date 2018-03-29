@@ -26,13 +26,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 
 /**
  * Created by sowjanyanaidu on 9/5/17.
@@ -55,11 +54,11 @@ public class DataCatalogDaoImplTest {
     public LocalDateTime getUploadDate() {
         String str = "2018-03-08 10:51:30";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime localtDateAndTime = LocalDateTime.parse(str, formatter);
-		
+        LocalDateTime localtDateAndTime = LocalDateTime.parse(str, formatter);
+
         return localtDateAndTime;
     }
-    
+
 /*    @Test
     public void testGetImageSeriesIdLst() {
         List returnList = dataCatalogDao.getImgSeriesIdLst(getImageSeries());
@@ -79,7 +78,7 @@ public class DataCatalogDaoImplTest {
         GEClass[] expectedValue = new GEClass[0];
         assertEquals(expectedValue.getClass(), returnValue.getClass());
     }
-    
+
     @Test
     public void testGEClassesWithoutGEClass() {
         Map geClass = getParamsMap();
@@ -91,7 +90,7 @@ public class DataCatalogDaoImplTest {
         GEClass[] expectedValue = new GEClass[0];
         assertEquals(expectedValue.getClass(), returnValue.getClass());
     }
-    
+
     @Test
     public void testGEClassesThrowsException() {
         Map geClass = getParamsMap();
@@ -115,7 +114,7 @@ public class DataCatalogDaoImplTest {
         GEClass[] expectedValue = new GEClass[0];
         assertEquals(expectedValue.getClass(), returnValue.getClass());
     }
-    
+
     @Test
     public void testgeClassDataSummary() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
@@ -125,7 +124,7 @@ public class DataCatalogDaoImplTest {
         assertEquals("{8082=CR, 121=DX}", result.toString());
 
     }
-    
+
     @Test
     public void testgeClassDataSummaryAnatomy() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
@@ -154,25 +153,25 @@ public class DataCatalogDaoImplTest {
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
-    
+
     @Test(expected = Exception.class)
     public void testgetImageSeriesByFiltersThrowsException() {
-       // dataSetUp();
+        // dataSetUp();
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("fromDate", "LABEL"));
         List result = dataCatalogDao.getImgSeriesByFilters(input);
     }
-    
+
     @Test
     public void testgetImageSeriesByFiltersWithNullProperties() {
-    	when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
         Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30") };
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
-        
+
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
@@ -196,24 +195,6 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
-    }
-
-    @Test
-    public void testgetDCByID() {
-        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
-        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
-        List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{"1", "SUID", 1, "test", "test", "test", "test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "{}", "test", "test", "test", "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]"};
-        expectedList.add(newObj);
-        when(query.getResultList()).thenReturn(expectedList);
-        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
-        List<Long> ids = new ArrayList<Long>();
-        ids.add(0, 1L);
-        ids.add(1, 2L);
-        List result = dataCatalogDao.getAnnotationsByDSId(ids);
-        assertEquals(getAnnotationDetails().size(), result.size());
-        assertEquals(getAnnotationDetails().toArray()[0].getClass(), result.toArray()[0].getClass());
-        //  assertEquals(getAnnotationDetails().toString(), result.toString());
     }
 
     @Test
@@ -463,7 +444,7 @@ public class DataCatalogDaoImplTest {
         imageSeriesList.add(imgSeries);
         return imageSeriesList;
     }
-    
+
     private List<ImageSeries> getImageSeriesWithFiltersAndNullProperties() {
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
         ImageSeries imgSeries = new ImageSeries();
@@ -518,37 +499,6 @@ public class DataCatalogDaoImplTest {
         return imgSerLst;
     }
 
-    private List<AnnotationDetails> getAnnotationDetails() {
-        List<AnnotationDetails> annotationDetails = new ArrayList<AnnotationDetails>();
-        AnnotationDetails annotation = new AnnotationDetails();
-        annotation.setPatientId("1");
-        annotation.setSeriesUID("SUID");
-        annotation.setAnnotationId(1L);
-        annotation.setAnnotationType("test");
-        annotation.setName("test");
-        annotation.setMaskURI("test");
-        annotation.setMaskFormat("test");
-        annotation.setMaskOrigin("{}");
-        annotation.setGeClass("[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]");
-        annotation.setData("{}");
-        annotation.setGeClass1("{}");
-        annotation.setGeClass2("{}");
-        annotation.setGeClass3("{}");
-        annotation.setGeClass4("{}");
-        annotation.setGeClass5("{}");
-        annotation.setGeClass6("{}");
-        annotation.setGeClass7("{}");
-        annotation.setGeClass8("{}");
-        annotation.setGeClass9("{}");
-        annotation.setGeClass10("{}");
-        annotation.setFindings("test");
-        annotation.setIndication("test");
-        annotation.setCoordSys("test");
-        annotation.setInstances("[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]");
-        annotationDetails.add(annotation);
-        return annotationDetails;
-    }
-
     private Map getMapForGEClassDataSummary() {
 
         Map resultSetM = new HashMap();
@@ -596,7 +546,7 @@ public class DataCatalogDaoImplTest {
         }
         return countM;
     }
-    
+
 
 /*    @Test
     public void testConstructQueryWithEmptyParams() {
@@ -609,12 +559,12 @@ public class DataCatalogDaoImplTest {
         params.put(key, values);
         return params;
     }
-    
+
     @Test(expected = Exception.class)
     public void testConstructQueryThrowsException() {
-       dataCatalogDao.constructQuery(null);
+        dataCatalogDao.constructQuery(null);
     }
-    
+
     @Test
     public void testConstructQueryWithSingleParam() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
@@ -677,7 +627,7 @@ public class DataCatalogDaoImplTest {
     	Long contractId = dataCatalogDao.ingestContractDetails(contract);
     	assertEquals(contractId, contract.getId());
     }
-    
+
     @Test
     public void testgetContractDetails(){
     	Contract contract = new Contract();
@@ -685,7 +635,7 @@ public class DataCatalogDaoImplTest {
     	Contract receivedContract = dataCatalogDao.getContractDetails(contract.getId());
     	assertEquals(contract, receivedContract);
     }
-    
+
     private List<ImageSeries> getImageSeriesWithPatient() {
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
         ImageSeries imgSeries = new ImageSeries();
