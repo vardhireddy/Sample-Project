@@ -45,12 +45,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +63,7 @@ import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
 import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
@@ -76,6 +80,7 @@ import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
 /**
@@ -826,7 +831,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesByFilters(@RequestParam Map<String, Object> params) {
-    	
     	try{
         	RequestValidator.validateImageSeriesFilterParamMap(params);
         }catch(DataCatalogException exception){
@@ -921,4 +925,56 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return apiResponse;
     }
+    
+    /**
+     * 
+     * API to upload contract
+     * 
+     * @param contractFiles
+     * @param metadataJson
+     * @return
+     */
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
+	public ResponseEntity<DataCatalogResponse> uploadContract(
+			@RequestParam(value = "contract") List<MultipartFile> contractFiles,
+	        @RequestParam(value = "metadata") MultipartFile metadataJson) {
+    	Contract contract = null;
+    	try {
+    		contract = RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+		} catch(DataCatalogException exception){
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    	
+    	try {
+			long contractId = dataCatalogService.uploadContract(contractFiles, contract);
+			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+    
+    /**
+     * API to fetch contract
+     * 
+     * @param contractIdStr
+     * @return
+     */
+    @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
+	public ResponseEntity<DataCatalogResponse> getContracts(@PathVariable(value = "contractId") Long contractId) {
+    	Contract contract;
+    	try {
+    		RequestValidator.validateContractId(contractId);
+		} catch(DataCatalogException exception){
+			//logger.error("Exception occured while validating the contract ", exception);
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    	
+    	try {
+    		contract = dataCatalogService.getContract(contractId);
+			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contract),HttpStatus.OK);
+		} catch (Exception e) {
+			//logger.error("Exception occured while uploading the contract ", e);
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

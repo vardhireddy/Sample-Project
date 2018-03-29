@@ -17,8 +17,6 @@ import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,9 +44,11 @@ import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 
 @Service
 @Component
@@ -170,6 +170,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	
 	@Autowired
 	private EntityManager em;
+	
+	@Autowired
+	private ContractRepository contractRepository;
 
 	private static String getColumnQueryString(String column, String values) {
 		StringBuilder q = new StringBuilder();
@@ -722,5 +725,24 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
         logger.debug("Image series with patient, list size " + imageSeriesList.size());
         return imageSeriesList;
+	}
+
+	@Override
+	public Long ingestContractDetails(Contract contract) {
+		 
+		 try{
+			 contract = contractRepository.save(contract);
+		 return contract.getId();
+		 }catch(Exception e){
+			 logger.error("Error in db");
+			 e.printStackTrace();
+		 }
+		 
+		 return null;
+	}
+
+	@Override
+	public Contract getContractDetails(Long contractId) {
+		return contractRepository.findOne(contractId);
 	}
 }

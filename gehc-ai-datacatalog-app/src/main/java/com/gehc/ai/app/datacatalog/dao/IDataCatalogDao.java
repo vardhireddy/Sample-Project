@@ -16,6 +16,7 @@ import java.util.Map;
 
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
 public interface IDataCatalogDao {
@@ -39,4 +40,8 @@ public interface IDataCatalogDao {
     List<Integer> getAnnotationsIds(Annotation annotation);
     
     List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst);
+
+	Long ingestContractDetails(Contract contract);
+
+	Contract getContractDetails(Long contractId);
 }

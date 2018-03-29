@@ -14,9 +14,19 @@ package com.gehc.ai.app.datacatalog.filters;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 
@@ -26,6 +36,19 @@ import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
  */
 public class RequestValidator {
 
+	/**
+     * The logger.
+     */
+    private static Logger logger = LoggerFactory.getLogger(RequestValidator.class);
+    
+	private static Map<String, String> supportedContractFileFormats = new HashMap<String, String>();
+	private static Map<String, String> supportedMetadataFileFormats = new HashMap<String, String>();
+	
+	static{
+		supportedContractFileFormats.put("pdf", "pdf");
+		supportedMetadataFileFormats.put("json", "json");
+	}
+	
 	/**
 	 * Validates the filter parameters for fetching image series
 	 * 
@@ -96,6 +119,7 @@ public class RequestValidator {
 		try{
 			dateAndTimeFrom = LocalDateTime.parse((String)dateFrom, sourceFormat);
 		}catch(Exception exception){
+			logger.error(ErrorCodes.INVALID_DATE_FROM_FORMAT.getErrorMessage(),exception);
 			errorMessage.append(ErrorCodes.INVALID_DATE_FROM_FORMAT.getErrorMessage());
 		}
 		
@@ -123,4 +147,78 @@ public class RequestValidator {
 		
 	}
 
+	/**
+	 * 
+	 * @param contractFiles
+	 * @param metadataJson
+	 * @throws DataCatalogException
+	 */
+	public static Contract validateContractAndParseMetadata(List<MultipartFile> contractFiles, MultipartFile metadataJson) throws DataCatalogException {
+		StringBuilder errorMessage = new StringBuilder();
+		Contract contract = null;
+		// Check if contract file(s) is(are) present
+		if(contractFiles == null || contractFiles.isEmpty()){
+			errorMessage.append(ErrorCodes.MISSING_CONTRACT.getErrorMessage());
+		}
+		// Check if metadata file is present
+		if(metadataJson == null || metadataJson.isEmpty() || metadataJson.getSize() == 0){
+			errorMessage.append(ErrorCodes.MISSING_CONTRACT_METADATA.getErrorMessage());
+		}
+		
+		if(errorMessage.length() == 0){
+			contractFiles.forEach(contractFile -> {
+				final String contractFileExt = FilenameUtils.getExtension(contractFile.getOriginalFilename());
+				if(!supportedContractFileFormats.containsKey(contractFileExt)){
+					errorMessage.append(ErrorCodes.UNSUPPORTED_CONTRACT_FILE_TYPE.getErrorMessage() + contractFile.getOriginalFilename());
+				}
+				if (contractFile.getSize() == 0){
+					errorMessage.append(ErrorCodes.EMPTY_CONTRACT_FILE_TYPE.getErrorMessage() + contractFile.getOriginalFilename());
+				}
+			});
+			
+			ObjectMapper mapper = new ObjectMapper();
+			String metadataFileExt = FilenameUtils.getExtension(metadataJson.getOriginalFilename());
+			if(supportedMetadataFileFormats.containsKey(metadataFileExt)){
+				try {
+					contract = mapper.readValue(metadataJson.getInputStream(), Contract.class);
+				} catch(InvalidFormatException invalidFormatException){
+					logger.error(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage()+" : "
+							+invalidFormatException.getOriginalMessage(),invalidFormatException);
+					errorMessage.append(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage()+" : "
+							+invalidFormatException.getOriginalMessage());
+				} catch (Exception exception) {
+					logger.error(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage(),exception);
+					errorMessage.append(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage());
+				}
+			}else{
+				errorMessage.append(ErrorCodes.UNSUPPORTED_CONTRACT_METADATA_FILE_TYPE.getErrorMessage());
+			}
+		}
+		
+		// Throw error if metadata or contract file is missing
+		if(errorMessage.length() > 0){
+    		throw new DataCatalogException(errorMessage.toString());
+    	}
+		
+		return contract;
+	}
+
+	/**
+	 * Validates the contract Id required for fetching contract details
+	 * 
+	 * @param contractId
+	 * @return 
+	 * @throws DataCatalogException
+	 */
+	public static void validateContractId(Long contractId) throws DataCatalogException {
+		
+		if(contractId == null){
+			throw new DataCatalogException(ErrorCodes.MISSING_CONTRACT_ID.getErrorMessage());
+		}
+		
+		if(contractId <= 0){
+			throw new DataCatalogException(ErrorCodes.INVALID_CONTRACT_ID.getErrorMessage());
+		}
+		
+	}
 }

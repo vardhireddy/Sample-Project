@@ -27,10 +27,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.GEClass;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 
 /**
  * Created by sowjanyanaidu on 9/5/17.
@@ -40,6 +42,8 @@ public class DataCatalogDaoImplTest {
     private GEClass[] returnValue;
     @Mock
     EntityManager entityManager;
+    @Mock
+    ContractRepository contractRepository;
     @Mock
     Query query;
     @Mock
@@ -664,6 +668,24 @@ public class DataCatalogDaoImplTest {
         assertEquals(result.toString(), getImageSeriesWithPatient().toString());
     }
 
+    @Test
+    public void testingestContractDetails(){
+    	Contract contract = new Contract();
+    	contract.setOrgId("test_123");
+    	contract.setId(1L);
+    	when(contractRepository.save(contract)).thenReturn(contract);
+    	Long contractId = dataCatalogDao.ingestContractDetails(contract);
+    	assertEquals(contractId, contract.getId());
+    }
+    
+    @Test
+    public void testgetContractDetails(){
+    	Contract contract = new Contract();
+    	when(contractRepository.findOne(contract.getId())).thenReturn(contract);
+    	Contract receivedContract = dataCatalogDao.getContractDetails(contract.getId());
+    	assertEquals(contract, receivedContract);
+    }
+    
     private List<ImageSeries> getImageSeriesWithPatient() {
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
         ImageSeries imgSeries = new ImageSeries();

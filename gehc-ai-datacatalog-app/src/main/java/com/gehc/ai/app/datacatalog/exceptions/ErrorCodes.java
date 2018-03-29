@@ -24,7 +24,15 @@ public enum ErrorCodes {
     MISSING_DATE_TO_VALUE("Missing value of dateTo"),
 	INVALID_DATE_FROM_FORMAT("Inavlid format for dateFrom. Correct format is : yyyy-MM-ddTHH:mm:ssZ"),
 	INVALID_DATE_TO_FORMAT("Inavlid format for dateTo. Correct format is : yyyy-MM-ddTHH:mm:ssZ"),
-	DATE_FROM_AFTER_DATE_TO("dateFrom should be before dateTo")
+	DATE_FROM_AFTER_DATE_TO("dateFrom should be before dateTo"),
+	MISSING_CONTRACT("Missing Contract file(s) "), 
+	MISSING_CONTRACT_METADATA("Missing Contract Metadata file"), 
+	UNSUPPORTED_CONTRACT_FILE_TYPE("Only .pdf file is supported for contracts. Unsupported Contract File - "),
+	EMPTY_CONTRACT_FILE_TYPE("Empty Contract File - "),
+	UNSUPPORTED_CONTRACT_METADATA_FILE_TYPE("Only .json file is supported for metadata"),
+	INVALID_CONTRACT_METADATA_FILE("Unable to parse Contract Metadata File"),
+	MISSING_CONTRACT_ID("Contract Id is required for fetching contract details"),
+	INVALID_CONTRACT_ID("Contract Id should be in Number format")
     ;
 
     private final String errorMessage;

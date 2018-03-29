@@ -15,14 +15,23 @@ package com.gehc.ai.app.datacatalog.filters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.Contract.DeidStatus;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 
@@ -33,6 +42,8 @@ import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 public class RequestValidatorTest {
 	
 	Map<String, Object> paramMap = new HashMap<String, Object>();
+	List<MultipartFile> contractFiles = new ArrayList<MultipartFile>();
+	MockMultipartFile metadataJson;
 	
 	@Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -174,6 +185,138 @@ public class RequestValidatorTest {
 		thrown.expectMessage(ErrorCodes.DATE_FROM_AFTER_DATE_TO.getErrorMessage());
 		
 		RequestValidator.validateImageSeriesFilterParamMap(paramMap);
+	}
+	
+	private void getContractFiles(String metaDataFileName, String ...contractFileNames){
+		ClassLoader classLoader = getClass().getClassLoader();
+		MockMultipartFile contractFile = null;
+		try {
+			for(String contractFileName : contractFileNames){
+				contractFile = new MockMultipartFile("contract", contractFileName, MediaType.MULTIPART_FORM_DATA, 
+					classLoader.getResourceAsStream("data/"+contractFileName));
+				contractFiles.add(contractFile);
+			}
+			metadataJson = new MockMultipartFile("metadata", metaDataFileName, MediaType.MULTIPART_FORM_DATA, 
+					classLoader.getResourceAsStream("data/"+metaDataFileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+			
+	}
+	
+	/**
+	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#testvalidateContractAndParseMetadata(List<Multipart>,MultipartFile)}.
+	 */
+	@Test
+	public void testvalidateContractAndParseMetadata(){
+		try {
+			getContractFiles("metadata_success_DEIDS_TO_LOCAL_STANDARDS.json","contract_success.pdf");
+			Contract receivedContract = RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+			assertEquals(getExpectedContract(), receivedContract);
+		} catch (DataCatalogException e) {
+			fail();
+		}
+	}
+	
+	/**
+	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#testvalidateContractAndParseMetadata(List<Multipart>,MultipartFile)}.
+	 */
+	@Test
+	public void testvalidateContractAndParseMetadataNullFiles() throws DataCatalogException{
+		thrown.expect(DataCatalogException.class);
+		thrown.expectMessage(ErrorCodes.MISSING_CONTRACT.getErrorMessage()+ErrorCodes.MISSING_CONTRACT_METADATA.getErrorMessage());
+		
+		RequestValidator.validateContractAndParseMetadata(null, null);
+	}
+	
+	/**
+	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#testvalidateContractAndParseMetadata(List<Multipart>,MultipartFile)}.
+	 */
+	@Test
+	public void testvalidateContractAndParseMetadataInavlidFormat() throws DataCatalogException{
+		thrown.expect(DataCatalogException.class);
+		thrown.expectMessage(ErrorCodes.UNSUPPORTED_CONTRACT_FILE_TYPE.getErrorMessage()+ "contract_failure_invalid_format.pd" + ErrorCodes.UNSUPPORTED_CONTRACT_METADATA_FILE_TYPE.getErrorMessage());
+		
+		getContractFiles("metadata_failure_invalid_format.js","contract_failure_invalid_format.pd");
+		RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+	}
+	
+	/**
+	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#testvalidateContractAndParseMetadata(List<Multipart>,MultipartFile)}.
+	 */
+	@Test
+	public void testvalidateContractAndParseMetadataInavlidDeidStatus() throws DataCatalogException{
+		thrown.expect(DataCatalogException.class);
+		thrown.expectMessage(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage());
+		
+		getContractFiles("metadata_failure_invalid_deidstatus.json","contract_success.pdf");
+		RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+	}
+	
+	/**
+	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#testvalidateContractAndParseMetadata(List<Multipart>,MultipartFile)}.
+	 */
+	@Test
+	public void testvalidateContractAndParseMetadataInavlidJsonFormat() throws DataCatalogException{
+		thrown.expect(DataCatalogException.class);
+		thrown.expectMessage(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage());
+		
+		getContractFiles("metadata_failure_invalid_json_format.json","contract_success.pdf");
+		RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+	}
+	
+	/**
+	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#validateContractId()}.
+	 */
+	@Test
+	public void testvalidateContractId(){
+		try{
+			RequestValidator.validateContractId(1L);
+		}catch(Exception e){
+			fail();
+		}
+	}
+	
+	/**
+	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#validateContractId()}.
+	 */
+	@Test
+	public void testvalidateContractIdNullContractId() throws DataCatalogException{
+		thrown.expect(DataCatalogException.class);
+		thrown.expectMessage(ErrorCodes.MISSING_CONTRACT_ID.getErrorMessage());
+		
+		RequestValidator.validateContractId(null);
+	}
+	
+	/**
+	 * Test method for {@link com.gehc.ai.app.datacatalog.filters.RequestValidator#validateContractId()}.
+	 */
+	@Test
+	public void testvalidateContractIdEmptyContractId() throws DataCatalogException{
+		thrown.expect(DataCatalogException.class);
+		thrown.expectMessage(ErrorCodes.INVALID_CONTRACT_ID.getErrorMessage());
+		
+		RequestValidator.validateContractId(0L);
+	}
+
+	
+	private Object getExpectedContract() {
+    	Contract contract = new Contract();
+    	contract.setActive("true");
+    	contract.setBusinessCase("Business Case");
+    	contract.setContactInfo("Contact Info");
+    	contract.setContractName("Contract Name");
+    	contract.setDataOriginCountry("Data Origin Country");
+    	contract.setDeidStatus(DeidStatus.DEIDS_TO_LOCAL_STANDARDS);
+    	contract.setOrgId("orgId");
+    	contract.setProperties("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
+    	contract.setSchemaVersion("Schema Version");
+    	contract.setUploadBy("radiologist");
+    	contract.setUsageNotes("Usage Notes");
+    	contract.setUsageRights("Usage Rights");
+    	contract.setUsageLength(11);
+    	
+    	return contract;
 	}
 	
 

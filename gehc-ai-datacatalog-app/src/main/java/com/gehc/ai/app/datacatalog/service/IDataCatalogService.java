@@ -14,8 +14,11 @@ package com.gehc.ai.app.datacatalog.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 
@@ -40,4 +43,8 @@ public interface IDataCatalogService {
     List<Integer> getAnnotationsById(Annotation annotation);
     
     List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst);
+
+	long uploadContract(List<MultipartFile> contractFiles, Contract contract);
+
+	Contract getContract(Long contractId);
 }

@@ -11,16 +11,19 @@
  */
 package com.gehc.ai.app.datacatalog.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
@@ -59,5 +62,26 @@ public class DataCatalogServiceImpl implements IDataCatalogService{
 	@Override
 	public List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst) {
 		return dataCatalogDao.getImgSeriesWithPatientByIds(imgSerIdLst);
+	}
+
+	@Override
+	public long uploadContract(List<MultipartFile> contractFiles, Contract contract) {
+		List<String> uris = uploadFileToS3(contractFiles);
+		contract.setUri(uris);
+		
+		return dataCatalogDao.ingestContractDetails(contract);
+	}
+
+	private List<String> uploadFileToS3(List<MultipartFile> contractFiles) {
+		List<String> uriList = new ArrayList<String>();
+		// TODO : Add code to upload files to S3
+		contractFiles.forEach(contractFile -> uriList.add(contractFile.getOriginalFilename()));
+		return uriList;
+	}
+
+	@Override
+	public Contract getContract(Long contractId) {
+		
+		return dataCatalogDao.getContractDetails(contractId);
 	}
 }
