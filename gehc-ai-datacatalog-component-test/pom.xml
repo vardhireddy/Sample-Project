@@ -67,17 +67,10 @@
 			<version>${h2.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>de.codecentric</groupId>
-			<artifactId>jbehave-junit-runner</artifactId>
-			<version>1.2.0</version>
-			<scope>test</scope>
-		</dependency>
 
 	</dependencies>
 
 	<build>
-		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -115,6 +108,5 @@
 					</configuration>
 				</plugin>
 			</plugins>
-		</pluginManagement>
 	</build>
 </project>
