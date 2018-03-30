@@ -12,7 +12,7 @@ public class PointRoiAnnotationJsonTest {
 
     @Test
     public void equalsContract() {
-        EqualsVerifier.forClass(FreeformRoiAnnotationJson.class)
+        EqualsVerifier.forClass(PointRoiAnnotationJson.class)
                 .withNonnullFields("patientID", "seriesUID", "imageSetFormat", "annotationID", "annotationType", "coordSys", "localID", "data")
                 .withRedefinedSuperclass()
                 .verify();
