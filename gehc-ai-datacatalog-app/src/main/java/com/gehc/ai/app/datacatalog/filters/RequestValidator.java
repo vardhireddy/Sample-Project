@@ -156,25 +156,11 @@ public class RequestValidator {
 	public static Contract validateContractAndParseMetadata(List<MultipartFile> contractFiles, MultipartFile metadataJson) throws DataCatalogException {
 		StringBuilder errorMessage = new StringBuilder();
 		Contract contract = null;
-		// Check if contract file(s) is(are) present
-		if(contractFiles == null || contractFiles.isEmpty()){
-			errorMessage.append(ErrorCodes.MISSING_CONTRACT.getErrorMessage());
-		}
-		// Check if metadata file is present
-		if(metadataJson == null || metadataJson.isEmpty() || metadataJson.getSize() == 0){
-			errorMessage.append(ErrorCodes.MISSING_CONTRACT_METADATA.getErrorMessage());
-		}
+		checkFilesExists(contractFiles, metadataJson, errorMessage);
 		
-		if(errorMessage.length() == 0){
-			contractFiles.forEach(contractFile -> {
-				final String contractFileExt = FilenameUtils.getExtension(contractFile.getOriginalFilename());
-				if(!supportedContractFileFormats.containsKey(contractFileExt)){
-					errorMessage.append(ErrorCodes.UNSUPPORTED_CONTRACT_FILE_TYPE.getErrorMessage() + contractFile.getOriginalFilename());
-				}
-				if (contractFile.getSize() == 0){
-					errorMessage.append(ErrorCodes.EMPTY_CONTRACT_FILE_TYPE.getErrorMessage() + contractFile.getOriginalFilename());
-				}
-			});
+		if(contractFiles != null && metadataJson != null && errorMessage.length() == 0){
+			
+			validateSupportedContractFileFormats(contractFiles, errorMessage);
 			
 			ObjectMapper mapper = new ObjectMapper();
 			String metadataFileExt = FilenameUtils.getExtension(metadataJson.getOriginalFilename());
@@ -184,8 +170,9 @@ public class RequestValidator {
 				} catch(InvalidFormatException invalidFormatException){
 					logger.error(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage()+" : "
 							+invalidFormatException.getOriginalMessage(),invalidFormatException);
-					errorMessage.append(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage()+" : "
-							+invalidFormatException.getOriginalMessage());
+					errorMessage.append(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage());
+					errorMessage.append(" : ");
+					errorMessage.append(invalidFormatException.getOriginalMessage());
 				} catch (Exception exception) {
 					logger.error(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage(),exception);
 					errorMessage.append(ErrorCodes.INVALID_CONTRACT_METADATA_FILE.getErrorMessage());
@@ -201,6 +188,40 @@ public class RequestValidator {
     	}
 		
 		return contract;
+	}
+
+	/**
+	 * @param contractFiles
+	 * @param errorMessage
+	 */
+	private static void validateSupportedContractFileFormats(List<MultipartFile> contractFiles,
+			StringBuilder errorMessage) {
+		contractFiles.forEach(contractFile -> {
+			final String contractFileExt = FilenameUtils.getExtension(contractFile.getOriginalFilename());
+			if(!supportedContractFileFormats.containsKey(contractFileExt)){
+				errorMessage.append(ErrorCodes.UNSUPPORTED_CONTRACT_FILE_TYPE.getErrorMessage() + contractFile.getOriginalFilename());
+			}
+			if (contractFile.getSize() == 0){
+				errorMessage.append(ErrorCodes.EMPTY_CONTRACT_FILE_TYPE.getErrorMessage() + contractFile.getOriginalFilename());
+			}
+		});
+	}
+
+	/**
+	 * @param contractFiles
+	 * @param metadataJson
+	 * @param errorMessage
+	 */
+	private static void checkFilesExists(List<MultipartFile> contractFiles, MultipartFile metadataJson,
+			StringBuilder errorMessage) {
+		// Check if contract file(s) is(are) present
+		if(contractFiles == null || contractFiles.isEmpty()){
+			errorMessage.append(ErrorCodes.MISSING_CONTRACT.getErrorMessage());
+		}
+		// Check if metadata file is present
+		if(metadataJson == null || metadataJson.isEmpty() || metadataJson.getSize() == 0){
+			errorMessage.append(ErrorCodes.MISSING_CONTRACT_METADATA.getErrorMessage());
+		}
 	}
 
 	/**

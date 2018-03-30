@@ -19,9 +19,9 @@ public class DataCatalogResponse {
     public static final String SUCCESS = "SUCCESS";
     public static final String FAILED = "FAILED";
 
-    String status;
-    String message;
-    Object responseObject;
+    private String status;
+    private String message;
+    private Object responseObject;
 
     public DataCatalogResponse(String status, String message) {
         this.status = status;
