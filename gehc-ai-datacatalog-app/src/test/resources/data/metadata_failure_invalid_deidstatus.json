@@ -1,0 +1,15 @@
+{
+	"schemaVersion" : "schemaVersion",
+	"orgId" : "orgId",
+	"contractName" : "contractName",
+	"businessCase" : "businessCase",
+	"deidStatus" : "INVALID_STATUS",
+	"usageLength" : 11,
+	"dataOriginCountry" : "dataOriginCountry",
+	"usageRights" : "usageRights",
+	"usageNotes" : "usageNotes",
+	"contactInfo" : "contactInfo",
+	"active" : "true",
+	"properties" : "properties",
+	"uploadBy" : "uploadBy"
+}

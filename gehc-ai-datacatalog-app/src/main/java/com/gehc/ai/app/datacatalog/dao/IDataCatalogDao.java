@@ -11,14 +11,15 @@
  */
 package com.gehc.ai.app.datacatalog.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-
-import java.util.List;
-import java.util.Map;
 
 public interface IDataCatalogDao {
 
@@ -59,4 +60,8 @@ public interface IDataCatalogDao {
     List<Integer> getAnnotationsIds(Annotation annotation);
 
     List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst);
+
+	Long ingestContractDetails(Contract contract);
+
+	Contract getContractDetails(Long contractId);
 }

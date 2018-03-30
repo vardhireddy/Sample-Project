@@ -12,31 +12,8 @@
 
 package com.gehc.ai.app.datacatalog.dao.impl;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.common.constants.ApplicationConstants;
-import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationDetailsExporter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.JsonAnnotationDetailsExporter;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -48,7 +25,34 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.common.constants.ApplicationConstants;
+import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationDetailsExporter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.JsonAnnotationDetailsExporter;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
 @Service
 @Component
@@ -172,6 +176,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 
 	@Autowired
 	private EntityManager em;
+
+	@Autowired
+	private ContractRepository contractRepository;
 
 	private static String getColumnQueryString(String column, String values) {
 		StringBuilder q = new StringBuilder();
@@ -724,5 +731,24 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 		logger.debug("Image series with patient, list size " + imageSeriesList.size());
 		return imageSeriesList;
+	}
+
+	@Override
+	public Long ingestContractDetails(Contract contract) {
+
+		 try{
+			 contract = contractRepository.save(contract);
+		 return contract.getId();
+		 }catch(Exception e){
+			 logger.error("Error in db");
+			 e.printStackTrace();
+		 }
+
+		 return null;
+	}
+
+	@Override
+	public Contract getContractDetails(Long contractId) {
+		return contractRepository.findOne(contractId);
 	}
 }

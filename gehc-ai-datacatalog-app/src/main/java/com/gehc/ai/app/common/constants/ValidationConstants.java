@@ -18,4 +18,6 @@ public abstract class ValidationConstants {
     public static final String UUID= "^$|[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
     public static final String DATA_SET_TYPE = "Experiment|Annotation|Inference";
     public static final String ANNOTATION_TYPES = "label|point|contour|line|ellipse|rect|polygon|freehand|contour2d|contour3d|mask|box|ellipsoid";
+    public static final String HIPAA_COMPLIANT= "HIPAA Compliant";
+    public static final String DEIDS_TO_LOCAL_STANDARDS = "DeID's to local standards";
 }

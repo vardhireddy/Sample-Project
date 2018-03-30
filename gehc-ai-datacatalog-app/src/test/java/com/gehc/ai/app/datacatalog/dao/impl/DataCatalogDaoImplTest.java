@@ -1,19 +1,10 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -24,10 +15,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 
 /**
  * Created by sowjanyanaidu on 9/5/17.
@@ -37,6 +41,8 @@ public class DataCatalogDaoImplTest {
     private GEClass[] returnValue;
     @Mock
     EntityManager entityManager;
+    @Mock
+    ContractRepository contractRepository;
     @Mock
     Query query;
     @Mock
@@ -610,6 +616,24 @@ public class DataCatalogDaoImplTest {
         ids.add(0, 1L);
         List result = dataCatalogDao.getImgSeriesWithPatientByIds(ids);
         assertEquals(result.toString(), getImageSeriesWithPatient().toString());
+    }
+
+    @Test
+    public void testingestContractDetails(){
+    	Contract contract = new Contract();
+    	contract.setOrgId("test_123");
+    	contract.setId(1L);
+    	when(contractRepository.save(contract)).thenReturn(contract);
+    	Long contractId = dataCatalogDao.ingestContractDetails(contract);
+    	assertEquals(contractId, contract.getId());
+    }
+
+    @Test
+    public void testgetContractDetails(){
+    	Contract contract = new Contract();
+    	when(contractRepository.findOne(contract.getId())).thenReturn(contract);
+    	Contract receivedContract = dataCatalogDao.getContractDetails(contract.getId());
+    	assertEquals(contract, receivedContract);
     }
 
     private List<ImageSeries> getImageSeriesWithPatient() {

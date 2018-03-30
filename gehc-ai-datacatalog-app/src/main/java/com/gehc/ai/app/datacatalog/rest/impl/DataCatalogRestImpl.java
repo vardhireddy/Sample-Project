@@ -11,6 +11,51 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
+import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+
+import org.hibernate.service.spi.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
@@ -18,6 +63,7 @@ import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
@@ -36,50 +82,9 @@ import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import org.hibernate.service.spi.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 /**
  * @author 212071558
@@ -266,7 +271,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
                     logger.info("[In REST, Annotation exists so returning annotation with id = " + ids + "]");
                     apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                            ApplicationConstants.SUCCESS, idValue);
+                            ApplicationConstants.SUCCESS,idValue);
                 } else {
                     Annotation newAnnotation = annotationRepository.save(annotation);
 
@@ -422,10 +427,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ApiResponse apiResponse = null;
         logger.info("[In REST, update institution = " + u.getInstitution() + u.getSeriesUIds());
         try {
-            if (u.getSeriesUIds().length > 0) {
+            if (u.getSeriesUIds().length>0) {
                 imageSeriesRepository.updateInstitution(u.getInstitution(), u.getSeriesUIds());
                 apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                        ApplicationConstants.SUCCESS, convertStringArrayToString(u.getSeriesUIds(), ","));
+                        ApplicationConstants.SUCCESS,convertStringArrayToString(u.getSeriesUIds(), ","));
             }
         } catch (Exception e) {
             logger.error("Exception occured while updating institution ", e);
@@ -443,7 +448,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             sb.append(str).append(delimiter);
         return sb.substring(0, sb.length() - 1);
     }
-
     /*
      * (non-Javadoc)
      *
@@ -505,13 +509,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
                     }
                     return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
-                    //  return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
+                  //  return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
                 }
             }
         }
         return new ArrayList<ImageSeries>();
     }
-
+    
     /*
      * (non-Javadoc)
      *
@@ -626,7 +630,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     .entity("Datacollection id and annotation type is required to get annotation for a data collection")
                     .build());
         }
-
+        
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> annImgSetDCLst = null;
         List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
@@ -948,4 +952,56 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return apiResponse;
     }
+
+    /**
+     *
+     * API to upload contract
+     *
+     * @param contractFiles
+     * @param metadataJson
+     * @return
+     */
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
+	public ResponseEntity<DataCatalogResponse> uploadContract(
+			@RequestParam(value = "contract") List<MultipartFile> contractFiles,
+	        @RequestParam(value = "metadata") MultipartFile metadataJson) {
+    	Contract contract = null;
+    	try {
+    		contract = RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+		} catch(DataCatalogException exception){
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    	try {
+			long contractId = dataCatalogService.uploadContract(contractFiles, contract);
+			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+    /**
+     * API to fetch contract
+     *
+     * @param contractIdStr
+     * @return
+     */
+    @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
+	public ResponseEntity<DataCatalogResponse> getContracts(@PathVariable(value = "contractId") Long contractId) {
+    	Contract contract;
+    	try {
+    		RequestValidator.validateContractId(contractId);
+		} catch(DataCatalogException exception){
+			//logger.error("Exception occured while validating the contract ", exception);
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    	try {
+    		contract = dataCatalogService.getContract(contractId);
+			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contract),HttpStatus.OK);
+		} catch (Exception e) {
+			//logger.error("Exception occured while uploading the contract ", e);
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
