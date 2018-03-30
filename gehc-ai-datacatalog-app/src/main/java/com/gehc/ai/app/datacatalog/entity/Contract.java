@@ -300,7 +300,7 @@ public class Contract{
 
 
 	@Override
-	public int hashCode() {
+	public int hashCode() {//NOSONAR
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((active == null) ? 0 : active.hashCode());
@@ -323,7 +323,7 @@ public class Contract{
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj) {//NOSONAR
 		if (this == obj)
 			return true;
 		if (obj == null)
