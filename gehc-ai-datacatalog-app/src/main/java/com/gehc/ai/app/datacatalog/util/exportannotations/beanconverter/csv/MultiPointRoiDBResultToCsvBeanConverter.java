@@ -1,5 +1,5 @@
 /*
- *  FreeformRoiJsonToCsvBeanConverter.java
+ *  MultiPointRoiDBResultToCsvBeanConverter.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -11,27 +11,36 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.csv;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ImageSetAssociation;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.MultiPointRoiAnnotationCsv;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.RoiAnnotationCsv;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
 
 /**
- * {@code FreeformRoiDBResultToCsvBeanConverter} converts a DB result record, which describes a freeform ROI annotation, to its corresponding CSV bean(s) representation.
+ * {@code MultiPointRoiDBResultToCsvBeanConverter} converts a DB result record, which describes a freeform ROI annotation, to its corresponding CSV bean(s) representation.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class FreeformRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConverter<RoiAnnotationCsv> {
+public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConverter<RoiAnnotationCsv> {
+
+    private Supplier<RoiDataConverter> roiDataSupplier;
+
+    /**
+     * Creates a new {@code MultiPointRoiDBResultToCsvBeanConverter} with the provided {@code Supplier} of a {@link RoiDataConverter}
+     *
+     * @param roiDataSupplier The {@code Supplier} that returns an instance of {@link RoiDataConverter}
+     */
+    public MultiPointRoiDBResultToCsvBeanConverter(Supplier<RoiDataConverter> roiDataSupplier) {
+        this.roiDataSupplier = roiDataSupplier;
+    }
 
     ////////////////
     //
@@ -81,7 +90,7 @@ public class FreeformRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanC
      * @return a new {@code RoiAnnotationCsv}
      * @throws InvalidAnnotationException if the provided DB result record representation contains coordinates that are not represented as an array of double values
      */
-    private static MultiPointRoiAnnotationCsv createDicomRoi(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
+    private MultiPointRoiAnnotationCsv createDicomRoi(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
         final String seriesUID = (String) result[resultIndexMap.get("seriesUID")];
         final Map<String, Object> commonMetaData = getCommonMetaData(result, resultIndexMap);
 
@@ -103,7 +112,7 @@ public class FreeformRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanC
      * @return a new {@code RoiAnnotationCsv}
      * @throws InvalidAnnotationException if the provided DB result record representation contains coordinates that are not represented as an array of double values
      */
-    private static MultiPointRoiAnnotationCsv createNonDicomRoi(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
+    private MultiPointRoiAnnotationCsv createNonDicomRoi(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
         // For non-DICOM files which do not actually have a patient ID associated with them, the convention is to use the original file name as the patient ID
         final String fileName = (String) result[resultIndexMap.get("patientID")];
         final String spaceID = "";
@@ -128,35 +137,16 @@ public class FreeformRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanC
      * @return a {@code Map} where the key is the meta-data property and the value is that property's value
      * @throws InvalidAnnotationException if the provided DB result record representation contains coordinates that are not represented as an array of double values
      */
-    private static Map<String, Object> getCommonMetaData(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
+    private Map<String, Object> getCommonMetaData(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
         Map<String, Object> commonMetaData = new HashMap<>();
         commonMetaData.put("annotationType", (String) result[resultIndexMap.get("annotationType")]);
-        commonMetaData.put("coordSys", mapToString( result[resultIndexMap.get("coordSys")]));
-        commonMetaData.put("localID", mapToString( result[resultIndexMap.get("roiLocalID")]));
-        commonMetaData.put("name", mapToString( result[resultIndexMap.get("roiName")]));
-        commonMetaData.put("data", toCoordsList(result[resultIndexMap.get("roiData")]));
+        commonMetaData.put("coordSys", mapToString(result[resultIndexMap.get("coordSys")]));
+        commonMetaData.put("localID", mapToString(result[resultIndexMap.get("roiLocalID")]));
+        commonMetaData.put("name", mapToString(result[resultIndexMap.get("roiName")]));
+        commonMetaData.put("data", this.roiDataSupplier.get().convertRoiData(result[resultIndexMap.get("roiData")]));
 
         return commonMetaData;
     }
 
-    /**
-     * Converts the provided {@code} Object representation of a coordinate data into its bean representation.
-     *
-     * @param coords The {@code} Object representation of the coordinate data to be converted
-     * @return The bean representation
-     * @throws InvalidAnnotationException if the {@code Object representation} of the coordinate data does not encode a nested list of doubles
-     */
-    // TODO: Make a utility
-    private static List<List<Double>> toCoordsList(Object coords) throws InvalidAnnotationException {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return (List<List<Double>>) mapper.readValue(
-                    coords.toString(),
-                    new TypeReference<List<List<Double>>>() {
-                    });
-        } catch (IOException e) {
-            throw new InvalidAnnotationException(e.getMessage());
-        }
-    }
 
 }

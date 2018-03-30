@@ -23,6 +23,7 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import org.apache.log4j.Logger;
 
 import java.io.StringWriter;
 import java.util.LinkedHashSet;
@@ -39,6 +40,8 @@ import java.util.function.Supplier;
  * @author andrew.c.wong@ge.com (212069153)
  */
 final class CsvConversionTemplates {
+
+    private static final Logger logger = Logger.getLogger(CsvConversionTemplates.class);
 
     /**
      * Prevents the {@code CsvConversionTemplates} class from being instantiated.
@@ -93,6 +96,7 @@ final class CsvConversionTemplates {
      */
     public static Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, Supplier<DBResultToCsvBeanConverter> beanConverterSupplier) throws InvalidAnnotationException {
         List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(result, resultIndexMap, resultIndicesMap);
+        logger.debug("There are " + annotationCsvBeans.size() + "CSV beans to export");
 
         // First aggregate all optional columns that have at least one annotation with a non-null value
         Set<ColumnHeader> optionalColumnsWithValues = annotationCsvBeans.stream()

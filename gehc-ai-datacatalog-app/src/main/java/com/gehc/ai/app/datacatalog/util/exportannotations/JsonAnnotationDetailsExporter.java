@@ -13,6 +13,7 @@ package com.gehc.ai.app.datacatalog.util.exportannotations;
 
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ import java.util.Map;
  * @author andrew.c.wong@ge.com (212069153)
  */
 public final class JsonAnnotationDetailsExporter {
+
+    private static final Logger logger = Logger.getLogger(JsonAnnotationDetailsExporter.class);
 
     /**
      * Prevents the {@code JsonAnnotationDetailsExporter} class from being instantiated.
@@ -54,9 +57,14 @@ public final class JsonAnnotationDetailsExporter {
 
         for (final Object[] result : results) {
             String annotationTypeAsStr = (String) result[resultIndexMap.get("annotationType")];
-            AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
-            AnnotationJson dbResultAsJson = annotationType.convertDBResultToJson(result, resultIndexMap, resultIndicesMap);
-            annotationDetails.add(dbResultAsJson);
+            if (AnnotationType.contains(annotationTypeAsStr)) {
+                AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
+                AnnotationJson dbResultAsJson = annotationType.convertDBResultToJson(result, resultIndexMap, resultIndicesMap);
+                annotationDetails.add(dbResultAsJson);
+            } else {
+                logger.debug("Skipping DB result since it describes an annotation of an unsupported type: " + annotationTypeAsStr);
+            }
+
         }
 
         return annotationDetails;

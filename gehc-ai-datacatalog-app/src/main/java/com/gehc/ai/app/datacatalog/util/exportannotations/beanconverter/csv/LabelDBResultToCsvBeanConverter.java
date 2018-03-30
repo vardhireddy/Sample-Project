@@ -15,6 +15,7 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.ImageSetAssociation;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv.LabelAnnotationCsv;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.O
  * @author andrew.c.wong@ge.com (212069153)
  */
 public class LabelDBResultToCsvBeanConverter implements DBResultToCsvBeanConverter<LabelAnnotationCsv> {
+
+    private static final Logger logger = Logger.getLogger(LabelDBResultToCsvBeanConverter.class);
 
     ////////////////
     //
@@ -51,14 +54,18 @@ public class LabelDBResultToCsvBeanConverter implements DBResultToCsvBeanConvert
         Integer[] geClassIndices = resultIndicesMap.get("geClasses");
         List<GEClass> geClasses = GEClass.toGEClasses(result, geClassIndices);
 
+        logger.debug("Exporting " + geClasses.size() + "GE classes as CSV");
+
         // Convert each GE class into its CSV bean representations
         List<LabelAnnotationCsv> labelBeans = new ArrayList<>();
         for (GEClass geClass : geClasses) {
             final LabelAnnotationCsv labelBean;
             final int imageSetFormatIndex = resultIndexMap.get("imageSetFormat");
             if (ImageSetAssociation.isAssociatedWithDicom(result, imageSetFormatIndex)) {
+                logger.debug("Exporting as DICOM CSV record");
                 labelBean = createDicomLabel(result, resultIndexMap, geClass);
             } else if (ImageSetAssociation.isAssociatedWithNonDicom(result, imageSetFormatIndex)) {
+                logger.debug("Exporting as non-DICOM CSV record");
                 labelBean = createNonDicomLabel(result, resultIndexMap, geClass);
             } else {
                 throw new InvalidAnnotationException("The provided annotation does not map to either a DICOM or non-DICOM image set!");

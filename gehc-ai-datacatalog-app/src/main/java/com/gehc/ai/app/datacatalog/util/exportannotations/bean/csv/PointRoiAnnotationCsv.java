@@ -1,5 +1,5 @@
 /*
- *  MultiPointRoiAnnotation.java
+ *  PointRoiAnnotationCsv.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -11,8 +11,6 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
-import org.apache.log4j.Logger;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -21,37 +19,35 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * {@code MultiPointRoiAnnotation} is a bean representing an annotation that is a multi-point ROI (e.g. line, rectangle, ellipse, polygon or contour).
+ * {@code PointRoiAnnotationCsv} is a bean representing an annotation that is a single point ROI.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
-
-    private static final Logger logger = Logger.getLogger(MultiPointRoiAnnotationCsv.class);
+public class PointRoiAnnotationCsv extends RoiAnnotationCsv {
 
     private static final ColumnHeader[] REQUIRED_COLUMNS = new ColumnHeader[]{new ColumnHeader("data", 1)};
 
-    private final List<List<Double>> data;
+    private final List<Double> data;
 
     /**
-     * Creates a new {@code MultiPointRoiAnnotation} that is associated with a DICOM image set.
+     * Creates a new {@code PointRoiAnnotationCsv} that is associated with a DICOM image set.
      *
-     * @param seriesUID           (Required) The series instance UID of the DICOM data to which this {@code MultiPointRoiAnnotation} is associated.
+     * @param seriesUID           (Required) The series instance UID of the DICOM data to which this {@code PointRoiAnnotationCsv} is associated.
      * @param annotationTypeAsStr (Required) The string representation of the multi-point ROI annotation type
      * @param coordSys            (Required) The coordinate system in which the data points should be represented
      * @param data                (Required) The array of data points that comprise the ROI.
      * @param localID             (Optional) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name                (Optional) A name to identify this ROI.  This name does not need to be unique.
      */
-    public MultiPointRoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, String coordSys, List<List<Double>> data, String localID, String name) {
+    public PointRoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, String coordSys, List<Double> data, String localID, String name) {
         super(seriesUID, annotationTypeAsStr, coordSys, localID, name);
         this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 
     /**
-     * Creates a new {@code MultiPointRoiAnnotation} that is associated with a non-DICOM image set.
+     * Creates a new {@code PointRoiAnnotationCsv} that is associated with a non-DICOM image set.
      *
-     * @param fileName            (Required) The original file name of the non-DICOM image to which this {@code MultiPointRoiAnnotation} is associated
+     * @param fileName            (Required) The original file name of the non-DICOM image to which this {@code PointRoiAnnotationCsv} is associated
      * @param spaceID             (Required) The S3 space ID where the non-DICOM image is stored
      * @param annotationTypeAsStr (Required) The string representation of the multi-point ROI annotation type
      * @param coordSys            (Required) The coordinate system in which the data points should be represented
@@ -59,18 +55,8 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
      * @param localID             (Optional) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name                (Optional) A name to identify this ROI.  This name does not need to be unique.
      */
-    public MultiPointRoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String coordSys, List<List<Double>> data, String localID, String name) {
+    public PointRoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String coordSys, List<Double> data, String localID, String name) {
         super(fileName, spaceID, annotationTypeAsStr, coordSys, localID, name);
-        StringBuilder sb = new StringBuilder();
-        for (List<Double> coord : data) {
-            sb.append("[");
-            for (Double coordElem : coord) {
-                sb.append(coordElem);
-                sb.append(",");
-            }
-            sb.append("]");
-        }
-        logger.debug("Multi-point ROI CSV data " + sb.toString());
         this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 
@@ -80,7 +66,7 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
     //
     /////////////////////////
 
-    public List<List<Double>> getData() {
+    public List<Double> getData() {
         return Collections.unmodifiableList(data);
     }
 
@@ -101,9 +87,9 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
     }
 
     /**
-     * Returns the set of columns required by this {@code MultiPointRoiAnnotation} and its parent.
+     * Returns the set of columns required by this {@code PointRoiAnnotationCsv} and its parent.
      *
-     * @param requiredParentColumns The columns required by this {@code MultiPointRoiAnnotation}'s parent.
+     * @param requiredParentColumns The columns required by this {@code PointRoiAnnotationCsv}'s parent.
      * @return a Set<ColumnHeader>
      */
     private static Set<ColumnHeader> getRequiredColumns(Set<ColumnHeader> requiredParentColumns) {

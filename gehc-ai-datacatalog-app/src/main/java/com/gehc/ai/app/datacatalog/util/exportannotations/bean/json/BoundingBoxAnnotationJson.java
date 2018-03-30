@@ -1,5 +1,5 @@
 /*
- *  FreeformRoiAnnotationJson.java
+ *  BoundingBoxAnnotationJson.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -11,31 +11,30 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
 
-import java.util.Collections;
-import java.util.List;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.BoundingBox;
+
 import java.util.Locale;
-import java.util.Objects;
 
 /**
- * {@code FreeformRoiAnnotationJson} is a bean representing an annotation that is a freeform ROI (e.g. polygon or contour).
+ * {@code BoundingBoxAnnotationJson} is a bean representing an annotation that is a bounding box ROI (e.g. rectangle or ellipse).
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
+public class BoundingBoxAnnotationJson extends RoiAnnotationJson {
 
-    private final List<List<Double>> data;
+    private final BoundingBox data;
 
     /**
-     * Creates a new {@code FreeformRoiAnnotationJson}.
+     * Creates a new {@code BoundingBoxJson} .
      *
      * @param patientID      The ID of the patient to which this annotation is associated
      * @param seriesUID      The series instance UID of the DICOM data to which this annotation is associated
      * @param imageSetFormat The data format of the image set to which this annotation is associated
      * @param annotationType This annotation's type
      */
-    public FreeformRoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, FreeformRoiType annotationType, String coordSys, List<List<Double>> data, String localID, String name) {
+    public BoundingBoxAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, BoundingBoxType annotationType, String coordSys, BoundingBox data, String localID, String name) {
         super(patientID, seriesUID, imageSetFormat, annotationID, annotationType.toString().toLowerCase(Locale.ENGLISH), coordSys, localID, name);
-        this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
+        this.data = data;
     }
 
     /////////////
@@ -44,17 +43,17 @@ public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
     //
     /////////////
 
-    public List<List<Double>> getData() {
-        return Collections.unmodifiableList(data);
+    public BoundingBox getData() {
+        return data;
     }
 
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (!(o instanceof FreeformRoiAnnotationJson)) return false;
+        if (!(o instanceof BoundingBoxAnnotationJson)) return false;
 
-        FreeformRoiAnnotationJson that = (FreeformRoiAnnotationJson) o;
+        BoundingBoxAnnotationJson that = (BoundingBoxAnnotationJson) o;
         if (!that.canEqual(this)) return false;
         if (!super.equals(that)) return false;
 
@@ -71,7 +70,7 @@ public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
 
     @Override
     public final boolean canEqual(Object other) {
-        return (other instanceof FreeformRoiAnnotationJson);
+        return (other instanceof BoundingBoxAnnotationJson);
     }
 
 }

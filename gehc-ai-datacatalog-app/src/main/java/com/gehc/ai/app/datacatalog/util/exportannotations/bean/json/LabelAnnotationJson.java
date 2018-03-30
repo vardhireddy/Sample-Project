@@ -49,11 +49,11 @@ public final class LabelAnnotationJson extends AnnotationJson {
         this.findings = findings;
     }
 
-    /////////////////////////
+    /////////////
     //
-    // Getters and setters //
+    // Getters //
     //
-    /////////////////////////
+    /////////////
 
     public List<GEClass> getGeClasses() {
         return Collections.unmodifiableList(geClasses);

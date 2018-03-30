@@ -1,5 +1,5 @@
 /*
- *  FreeformRoi.java
+ *  FreeformRoiType.java
  *
  *  Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
@@ -12,11 +12,15 @@
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.json;
 
 /**
- * A {@code FreeformRoi} is a type of ROI that is formed by multiple vertices which have no inherent spatial order.
+ * A {@code FreeformRoiType} is a type of ROI that is formed by multiple vertices which have no inherent spatial order.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public enum FreeformRoi {
+public enum FreeformRoiType {
+    /**
+     * A 2D line segment
+     */
+    LINE,
     /**
      * A freeform ROI that is composed of multiple vertices whereby the vertices are connected by straight line segments.
      */
