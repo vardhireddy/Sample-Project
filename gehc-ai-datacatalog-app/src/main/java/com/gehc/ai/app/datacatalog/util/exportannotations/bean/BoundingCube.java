@@ -49,7 +49,6 @@ public final class BoundingCube extends BoundingBox {
         if (this == o) {return true;}
         if (o == null) {return false;}
         if (!(o instanceof BoundingCube)) {return false;}
-        if (!super.equals(o)) {return false;}
 
         BoundingCube that = (BoundingCube) o;
 
