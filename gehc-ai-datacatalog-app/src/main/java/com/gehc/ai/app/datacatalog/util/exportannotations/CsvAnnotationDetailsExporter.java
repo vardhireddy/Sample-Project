@@ -120,6 +120,7 @@ public final class CsvAnnotationDetailsExporter {
 
         for (final Object[] result : results) {
             String annotationTypeAsStr = (String) result[annotationTypeIndex];
+            logger.debug("Exporting annotation of type " + annotationTypeAsStr + "as CSV");
 
             if (AnnotationType.contains(annotationTypeAsStr)) {
                 AnnotationType annotationType = AnnotationType.valueOf(annotationTypeAsStr.toUpperCase(Locale.ENGLISH));
