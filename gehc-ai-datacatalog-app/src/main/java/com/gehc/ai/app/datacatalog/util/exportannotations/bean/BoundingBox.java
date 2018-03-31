@@ -25,31 +25,31 @@ import java.util.Objects;
  */
 public class BoundingBox {
 
-    private final List<Double> xDir;
+    private final List<Double> xdir;
 
-    private final List<Double> yDir;
+    private final List<Double> ydir;
 
     private final List<Double> origin;
 
     /**
      * Creates a new {@code BoundingBox} described by the provided origin, x-direction, and y-direction vectors.
      *
-     * @param xDir   A 2D point that when considered with the provided origin forms the x-component vector
-     * @param yDir   A 2D point that when considered with the provided origin forms the y-component vector
+     * @param xdir   A 2D point that when considered with the provided origin forms the x-component vector
+     * @param ydir   A 2D point that when considered with the provided origin forms the y-component vector
      * @param origin The point represented the top left vertex of the bounding box
      */
-    public BoundingBox(@JsonProperty("xDir") List<Double> xDir, @JsonProperty("yDir") List<Double> yDir, @JsonProperty("origin") List<Double> origin) {
-        this.xDir = Collections.unmodifiableList(Objects.requireNonNull(xDir));
-        this.yDir = Collections.unmodifiableList(Objects.requireNonNull(yDir));
+    public BoundingBox(@JsonProperty("xdir") List<Double> xdir, @JsonProperty("ydir") List<Double> ydir, @JsonProperty("origin") List<Double> origin) {
+        this.xdir = Collections.unmodifiableList(Objects.requireNonNull(xdir));
+        this.ydir = Collections.unmodifiableList(Objects.requireNonNull(ydir));
         this.origin = Collections.unmodifiableList(Objects.requireNonNull(origin));
     }
 
-    public List<Double> getxDir() {
-        return Collections.unmodifiableList(xDir);
+    public List<Double> getxdir() {
+        return Collections.unmodifiableList(xdir);
     }
 
-    public List<Double> getyDir() {
-        return Collections.unmodifiableList(yDir);
+    public List<Double> getydir() {
+        return Collections.unmodifiableList(ydir);
     }
 
     public List<Double> getOrigin() {
@@ -75,10 +75,10 @@ public class BoundingBox {
             return false;
         }
 
-        if (!getxDir().equals(that.getxDir())) {
+        if (!getxdir().equals(that.getxdir())) {
             return false;
         }
-        if (!getyDir().equals(that.getyDir())) {
+        if (!getydir().equals(that.getydir())) {
             return false;
         }
         return getOrigin().equals(that.getOrigin());
@@ -86,8 +86,8 @@ public class BoundingBox {
 
     @Override
     public int hashCode() {
-        int result = getxDir().hashCode();
-        result = 31 * result + getyDir().hashCode();
+        int result = getxdir().hashCode();
+        result = 31 * result + getydir().hashCode();
         result = 31 * result + getOrigin().hashCode();
         return result;
     }

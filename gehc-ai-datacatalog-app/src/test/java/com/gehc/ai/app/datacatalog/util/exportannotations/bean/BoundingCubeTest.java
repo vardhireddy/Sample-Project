@@ -14,7 +14,7 @@ public class BoundingCubeTest {
     public void equalsContract() {
         EqualsVerifier
                 .forClass(BoundingCube.class)
-                .withNonnullFields("xDir", "yDir", "zDir", "origin")
+                .withNonnullFields("xdir", "ydir", "zdir", "origin")
                 .withRedefinedSuperclass()
                 .verify();
     }

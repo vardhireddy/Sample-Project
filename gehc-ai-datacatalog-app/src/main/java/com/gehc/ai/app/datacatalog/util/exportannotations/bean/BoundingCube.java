@@ -25,23 +25,23 @@ import java.util.Objects;
  */
 public final class BoundingCube extends BoundingBox {
 
-    private final List<Double> zDir;
+    private final List<Double> zdir;
 
     /**
      * Creates a new {@code BoundingCube} described by the provided origin, x-direction, y-direction, and z-direction vectors.
      *
-     * @param xDir   A 3D point that when considered with the provided origin forms the x-component vector
-     * @param yDir   A 3D point that when considered with the provided origin forms the y-component vector
-     * @param zDir   A 3D point that when considered with the provided origin forms the z-component vector
+     * @param xdir   A 3D point that when considered with the provided origin forms the x-component vector
+     * @param ydir   A 3D point that when considered with the provided origin forms the y-component vector
+     * @param zdir   A 3D point that when considered with the provided origin forms the z-component vector
      * @param origin The point represented the top left vertex of the bounding box
      */
-    public BoundingCube(@JsonProperty("xDir") List<Double> xDir, @JsonProperty("yDir") List<Double> yDir, @JsonProperty("zDir") List<Double> zDir, @JsonProperty("origin") List<Double> origin) {
-        super(xDir, yDir, origin);
-        this.zDir = Collections.unmodifiableList(Objects.requireNonNull(zDir));
+    public BoundingCube(@JsonProperty("xdir") List<Double> xdir, @JsonProperty("ydir") List<Double> ydir, @JsonProperty("zdir") List<Double> zdir, @JsonProperty("origin") List<Double> origin) {
+        super(xdir, ydir, origin);
+        this.zdir = Collections.unmodifiableList(Objects.requireNonNull(zdir));
     }
 
-    public List<Double> getzDir() {
-        return Collections.unmodifiableList(zDir);
+    public List<Double> getzdir() {
+        return Collections.unmodifiableList(zdir);
     }
 
     @Override
@@ -60,13 +60,13 @@ public final class BoundingCube extends BoundingBox {
             return false;
         }
 
-        return zDir.equals(that.zDir);
+        return zdir.equals(that.zdir);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + zDir.hashCode();
+        result = 31 * result + zdir.hashCode();
         return result;
     }
 
