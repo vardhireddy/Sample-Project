@@ -26,6 +26,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.apache.log4j.Logger;
 
 import java.io.StringWriter;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -96,29 +97,33 @@ final class CsvConversionTemplates {
      */
     public static Set<ColumnHeader> getColumnHeaders(Object[] result, Map<String, Integer> resultIndexMap, Map<String, Integer[]> resultIndicesMap, Supplier<DBResultToCsvBeanConverter> beanConverterSupplier) throws InvalidAnnotationException {
         List<AnnotationCsv> annotationCsvBeans = beanConverterSupplier.get().getAnnotationBeans(result, resultIndexMap, resultIndicesMap);
-        logger.debug("There are " + annotationCsvBeans.size() + "CSV beans to export");
 
-        // First aggregate all optional columns that have at least one annotation with a non-null value
-        Set<ColumnHeader> optionalColumnsWithValues = annotationCsvBeans.stream()
-                .map(annotationBean -> annotationBean.getOptionalColumnsWithValues())
-                .reduce(new LinkedHashSet<ColumnHeader>(), (aggregateSet, currentSet) -> {
-                    // Take the union of all optional columns with values
-                    aggregateSet.addAll(currentSet);
-                    return aggregateSet;
-                });
+        Set<ColumnHeader> requiredColumns = new HashSet<>();
 
-        // Next add those optional columns to the required columns
-        Set<ColumnHeader> requiredColumns;
-        int imageSetFormatIndex = resultIndexMap.get("imageSetFormat");
-        if (ImageSetAssociation.isAssociatedWithDicom(result, imageSetFormatIndex)) {
-            requiredColumns = annotationCsvBeans.get(0).getRequiredDicomColumns();
-        } else if (ImageSetAssociation.isAssociatedWithNonDicom(result, imageSetFormatIndex)) {
-            requiredColumns = annotationCsvBeans.get(0).getRequiredNonDicomColumns();
-        } else {
-            throw new InvalidAnnotationException("The provided annotation node is not associated with either DICOM or non-DICOM data");
+        if (!annotationCsvBeans.isEmpty()) {
+            logger.debug("There are " + annotationCsvBeans.size() + "CSV beans to export");
+
+            // First aggregate all optional columns that have at least one annotation with a non-null value
+            Set<ColumnHeader> optionalColumnsWithValues = annotationCsvBeans.stream()
+                    .map(annotationBean -> annotationBean.getOptionalColumnsWithValues())
+                    .reduce(new LinkedHashSet<ColumnHeader>(), (aggregateSet, currentSet) -> {
+                        // Take the union of all optional columns with values
+                        aggregateSet.addAll(currentSet);
+                        return aggregateSet;
+                    });
+
+            // Next add those optional columns to the required columns
+            int imageSetFormatIndex = resultIndexMap.get("imageSetFormat");
+            if (ImageSetAssociation.isAssociatedWithDicom(result, imageSetFormatIndex)) {
+                requiredColumns = annotationCsvBeans.get(0).getRequiredDicomColumns();
+            } else if (ImageSetAssociation.isAssociatedWithNonDicom(result, imageSetFormatIndex)) {
+                requiredColumns = annotationCsvBeans.get(0).getRequiredNonDicomColumns();
+            } else {
+                throw new InvalidAnnotationException("The provided annotation node is not associated with either DICOM or non-DICOM data");
+            }
+
+            requiredColumns.addAll(optionalColumnsWithValues);
         }
-
-        requiredColumns.addAll(optionalColumnsWithValues);
 
         // Finally return the aggregated set
         return requiredColumns;
