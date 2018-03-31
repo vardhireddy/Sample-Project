@@ -14,7 +14,7 @@ public class BoundingBoxTest {
     public void equalsContract() {
         EqualsVerifier
                 .forClass(BoundingBox.class)
-                .withNonnullFields("xDir","yDir","origin")
+                .withNonnullFields("xdir","ydir","origin")
                 .withRedefinedSubclass(BoundingCube.class)
                 .verify();
     }
