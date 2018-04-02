@@ -11,8 +11,6 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
-import org.apache.log4j.Logger;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -26,8 +24,6 @@ import java.util.stream.Collectors;
  * @author andrew.c.wong@ge.com (212069153)
  */
 public class LabelAnnotationCsv extends AnnotationCsv {
-
-    private static final Logger logger = Logger.getLogger(LabelAnnotationCsv.class);
 
     private String label;
 
@@ -77,10 +73,6 @@ public class LabelAnnotationCsv extends AnnotationCsv {
      * @param findings   (Optional) The findings associated with the specified label
      */
     private void setUp(String label, String severity, String indication, String findings) {
-        logger.debug("CSV label " + label);
-        logger.debug("CSV severity " + severity);
-        logger.debug("CSV indication " + indication);
-        logger.debug("CSV findings " + findings);
         this.label = Objects.requireNonNull(label);
         this.severity = severity;
         this.indication = indication;

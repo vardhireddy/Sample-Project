@@ -23,7 +23,6 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import org.apache.log4j.Logger;
 
 import java.io.StringWriter;
 import java.util.HashSet;
@@ -41,8 +40,6 @@ import java.util.function.Supplier;
  * @author andrew.c.wong@ge.com (212069153)
  */
 final class CsvConversionTemplates {
-
-    private static final Logger logger = Logger.getLogger(CsvConversionTemplates.class);
 
     /**
      * Prevents the {@code CsvConversionTemplates} class from being instantiated.
@@ -101,8 +98,6 @@ final class CsvConversionTemplates {
         Set<ColumnHeader> requiredColumns = new HashSet<>();
 
         if (!annotationCsvBeans.isEmpty()) {
-            logger.debug("There are " + annotationCsvBeans.size() + "CSV beans to export");
-
             // First aggregate all optional columns that have at least one annotation with a non-null value
             Set<ColumnHeader> optionalColumnsWithValues = annotationCsvBeans.stream()
                     .map(annotationBean -> annotationBean.getOptionalColumnsWithValues())

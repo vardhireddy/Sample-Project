@@ -11,8 +11,6 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
-import org.apache.log4j.Logger;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -26,8 +24,6 @@ import java.util.Set;
  * @author andrew.c.wong@ge.com (212069153)
  */
 public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
-
-    private static final Logger logger = Logger.getLogger(MultiPointRoiAnnotationCsv.class);
 
     private static final ColumnHeader[] REQUIRED_COLUMNS = new ColumnHeader[]{new ColumnHeader("data", 1)};
 
@@ -61,16 +57,6 @@ public class MultiPointRoiAnnotationCsv extends RoiAnnotationCsv {
      */
     public MultiPointRoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String coordSys, List<List<Double>> data, String localID, String name) {
         super(fileName, spaceID, annotationTypeAsStr, coordSys, localID, name);
-        StringBuilder sb = new StringBuilder();
-        for (List<Double> coord : data) {
-            sb.append("[");
-            for (Double coordElem : coord) {
-                sb.append(coordElem);
-                sb.append(",");
-            }
-            sb.append("]");
-        }
-        logger.debug("Multi-point ROI CSV data " + sb.toString());
         this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 
