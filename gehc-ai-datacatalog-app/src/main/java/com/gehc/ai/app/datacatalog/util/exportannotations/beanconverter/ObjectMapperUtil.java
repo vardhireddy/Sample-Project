@@ -52,7 +52,24 @@ public class ObjectMapperUtil {
      */
     public static List<Double> mapToListOfDoubles(Object strObj) throws InvalidAnnotationException {
         try {
-            return strObj != null ? (List<Double>) mapper.readValue(strObj.toString(), new TypeReference<List<Double>>() {}) : (List<Double>) strObj;
+            return strObj != null ? (List<Double>) mapper.readValue(strObj.toString(), new TypeReference<List<Double>>() {
+            }) : (List<Double>) strObj;
+        } catch (IOException e) {
+            throw new InvalidAnnotationException("The provided annotation property, " + strObj + ", was expected to be a JSON string but was not.");
+        }
+    }
+
+    /**
+     * Maps a JSON string that only represents a list of strings to a corresponding {@link List<String>} representation.
+     *
+     * @param strObj The {@code Object} which encapsulates the JSON string
+     * @return a {@code List<String>}
+     * @throws InvalidAnnotationException if the provided {@code Object} does not encapsulate a JSON string
+     */
+    public static List<String> mapToListOfStrings(Object strObj) throws InvalidAnnotationException {
+        try {
+            return strObj != null ? (List<String>) mapper.readValue(strObj.toString(), new TypeReference<List<String>>() {
+            }) : (List<String>) strObj;
         } catch (IOException e) {
             throw new InvalidAnnotationException("The provided annotation property, " + strObj + ", was expected to be a JSON string but was not.");
         }

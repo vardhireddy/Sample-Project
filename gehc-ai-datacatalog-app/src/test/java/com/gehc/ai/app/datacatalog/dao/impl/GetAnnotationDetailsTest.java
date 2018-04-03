@@ -36,6 +36,10 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.equalTo;
+
 /**
  * {@code GetAnnotationDetailsTest} evaluates the behavior of the {@link DataCatalogDaoImpl#getAnnotationDetailsByImageSetIDs(List)} API.
  *
@@ -292,7 +296,7 @@ public class GetAnnotationDetailsTest {
                 String optionalValuesForFirstAnnot = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"Absent\",\"Test indication\",\"Test findings\"" : "";
                 String optionalValuesForSecondAnnot = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"\",\"Test indication\",\"Test findings\"" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,label" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"label\",\"Foreign Bodies\"" + optionalValuesForFirstAnnot + "\n" + imageSetType.getCsvColumnValues() + ",\"label\",\"Calcification\"" + optionalValuesForSecondAnnot + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,label" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"label\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"Foreign Bodies\"" + optionalValuesForFirstAnnot + "\n" + imageSetType.getCsvColumnValues() + ",\"label\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"Calcification\"" + optionalValuesForSecondAnnot + "\n";
             }
         },
         POINT() {
@@ -329,7 +333,7 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"point\",\"IMAGE\",\"[-1.2345, 6.789, 10.1112]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"point\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[-1.2345, 6.789, 10.1112]\",\"0\"" + roiName + "\n";
             }
         },
         LINE() {
@@ -368,7 +372,7 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"line\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"line\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213]]\",\"0\"" + roiName + "\n";
             }
         },
         POLYGON() {
@@ -408,7 +412,7 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"polygon\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"polygon\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
             }
         },
         CONTOUR() {
@@ -448,7 +452,7 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"contour\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"contour\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
             }
         },
         RECT() {
@@ -488,7 +492,7 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"rect\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"rect\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
             }
         },
         ELLIPSE() {
@@ -528,7 +532,7 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipse\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipse\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
             }
         },
         BOX() {
@@ -569,7 +573,7 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"box\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"box\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + roiName + "\n";
             }
         },
         ELLIPSOID() {
@@ -610,7 +614,7 @@ public class GetAnnotationDetailsTest {
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
                 String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipsoid\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipsoid\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + roiName + "\n";
             }
         };
 
@@ -670,7 +674,7 @@ public class GetAnnotationDetailsTest {
         String result = dataCatalogDao.getAnnotationDetailsAsCsvByImageSetIDs(MOCK_DATA_IMAGE_SET_IDS);
 
         // ASSERT
-        assertEquals(this.expectedAnnotDetailsAsCsv, result);
+        assertThat(this.expectedAnnotDetailsAsCsv, is(equalTo(result)));
     }
 
 }

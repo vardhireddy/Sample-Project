@@ -12,6 +12,7 @@
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,6 +34,8 @@ public abstract class AnnotationCsv {
     ///////////////////////////////////////////
 
     private final String annotationType;
+
+    private List<String> instances;
 
     ////////////////////////////////////////////////////////////////////////////
     //
@@ -57,11 +60,13 @@ public abstract class AnnotationCsv {
      *
      * @param seriesUID      (Required) The series instance UID of the DICOM data to which this annotation is associated
      * @param annotationType (Required) This annotation's type. {@link com.gehc.ai.app.datacatalog.util.exportannotations.AnnotationType}
+     * @param instances      (Required) The image instances associated this annotation
      * @return a new {@code AnnotationCsv}
      */
-    public AnnotationCsv(String seriesUID, String annotationType) {
+    public AnnotationCsv(String seriesUID, String annotationType, List<String> instances) {
         this.seriesUID = Objects.requireNonNull(seriesUID);
         this.annotationType = Objects.requireNonNull(annotationType);
+        this.instances = Objects.requireNonNull(instances);
     }
 
     /**
@@ -70,11 +75,13 @@ public abstract class AnnotationCsv {
      * @param fileName       (Required) The original file name of the non-DICOM image to which this annotation is associated
      * @param spaceID        (Required) The S3 space ID where the non-DICOM is stored
      * @param annotationType (Required) This annotation's type
+     * @param instances      (Required) The image instances associated this annotation
      */
-    public AnnotationCsv(String fileName, String spaceID, String annotationType) {
+    public AnnotationCsv(String fileName, String spaceID, String annotationType, List<String> instances) {
         this.fileName = Objects.requireNonNull(fileName);
         this.spaceID = Objects.requireNonNull(spaceID);
         this.annotationType = Objects.requireNonNull(annotationType);
+        this.instances = instances;
     }
 
     /**
@@ -86,6 +93,7 @@ public abstract class AnnotationCsv {
         Set<ColumnHeader> requiredDicomColumns = new LinkedHashSet<>();
         requiredDicomColumns.add(new ColumnHeader("seriesUID", 0));
         requiredDicomColumns.add(new ColumnHeader("annotationType", 1));
+        requiredDicomColumns.add(new ColumnHeader("instances", 1));
         return requiredDicomColumns;
     }
 
@@ -99,6 +107,7 @@ public abstract class AnnotationCsv {
         requiredDicomColumns.add(new ColumnHeader("fileName", 0));
         requiredDicomColumns.add(new ColumnHeader("spaceID", 0));
         requiredDicomColumns.add(new ColumnHeader("annotationType", 1));
+        requiredDicomColumns.add(new ColumnHeader("instances", 1));
         return requiredDicomColumns;
     }
 
@@ -130,6 +139,10 @@ public abstract class AnnotationCsv {
 
     public String getSpaceID() {
         return spaceID;
+    }
+
+    public List<String> getInstances() {
+        return instances;
     }
 
 }

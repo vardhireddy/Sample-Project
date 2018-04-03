@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * {@code RoiAnnotationCsv} is a bean representing an annotation that is a ROI (e.g. point, line, rectangle, ellipse, polygon or contour).
@@ -43,12 +44,13 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
      *
      * @param seriesUID           (Required) The series instance UID of the DICOM data to which this {@code RoiAnnotationCsv} is associated.
      * @param annotationTypeAsStr (Required) The string representation of the ROI annotation type
+     * @param instances           (Required) The image instances associated this annotation
      * @param coordSys            (Required) The coordinate system in which the data points should be represented
      * @param localID             (Optional) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name                (Optional) A name to identify this ROI.  This name does not need to be unique.
      */
-    public RoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, String coordSys, String localID, String name) {
-        super(seriesUID, annotationTypeAsStr);
+    public RoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, List<String> instances, String coordSys, String localID, String name) {
+        super(seriesUID, annotationTypeAsStr, instances);
         setUp(coordSys, localID, name);
     }
 
@@ -58,12 +60,13 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
      * @param fileName            (Required) The original file name of the non-DICOM image to which this {@code RoiAnnotationCsv} is associated
      * @param spaceID             (Required) The S3 space ID where the non-DICOM image is stored
      * @param annotationTypeAsStr (Required) The string representation of the ROI annotation type
+     * @param instances           (Required) The image instances associated this annotation
      * @param coordSys            (Required) The coordinate system in which the data points should be represented
      * @param localID             (Optional) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name                (Optional) A name to identify this ROI.  This name does not need to be unique.
      */
-    public RoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String coordSys, String localID, String name) {
-        super(fileName, spaceID, annotationTypeAsStr);
+    public RoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, List<String> instances, String coordSys, String localID, String name) {
+        super(fileName, spaceID, annotationTypeAsStr, instances);
         setUp(coordSys, localID, name);
     }
 

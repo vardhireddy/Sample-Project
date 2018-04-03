@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * {@code LabelAnnotationCsv} is a bean representing a label annotation as CSV.
@@ -38,13 +39,14 @@ public class LabelAnnotationCsv extends AnnotationCsv {
      *
      * @param seriesUID           (Required) The series instance UID of the DICOM data to which this {@code LabelAnnotationCsv} is associated.
      * @param annotationTypeAsStr (Required) The string representation of the label annotation type
+     * @param instances           (Required) The image instances associated this annotation
      * @param label               (Required) The label value (e.g. "Pneumothorax")
      * @param severity            (Optional) The severity of the specified label.  For example, if the label is 'Pneumothorax', then the severity could be 'TRACE'.
      * @param indication          (Optional) The indication associated with the specified label.  For example, if the label is 'Pneumothorax', then an indication could be 'Motor Vehicle Accident'.
      * @param findings            (Optional) The findings associated with the specified label such as a radiologist's notes
      */
-    public LabelAnnotationCsv(String seriesUID, String annotationTypeAsStr, String label, String severity, String indication, String findings) {
-        super(seriesUID, annotationTypeAsStr);
+    public LabelAnnotationCsv(String seriesUID, String annotationTypeAsStr, List<String> instances, String label, String severity, String indication, String findings) {
+        super(seriesUID, annotationTypeAsStr, instances);
         setUp(label, severity, indication, findings);
     }
 
@@ -54,13 +56,14 @@ public class LabelAnnotationCsv extends AnnotationCsv {
      * @param fileName            (Required) The original file name of the non-DICOM image to which this {@code LabelAnnotationCsv} is associated
      * @param spaceID             (Required) The S3 space ID where the non-DICOM image is stored
      * @param annotationTypeAsStr (Required) The string representation of the label annotation type
+     * @param instances           (Required) The image instances associated this annotation
      * @param label               (Required) The label value (e.g. "Pneumothorax")
      * @param severity            (Optional) The severity of the specified label.  For example, if the label is 'Pneumothorax', then the severity could be 'TRACE'.
      * @param indication          (Optional) The indication associated with the specified label.  For example, if the label is 'Pneumothorax', then an indication could be 'Motor Vehicle Accident'.
      * @param findings            (Optional) The findings associated with the specified label such as a radiologist's notes
      */
-    public LabelAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, String label, String severity, String indication, String findings) {
-        super(fileName, spaceID, annotationTypeAsStr);
+    public LabelAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, List<String> instances, String label, String severity, String indication, String findings) {
+        super(fileName, spaceID, annotationTypeAsStr, instances);
         setUp(label, severity, indication, findings);
     }
 

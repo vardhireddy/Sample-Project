@@ -67,7 +67,7 @@ public class CsvAnnotationDetailsExporterTest {
     @Test
     public void itShouldSkipUnsupportedAnnotationType() throws Exception {
         // ARRANGE
-        String expectedCsv =  "seriesUID,annotationType,coordSys,data,localID,name\n\"series123\",\"point\",\"IMAGE\",\"[-1.2345, 6.789, 10.1112]\",\"0\",\"ROI name\"\n";
+        String expectedCsv =  "seriesUID,annotationType,instances,coordSys,data,localID,name\n\"series123\",\"point\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[-1.2345, 6.789, 10.1112]\",\"0\",\"ROI name\"\n";
 
         List<Object[]> dbResults = new ArrayList<>();
         // Add a DB result that contains a supported annotation type
