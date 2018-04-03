@@ -82,7 +82,7 @@ public abstract class AnnotationCsv {
         this.fileName = Objects.requireNonNull(fileName);
         this.spaceID = Objects.requireNonNull(spaceID);
         this.annotationType = Objects.requireNonNull(annotationType);
-        this.instances = instances;
+        this.instances = Objects.requireNonNull(Collections.unmodifiableList(instances));
     }
 
     /**
