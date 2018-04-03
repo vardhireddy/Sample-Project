@@ -154,9 +154,15 @@ public class GetAnnotationDetailsTest {
         DICOM("DICOM", "DCM", "patient123", "series123", "seriesUID", "\"series123\""),
 
         /**
+         * A deprecated type of image set that is associated with non-DICOM image data (e.g. PNG, JPG, JPEG).  The patient ID is equal to the source file name
+         * excluding the extension.  The series UID is the 
+         */
+        NON_DICOM_DEPRECATED("non-DICOM deprecated", "PNG", "file123", "space123", "fileName,spaceID", "\"file123\",\"space123\""),
+
+        /**
          * A type of image set that is associated with non-DICOM image data (e.g. PNG, JPG, JPEG).
          */
-        NON_DICOM("non-DICOM", "PNG", "file123.png", "file123.png/space123", "fileName,spaceID", "\"file123.png\",\"\"");
+        NON_DICOM("non-DICOM", "PNG", "file123.png", "file123.png/space123", "fileName,spaceID", "\"file123.png\",\"space123\"");
 
         private String description;
 

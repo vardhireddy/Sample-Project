@@ -117,7 +117,8 @@ public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBea
     private MultiPointRoiAnnotationCsv createNonDicomRoi(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
         // For non-DICOM files which do not actually have a patient ID associated with them, the convention is to use the original file name as the patient ID
         final String fileName = (String) result[resultIndexMap.get("patientID")];
-        final String spaceID = "";
+        final String seriesUID = (String) result[resultIndexMap.get("seriesUID")];
+        final String spaceID = seriesUID.indexOf("/") != -1 ? seriesUID.split("/")[1] : seriesUID;
         final Map<String, Object> commonMetaData = getCommonMetaData(result, resultIndexMap);
 
         return new MultiPointRoiAnnotationCsv(
