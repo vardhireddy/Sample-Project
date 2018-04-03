@@ -55,8 +55,11 @@ public class CsvConversionTemplatesTest {
 
         Map<String, Integer[]> mockResultIndicesMap = new HashMap<>();
 
+        List<String> mockInstances = new ArrayList<>();
+        mockInstances.add("instance123");
+
         List<AnnotationCsv> mockCsvBeans = new ArrayList<>();
-        mockCsvBeans.add(new LabelAnnotationCsv("series123", "label", "pneumothorax", null, null, null));
+        mockCsvBeans.add(new LabelAnnotationCsv("series123", "label", mockInstances,"pneumothorax", null, null, null));
 
         DBResultToCsvBeanConverter mockConverter = (result, resultIndexMap, resultIndiciesMap) -> mockCsvBeans;
 

@@ -20,8 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToListOfDoubles;
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToListOfStrings;
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
 
 /**
  * {@code PointRoiDBResultToCsvBeanConverter} converts a DB result record, which describes a freeform ROI annotation, to its corresponding CSV bean(s) representation.
@@ -85,6 +86,7 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
         return new PointRoiAnnotationCsv(
                 seriesUID,
                 (String) commonMetaData.get("annotationType"),
+                (List<String>) commonMetaData.get("instances"),
                 (String) commonMetaData.get("coordSys"),
                 (List<Double>) commonMetaData.get("data"),
                 (String) commonMetaData.get("localID"),
@@ -110,6 +112,7 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
                 fileName,
                 spaceID,
                 (String) commonMetaData.get("annotationType"),
+                (List<String>) commonMetaData.get("instances"),
                 (String) commonMetaData.get("coordSys"),
                 (List<Double>) commonMetaData.get("data"),
                 (String) commonMetaData.get("localID"),
@@ -128,6 +131,7 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
     private Map<String, Object> getCommonMetaData(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
         Map<String, Object> commonMetaData = new HashMap<>();
         commonMetaData.put("annotationType", (String) result[resultIndexMap.get("annotationType")]);
+        commonMetaData.put("instances", mapToListOfStrings(result[resultIndexMap.get("instances")]));
         commonMetaData.put("coordSys", mapToString(result[resultIndexMap.get("coordSys")]));
         commonMetaData.put("localID", mapToString(result[resultIndexMap.get("roiLocalID")]));
         commonMetaData.put("name", mapToString(result[resultIndexMap.get("roiName")]));
