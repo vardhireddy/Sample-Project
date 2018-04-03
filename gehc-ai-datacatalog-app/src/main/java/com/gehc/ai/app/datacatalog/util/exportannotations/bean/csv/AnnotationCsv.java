@@ -11,6 +11,7 @@
  */
 package com.gehc.ai.app.datacatalog.util.exportannotations.bean.csv;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -66,7 +67,7 @@ public abstract class AnnotationCsv {
     public AnnotationCsv(String seriesUID, String annotationType, List<String> instances) {
         this.seriesUID = Objects.requireNonNull(seriesUID);
         this.annotationType = Objects.requireNonNull(annotationType);
-        this.instances = Objects.requireNonNull(instances);
+        this.instances = Objects.requireNonNull(Collections.unmodifiableList(instances));
     }
 
     /**
