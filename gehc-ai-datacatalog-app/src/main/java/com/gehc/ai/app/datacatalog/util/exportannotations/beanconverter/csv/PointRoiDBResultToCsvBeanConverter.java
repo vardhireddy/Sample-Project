@@ -106,7 +106,7 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
         // For non-DICOM files which do not actually have a patient ID associated with them, the convention is to use the original file name as the patient ID
         final String fileName = (String) result[resultIndexMap.get("patientID")];
         final String seriesUID = (String) result[resultIndexMap.get("seriesUID")];
-        final String spaceID = seriesUID.indexOf("/") != -1 ? seriesUID.split("/")[1] : seriesUID;
+        final String spaceID = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[1] : seriesUID;
         final Map<String, Object> commonMetaData = getCommonMetaData(result, resultIndexMap);
 
         return new PointRoiAnnotationCsv(
