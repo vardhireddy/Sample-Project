@@ -162,7 +162,7 @@ public class GetAnnotationDetailsTest {
         /**
          * A type of image set that is associated with non-DICOM image data (e.g. PNG, JPG, JPEG).
          */
-        NON_DICOM("non-DICOM", "PNG", "file123.png", "file123.png/space123", "fileName,spaceID", "\"file123.png\",\"space123\"");
+        NON_DICOM("non-DICOM", "PNG", "file123", "file123.png/space123", "fileName,spaceID", "\"file123.png\",\"space123\"");
 
         private String description;
 
