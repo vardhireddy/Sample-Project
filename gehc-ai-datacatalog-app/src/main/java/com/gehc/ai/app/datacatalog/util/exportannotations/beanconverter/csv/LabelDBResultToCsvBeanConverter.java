@@ -113,9 +113,9 @@ public class LabelDBResultToCsvBeanConverter implements DBResultToCsvBeanConvert
      */
     private static LabelAnnotationCsv createNonDicomLabel(Object[] result, Map<String, Integer> resultIndexMap, GEClass geClass) throws InvalidAnnotationException {
         // For non-DICOM files which do not actually have a patient ID associated with them, the convention is to use the original file name as the patient ID
-        final String fileName = (String) result[resultIndexMap.get("patientID")];
         final String seriesUID = (String) result[resultIndexMap.get("seriesUID")];
-        final String spaceID = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[1] : seriesUID;
+        final String fileName = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[0]:(String) result[resultIndexMap.get("patientID")];
+        final String spaceID = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[1] : "";
         final Map<String, Object> commonMetaData = getCommonMetaData(result, resultIndexMap, geClass);
 
         return new LabelAnnotationCsv(fileName, spaceID, (String) commonMetaData.get("annotationType"), (List<String>) commonMetaData.get("instances"), (String) commonMetaData.get("name"), (String) commonMetaData.get("value"), (String) commonMetaData.get("indication"), (String) commonMetaData.get("findings"));
