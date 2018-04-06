@@ -25,23 +25,27 @@ import java.util.Objects;
  */
 public class BoundingBox {
 
+    private final List<Double> origin;
+
     private final List<Double> xdir;
 
     private final List<Double> ydir;
 
-    private final List<Double> origin;
-
     /**
      * Creates a new {@code BoundingBox} described by the provided origin, x-direction, and y-direction vectors.
      *
+     * @param origin The point represented the top left vertex of the bounding box
      * @param xdir   A 2D point that when considered with the provided origin forms the x-component vector
      * @param ydir   A 2D point that when considered with the provided origin forms the y-component vector
-     * @param origin The point represented the top left vertex of the bounding box
      */
-    public BoundingBox(@JsonProperty("xdir") List<Double> xdir, @JsonProperty("ydir") List<Double> ydir, @JsonProperty("origin") List<Double> origin) {
+    public BoundingBox(@JsonProperty("origin") List<Double> origin, @JsonProperty("xdir") List<Double> xdir, @JsonProperty("ydir") List<Double> ydir) {
+        this.origin = Collections.unmodifiableList(Objects.requireNonNull(origin));
         this.xdir = Collections.unmodifiableList(Objects.requireNonNull(xdir));
         this.ydir = Collections.unmodifiableList(Objects.requireNonNull(ydir));
-        this.origin = Collections.unmodifiableList(Objects.requireNonNull(origin));
+    }
+
+    public List<Double> getOrigin() {
+        return Collections.unmodifiableList(origin);
     }
 
     public List<Double> getxdir() {
@@ -50,10 +54,6 @@ public class BoundingBox {
 
     public List<Double> getydir() {
         return Collections.unmodifiableList(ydir);
-    }
-
-    public List<Double> getOrigin() {
-        return Collections.unmodifiableList(origin);
     }
 
     @Override

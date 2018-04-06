@@ -469,7 +469,7 @@ public class GetAnnotationDetailsTest {
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "rect", roiName, "\"0\"", "{\"xdir\":[-1.2345,6.789,10.1112],\"ydir\":[-2.3456, 7.8901, 11.1213],\"origin\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "rect", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -479,10 +479,10 @@ public class GetAnnotationDetailsTest {
                 List<AnnotationJson> annotationDetails = new ArrayList<>();
 
                 // Create three mock coordinates
-                List<Double> xdir = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
-                List<Double> ydir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
-                List<Double> origin = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
-                BoundingBox boundingBox = new BoundingBox(xdir, ydir, origin);
+                List<Double> origin = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
+                List<Double> xdir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
+                List<Double> ydir = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
+                BoundingBox boundingBox = new BoundingBox(origin, xdir, ydir);
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
@@ -509,7 +509,7 @@ public class GetAnnotationDetailsTest {
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipse", roiName, "\"0\"", "{\"xdir\":[-1.2345,6.789,10.1112],\"ydir\":[-2.3456, 7.8901, 11.1213],\"origin\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipse", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -519,10 +519,10 @@ public class GetAnnotationDetailsTest {
                 List<AnnotationJson> annotationDetails = new ArrayList<>();
 
                 // Create three mock coordinates
-                List<Double> xdir = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
-                List<Double> ydir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
-                List<Double> origin = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
-                BoundingBox boundingBox = new BoundingBox(xdir, ydir, origin);
+                List<Double> origin = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
+                List<Double> xdir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
+                List<Double> ydir = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
+                BoundingBox boundingBox = new BoundingBox(origin, xdir, ydir);
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
@@ -549,7 +549,7 @@ public class GetAnnotationDetailsTest {
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "box", roiName, "\"0\"", "{\"xdir\":[-1.2345,6.789,10.1112],\"ydir\":[-2.3456, 7.8901, 11.1213],\"zdir\":[-3.4567, 8.9102, 12.1314],\"origin\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "box", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314],\"zdir\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -559,11 +559,11 @@ public class GetAnnotationDetailsTest {
                 List<AnnotationJson> annotationDetails = new ArrayList<>();
 
                 // Create four mock coordinates
-                List<Double> xdir = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
-                List<Double> ydir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
-                List<Double> zdir = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
-                List<Double> origin = createMockCoord(new Double[]{-4.5678, 9.1011, 13.1415});
-                BoundingCube boundingCube = new BoundingCube(xdir, ydir, zdir, origin);
+                List<Double> origin = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
+                List<Double> xdir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
+                List<Double> ydir = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
+                List<Double> zdir = createMockCoord(new Double[]{-4.5678, 9.1011, 13.1415});
+                BoundingCube boundingCube = new BoundingCube(origin, xdir, ydir, zdir);
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
@@ -590,7 +590,7 @@ public class GetAnnotationDetailsTest {
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipsoid", roiName, "\"0\"", "{\"xdir\":[-1.2345,6.789,10.1112],\"ydir\":[-2.3456, 7.8901, 11.1213],\"zdir\":[-3.4567, 8.9102, 12.1314],\"origin\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipsoid", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314],\"zdir\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -600,11 +600,11 @@ public class GetAnnotationDetailsTest {
                 List<AnnotationJson> annotationDetails = new ArrayList<>();
 
                 // Create four mock coordinates
-                List<Double> xdir = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
-                List<Double> ydir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
-                List<Double> zdir = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
-                List<Double> origin = createMockCoord(new Double[]{-4.5678, 9.1011, 13.1415});
-                BoundingCube boundingCube = new BoundingCube(xdir, ydir, zdir, origin);
+                List<Double> origin = createMockCoord(new Double[]{-1.2345, 6.789, 10.1112});
+                List<Double> xdir = createMockCoord(new Double[]{-2.3456, 7.8901, 11.1213});
+                List<Double> ydir = createMockCoord(new Double[]{-3.4567, 8.9102, 12.1314});
+                List<Double> zdir = createMockCoord(new Double[]{-4.5678, 9.1011, 13.1415});
+                BoundingCube boundingCube = new BoundingCube(origin, xdir, ydir, zdir);
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
@@ -680,7 +680,7 @@ public class GetAnnotationDetailsTest {
         String result = dataCatalogDao.getAnnotationDetailsAsCsvByImageSetIDs(MOCK_DATA_IMAGE_SET_IDS);
 
         // ASSERT
-        assertThat(this.expectedAnnotDetailsAsCsv, is(equalTo(result)));
+        assertThat(result, is(equalTo(this.expectedAnnotDetailsAsCsv)));
     }
 
 }
