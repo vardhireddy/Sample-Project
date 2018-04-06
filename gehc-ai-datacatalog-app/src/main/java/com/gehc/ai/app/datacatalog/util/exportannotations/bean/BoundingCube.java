@@ -30,13 +30,13 @@ public final class BoundingCube extends BoundingBox {
     /**
      * Creates a new {@code BoundingCube} described by the provided origin, x-direction, y-direction, and z-direction vectors.
      *
+     * @param origin The point represented the top left vertex of the bounding box
      * @param xdir   A 3D point that when considered with the provided origin forms the x-component vector
      * @param ydir   A 3D point that when considered with the provided origin forms the y-component vector
      * @param zdir   A 3D point that when considered with the provided origin forms the z-component vector
-     * @param origin The point represented the top left vertex of the bounding box
      */
-    public BoundingCube(@JsonProperty("xdir") List<Double> xdir, @JsonProperty("ydir") List<Double> ydir, @JsonProperty("zdir") List<Double> zdir, @JsonProperty("origin") List<Double> origin) {
-        super(xdir, ydir, origin);
+    public BoundingCube(@JsonProperty("origin") List<Double> origin, @JsonProperty("xdir") List<Double> xdir, @JsonProperty("ydir") List<Double> ydir, @JsonProperty("zdir") List<Double> zdir) {
+        super(origin, xdir, ydir);
         this.zdir = Collections.unmodifiableList(Objects.requireNonNull(zdir));
     }
 

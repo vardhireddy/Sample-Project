@@ -43,9 +43,9 @@ public class BoundingBoxDataConverter implements RoiDataConverter {
     public List<List<Double>> convertRoiData(Object boundingBoxObj) throws InvalidAnnotationException {
         BoundingBox boundingBox = toBoundingBox(boundingBoxObj);
         List<List<Double>> data = new ArrayList<>();
+        data.add(boundingBox.getOrigin());
         data.add(boundingBox.getxdir());
         data.add(boundingBox.getydir());
-        data.add(boundingBox.getOrigin());
 
         return data;
     }

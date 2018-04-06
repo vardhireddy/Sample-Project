@@ -43,10 +43,10 @@ public class BoundingCubeDataConverter implements RoiDataConverter {
     public List<List<Double>> convertRoiData(Object boundingCubeObj) throws InvalidAnnotationException {
         BoundingCube boundingCube = toBoundingCube(boundingCubeObj);
         List<List<Double>> data = new ArrayList<>();
+        data.add(boundingCube.getOrigin());
         data.add(boundingCube.getxdir());
         data.add(boundingCube.getydir());
         data.add(boundingCube.getzdir());
-        data.add(boundingCube.getOrigin());
 
         return data;
     }
