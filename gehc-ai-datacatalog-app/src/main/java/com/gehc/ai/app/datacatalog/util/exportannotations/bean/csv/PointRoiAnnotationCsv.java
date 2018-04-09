@@ -39,9 +39,10 @@ public class PointRoiAnnotationCsv extends RoiAnnotationCsv {
      * @param data                (Required) The array of data points that comprise the ROI.
      * @param localID             (Optional) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name                (Optional) A name to identify this ROI.  This name does not need to be unique.
+     * @param index               (Optional) The frame index this ROI is associated with
      */
-    public PointRoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, List<String> instances, String coordSys, List<Double> data, String localID, String name) {
-        super(seriesUID, annotationTypeAsStr, instances, coordSys, localID, name);
+    public PointRoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, List<String> instances, String coordSys, List<Double> data, String localID, String name, Integer index) {
+        super(seriesUID, annotationTypeAsStr, instances, coordSys, localID, name, index);
         this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 
@@ -56,9 +57,10 @@ public class PointRoiAnnotationCsv extends RoiAnnotationCsv {
      * @param data                (Required) The array of data points that comprise the ROI.
      * @param localID             (Optional) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name                (Optional) A name to identify this ROI.  This name does not need to be unique.
+     * @param index               (Optional) The frame index this ROI is associated with
      */
-    public PointRoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, List<String> instances, String coordSys, List<Double> data, String localID, String name) {
-        super(fileName, spaceID, annotationTypeAsStr, instances, coordSys, localID, name);
+    public PointRoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, List<String> instances, String coordSys, List<Double> data, String localID, String name, Integer index) {
+        super(fileName, spaceID, annotationTypeAsStr, instances, coordSys, localID, name, index);
         this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 

@@ -30,7 +30,7 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
     private static final ColumnHeader[] REQUIRED_COLUMNS = new ColumnHeader[]{
             new ColumnHeader("coordSys", 1),
             new ColumnHeader("data", 1),
-            new ColumnHeader("localID", 1),
+            new ColumnHeader("localID", 1)
     };
 
     private String coordSys;
@@ -38,6 +38,8 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
     private String localID;
 
     private String name;
+
+    private Integer index;
 
     /**
      * Creates a new {@code RoiAnnotationCsv} that is associated with a DICOM image set.
@@ -48,10 +50,11 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
      * @param coordSys            (Required) The coordinate system in which the data points should be represented
      * @param localID             (Optional) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name                (Optional) A name to identify this ROI.  This name does not need to be unique.
+     * @param index               (Optional) The frame index this ROI is associated with
      */
-    public RoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, List<String> instances, String coordSys, String localID, String name) {
+    public RoiAnnotationCsv(String seriesUID, String annotationTypeAsStr, List<String> instances, String coordSys, String localID, String name, Integer index) {
         super(seriesUID, annotationTypeAsStr, instances);
-        setUp(coordSys, localID, name);
+        setUp(coordSys, localID, name, index);
     }
 
     /**
@@ -64,10 +67,11 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
      * @param coordSys            (Required) The coordinate system in which the data points should be represented
      * @param localID             (Optional) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name                (Optional) A name to identify this ROI.  This name does not need to be unique.
+     * @param index               (Optional) The frame index this ROI is associated with
      */
-    public RoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, List<String> instances, String coordSys, String localID, String name) {
+    public RoiAnnotationCsv(String fileName, String spaceID, String annotationTypeAsStr, List<String> instances, String coordSys, String localID, String name, Integer index) {
         super(fileName, spaceID, annotationTypeAsStr, instances);
-        setUp(coordSys, localID, name);
+        setUp(coordSys, localID, name, index);
     }
 
     /**
@@ -76,11 +80,13 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
      * @param coordSys (Required) The coordinate system in which the data points should be represented
      * @param localID  (Required) A identifier that is unique relative to other ROIs associated with the same image set.
      * @param name     (Optional) A name to identify this ROI.  This name does not need to be unique.
+     * @param index    (Optional) The frame index this ROI is associated with
      */
-    private void setUp(String coordSys, String localID, String name) {
+    private void setUp(String coordSys, String localID, String name, Integer index) {
         this.coordSys = Objects.requireNonNull(coordSys);
         this.localID = Objects.requireNonNull(localID);
         this.name = name;
+        this.index = index;
     }
 
     /////////////////////////
@@ -113,6 +119,14 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
         this.name = name;
     }
 
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
     /////////////////////////////////////////////////
     //
     // APIs for defining CSV column set for an ROI //
@@ -131,8 +145,9 @@ public abstract class RoiAnnotationCsv extends AnnotationCsv {
 
     @Override
     public Set<ColumnHeader> getOptionalColumnsWithValues() {
-        Map<String, String> optionalColumnValues = new LinkedHashMap<>();
+        Map<String, Object> optionalColumnValues = new LinkedHashMap<>();
         optionalColumnValues.put("name", getName());
+        optionalColumnValues.put("index", getIndex());
         return optionalColumnValues.entrySet().stream().filter(entry -> entry.getValue() != null).map(nonNullEntry -> new ColumnHeader(nonNullEntry.getKey(), 1)).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

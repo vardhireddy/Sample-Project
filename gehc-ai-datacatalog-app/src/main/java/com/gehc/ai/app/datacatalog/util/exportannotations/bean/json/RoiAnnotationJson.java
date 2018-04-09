@@ -24,11 +24,14 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
 
     private final String name;
 
-    public RoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType, String coordSys, String localID, String name) {
+    private final Integer index;
+
+    public RoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType, String coordSys, String localID, String name, Integer index) {
         super(patientID, seriesUID, imageSetFormat, annotationID, annotationType);
         this.coordSys = coordSys;
         this.localID = localID;
         this.name = name;
+        this.index = index;
     }
 
     /////////////////////////
@@ -49,6 +52,10 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
         return name;
     }
 
+    public Integer getIndex() {
+        return index;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,6 +68,7 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
         if (!super.equals(that)) return false;
         if (!getCoordSys().equals(that.getCoordSys())) return false;
         if (!getLocalID().equals(that.getLocalID())) return false;
+        if (getIndex() != null ? !getIndex().equals(that.getIndex()) : that.getIndex() != null) return false;
         return (getName() != null) ? (getName().equals(that.getName())) : (that.getName() == null);
     }
 
@@ -70,6 +78,7 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
         int result = super.hashCode();
         result = 31 * result + getCoordSys().hashCode();
         result = 31 * result + getLocalID().hashCode();
+        result = 31 * result + (getIndex() != null ? getIndex().hashCode() : 0);
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         return result;
     }

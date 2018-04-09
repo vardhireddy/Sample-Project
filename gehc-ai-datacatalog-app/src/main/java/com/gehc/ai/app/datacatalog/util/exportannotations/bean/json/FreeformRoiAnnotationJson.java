@@ -32,9 +32,10 @@ public class FreeformRoiAnnotationJson extends RoiAnnotationJson {
      * @param seriesUID      The series instance UID of the DICOM data to which this annotation is associated
      * @param imageSetFormat The data format of the image set to which this annotation is associated
      * @param annotationType This annotation's type
+     * @param index          The frame index this ROI is associated with
      */
-    public FreeformRoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, FreeformRoiType annotationType, String coordSys, List<List<Double>> data, String localID, String name) {
-        super(patientID, seriesUID, imageSetFormat, annotationID, annotationType.toString().toLowerCase(Locale.ENGLISH), coordSys, localID, name);
+    public FreeformRoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, FreeformRoiType annotationType, String coordSys, List<List<Double>> data, String localID, String name, Integer index) {
+        super(patientID, seriesUID, imageSetFormat, annotationID, annotationType.toString().toLowerCase(Locale.ENGLISH), coordSys, localID, name, index);
         this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 

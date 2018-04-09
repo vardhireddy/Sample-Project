@@ -102,7 +102,8 @@ public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBea
                 (String) commonMetaData.get("coordSys"),
                 (List<List<Double>>) commonMetaData.get("data"),
                 (String) commonMetaData.get("localID"),
-                (String) commonMetaData.get("name")
+                (String) commonMetaData.get("name"),
+                (Integer) commonMetaData.get("index")
         );
     }
 
@@ -129,7 +130,8 @@ public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBea
                 (String) commonMetaData.get("coordSys"),
                 (List<List<Double>>) commonMetaData.get("data"),
                 (String) commonMetaData.get("localID"),
-                (String) commonMetaData.get("name")
+                (String) commonMetaData.get("name"),
+                (Integer) commonMetaData.get("index")
         );
     }
 
@@ -149,6 +151,7 @@ public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBea
         commonMetaData.put("localID", mapToString(result[resultIndexMap.get("roiLocalID")]));
         commonMetaData.put("name", mapToString(result[resultIndexMap.get("roiName")]));
         commonMetaData.put("data", this.roiDataSupplier.get().convertRoiData(result[resultIndexMap.get("roiData")]));
+        commonMetaData.put("index", (Integer) (result[resultIndexMap.get("roiIndex")]));
 
         return commonMetaData;
     }
