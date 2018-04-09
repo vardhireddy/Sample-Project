@@ -68,7 +68,7 @@ public abstract class RoiAnnotationJson extends AnnotationJson {
         if (!super.equals(that)) return false;
         if (!getCoordSys().equals(that.getCoordSys())) return false;
         if (!getLocalID().equals(that.getLocalID())) return false;
-        if (getIndex() != null ? !getIndex().equals(that.getIndex()) : that.getIndex() != null) return false;
+        if (getIndex() != null ? !getIndex().equals(that.getIndex()) : (that.getIndex() != null)) return false;
         return (getName() != null) ? (getName().equals(that.getName())) : (that.getName() == null);
     }
 
