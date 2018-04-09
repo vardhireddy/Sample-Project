@@ -142,7 +142,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(an.item, '$.origin') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.uri') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.format') as CHAR(500)), "
-			+ " CAST(JSON_EXTRACT(an.item, '$.index') as CHAR(500)) "
+			+ " CAST(JSON_EXTRACT(an.item, '$.index') as CHAR(3)) "
 			+ " FROM patient p inner join image_set im on im.patient_dbid = p.id  "
 			+ " inner join annotation an on an.image_set = im.id "
 			+ " WHERE im.id in (";
