@@ -31,9 +31,10 @@ public class PointRoiAnnotationJson extends RoiAnnotationJson {
      * @param seriesUID      The series instance UID of the DICOM data to which this annotation is associated
      * @param imageSetFormat The data format of the image set to which this annotation is associated
      * @param annotationType This annotation's type
+     * @param index          The frame index this ROI is associated with
      */
-    public PointRoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType, String coordSys, List<Double> data, String localID, String name) {
-        super(patientID, seriesUID, imageSetFormat, annotationID, annotationType, coordSys, localID, name);
+    public PointRoiAnnotationJson(String patientID, String seriesUID, String imageSetFormat, Long annotationID, String annotationType, String coordSys, List<Double> data, String localID, String name, Integer index) {
+        super(patientID, seriesUID, imageSetFormat, annotationID, annotationType, coordSys, localID, name, index);
         this.data = Collections.unmodifiableList(Objects.requireNonNull(data));
     }
 

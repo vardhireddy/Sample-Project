@@ -37,8 +37,9 @@ public class PointRoiDBResultToJsonBeanConverter implements DBResultToJsonBeanCo
                 (String) result[resultIndexMap.get("annotationType")],
                 mapToString(result[resultIndexMap.get("coordSys")]),
                 mapToListOfDoubles(result[resultIndexMap.get("roiData")]),
-                mapToString( result[resultIndexMap.get("roiLocalID")]),
-                mapToString(result[resultIndexMap.get("roiName")])
+                mapToString(result[resultIndexMap.get("roiLocalID")]),
+                mapToString(result[resultIndexMap.get("roiName")]),
+                (Integer) result[resultIndexMap.get("roiIndex")]
         );
     }
 

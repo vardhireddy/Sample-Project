@@ -90,7 +90,8 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
                 (String) commonMetaData.get("coordSys"),
                 (List<Double>) commonMetaData.get("data"),
                 (String) commonMetaData.get("localID"),
-                (String) commonMetaData.get("name")
+                (String) commonMetaData.get("name"),
+                (Integer) commonMetaData.get("index")
         );
     }
 
@@ -105,7 +106,7 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
     private PointRoiAnnotationCsv createNonDicomRoi(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
         // For non-DICOM files which do not actually have a patient ID associated with them, the convention is to use the original file name as the patient ID
         final String seriesUID = (String) result[resultIndexMap.get("seriesUID")];
-        final String fileName = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[0]:(String) result[resultIndexMap.get("patientID")];
+        final String fileName = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[0] : (String) result[resultIndexMap.get("patientID")];
         final String spaceID = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[1] : "";
         final Map<String, Object> commonMetaData = getCommonMetaData(result, resultIndexMap);
 
@@ -117,7 +118,8 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
                 (String) commonMetaData.get("coordSys"),
                 (List<Double>) commonMetaData.get("data"),
                 (String) commonMetaData.get("localID"),
-                (String) commonMetaData.get("name")
+                (String) commonMetaData.get("name"),
+                (Integer) commonMetaData.get("index")
         );
     }
 
@@ -137,6 +139,7 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
         commonMetaData.put("localID", mapToString(result[resultIndexMap.get("roiLocalID")]));
         commonMetaData.put("name", mapToString(result[resultIndexMap.get("roiName")]));
         commonMetaData.put("data", mapToListOfDoubles(result[resultIndexMap.get("roiData")]));
+        commonMetaData.put("index", (Integer) (result[resultIndexMap.get("roiIndex")]));
 
         return commonMetaData;
     }

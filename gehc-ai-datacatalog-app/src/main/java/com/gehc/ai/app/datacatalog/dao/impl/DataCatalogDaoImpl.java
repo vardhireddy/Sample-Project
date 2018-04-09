@@ -12,28 +12,6 @@
 
 package com.gehc.ai.app.datacatalog.dao.impl;
 
-import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -53,6 +31,26 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationDetailsEx
 import com.gehc.ai.app.datacatalog.util.exportannotations.JsonAnnotationDetailsExporter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 
 @Service
 @Component
@@ -143,7 +141,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " CAST(JSON_EXTRACT(im.properties, '$.instances') as CHAR(20000)),"
 			+ " CAST(JSON_EXTRACT(an.item, '$.origin') as CHAR(500)), "
 			+ " CAST(JSON_EXTRACT(an.item, '$.uri') as CHAR(500)), "
-			+ " CAST(JSON_EXTRACT(an.item, '$.format') as CHAR(500)) "
+			+ " CAST(JSON_EXTRACT(an.item, '$.format') as CHAR(500)), "
+			+ " CAST(JSON_EXTRACT(an.item, '$.index') as CHAR(3)) "
 			+ " FROM patient p inner join image_set im on im.patient_dbid = p.id  "
 			+ " inner join annotation an on an.image_set = im.id "
 			+ " WHERE im.id in (";
@@ -462,6 +461,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		resultIndexMap.put("maskOrigin", 23);
 		resultIndexMap.put("maskURI", 24);
 		resultIndexMap.put("maskFormat", 25);
+		resultIndexMap.put("roiIndex", 26);
 
 		// For result meta data that is composed of multiple values, create a map for indicating which indices map to which aggregate result meta data
 		Map<String, Integer[]> resultIndicesMap = new HashMap<>();

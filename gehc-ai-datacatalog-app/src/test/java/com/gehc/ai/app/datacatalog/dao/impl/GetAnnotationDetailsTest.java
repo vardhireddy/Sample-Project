@@ -270,7 +270,7 @@ public class GetAnnotationDetailsTest {
                 String indication = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"Test indication\"" : null;
                 String findings = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"Test findings\"" : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "label", null, null, null, "{\"name\":\"Foreign Bodies\"" + severity + "}", "{\"name\":\"Calcification\"}", null, null, null, null, null, null, null, null, null, null, indication, findings, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "label", null, null, null, "{\"name\":\"Foreign Bodies\"" + severity + "}", "{\"name\":\"Calcification\"}", null, null, null, null, null, null, null, null, null, null, indication, findings, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, null};
 
                 mockDBResults.add(newObj);
                 return mockDBResults;
@@ -312,8 +312,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "point", roiName, "\"0\"", "[-1.2345,6.789,10.1112]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "point", roiName, "\"0\"", "[-1.2345,6.789,10.1112]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -327,8 +328,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                AnnotationJson annotation = new PointRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, "point", "IMAGE", point, "0", roiName);
+                AnnotationJson annotation = new PointRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, "point", "IMAGE", point, "0", roiName, roiIndex);
                 annotationDetails.add(annotation);
                 return annotationDetails;
             }
@@ -336,10 +338,10 @@ public class GetAnnotationDetailsTest {
             @Override
             String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
-                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+                String optionalValues = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\",\"0\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name,index" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"point\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[-1.2345, 6.789, 10.1112]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"point\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[-1.2345, 6.789, 10.1112]\",\"0\"" + optionalValues + "\n";
             }
         },
         LINE() {
@@ -349,8 +351,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "line", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "line", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -366,8 +369,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                AnnotationJson annotation = new FreeformRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, FreeformRoiType.LINE, "IMAGE", coords, "0", roiName);
+                AnnotationJson annotation = new FreeformRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, FreeformRoiType.LINE, "IMAGE", coords, "0", roiName, roiIndex);
                 annotationDetails.add(annotation);
                 return annotationDetails;
             }
@@ -375,10 +379,10 @@ public class GetAnnotationDetailsTest {
             @Override
             String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
-                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+                String optionalValues = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\",\"0\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name,index" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"line\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"line\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213]]\",\"0\"" + optionalValues + "\n";
             }
         },
         POLYGON() {
@@ -388,8 +392,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "polygon", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "polygon", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -406,8 +411,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                AnnotationJson annotation = new FreeformRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, FreeformRoiType.POLYGON, "IMAGE", coords, "0", roiName);
+                AnnotationJson annotation = new FreeformRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, FreeformRoiType.POLYGON, "IMAGE", coords, "0", roiName, roiIndex);
                 annotationDetails.add(annotation);
                 return annotationDetails;
             }
@@ -415,10 +421,10 @@ public class GetAnnotationDetailsTest {
             @Override
             String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
-                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+                String optionalValues = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\",\"0\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name,index" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"polygon\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"polygon\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + optionalValues + "\n";
             }
         },
         CONTOUR() {
@@ -428,8 +434,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "contour", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "contour", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -446,8 +453,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                AnnotationJson annotation = new FreeformRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, FreeformRoiType.CONTOUR, "IMAGE", coords, "0", roiName);
+                AnnotationJson annotation = new FreeformRoiAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, FreeformRoiType.CONTOUR, "IMAGE", coords, "0", roiName, roiIndex);
                 annotationDetails.add(annotation);
                 return annotationDetails;
             }
@@ -455,10 +463,10 @@ public class GetAnnotationDetailsTest {
             @Override
             String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
-                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+                String optionalValues = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\",\"0\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name,index" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"contour\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"contour\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + optionalValues + "\n";
             }
         },
         RECT() {
@@ -468,8 +476,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "rect", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "rect", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -486,8 +495,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                AnnotationJson annotation = new BoundingBoxAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingBoxType.RECT, "IMAGE", boundingBox, "0", roiName);
+                AnnotationJson annotation = new BoundingBoxAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingBoxType.RECT, "IMAGE", boundingBox, "0", roiName, roiIndex);
                 annotationDetails.add(annotation);
                 return annotationDetails;
             }
@@ -495,10 +505,10 @@ public class GetAnnotationDetailsTest {
             @Override
             String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
-                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+                String optionalValues = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\",\"0\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name,index" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"rect\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"rect\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + optionalValues + "\n";
             }
         },
         ELLIPSE() {
@@ -508,8 +518,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipse", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipse", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -526,8 +537,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                AnnotationJson annotation = new BoundingBoxAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingBoxType.ELLIPSE, "IMAGE", boundingBox, "0", roiName);
+                AnnotationJson annotation = new BoundingBoxAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingBoxType.ELLIPSE, "IMAGE", boundingBox, "0", roiName, roiIndex);
                 annotationDetails.add(annotation);
                 return annotationDetails;
             }
@@ -535,10 +547,10 @@ public class GetAnnotationDetailsTest {
             @Override
             String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
-                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+                String optionalValues = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\",\"0\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name,index" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipse\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipse\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314]]\",\"0\"" + optionalValues + "\n";
             }
         },
         BOX() {
@@ -548,8 +560,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "box", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314],\"zdir\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "box", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314],\"zdir\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -567,8 +580,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                AnnotationJson annotation = new BoundingCubeAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingCubeType.BOX, "IMAGE", boundingCube, "0", roiName);
+                AnnotationJson annotation = new BoundingCubeAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingCubeType.BOX, "IMAGE", boundingCube, "0", roiName, roiIndex);
                 annotationDetails.add(annotation);
                 return annotationDetails;
             }
@@ -576,10 +590,10 @@ public class GetAnnotationDetailsTest {
             @Override
             String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
-                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+                String optionalValues = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\",\"0\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name,index" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"box\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"box\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + optionalValues + "\n";
             }
         },
         ELLIPSOID() {
@@ -589,8 +603,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipsoid", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314],\"zdir\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+                Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipsoid", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314],\"zdir\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
                 return mockDBResults;
             }
@@ -608,8 +623,9 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "ROI Name" : null;
+                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
 
-                AnnotationJson annotation = new BoundingCubeAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingCubeType.ELLIPSOID, "IMAGE", boundingCube, "0", roiName);
+                AnnotationJson annotation = new BoundingCubeAnnotationJson(imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1L, BoundingCubeType.ELLIPSOID, "IMAGE", boundingCube, "0", roiName, roiIndex);
                 annotationDetails.add(annotation);
                 return annotationDetails;
             }
@@ -617,10 +633,10 @@ public class GetAnnotationDetailsTest {
             @Override
             String getExpectedAnnotDetailsAsCsv(ImageSetType imageSetType, MetaDataTypes metaDataTypes) {
                 // Set optional fields based on the defined meta data type spec
-                String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\"" : "";
-                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name" : "";
+                String optionalValues = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",\"ROI Name\",\"0\"" : "";
+                String optionalColumns = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? ",name,index" : "";
 
-                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipsoid\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + roiName + "\n";
+                return imageSetType.getCsvColumnHeaders() + ",annotationType,instances,coordSys,data,localID" + optionalColumns + "\n" + imageSetType.getCsvColumnValues() + ",\"ellipsoid\",\"[1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695, 1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199]\",\"IMAGE\",\"[[-1.2345, 6.789, 10.1112], [-2.3456, 7.8901, 11.1213], [-3.4567, 8.9102, 12.1314], [-4.5678, 9.1011, 13.1415]]\",\"0\"" + optionalValues + "\n";
             }
         };
 

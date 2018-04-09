@@ -44,6 +44,7 @@ public class JsonAnnotationDetailsExporterTest {
         resultIndexMap.put("maskOrigin", 23);
         resultIndexMap.put("maskURI", 24);
         resultIndexMap.put("maskFormat", 25);
+        resultIndexMap.put("roiIndex", 26);
     }
 
     /**
@@ -79,15 +80,15 @@ public class JsonAnnotationDetailsExporterTest {
         // ARRANGE
         List<AnnotationJson> expectedAnnotationBeans = new ArrayList<>();
         List<Double> pointCoords = DoubleStream.of(new double[]{-1.2345, 6.789, 10.1112}).boxed().collect(Collectors.toList());
-        expectedAnnotationBeans.add(new PointRoiAnnotationJson("patient123", "series123", "DCM", 1L, "point", "IMAGE", pointCoords, "0", "ROI name"));
+        expectedAnnotationBeans.add(new PointRoiAnnotationJson("patient123", "series123", "DCM", 1L, "point", "IMAGE", pointCoords, "0", "ROI name",0));
 
         List<Object[]> dbResults = new ArrayList<>();
         // Add a DB result that contains a supported annotation type
-        Object[] pointAnnotation = new Object[]{"patient123", "series123", "DCM", 1, "point", "\"ROI name\"", "\"0\"", "[-1.2345,6.789,10.1112]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+        Object[] pointAnnotation = new Object[]{"patient123", "series123", "DCM", 1, "point", "\"ROI name\"", "\"0\"", "[-1.2345,6.789,10.1112]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, 0};
         dbResults.add(pointAnnotation);
 
         // Add a DB result that contains an unsupported annotation type
-        Object[] unsupportedAnnotation = new Object[]{"patient123", "series123", "DCM", 1, "contour2d", "\"ROI name\"", "\"0\"", "[-1.2345,6.789,10.1112]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null};
+        Object[] unsupportedAnnotation = new Object[]{"patient123", "series123", "DCM", 1, "contour2d", "\"ROI name\"", "\"0\"", "[-1.2345,6.789,10.1112]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, 0};
         dbResults.add(unsupportedAnnotation);
 
         // ACT
