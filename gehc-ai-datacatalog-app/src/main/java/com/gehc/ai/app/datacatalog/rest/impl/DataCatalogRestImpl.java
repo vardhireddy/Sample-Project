@@ -115,6 +115,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String DATE_FROM = "dateFrom";
     public static final String DATE_TO = "dateTo";
     public static final int ORG_ID_LENGTH = 255;
+    public static final String VIEW = "view";
 
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
@@ -841,7 +842,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             throw new WebApplicationException(exception.getLocalizedMessage());
         }
         Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
-                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, ANNOTATIONS, GE_CLASS, DATE_FROM, DATE_TO));
+                SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, VIEW, ANNOTATIONS, GE_CLASS, DATE_FROM, DATE_TO));
 
         ResponseBuilder responseBuilder;
         List<ImageSeries> imageSeriesLst = new ArrayList<ImageSeries>();

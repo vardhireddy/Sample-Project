@@ -139,7 +139,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}", Timestamp.valueOf("2018-03-08 10:51:30") };
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}", Timestamp.valueOf("2018-03-08 10:51:30"), "AP" };
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
     }
@@ -168,7 +168,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30") };
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30"), "AP" };
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
 
@@ -440,6 +440,7 @@ public class DataCatalogDaoImplTest {
 //        p.setAge("12");
 //        p.setGender("M");
         imgSeries.setUploadDate(getUploadDate());
+        imgSeries.setView("AP");
         imgSeries.setPatient(p);
         imageSeriesList.add(imgSeries);
         return imageSeriesList;
@@ -462,7 +463,7 @@ public class DataCatalogDaoImplTest {
         LinkedHashMap prop = new LinkedHashMap();
         imgSeries.setProperties(null);
 //        imgSeries.setImageType("test");
-//        imgSeries.setView("test");
+        imgSeries.setView("AP");
         p.setPatientId("test");
 //        p.setAge("12");
 //        p.setGender("M");
