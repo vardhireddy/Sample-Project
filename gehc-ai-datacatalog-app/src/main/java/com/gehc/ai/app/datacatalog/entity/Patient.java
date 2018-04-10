@@ -22,8 +22,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -83,6 +86,7 @@ public class Patient implements Serializable {
      */
     @Column(name="patient_id")
     @Size(min=1, max=255)
+    @NotNull
     private String patientId;
     public String getPatientId() {
         return patientId;
@@ -132,7 +136,9 @@ public class Patient implements Serializable {
      * The organization who owns or uploads the data. This could be an entry in an org database
      */
     @Column(name="org_id")
-    @Size(max=255)
+    @Size(min=1,max=255)
+    @Pattern(regexp = UUID)
+    @NotNull
     private String orgId;
     public String getOrgId() { return orgId; }
     public void setOrgId(String orgId) {

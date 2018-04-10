@@ -1,21 +1,23 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import com.gehc.ai.app.datacatalog.entity.*;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,6 +25,13 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 
 /**
  * Created by sowjanyanaidu on 9/5/17.
@@ -33,12 +42,22 @@ public class DataCatalogDaoImplTest {
     @Mock
     EntityManager entityManager;
     @Mock
+    ContractRepository contractRepository;
+    @Mock
     Query query;
     @Mock
     ObjectMapper mapper;
 
     @InjectMocks
     DataCatalogDaoImpl dataCatalogDao;
+
+    public LocalDateTime getUploadDate() {
+        String str = "2018-03-08 10:51:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localtDateAndTime = LocalDateTime.parse(str, formatter);
+
+        return localtDateAndTime;
+    }
 
 /*    @Test
     public void testGetImageSeriesIdLst() {
@@ -61,6 +80,42 @@ public class DataCatalogDaoImplTest {
     }
 
     @Test
+    public void testGEClassesWithoutGEClass() {
+        Map geClass = getParamsMap();
+        geClass.remove("ge-class");
+        returnValue = dataCatalogDao.getGEClasses(geClass);
+        List expectedList = new ArrayList();
+        expectedList.add(1L);
+        expectedList.add(2L);
+        GEClass[] expectedValue = new GEClass[0];
+        assertEquals(expectedValue.getClass(), returnValue.getClass());
+    }
+
+    @Test
+    public void testGEClassesThrowsException() {
+        Map geClass = getParamsMap();
+        geClass.put("ge-class", "[\"name\": \"Aorta Abnormalities\"}, {\"name\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]");// {"name": "Pediatric", "value": "", "patient_outcome": "40"}]
+        returnValue = dataCatalogDao.getGEClasses(geClass);
+        List expectedList = new ArrayList();
+        expectedList.add(1L);
+        expectedList.add(2L);
+        GEClass[] expectedValue = new GEClass[0];
+        assertEquals(expectedValue.getClass(), returnValue.getClass());
+    }
+
+    @Test
+    public void testGEClassesThrowsException2() {
+        Map geClass = getParamsMap();
+        geClass.put("ge-class", "[{\"name\": }, {\"\": \"Pediatric\", \"value\": \"\", \"patient_outcome\": \"40\"}]");// {"name": "Pediatric", "value": "", "patient_outcome": "40"}]
+        returnValue = dataCatalogDao.getGEClasses(geClass);
+        List expectedList = new ArrayList();
+        expectedList.add(1L);
+        expectedList.add(2L);
+        GEClass[] expectedValue = new GEClass[0];
+        assertEquals(expectedValue.getClass(), returnValue.getClass());
+    }
+
+    @Test
     public void testgeClassDataSummary() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
@@ -70,11 +125,21 @@ public class DataCatalogDaoImplTest {
 
     }
 
+    @Test
+    public void testgeClassDataSummaryAnatomy() {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
+        when(query.getResultList()).thenReturn(getQueryList("anatomy"));
+        Map result = dataCatalogDao.geClassDataSummary(getMapForGEClassDataSummary(), "123");
+        assertEquals("{8203=CHEST}", result.toString());
+
+    }
+
     public void dataSetUp() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test"};
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}", Timestamp.valueOf("2018-03-08 10:51:30"), "AP" };
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
     }
@@ -84,9 +149,34 @@ public class DataCatalogDaoImplTest {
         dataSetUp();
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
-        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
         List result = dataCatalogDao.getImgSeriesByFilters(input);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
+    }
+
+    @Test(expected = Exception.class)
+    public void testgetImageSeriesByFiltersThrowsException() {
+        // dataSetUp();
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "LABEL"));
+        input.putAll(constructQueryParam("fromDate", "LABEL"));
+        List result = dataCatalogDao.getImgSeriesByFilters(input);
+    }
+
+    @Test
+    public void testgetImageSeriesByFiltersWithNullProperties() {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
+        List expectedList = new ArrayList();
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30"), "AP" };
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "LABEL"));
+        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        assertEquals(getImageSeriesWithFiltersAndNullProperties().toString(), result.toString());
     }
 
     @Test
@@ -107,36 +197,17 @@ public class DataCatalogDaoImplTest {
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
-
-    @Test
-    public void testgetDCByID() {
-        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
-        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
-        List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{"1", "SUID", 1, "test", "test", "test","test", "{}", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","test","test","test","[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]"};
-        expectedList.add(newObj);
-        when(query.getResultList()).thenReturn(expectedList);
-        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
-        List<Long> ids = new ArrayList<Long>();
-        ids.add(0, 1L);
-        ids.add(1, 2L);
-        List result = dataCatalogDao.getAnnotationsByDSId(ids);
-        assertEquals(getAnnotationDetails().size(), result.size());
-        assertEquals(getAnnotationDetails().toArray()[0].getClass(), result.toArray()[0].getClass());
-      //  assertEquals(getAnnotationDetails().toString(), result.toString());
-    }
-
     @Test
     public void testGetAnnotationIdsWhenTriedToSavePointAnnotation() throws DataCatalogException {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "[1105.8823529411766,616.3315508021391,2]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
-        List result = dataCatalogDao.getAnnotationsIds( getForPointAnnotation());
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(getForPointAnnotation());
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -145,13 +216,13 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","[1105.8823529411766,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "[1105.8823529411766,616.3315508021391,2]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation lineAnnotation = getForPointAnnotation();
         lineAnnotation.setType("line");
-        List result = dataCatalogDao.getAnnotationsIds( lineAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(lineAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -159,15 +230,14 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,"test","[1105,616.3315508021391,2]",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "[1105,616.3315508021391,2]", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation lineAnnotation = getForPointAnnotation();
         lineAnnotation.setType("line");
-        List result = dataCatalogDao.getAnnotationsIds( lineAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(lineAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
-
 
 
     @Test
@@ -176,14 +246,14 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation rectAnnotation = getForPointAnnotation();
         rectAnnotation.setType("rect");
         getRectangleEllipseItemInfo(rectAnnotation);
-        List result = dataCatalogDao.getAnnotationsIds( rectAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(rectAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -191,14 +261,14 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,1,1],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "{\"xdir\":[511.7407407407409,1,1],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation rectAnnotation = getForPointAnnotation();
         rectAnnotation.setType("rect");
         getRectangleEllipseItemInfo(rectAnnotation);
-        List result = dataCatalogDao.getAnnotationsIds( rectAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(rectAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -207,14 +277,14 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,"test","{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}",null,null,null,null,null,null,null,null,null,null,null,"IMAGE",null,null};
+        Object[] newObj = new Object[]{1, "test", "{\"xdir\":[511.7407407407409,0,0],\"ydir\":[511.7407407407409,0,0],\"origin\":[511.7407407407409,0,0]}", null, null, null, null, null, null, null, null, null, null, null, "IMAGE", null, null};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation ellipseAnnotation = getForPointAnnotation();
         ellipseAnnotation.setType("ellipse");
         getRectangleEllipseItemInfo(ellipseAnnotation);
-        List result = dataCatalogDao.getAnnotationsIds( ellipseAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(ellipseAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -223,12 +293,12 @@ public class DataCatalogDaoImplTest {
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
         resultList.add(1);
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
+        Object[] newObj = new Object[]{1, null, null, "{\"name\": \"Pneumothorax\", \"value\": \"Small\"}", null, null, null, null, null, null, null, null, null, null, "IMAGE", null, "Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();
-        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(labelAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -236,12 +306,12 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"large\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
+        Object[] newObj = new Object[]{1, null, null, "{\"name\": \"Pneumothorax\", \"value\": \"large\"}", null, null, null, null, null, null, null, null, null, null, "IMAGE", null, "Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();
-        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(labelAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
     @Test
@@ -249,30 +319,30 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         List expectedList = new ArrayList();
         List resultList = new ArrayList();
-        Object[] newObj = new Object[]{1,null,null,"{\"name\": \"Pneumothorax\", \"value\": \"Small\"}",null,null,null,null,null,null,null,null,null,null,"IMAGE",null,"TEST"};
+        Object[] newObj = new Object[]{1, null, null, "{\"name\": \"Pneumothorax\", \"value\": \"Small\"}", null, null, null, null, null, null, null, null, null, null, "IMAGE", null, "TEST"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
         Annotation labelAnnotation = getForLabelAnnotation();
-        List result = dataCatalogDao.getAnnotationsIds( labelAnnotation);
-        assertEquals(result.toString(),resultList.toString());
+        List result = dataCatalogDao.getAnnotationsIds(labelAnnotation);
+        assertEquals(result.toString(), resultList.toString());
     }
 
 
     private Annotation getRectangleEllipseItemInfo(Annotation rectAnnotation) {
         LinkedHashMap item = new LinkedHashMap();
-        Map<String, List<Long>> dataMap = new HashMap<String, List<Long>>() ;
+        Map<String, List<Long>> dataMap = new HashMap<String, List<Long>>();
         ArrayList list1 = new ArrayList();
         list1.add(511.7407407407409);
         list1.add(0);
         list1.add(0);
-        dataMap.put("xdir",list1);
-        dataMap.put("ydir",list1);
-        dataMap.put("origin",list1);
+        dataMap.put("xdir", list1);
+        dataMap.put("ydir", list1);
+        dataMap.put("origin", list1);
 
         item.put("data", dataMap);
-        item.put("properties","{\"ge_class\":[]}");
-        item.put("coord_sys","IMAGE");
-        item.put("object_name","test");
+        item.put("properties", "{\"ge_class\":[]}");
+        item.put("coord_sys", "IMAGE");
+        item.put("object_name", "test");
         rectAnnotation.setItem(item);
         return rectAnnotation;
     }
@@ -308,12 +378,12 @@ public class DataCatalogDaoImplTest {
         ArrayList<Map> list = new ArrayList<Map>();
         Map map1 = new HashMap();
 
-        map1.put("name","Pneumothorax");
-        map1.put("value","Small");
+        map1.put("name", "Pneumothorax");
+        map1.put("value", "Small");
         list.add(map1);
         Map map2 = new HashMap();
-        map2.put("ge_class",list);
-        map2.put("findings","Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC");
+        map2.put("ge_class", list);
+        map2.put("findings", "Medical Imaging - CONSULTATION Accession No: ACN Category/Procedure name: COMPUTED RADIOGRAPHY (RAD)/CHEST 2 VIEWS Portable chest AP upright and lateral Left chest tube is still present in the lower hemithorax. Moderate sized bilateral pleural effusions persist. There is partial atelectasis/consolidation of both lower lobes. There appears to be a tiny left pneumothorax. The upper lung zones are clear. **Signed 16/11/16 1332 Reported By: Osuszek Andrew MD FRCPC");
         geClassJson.put("properties", map2);
 
         annotation.setItem(geClassJson);
@@ -361,12 +431,43 @@ public class DataCatalogDaoImplTest {
 //        imgSeries.setManufacturer("test");
         imgSeries.setInstanceCount(1);
         imgSeries.setEquipment("GE XRAY");
+        LinkedHashMap prop = new LinkedHashMap();
+        prop.put("name", "PTX");
+        imgSeries.setProperties(prop);
 //        imgSeries.setImageType("test");
 //        imgSeries.setView("test");
         p.setPatientId("test");
 //        p.setAge("12");
 //        p.setGender("M");
+        imgSeries.setUploadDate(getUploadDate());
+        imgSeries.setView("AP");
+        imgSeries.setPatient(p);
+        imageSeriesList.add(imgSeries);
+        return imageSeriesList;
+    }
 
+    private List<ImageSeries> getImageSeriesWithFiltersAndNullProperties() {
+        List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+        ImageSeries imgSeries = new ImageSeries();
+        Patient p = new Patient();
+        imgSeries.setId(1L);
+        imgSeries.setOrgId("4fac7976-e58b-472a-960b-42d7e3689f20");
+        imgSeries.setModality("DX");
+        imgSeries.setAnatomy("CHEST");
+        imgSeries.setDataFormat("PNG");
+        imgSeries.setSeriesInstanceUid("12345");
+        imgSeries.setInstitution("UCSF");
+//        imgSeries.setManufacturer("test");
+        imgSeries.setInstanceCount(1);
+        imgSeries.setEquipment("GE XRAY");
+        LinkedHashMap prop = new LinkedHashMap();
+        imgSeries.setProperties(null);
+//        imgSeries.setImageType("test");
+        imgSeries.setView("AP");
+        p.setPatientId("test");
+//        p.setAge("12");
+//        p.setGender("M");
+        imgSeries.setUploadDate(getUploadDate());
         imgSeries.setPatient(p);
         imageSeriesList.add(imgSeries);
         return imageSeriesList;
@@ -397,37 +498,6 @@ public class DataCatalogDaoImplTest {
         imgSerLst.add(imageSeries);
         imgSerLst.add(imageSeries1);
         return imgSerLst;
-    }
-    
-    private List<AnnotationDetails> getAnnotationDetails() {
-        List<AnnotationDetails> annotationDetails = new ArrayList<AnnotationDetails>();
-        AnnotationDetails annotation = new AnnotationDetails();
-        annotation.setPatientId("1");
-        annotation.setSeriesUID("SUID");
-        annotation.setAnnotationId(1L);
-        annotation.setAnnotationType("test");
-        annotation.setName("test");
-        annotation.setMaskURI("test");
-        annotation.setMaskFormat("test");
-        annotation.setMaskOrigin("{}");
-        annotation.setGeClass("[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]");
-        annotation.setData("{}");
-        annotation.setGeClass1("{}");
-        annotation.setGeClass2("{}");
-        annotation.setGeClass3("{}");
-        annotation.setGeClass4("{}");
-        annotation.setGeClass5("{}");
-        annotation.setGeClass6("{}");
-        annotation.setGeClass7("{}");
-        annotation.setGeClass8("{}");
-        annotation.setGeClass9("{}");
-        annotation.setGeClass10("{}");
-        annotation.setFindings("test");
-        annotation.setIndication("test");
-        annotation.setCoordSys("test");
-        annotation.setInstances("[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]");
-        annotationDetails.add(annotation);
-        return annotationDetails;
     }
 
     private Map getMapForGEClassDataSummary() {
@@ -477,7 +547,7 @@ public class DataCatalogDaoImplTest {
         }
         return countM;
     }
-    
+
 
 /*    @Test
     public void testConstructQueryWithEmptyParams() {
@@ -491,40 +561,104 @@ public class DataCatalogDaoImplTest {
         return params;
     }
 
-    //  @Test
+    @Test(expected = Exception.class)
+    public void testConstructQueryThrowsException() {
+        dataCatalogDao.constructQuery(null);
+    }
+
+    @Test
     public void testConstructQueryWithSingleParam() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = "WHERE x.modality IN (\"CT\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\")";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
-    //  @Test
+    @Test
     public void testConstructQueryWithSingleParamMultipleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT,MR");
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = "WHERE x.modality IN (\"CT\", \"MR\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\", \"MR\")";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
     }
 
-    //  @Test
+    @Test
     public void testConstructQueryWithMultipleParamSingleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT");
         input.putAll(constructQueryParam("anatomy", "LUNG"));
+        input.put("dateFrom", "2017-12-14 19:00:00");
+        input.put("dateTo", "2017-12-14 20:00:00");
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = "WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\") AND x.anatomy IN (\"LUNG\") and x.upload_date between \"2017-12-14 19:00:00\" and \"2017-12-14 20:00:00\"";
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
     }
 
-    // @Test
+    @Test
     public void testConstructQueryWithMultipleParamMultipleValue() {
         Map<String, Object> input = constructQueryParam("modality", "CT,MR");
         input.putAll(constructQueryParam("anatomy", "LUNG,HEART"));
         String result = dataCatalogDao.constructQuery(input);
-        String expectedResult = "WHERE x.modality IN (\"CT\", \"MR\") AND x.anatomy IN (\"LUNG\", \"HEART\")";
+        String expectedResult = " WHERE x.modality IN (\"CT\", \"MR\") AND x.anatomy IN (\"LUNG\", \"HEART\")";
 
         assertEquals("Param constructed in incorrect ", expectedResult, result);
 
+    }
+
+    @Test
+    public void testGetImgSeriesWithPatientByIds() throws DataCatalogException {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        List expectedList = new ArrayList();
+        List resultList = new ArrayList();
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "DCM", null, null, 1, null, null, null, null, null, "{\"name\": \"PTX\"}", Timestamp.valueOf("2018-03-08 10:51:30")};
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+        List<Long> ids = new ArrayList<Long>();
+        ids.add(0, 1L);
+        List result = dataCatalogDao.getImgSeriesWithPatientByIds(ids);
+        assertEquals(result.toString(), getImageSeriesWithPatient().toString());
+    }
+
+    @Test
+    public void testingestContractDetails(){
+    	Contract contract = new Contract();
+    	contract.setOrgId("test_123");
+    	contract.setId(1L);
+    	when(contractRepository.save(contract)).thenReturn(contract);
+    	Long contractId = dataCatalogDao.ingestContractDetails(contract);
+    	assertEquals(contractId, contract.getId());
+    }
+
+    @Test
+    public void testgetContractDetails(){
+    	Contract contract = new Contract();
+    	when(contractRepository.findOne(contract.getId())).thenReturn(contract);
+    	Contract receivedContract = dataCatalogDao.getContractDetails(contract.getId());
+    	assertEquals(contract, receivedContract);
+    }
+
+    private List<ImageSeries> getImageSeriesWithPatient() {
+        List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+        ImageSeries imgSeries = new ImageSeries();
+        Patient p = new Patient();
+        imgSeries.setId(1L);
+        imgSeries.setOrgId("4fac7976-e58b-472a-960b-42d7e3689f20");
+        imgSeries.setModality("DX");
+        imgSeries.setAnatomy("CHEST");
+        imgSeries.setDataFormat("DCM");
+        imgSeries.setSeriesInstanceUid(null);
+        imgSeries.setInstanceCount(1);
+        imgSeries.setEquipment(null);
+        p.setPatientId(null);
+        p.setAge(null);
+        p.setGender(null);
+        imgSeries.setPatient(p);
+        imgSeries.setUri(null);
+        LinkedHashMap prop = new LinkedHashMap();
+        prop.put("name", "PTX");
+        imgSeries.setProperties(prop);
+        imgSeries.setUploadDate(getUploadDate());
+        imageSeriesList.add(imgSeries);
+        return imageSeriesList;
     }
 }

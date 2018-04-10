@@ -5,6 +5,8 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -16,6 +18,14 @@ public class CommonSteps {
     public Date getDate() {
         String str = "2017-03-31";
         return Date.valueOf(str);
+    }
+    
+    public LocalDateTime getUploadDate() {
+        String str = "2017-03-31 00:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime localtDateAndTime = LocalDateTime.parse(str, formatter);
+		
+        return localtDateAndTime;
     }
 
     public Date getDateTime() {
@@ -35,7 +45,7 @@ public class CommonSteps {
         imageSeries.setEquipment("tem");
         imageSeries.setInstanceCount(1);
         imageSeries.setUploadBy("BDD");
-        imageSeries.setUploadDate(getDate());
+        imageSeries.setUploadDate(getUploadDate());
         imageSeries.setPatientDbId(1L);
         Map prop = new HashMap<String,String>();
         prop.put("test", "bdd");
@@ -63,7 +73,7 @@ public class CommonSteps {
         imageSeries.setEquipment("tem");
         imageSeries.setInstanceCount(1);
         imageSeries.setUploadBy("BDD");
-        imageSeries.setUploadDate(getDate());
+        imageSeries.setUploadDate(getUploadDate());
         imageSeries.setPatientDbId(1L);
         Map prop = new HashMap<String,String>();
         prop.put("test", "bdd");
@@ -102,7 +112,7 @@ public class CommonSteps {
         imageSeries.setEquipment("CT");
         imageSeries.setInstanceCount(1);
         imageSeries.setUploadBy("BDD");
-        imageSeries.setUploadDate(getDate());
+        imageSeries.setUploadDate(getUploadDate());
         imageSeries.setPatientDbId(1L);
         Map prop = new HashMap<String,String>();
         prop.put("test", "bdd");
@@ -133,7 +143,7 @@ public class CommonSteps {
     }
 
     public String expectedImageSeries() {
-        String imageSeries = "[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1},{\"id\":1,\"modality\":\"DX\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}]";
+        String imageSeries = "[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"uploadDate\":\"2017-03-31 00:00:00\",\"patientDbId\":1},{\"id\":1,\"modality\":\"DX\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"uploadDate\":\"2017-03-31 00:00:00\",\"patientDbId\":1}]";
         return imageSeries;
     }
 
@@ -145,7 +155,7 @@ public class CommonSteps {
 
 
     public String expectedImageSeriesJson() {
-        String imageSeries = "{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"patientDbId\":1}";
+        String imageSeries = "{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"uploadDate\":\"2017-03-31 00:00:00\",\"patientDbId\":1}";
         return imageSeries;
     }
 
@@ -157,14 +167,14 @@ public class CommonSteps {
         Annotation annotation = new Annotation();
         annotation.setId(1L);
         annotation.setAnnotationDate(getDate());
-        annotation.setAnnotatorId("123");
+        annotation.setAnnotatorId("87654321-abcd-42ca-a317-4d408b98c500");
         annotation.setAnnotationTool("Tool");
         ImageSeries imageSeries =  getOneimageSeries();
         imageSeries.setId(1L);
         annotation.setImageSet(imageSeries);
        annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
-        annotation.setType("type");
+        annotation.setType("point");
         annotation.setSchemaVersion("v1");
         annotation.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         annotation.setImageSetId(1L);
@@ -182,7 +192,7 @@ public class CommonSteps {
 
        annotation.setItem(new HashMap<String,String>());
         annotation.setSchemaVersion("123");
-        annotation.setType("type");
+        annotation.setType("point");
         annotation.setSchemaVersion("1");
         return annotation;
     }

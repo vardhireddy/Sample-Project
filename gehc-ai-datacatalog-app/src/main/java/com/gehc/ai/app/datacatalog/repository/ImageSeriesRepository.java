@@ -21,6 +21,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
 import org.springframework.transaction.annotation.Propagation;
@@ -90,4 +91,7 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     @Modifying
     @Query("update ImageSeries i set i.institution=:institution where i.seriesInstanceUid in :seriesUIds")
     void updateInstitution( @Param("institution") String institution, @Param("seriesUIds") String [] seriesUIds);
+	void delete(ImageSeries deleted);
+    @Query("SELECT view as view, count(*) as count FROM ImageSeries where orgId=:orgId group by view")
+    List<Object[]> countView(@Param("orgId") String orgId);
  }

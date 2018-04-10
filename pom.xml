@@ -21,6 +21,7 @@
         <sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPaths>
         <sonar.junit.reportsPath>${project.basedir}/../target/surefire-reports</sonar.junit.reportsPath>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+	<sonar.coverage.exclusions>src/main/java/com/gehc/ai/app/datacatalog/rest/**/*,src/main/java/com/gehc/ai/app/datacatalog/entity/**/*</sonar.coverage.exclusions>
     </properties>
 
     <profiles>

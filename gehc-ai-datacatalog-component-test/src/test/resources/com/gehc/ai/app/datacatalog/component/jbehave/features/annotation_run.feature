@@ -9,6 +9,10 @@ Delete annotation set data for Ids
 Delete annotation set data for Ids with out org id
 Throw Exception while Storing an annotation set data
 Throw Exception while Delete annotation set data for Ids
+Store an annotation set data when Annotation already exists should not save dupicate Annotation
+Store annotation set data with invalid annotator id
+Store annotation set data with invalid annotation type
+Store new Annotation annotation
 
 @functional
 @crs_10731
@@ -69,11 +73,39 @@ Given Delete annotation set data for Ids throws exception - DataSetUp Provided
 When Delete annotation set data for Ids throws exception
 Then Verify Delete annotation set data for Ids throws exception
 
-@test
+@test_54815
 Scenario: Store an annotation set data when Annotation already exists should not save dupicate Annotation
 Meta: @automated
 Given Store an annotation set data Annotation already exists - DataSetUp Provided
 When Store an annotation set data  Annotation already exists
 Then Verify Store an annotation set data if Annotation already exists should not save duplicate Annotation and will return the annotation id
+
+@test_54816
+Scenario: Store annotation set data with invalid annotator id
+Meta: @automated
+Given Store an annotation set data with invalid annotator id- Throws exception
+When Store an annotation set data with invalid annotator id
+Then Verify Store annotation set data throws exception
+
+@test_54817
+Scenario: Store annotation set data with invalid annotation type
+Meta: @automated
+Given Store an annotation set data with invalid annotation type- Throws exception
+When Store an annotation set data with invalid annotation type
+Then Verify Store annotation set data throws exception
+
+@test_54818
+Scenario: Store new Annotation annotation
+Meta: @automated
+Given Store new Annotationset data - DataSetUp Provided
+When Store new Annotation set data
+Then Verify Store new Annotation set data
+
+@test_54821
+Scenario: Delete annotation set data for multiple Ids
+Meta: @automated
+Given Delete annotation set data for multiple Ids - DataSetUp Provided
+When Delete annotation set data for multiple Ids
+Then Verify Delete annotation set data for multiple Ids
 
 

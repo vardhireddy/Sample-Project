@@ -13,7 +13,7 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -26,13 +26,19 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+import com.gehc.ai.app.datacatalog.filters.JsonDateSerializer;
+import com.gehc.ai.app.datacatalog.filters.LocalDateTimeAttributeConverter;
 
 
 @Entity
@@ -58,13 +64,16 @@ public class ImageSeries implements Serializable {
 	private String orgId;
 	
 	@Size(min=0, max=50)
+	@NotNull
 	private String modality;
 	
 	@Size(min=0, max=50)
+	@NotNull
 	private String anatomy;
 	
 	@Column(name = "data_format")
 	@Size(min=0, max=50)
+	@NotNull
 	private String dataFormat;
 	
 	private String uri;
@@ -77,9 +86,11 @@ public class ImageSeries implements Serializable {
 	private String description;
 	
 	@Size(min=0, max=100)
+	@NotNull
 	private String institution;
 	
 	@Size(min=0, max=255)
+	@NotNull
 	private String equipment;
 
 	@Size(min=0, max=255)
@@ -120,12 +131,26 @@ public class ImageSeries implements Serializable {
 	@Column(name = "upload_by")
 	@Size(min=0, max=255)
 	private String uploadBy;
+
 	/**
 	 * Date data was uploaded into database. Should be left to database to
 	 * provide.
 	 */
-	@Column(name = "upload_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", insertable = false, updatable = false)
-	private Date uploadDate;
+	@Column(name = "upload_date")
+	@JsonProperty(access = Access.READ_ONLY)
+	@JsonSerialize(using=JsonDateSerializer.class)
+	@Convert(converter = LocalDateTimeAttributeConverter.class)
+	private LocalDateTime uploadDate;
+	
+    @Column(name="upload_id")
+	private Long uploadId;
+
+	public Long getUploadId() {
+		return uploadId;
+	}
+	public void setUploadId(Long uploadId) {
+		this.uploadId = uploadId;
+	}
 	/**
 	 * Patient table ID. Establishes a correlation with the patient table
 	 */
@@ -253,12 +278,11 @@ public class ImageSeries implements Serializable {
 	public void setUploadBy(String uploadBy) {
 		this.uploadBy = uploadBy;
 	}
-	public Date getUploadDate() {
-		return new Date(uploadDate.getTime());
+	public LocalDateTime getUploadDate() {
+		return this.uploadDate;
 	}
-	@JsonIgnore
-	public void setUploadDate(Date uploadDate) {
-		this.uploadDate = new Date(uploadDate.getTime());
+	public void setUploadDate(LocalDateTime uploadDate) {
+		this.uploadDate = uploadDate;
 	}
 	public Object getProperties() {
 		return properties;
@@ -274,7 +298,7 @@ public class ImageSeries implements Serializable {
 	public ImageSeries(Long id, String schemaVersion, String orgId, String modality, String anatomy, String dataFormat,
 			String uri, String seriesInstanceUid, String description, String institution, String equipment,
 			String manufacturer, String imageType, String view, int instanceCount, Object properties, String uploadBy,
-			Date uploadDate, Long patientDbId, Long studyDbId, Patient patient,
+			LocalDateTime uploadDate, Long patientDbId, Long studyDbId, Patient patient,
 			String acqDate, String acqTime) {
 		super();
 		this.id = id;
@@ -294,7 +318,7 @@ public class ImageSeries implements Serializable {
 		this.instanceCount = instanceCount;
 		this.properties = properties;
 		this.uploadBy = uploadBy;
-		this.uploadDate = new Date(uploadDate.getTime());
+		this.uploadDate = uploadDate;
 		this.patientDbId = patientDbId;
 		this.studyDbId = studyDbId;
 		this.patient = patient;
@@ -311,5 +335,14 @@ public class ImageSeries implements Serializable {
 				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", patientDbId=" + patientDbId
 				+ ", studyDbId=" + studyDbId + ", patient=" + patient + ", acqDate="
 				+ acqDate + ", acqTime=" + acqTime + "]";
+	}
+	
+	/**
+	 * updates the update_date column with the current date for each newly 
+	 * created object
+	 */
+	@PrePersist
+	protected void onCreate() {
+		uploadDate = LocalDateTime.now();
 	}
 }

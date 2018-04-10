@@ -15,26 +15,53 @@ import java.util.List;
 import java.util.Map;
 
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationDetails;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
 public interface IDataCatalogDao {
-    
+
     /**
      * @param params
      * @param orgId
      * @return
      */
     Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId);
-    
+
     /**
      * @param params
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
-    
-    List<AnnotationDetails> getAnnotationsByDSId(List<Long> imgSerIdLst);
+
+    /**
+     * Returns the annotation details for every specified image set ID as a list of beans encapsulating their JSON representations.
+     *
+     * @param imageSetIDList the {@code List} of image set IDs for which their annotation details will be returned
+     * @return a {@code List} of {@link AnnotationJson} beans
+     * @throws InvalidAnnotationException if at least one of the specified image sets is associated with a malformed annotation
+     */
+    List<AnnotationJson> getAnnotationDetailsByImageSetIDs(List<Long> imageSetIDList) throws InvalidAnnotationException;
+
+    /**
+     * Returns the annotation details for every specified image set ID as a CSV string.  The CSV string is formatted such
+     * that is ingestable by the Learning Factory ingestion pipeline.
+     *
+     * @param imageSetIDList the {@code List} of image set IDs for which their annotation details will be returned
+     * @return a CSV string
+     * @throws InvalidAnnotationException if at least one of the specified image sets is associated with a malformed annotation
+     * @throws CsvConversionException     if at least one of the specified image sets cannot successfully be transformed into its CSV representation
+     */
+    String getAnnotationDetailsAsCsvByImageSetIDs(List<Long> imageSetIDList) throws InvalidAnnotationException, CsvConversionException;
 
     List<Integer> getAnnotationsIds(Annotation annotation);
+
+    List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst);
+
+	Long ingestContractDetails(Contract contract);
+
+	Contract getContractDetails(Long contractId);
 }
