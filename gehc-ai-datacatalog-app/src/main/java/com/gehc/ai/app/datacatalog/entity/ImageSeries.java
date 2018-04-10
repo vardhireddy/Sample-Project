@@ -136,7 +136,7 @@ public class ImageSeries implements Serializable {
 	 * Date data was uploaded into database. Should be left to database to
 	 * provide.
 	 */
-	@Column(name = "upload_date")
+	@Column(name = "upload_date", updatable = false)
 	@JsonProperty(access = Access.READ_ONLY)
 	@JsonSerialize(using=JsonDateSerializer.class)
 	@Convert(converter = LocalDateTimeAttributeConverter.class)
