@@ -726,7 +726,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					// TODO throw the exception
 					e.printStackTrace();
 				}
-				imgSeries.setUploadDate(((Timestamp)record[14]).toLocalDateTime());
+				if(null != record[14]){
+					imgSeries.setUploadDate(((Timestamp)record[14]).toLocalDateTime());
+				}
 				imageSeriesList.add(imgSeries);
 			});
 		}
