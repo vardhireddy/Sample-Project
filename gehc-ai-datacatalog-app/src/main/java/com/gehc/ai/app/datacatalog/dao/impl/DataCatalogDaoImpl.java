@@ -305,7 +305,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					} catch (IOException e) {
 						logger.error("Properties not available for image id "+ imgSeries.getId() + e);
 					}
-					imgSeries.setUploadDate(((Timestamp)record[11]).toLocalDateTime());
+					if(null != record[11]){
+						imgSeries.setUploadDate(((Timestamp)record[11]).toLocalDateTime());
+					}
 					imgSeries.setView((String) record[12]);
 					imageSeriesList.add(imgSeries);
 				});
