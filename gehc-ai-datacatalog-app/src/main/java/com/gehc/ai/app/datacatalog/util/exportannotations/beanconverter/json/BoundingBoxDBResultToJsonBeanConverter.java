@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToInteger;
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
 
 /**
@@ -44,7 +45,7 @@ public class BoundingBoxDBResultToJsonBeanConverter implements DBResultToJsonBea
                 toBoundingBox(result[resultIndexMap.get("roiData")]),
                 mapToString(result[resultIndexMap.get("roiLocalID")]),
                 mapToString(result[resultIndexMap.get("roiName")]),
-                (Integer) result[resultIndexMap.get("roiIndex")]
+                mapToInteger(result[resultIndexMap.get("roiIndex")])
         );
     }
 

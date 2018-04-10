@@ -75,4 +75,19 @@ public class ObjectMapperUtil {
         }
     }
 
+    /**
+     * Maps a JSON string to a corresponding {@link Integer} representation.
+     *
+     * @param strObj The {@code Object} which encapsulates the JSON string
+     * @return an {@code Integer}
+     * @throws InvalidAnnotationException if the provided {@code Object} does not encapsulate a JSON string
+     */
+    public static Integer mapToInteger(Object strObj) throws InvalidAnnotationException {
+        try {
+            return strObj != null ? (Integer) mapper.readValue(strObj.toString(), Integer.class) : (Integer) strObj;
+        } catch (IOException e) {
+            throw new InvalidAnnotationException("The provided annotation property, " + strObj + ", was expected to be a JSON string but was not.");
+        }
+    }
+
 }

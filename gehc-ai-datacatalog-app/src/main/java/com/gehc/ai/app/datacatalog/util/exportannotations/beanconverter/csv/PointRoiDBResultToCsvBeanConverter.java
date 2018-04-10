@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToInteger;
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToListOfDoubles;
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToListOfStrings;
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
@@ -139,7 +140,7 @@ public class PointRoiDBResultToCsvBeanConverter implements DBResultToCsvBeanConv
         commonMetaData.put("localID", mapToString(result[resultIndexMap.get("roiLocalID")]));
         commonMetaData.put("name", mapToString(result[resultIndexMap.get("roiName")]));
         commonMetaData.put("data", mapToListOfDoubles(result[resultIndexMap.get("roiData")]));
-        commonMetaData.put("index", (Integer) (result[resultIndexMap.get("roiIndex")]));
+        commonMetaData.put("index", mapToInteger(result[resultIndexMap.get("roiIndex")]));
 
         return commonMetaData;
     }

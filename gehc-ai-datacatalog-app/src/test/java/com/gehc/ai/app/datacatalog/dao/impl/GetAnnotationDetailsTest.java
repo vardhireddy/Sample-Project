@@ -312,7 +312,7 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
-                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
+                String roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"0\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "point", roiName, "\"0\"", "[-1.2345,6.789,10.1112]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
@@ -351,7 +351,7 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
-                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
+                String roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"0\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "line", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
@@ -392,7 +392,7 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
-                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
+                String roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"0\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "polygon", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
@@ -434,7 +434,7 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
-                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
+                String roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"0\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "contour", roiName, "\"0\"", "[[-1.2345,6.789,10.1112],[-2.3456, 7.8901, 11.1213],[-3.4567, 8.9102, 12.1314]]", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
@@ -476,7 +476,7 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
-                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
+                String roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"0\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "rect", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
@@ -518,7 +518,7 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
-                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
+                String roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"0\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipse", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
@@ -560,7 +560,7 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
-                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
+                String roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"0\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "box", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314],\"zdir\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
@@ -603,7 +603,7 @@ public class GetAnnotationDetailsTest {
 
                 // Set optional fields based on the defined meta data type spec
                 String roiName = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"ROI Name\"" : null;
-                Integer roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? 0 : null;
+                String roiIndex = metaDataTypes == MetaDataTypes.REQUIRED_AND_OPTIONAL ? "\"0\"" : null;
 
                 Object[] newObj = new Object[]{imageSetType.getPatientID(), imageSetType.getSeriesUID(), imageSetType.getFileExtension(), 1, "ellipsoid", roiName, "\"0\"", "{\"origin\":[-1.2345,6.789,10.1112],\"xdir\":[-2.3456, 7.8901, 11.1213],\"ydir\":[-3.4567, 8.9102, 12.1314],\"zdir\":[-4.5678, 9.1011, 13.1415]}", null, null, null, null, null, null, null, null, null, null, null, "\"IMAGE\"", null, null, "[\"1.3.6.1.4.1.14519.5.2.1.6279.6001.271903262329812014254288323695\", \"1.3.6.1.4.1.14519.5.2.1.6279.6001.278535546794012771343423876199\"]", null, null, null, roiIndex};
                 mockDBResults.add(newObj);
