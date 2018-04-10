@@ -723,6 +723,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             filters.putAll(getModalityAndAnatomyCount(orgId, filters));
             filters.putAll(getDataFormatAndInstitutionCount(orgId, filters));
             filters.putAll(getEquipmentAndAnnoatationTypeCount(orgId, filters));
+            filters.putAll(getViewCount(orgId, filters));
         }
         return filters;
     }
@@ -769,6 +770,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             filters.putAll(getFiltersCount(anatomyCount, ANATOMY));
         }
         logger.debug("END for getModalityAndAnatomyCount" + new Timestamp(System.currentTimeMillis()));
+        return filters;
+    }
+    
+    private Map<String, Object> getViewCount(String orgId, Map<String, Object> filters) {
+        logger.debug("In REST, getViewCount, orgId = " + orgId);
+        logger.debug("Started for getViewCount" + new Timestamp(System.currentTimeMillis()));
+        List<Object[]> viewCount = imageSeriesRepository.countView(orgId);
+        if (null != viewCount && !viewCount.isEmpty()) {
+            filters.putAll(getFiltersCount(viewCount, VIEW));
+        }
+        logger.debug("END for getViewCount" + new Timestamp(System.currentTimeMillis()));
         return filters;
     }
 
