@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToListOfDoubles;
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToInteger;
 
 /**
  * {@code PointRoiDBResultToJsonBeanConverter} converts a DB result record which describes a point ROI into a bean that encapsulates its JSON representation.
@@ -39,7 +40,7 @@ public class PointRoiDBResultToJsonBeanConverter implements DBResultToJsonBeanCo
                 mapToListOfDoubles(result[resultIndexMap.get("roiData")]),
                 mapToString(result[resultIndexMap.get("roiLocalID")]),
                 mapToString(result[resultIndexMap.get("roiName")]),
-                (Integer) result[resultIndexMap.get("roiIndex")]
+                mapToInteger(result[resultIndexMap.get("roiIndex")])
         );
     }
 

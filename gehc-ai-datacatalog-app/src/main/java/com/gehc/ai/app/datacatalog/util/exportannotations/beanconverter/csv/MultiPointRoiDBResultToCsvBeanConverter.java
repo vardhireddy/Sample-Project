@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToInteger;
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToListOfStrings;
 import static com.gehc.ai.app.datacatalog.util.exportannotations.beanconverter.ObjectMapperUtil.mapToString;
 
@@ -98,7 +99,7 @@ public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBea
         return new MultiPointRoiAnnotationCsv(
                 seriesUID,
                 (String) commonMetaData.get("annotationType"),
-                (List<String>)commonMetaData.get("instances"),
+                (List<String>) commonMetaData.get("instances"),
                 (String) commonMetaData.get("coordSys"),
                 (List<List<Double>>) commonMetaData.get("data"),
                 (String) commonMetaData.get("localID"),
@@ -118,7 +119,7 @@ public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBea
     private MultiPointRoiAnnotationCsv createNonDicomRoi(Object[] result, Map<String, Integer> resultIndexMap) throws InvalidAnnotationException {
         // For non-DICOM files which do not actually have a patient ID associated with them, the convention is to use the original file name as the patient ID
         final String seriesUID = (String) result[resultIndexMap.get("seriesUID")];
-        final String fileName = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[0]:(String) result[resultIndexMap.get("patientID")];
+        final String fileName = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[0] : (String) result[resultIndexMap.get("patientID")];
         final String spaceID = seriesUID.indexOf('/') != -1 ? seriesUID.split("/")[1] : "";
         final Map<String, Object> commonMetaData = getCommonMetaData(result, resultIndexMap);
 
@@ -126,7 +127,7 @@ public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBea
                 fileName,
                 spaceID,
                 (String) commonMetaData.get("annotationType"),
-                (List<String>)commonMetaData.get("instances"),
+                (List<String>) commonMetaData.get("instances"),
                 (String) commonMetaData.get("coordSys"),
                 (List<List<Double>>) commonMetaData.get("data"),
                 (String) commonMetaData.get("localID"),
@@ -151,7 +152,7 @@ public class MultiPointRoiDBResultToCsvBeanConverter implements DBResultToCsvBea
         commonMetaData.put("localID", mapToString(result[resultIndexMap.get("roiLocalID")]));
         commonMetaData.put("name", mapToString(result[resultIndexMap.get("roiName")]));
         commonMetaData.put("data", this.roiDataSupplier.get().convertRoiData(result[resultIndexMap.get("roiData")]));
-        commonMetaData.put("index", (Integer) (result[resultIndexMap.get("roiIndex")]));
+        commonMetaData.put("index", mapToInteger(result[resultIndexMap.get("roiIndex")]));
 
         return commonMetaData;
     }
