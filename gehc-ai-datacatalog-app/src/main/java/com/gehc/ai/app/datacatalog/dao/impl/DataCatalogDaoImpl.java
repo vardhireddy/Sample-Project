@@ -305,7 +305,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					} catch (IOException e) {
 						logger.error("Properties not available for image id "+ imgSeries.getId() + e);
 					}
-					imgSeries.setUploadDate(((Timestamp)record[11]).toLocalDateTime());
+					if(null != record[11]){
+						imgSeries.setUploadDate(((Timestamp)record[11]).toLocalDateTime());
+					}
 					imgSeries.setView((String) record[12]);
 					imageSeriesList.add(imgSeries);
 				});
@@ -726,7 +728,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 					// TODO throw the exception
 					e.printStackTrace();
 				}
-				imgSeries.setUploadDate(((Timestamp)record[14]).toLocalDateTime());
+				if(null != record[14]){
+					imgSeries.setUploadDate(((Timestamp)record[14]).toLocalDateTime());
+				}
 				imageSeriesList.add(imgSeries);
 			});
 		}
