@@ -398,9 +398,9 @@ Given Get count of unique Image sets annotated by Radiologist for each Organizat
 When Get count of unique Image sets annotated by Radiologist for each Organization
 Then Verify the count of unique Image sets annotated by Radiologist for each Organization
 
-#@test
-#Scenario: Get count of unique Image sets annotated by Radiologist for each Organization throws Exception
-#Meta: @automated
-#Given Get count of unique Image sets annotated by Radiologist for each Organization throws Exception - DataSetUp Provided
-#When Get count of unique Image sets annotated by Radiologist for each Organization throws Exception
-#Then Verify the count of unique Image sets annotated by Radiologist for each Organization throws Exception
+@test
+Scenario: Get count of unique Image sets annotated by Radiologist for each Organization throws Exception
+Meta: @automated
+Given Get count of unique Image sets annotated by Radiologist for each Organization throws Exception - DataSetUp Provided
+When Get count of unique Image sets annotated by Radiologist for each Organization throws Exception
+Then Verify the count of unique Image sets annotated by Radiologist for each Organization throws Exception

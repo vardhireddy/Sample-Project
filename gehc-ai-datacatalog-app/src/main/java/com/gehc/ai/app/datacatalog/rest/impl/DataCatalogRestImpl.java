@@ -1020,7 +1020,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
     @Override
-    @RequestMapping(value = "/datacatalog/annotation/annotated-image-set-count-by-orgid", method = RequestMethod.GET)
+    @RequestMapping(value = "/datacatalog/image-set/annotated-image-set-count-by-orgid", method = RequestMethod.GET)
     public ResponseEntity<Map<String,List<AnnotatorImageSetCount>>> getCountOfImagesSetPerAnnotatorByOrgId(){
         System.out.println("HELLO");
         Map<String, List<AnnotatorImageSetCount>> responseMap = new HashMap<>();

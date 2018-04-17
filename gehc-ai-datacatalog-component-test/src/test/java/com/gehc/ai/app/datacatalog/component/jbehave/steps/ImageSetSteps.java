@@ -1134,14 +1134,13 @@ public class ImageSetSteps {
         mockData.add(record1);
         mockData.add(record2);
 
-        //when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId()).thenReturn(mockData);
+        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId()).thenReturn(mockData);
     }
 
     @When("Get count of unique Image sets annotated by Radiologist for each Organization")
     public void whenGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganization() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("api/v1/datacatalog/annotation/jingalala")
-               // get("api/v1/datacatalog/annotation/annotated-image-set-count-by-orgid")
+                get("/api/v1/datacatalog/image-set/annotated-image-set-count-by-orgid")
         );
     }
 
@@ -1150,23 +1149,23 @@ public class ImageSetSteps {
         retrieveResult.andExpect(status().is(200));
         retrieveResult.andExpect(content().string(containsString("org-ucm-id1")));
     }
-//
-//    @Given("Get count of unique Image sets annotated by Radiologist for each Organization throws Exception - DataSetUp Provided")
-//    public void getCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception{
-//        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId()).thenThrow(Exception.class);
-//    }
-//
-//    @When("Get count of unique Image sets annotated by Radiologist for each Organization throws Exception")
-//    public void whenGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception {
-//            retrieveResult = mockMvc.perform(
-//                    get("api/v1/datacatalog/annotated-image-set-count-by-orgid")
-//            );
-//    }
-//
-//    @Then("Verify the count of unique Image sets annotated by Radiologist for each Organization throws Exception")
-//    public void thenVerifyGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception {
-//        retrieveResult.andExpect(status().is(500));
-//    }
+
+    @Given("Get count of unique Image sets annotated by Radiologist for each Organization throws Exception - DataSetUp Provided")
+    public void getCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception{
+        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId()).thenThrow(Exception.class);
+    }
+
+    @When("Get count of unique Image sets annotated by Radiologist for each Organization throws Exception")
+    public void whenGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception {
+            retrieveResult = mockMvc.perform(
+                    get("/api/v1/datacatalog/image-set/annotated-image-set-count-by-orgid")
+            );
+    }
+
+    @Then("Verify the count of unique Image sets annotated by Radiologist for each Organization throws Exception")
+    public void thenVerifyGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception {
+        retrieveResult.andExpect(status().is(500));
+    }
 
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
