@@ -23,6 +23,7 @@ import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.http.ResponseEntity;
 
@@ -278,4 +279,11 @@ public interface IDataCatalogRest {
      * @return
      */
     ApiResponse deleteImageSeries(String id);
+
+    /**
+     * Returns the count of unique images sets , Annotator Id grouped by the Organization Id
+     *
+     * @return map of AnnotatorImageSetCount grouped by Org Id
+     */
+    ResponseEntity<Map<String,List<AnnotatorImageSetCount>>> getCountOfImagesSetPerAnnotatorByOrgId();
 }

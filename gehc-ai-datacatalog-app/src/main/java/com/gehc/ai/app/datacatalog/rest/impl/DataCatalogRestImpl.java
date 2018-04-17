@@ -67,6 +67,7 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
@@ -1017,4 +1018,40 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+    @Override
+    @RequestMapping(value = "/datacatalog/annotation/annotated-image-set-count-by-orgid", method = RequestMethod.GET)
+    public ResponseEntity<Map<String,List<AnnotatorImageSetCount>>> getCountOfImagesSetPerAnnotatorByOrgId(){
+        System.out.println("HELLO");
+        Map<String, List<AnnotatorImageSetCount>> responseMap = new HashMap<>();
+
+        List<Object[]> resultSet;
+
+        try {
+            resultSet = annotationRepository.getCountOfImageSetPerAnnotatorByorgId();
+        }catch (Exception e)
+        {
+            logger.error("Exception retrieving data in getCountOfImagesSetPerAnnotatorByOrgId : {}", e.getMessage());
+            return new ResponseEntity (e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+        resultSet.stream().forEach(record -> {
+
+            AnnotatorImageSetCount annotatorImageSetCount = new AnnotatorImageSetCount(record[1].toString(), Integer.valueOf(record[2].toString()));
+
+            if(responseMap.containsKey(record[0].toString())){
+
+                List<AnnotatorImageSetCount> list = responseMap.get(record[0].toString());
+                list.add(annotatorImageSetCount);
+                responseMap.put(record[0].toString(), list);
+
+            }else {
+                responseMap.put(record[0].toString(),new ArrayList<>(Arrays.asList(annotatorImageSetCount)));
+            }
+        });
+
+        return new ResponseEntity<>(responseMap,HttpStatus.OK);
+
+    }
 }

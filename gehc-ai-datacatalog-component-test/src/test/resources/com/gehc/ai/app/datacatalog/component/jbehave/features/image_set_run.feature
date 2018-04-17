@@ -45,6 +45,8 @@ Get Image set based on filter criteria with Modality, Institution and Equipment
 Get Image set based on filter criteria with Institution name containing accepted special characters like comma
 Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
 Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange
+Get count of unique Image sets annotated by Radiologist for each Organization
+Get count of unique Image sets annotated by Radiologist for each Organization throws Exception
 
   @functional
 @crs_10734
@@ -388,3 +390,17 @@ Meta: @automated
 Given Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange - DataSetUp Provided
 When Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange
 Then verify Image set based on filter  with ORG ID , Modality, Anatomy and DateRange
+
+@test
+Scenario: Get count of unique Image sets annotated by Radiologist for each Organization
+Meta: @automated
+Given Get count of unique Image sets annotated by Radiologist for each Organization - DataSetUp Provided
+When Get count of unique Image sets annotated by Radiologist for each Organization
+Then Verify the count of unique Image sets annotated by Radiologist for each Organization
+
+#@test
+#Scenario: Get count of unique Image sets annotated by Radiologist for each Organization throws Exception
+#Meta: @automated
+#Given Get count of unique Image sets annotated by Radiologist for each Organization throws Exception - DataSetUp Provided
+#When Get count of unique Image sets annotated by Radiologist for each Organization throws Exception
+#Then Verify the count of unique Image sets annotated by Radiologist for each Organization throws Exception
