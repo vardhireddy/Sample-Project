@@ -526,9 +526,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/datacatalog/data-collection/{id}", method = RequestMethod.GET)
     public List<DataSet> getDataSetById(@PathVariable Long id, HttpServletRequest request) {
-        logger.debug("In REST, Get DC by Id " + id);
-        return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
-                : dataSetRepository.findByIdAndOrgId(id, request.getAttribute("orgId").toString());
+    	Object orgId = request.getAttribute("orgId");
+        logger.debug("In REST, Get DC by Id " + id + ", orgId passed = " + orgId);
+        return orgId == null ? new ArrayList<DataSet>()
+                : dataSetRepository.findByIdAndOrgId(id, orgId.toString());
     }
 
     /*
@@ -682,6 +683,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             ImageSeries imageSeries = imgSeriesMap.get(annotation.getImageSet().getId());
                             annImgSetDataCol.setPatientDbid(imageSeries.getPatientDbId().toString());
                             annImgSetDataCol.setUri(imageSeries.getUri());
+                            annImgSetDataCol.setDataFormat(imageSeries.getDataFormat());
+                            Map props = (Map) imageSeries.getProperties();
+                            Object instances = props.get("instances");
+                            annImgSetDataCol.setInstances(instances);
                             annImgSetDCLst.add(annImgSetDataCol);
                         }
                     }

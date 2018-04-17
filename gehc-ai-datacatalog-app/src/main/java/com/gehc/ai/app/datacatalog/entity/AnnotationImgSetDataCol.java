@@ -18,6 +18,7 @@ import java.util.Map;
 /**
  * @author 212367833
  *
+ * note: this entity does not map to a DB table
  */
 
 public class AnnotationImgSetDataCol {
@@ -116,5 +117,23 @@ public class AnnotationImgSetDataCol {
 				", annotatorId='" + annotatorId + '\'' +
 				", annotationDate='" + annotationDate + '\'' +
 				'}';
+	}
+
+	private String dataFormat;
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
+	}
+	
+	public String getDataFormat() {
+		return this.dataFormat;
+	}
+
+	private Object instances;
+	public void setInstances(Object instances) {
+		this.instances = instances;
+	}
+	
+	public Object getInstances() {
+		return this.instances;
 	}
 }
