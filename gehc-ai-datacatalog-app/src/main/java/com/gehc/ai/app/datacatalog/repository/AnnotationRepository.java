@@ -41,6 +41,8 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     void delete(Annotation deleted);
     List<Annotation> findByImageSetIdInAndTypeInAndOrgId(List<Long> imageSets, List<String> types, List<String> orgId);
 
-    @Query(value = "SELECT org_id, annotator_id ,COUNT(distinct image_set) FROM lfdb.annotation GROUP BY annotator_id, org_id", nativeQuery = true)
-    List<Object[]> getCountOfImageSetPerAnnotatorByorgId();
+    @Query(value = "SELECT annotator_id ,COUNT(distinct image_set) " +
+                    "FROM lfdb.annotation where org_id=:orgId " +
+                    "GROUP BY annotator_id", nativeQuery = true)
+    List<Object[]> getCountOfImageSetPerAnnotatorByorgId(@Param("orgId") String orgId);
 }

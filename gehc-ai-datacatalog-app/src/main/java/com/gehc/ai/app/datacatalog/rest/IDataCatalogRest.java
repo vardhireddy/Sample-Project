@@ -281,9 +281,9 @@ public interface IDataCatalogRest {
     ApiResponse deleteImageSeries(String id);
 
     /**
-     * Returns the count of unique images sets , Annotator Id grouped by the Organization Id
+     * Returns the count of unique images sets per Annotator Id for given Organization Id
      *
-     * @return map of AnnotatorImageSetCount grouped by Org Id
+     * @return list of Annotated ImageSetCount grouped by user
      */
-    ResponseEntity<Map<String,List<AnnotatorImageSetCount>>> getCountOfImagesSetPerAnnotatorByOrgId();
+    ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesSetPerAnnotatorByOrgId(String orgId);
 }

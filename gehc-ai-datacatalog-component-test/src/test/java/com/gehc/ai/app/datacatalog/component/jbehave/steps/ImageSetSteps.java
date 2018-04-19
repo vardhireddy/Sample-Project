@@ -1126,43 +1126,61 @@ public class ImageSetSteps {
 
     }
 
-    @Given("Get count of unique Image sets annotated by Radiologist for each Organization - DataSetUp Provided")
+    @Given("orgId get count of unique Image sets annotated by each Radiologist in that Organization - DataSetUp Provided")
     public void getCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganization() throws Exception{
         List<Object[]> mockData = new ArrayList<>();
-        Object[] record1 = {"org-ucm-id1","annotator-ucm-id2",10};
-        Object[] record2 = {"org-ucm-id2","annotator-ucm-id5",21};
+        Object[] record1 = {"annotator-ucm-id2",10};
+        Object[] record2 = {"annotator-ucm-id5",21};
         mockData.add(record1);
         mockData.add(record2);
 
-        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId()).thenReturn(mockData);
+        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenReturn(mockData);
     }
 
-    @When("Get count of unique Image sets annotated by Radiologist for each Organization")
+    @When("Given a orgId return count of image sets annotated by each Radiologist")
     public void whenGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganization() throws Exception {
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/image-set/annotated-image-set-count-by-orgid")
+                get("/api/v1/datacatalog/image-set/annotated-image-set-count-by-user?orgId=iue28ue82u28u282")
         );
     }
 
-    @Then("Verify the count of unique Image sets annotated by Radiologist for each Organization")
+    @Then("Verify count of unique Image sets annotated by Radiologist for given orgId")
     public void thenVerifyGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganization() throws Exception {
         retrieveResult.andExpect(status().is(200));
-        retrieveResult.andExpect(content().string(containsString("org-ucm-id1")));
+        retrieveResult.andExpect(content().string(containsString("annotator-ucm-id2")));
     }
 
-    @Given("Get count of unique Image sets annotated by Radiologist for each Organization throws Exception - DataSetUp Provided")
+    @Given("orgId not present in data base the API to get count of unique Image sets annotated by each Radiologist")
+    public void getCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganization204() throws Exception{
+        List<Object[]> mockdata = new ArrayList<>();
+        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenReturn(mockdata);
+    }
+
+    @When("Given a orgId not present in data base API should return 204 - No Content")
+    public void whenGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganization204() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-set/annotated-image-set-count-by-user?orgId=iue28ue82u28u282")
+        );
+    }
+
+    @Then("Verify if response status code is 204")
+    public void thenVerifyGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganization204() throws Exception {
+        retrieveResult.andExpect(status().is(204));
+    }
+
+    @Given("orgId to get count of image sets annotated by each radiologist the API throws Exception - DataSetUp Provided")
     public void getCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception{
-        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId()).thenThrow(Exception.class);
+        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenThrow(Exception.class);
     }
 
-    @When("Get count of unique Image sets annotated by Radiologist for each Organization throws Exception")
+    @When("Given orgId to get count of unique Image sets annotated by Radiologist API should throw Exception")
     public void whenGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception {
             retrieveResult = mockMvc.perform(
-                    get("/api/v1/datacatalog/image-set/annotated-image-set-count-by-orgid")
+                    get("/api/v1/datacatalog/image-set/annotated-image-set-count-by-user?orgId=iue28ue82u28u282")
             );
     }
 
-    @Then("Verify the count of unique Image sets annotated by Radiologist for each Organization throws Exception")
+    @Then("Verify if the API is throwing exception with status code 500")
     public void thenVerifyGetCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception {
         retrieveResult.andExpect(status().is(500));
     }

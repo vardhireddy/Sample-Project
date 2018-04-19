@@ -1020,38 +1020,36 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
     @Override
-    @RequestMapping(value = "/datacatalog/image-set/annotated-image-set-count-by-orgid", method = RequestMethod.GET)
-    public ResponseEntity<Map<String,List<AnnotatorImageSetCount>>> getCountOfImagesSetPerAnnotatorByOrgId(){
-        System.out.println("HELLO");
-        Map<String, List<AnnotatorImageSetCount>> responseMap = new HashMap<>();
+    @RequestMapping(value = "/datacatalog/image-set/annotated-image-set-count-by-user", method = RequestMethod.GET)
+    public ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesSetPerAnnotatorByOrgId(
+            @RequestParam(value = "orgId") String orgId
+    ){
+        List<AnnotatorImageSetCount> responseList = new ArrayList<>();
 
         List<Object[]> resultSet;
 
         try {
-            resultSet = annotationRepository.getCountOfImageSetPerAnnotatorByorgId();
+            resultSet = annotationRepository.getCountOfImageSetPerAnnotatorByorgId(orgId);
         }catch (Exception e)
         {
             logger.error("Exception retrieving data in getCountOfImagesSetPerAnnotatorByOrgId : {}", e.getMessage());
-            return new ResponseEntity (e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity ("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
 
         resultSet.stream().forEach(record -> {
 
-            AnnotatorImageSetCount annotatorImageSetCount = new AnnotatorImageSetCount(record[1].toString(), Integer.valueOf(record[2].toString()));
+            AnnotatorImageSetCount annotatorImageSetCount = new AnnotatorImageSetCount(record[0].toString(), Integer.valueOf(record[1].toString()));
+            responseList.add(annotatorImageSetCount);
 
-            if(responseMap.containsKey(record[0].toString())){
-
-                List<AnnotatorImageSetCount> list = responseMap.get(record[0].toString());
-                list.add(annotatorImageSetCount);
-                responseMap.put(record[0].toString(), list);
-
-            }else {
-                responseMap.put(record[0].toString(),new ArrayList<>(Arrays.asList(annotatorImageSetCount)));
-            }
         });
 
-        return new ResponseEntity<>(responseMap,HttpStatus.OK);
+        if (responseList.size() == 0)
+        {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(responseList,HttpStatus.OK);
 
     }
 }
