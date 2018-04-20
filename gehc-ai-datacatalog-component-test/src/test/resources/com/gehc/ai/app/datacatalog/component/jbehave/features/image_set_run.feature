@@ -45,8 +45,11 @@ Get Image set based on filter criteria with Modality, Institution and Equipment
 Get Image set based on filter criteria with Institution name containing accepted special characters like comma
 Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes
 Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange
+Get count of unique Image sets annotated by Radiologist for given Organization Id
+Get count of unique Image sets annotated by Radiologist for given Organization Id should return 204 - No Content
+Get count of unique Image sets annotated by Radiologist for given Organization Id API throws Exception
 
-  @functional
+@functional
 @crs_10734
 
 
@@ -388,3 +391,24 @@ Meta: @automated
 Given Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange - DataSetUp Provided
 When Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange
 Then verify Image set based on filter  with ORG ID , Modality, Anatomy and DateRange
+
+@test
+Scenario: Get count of unique Image sets annotated by Radiologist for given Organization Id
+Meta: @automated
+Given orgId get count of unique Image sets annotated by each Radiologist in that Organization - DataSetUp Provided
+When Given a orgId return count of image sets annotated by each Radiologist
+Then Verify count of unique Image sets annotated by Radiologist for given orgId
+
+@test
+Scenario: Get count of unique Image sets annotated by Radiologist for given Organization Id should return 204 - No Content
+Meta: @automated
+Given orgId not present in data base the API to get count of unique Image sets annotated by each Radiologist
+When Given a orgId not present in data base API should return 204 - No Content
+Then Verify if response status code is 204
+
+@test
+Scenario: Get count of unique Image sets annotated by Radiologist for given Organization Id API throws Exception
+Meta: @automated
+Given orgId to get count of image sets annotated by each radiologist the API throws Exception - DataSetUp Provided
+When Given orgId to get count of unique Image sets annotated by Radiologist API should throw Exception
+Then Verify if the API is throwing exception with status code 500

@@ -67,6 +67,7 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
@@ -1005,7 +1006,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     /**
      * API to fetch contract
      *
-     * @param contractIdStr
+     * @param
      * @return
      */
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
@@ -1026,4 +1027,38 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+    @Override
+    @RequestMapping(value = "/datacatalog/image-set/annotated-image-set-count-by-user", method = RequestMethod.GET)
+    public ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesSetPerAnnotatorByOrgId(
+            @RequestParam(value = "orgId") String orgId
+    ){
+        List<AnnotatorImageSetCount> responseList = new ArrayList<>();
+
+        List<Object[]> resultSet;
+
+        try {
+            resultSet = annotationRepository.getCountOfImageSetPerAnnotatorByorgId(orgId);
+        }catch (Exception e)
+        {
+            logger.error("Exception retrieving data in getCountOfImagesSetPerAnnotatorByOrgId : {}", e.getMessage());
+            return new ResponseEntity ("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+        resultSet.stream().forEach(record -> {
+
+            AnnotatorImageSetCount annotatorImageSetCount = new AnnotatorImageSetCount(record[0].toString(), Integer.valueOf(record[1].toString()));
+            responseList.add(annotatorImageSetCount);
+
+        });
+
+        if (responseList.isEmpty())
+        {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(responseList,HttpStatus.OK);
+
+    }
 }
