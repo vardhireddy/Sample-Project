@@ -620,6 +620,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 : patientRepository.findByOrgId(request.getAttribute("orgId").toString());
     }
 
+    /**
+     * returns a flat list of annotations for a collection and a given annotation type
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     @RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
@@ -653,6 +656,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                         imgSeriesMap.put(imageSeries.getId(), imageSeries);
                     }
 
+                    // contains all the annotations belonging to image sets from the collection
                     List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn(imgSerIdLst,
                             types);
                     logger.info("***** Got annotationLst by img series id and type");

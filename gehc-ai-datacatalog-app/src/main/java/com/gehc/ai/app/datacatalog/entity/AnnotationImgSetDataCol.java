@@ -23,14 +23,49 @@ import java.util.Map;
 
 public class AnnotationImgSetDataCol {
 
+	/**
+	 * data collection id
+	 */
 	private String dcId;
+	
+	/**
+	 * image set id
+	 */
 	private String imId;
+	
+	/**
+	 * annotation id
+	 */
 	private String annotationId;
+	
+	/**
+	 * patient db id
+	 */
 	private String patientDbid;
+	
+	/**
+	 * image set uri
+	 */
 	private String uri;
+	
+	/**
+	 * annotation type
+	 */
 	private String annotationType;
+	
+	/**
+	 * annotation item
+	 */
 	private Map<String, Object> annotationItem;
+	
+	/**
+	 * annotator id
+	 */
 	private String annotatorId;
+	
+	/**
+	 * date of annotation
+	 */
 	private String annotationDate;
 
 	public String getDcId() {
