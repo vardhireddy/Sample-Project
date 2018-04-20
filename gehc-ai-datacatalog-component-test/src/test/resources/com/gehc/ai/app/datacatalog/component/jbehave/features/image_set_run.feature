@@ -49,7 +49,7 @@ Get count of unique Image sets annotated by Radiologist for given Organization I
 Get count of unique Image sets annotated by Radiologist for given Organization Id should return 204 - No Content
 Get count of unique Image sets annotated by Radiologist for given Organization Id API throws Exception
 
-  @functional
+@functional
 @crs_10734
 
 
