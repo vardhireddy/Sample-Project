@@ -997,7 +997,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     /**
      * API to fetch contract
      *
-     * @param contractIdStr
+     * @param
      * @return
      */
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
@@ -1044,7 +1044,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         });
 
-        if (responseList.size() == 0)
+        if (responseList.isEmpty())
         {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
