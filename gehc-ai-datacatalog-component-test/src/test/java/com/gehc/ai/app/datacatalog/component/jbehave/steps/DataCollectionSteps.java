@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -262,8 +263,9 @@ public class DataCollectionSteps {
     @Then("verify DataCatalog Raw Target Data")
     public void thenVerifyDataCatalogRawTargetData() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString("[{\"dcId\":\"1\",\"imId\":\"1\",\"annotationId\":\"1\",\"patientDbid\":\"1\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"annotationType\":\"point\",\"annotationItem\":{\"test\":\"test\"},\"annotatorId\":\"87654321-abcd-42ca-a317-4d408b98c500\",\"annotationDate\":\"2017-03-31\"}]")));
 
+        retrieveResult.andDo(MockMvcResultHandlers.print());
+        retrieveResult.andExpect(content().string(containsString("[{\"dcId\":\"1\",\"imId\":\"1\",\"annotationId\":\"1\",\"patientDbid\":\"1\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"annotationType\":\"point\",\"annotationItem\":{\"test\":\"test\"},\"annotatorId\":\"87654321-abcd-42ca-a317-4d408b98c500\",\"annotationDate\":\"2017-03-31\",\"dataFormat\":\"dataFormat\",\"instances\":null")));
     }
 
     @Given("DataCatalog Raw Target Data with invalid Id")
@@ -321,6 +323,8 @@ public class DataCollectionSteps {
     @Then("verify data collection image-set details by its id")
     public void thenVerifyDataCollectionImagesetDetailsByItsId() throws Exception {
         retrieveResult.andExpect(status().isOk());
+        
+        retrieveResult.andDo(MockMvcResultHandlers.print());
         retrieveResult.andExpect(content().string(containsString("[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\"CT\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"uploadDate\":\"2017-03-31 00:00:00\",\"patientDbId\":1}]")));
     }
 
