@@ -18,18 +18,54 @@ import java.util.Map;
 /**
  * @author 212367833
  *
+ * note: this entity does not map to a DB table
  */
 
 public class AnnotationImgSetDataCol {
 
+	/**
+	 * data collection id
+	 */
 	private String dcId;
+	
+	/**
+	 * image set id
+	 */
 	private String imId;
+	
+	/**
+	 * annotation id
+	 */
 	private String annotationId;
+	
+	/**
+	 * patient db id
+	 */
 	private String patientDbid;
+	
+	/**
+	 * image set uri
+	 */
 	private String uri;
+	
+	/**
+	 * annotation type
+	 */
 	private String annotationType;
+	
+	/**
+	 * annotation item
+	 */
 	private Map<String, Object> annotationItem;
+	
+	/**
+	 * annotator id
+	 */
 	private String annotatorId;
+	
+	/**
+	 * date of annotation
+	 */
 	private String annotationDate;
 
 	public String getDcId() {
@@ -116,5 +152,23 @@ public class AnnotationImgSetDataCol {
 				", annotatorId='" + annotatorId + '\'' +
 				", annotationDate='" + annotationDate + '\'' +
 				'}';
+	}
+
+	private String dataFormat;
+	public void setDataFormat(String dataFormat) {
+		this.dataFormat = dataFormat;
+	}
+	
+	public String getDataFormat() {
+		return this.dataFormat;
+	}
+
+	private Object instances;
+	public void setInstances(Object instances) {
+		this.instances = instances;
+	}
+	
+	public Object getInstances() {
+		return this.instances;
 	}
 }
