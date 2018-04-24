@@ -1024,6 +1024,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesSetPerAnnotatorByOrgId(
             @RequestParam(value = "orgId") String orgId
     ){
+        logger.info("Passing the org Id to get annotated image set count : {}", orgId);
         List<AnnotatorImageSetCount> responseList = new ArrayList<>();
 
         List<Object[]> resultSet;
