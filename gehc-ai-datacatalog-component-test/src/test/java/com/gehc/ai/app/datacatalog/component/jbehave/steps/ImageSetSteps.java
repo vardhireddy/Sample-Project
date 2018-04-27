@@ -1134,7 +1134,7 @@ public class ImageSetSteps {
         mockData.add(record1);
         mockData.add(record2);
 
-        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenReturn(mockData);
+        when(annotationRepository.getCountOfImagesAnnotated(anyString())).thenReturn(mockData);
     }
 
     @When("Given a orgId return count of image sets annotated by each Radiologist")
@@ -1153,7 +1153,7 @@ public class ImageSetSteps {
     @Given("orgId not present in data base the API to get count of unique Image sets annotated by each Radiologist")
     public void getCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganization204() throws Exception{
         List<Object[]> mockdata = new ArrayList<>();
-        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenReturn(mockdata);
+        when(annotationRepository.getCountOfImagesAnnotated(anyString())).thenReturn(mockdata);
     }
 
     @When("Given a orgId not present in data base API should return 204 - No Content")
@@ -1170,7 +1170,7 @@ public class ImageSetSteps {
 
     @Given("orgId to get count of image sets annotated by each radiologist the API throws Exception - DataSetUp Provided")
     public void getCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception{
-        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenThrow(Exception.class);
+        when(annotationRepository.getCountOfImagesAnnotated(anyString())).thenThrow(Exception.class);
     }
 
     @When("Given orgId to get count of unique Image sets annotated by Radiologist API should throw Exception")
