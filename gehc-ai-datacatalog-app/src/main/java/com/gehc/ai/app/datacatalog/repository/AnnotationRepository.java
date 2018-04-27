@@ -44,5 +44,5 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
     @Query(value = "SELECT annotator_id ,COUNT(distinct image_set) " +
                     "FROM lfdb.annotation where org_id=:orgId " +
                     "GROUP BY annotator_id", nativeQuery = true)
-    List<Object[]> getCountOfImageSetPerAnnotatorByorgId(@Param("orgId") String orgId);
+    List<Object[]> getCountOfImagesAnnotated(@Param("orgId") String orgId);
 }

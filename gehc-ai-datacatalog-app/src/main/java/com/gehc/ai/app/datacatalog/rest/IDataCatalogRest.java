@@ -285,5 +285,5 @@ public interface IDataCatalogRest {
      *
      * @return list of Annotated ImageSetCount grouped by user
      */
-    ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesSetPerAnnotatorByOrgId(String orgId);
+    ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesAnnotated(String orgId);
 }
