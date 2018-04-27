@@ -12,6 +12,7 @@
 
 package com.gehc.ai.app.datacatalog.component.jbehave.features;
 
+import de.codecentric.jbehave.junit.monitoring.JUnitReportingRunner;
 import org.jbehave.core.configuration.Configuration;
 import org.jbehave.core.configuration.MostUsefulConfiguration;
 import org.jbehave.core.embedder.Embedder;
@@ -23,21 +24,33 @@ import org.jbehave.core.reporters.FilePrintStreamFactory.ResolveToPackagedName;
 import org.jbehave.core.reporters.StoryReporterBuilder;
 import org.jbehave.core.steps.*;
 import org.jbehave.core.steps.spring.SpringStepsFactory;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.rules.SpringClassRule;
+import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 import java.util.Arrays;
 
 import static org.jbehave.core.reporters.Format.*;
 
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
+@RunWith(JUnitReportingRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public abstract class AbstractSpringJBehaveStory extends JUnitStory {
+
+    @ClassRule
+    public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
+    @Rule
+    public final SpringMethodRule springMethodRule = new SpringMethodRule();
+
 
     private static final int STORY_TIMEOUT = 120;
 
@@ -46,7 +59,12 @@ public abstract class AbstractSpringJBehaveStory extends JUnitStory {
 
     private Configuration configuration;
 
+    private TestContextManager testContextManager;
+
     public AbstractSpringJBehaveStory() {
+        testContextManager = new TestContextManager( getClass() );
+        applicationContext = testContextManager.getTestContext().getApplicationContext();
+
         Embedder embedder = new Embedder();
         embedder.useMetaFilters(Arrays.asList("-skip"));
         useEmbedder(embedder);
