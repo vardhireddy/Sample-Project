@@ -7,28 +7,19 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.*;
 
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 /*import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import Annotation;
 import DataCollection;
@@ -301,9 +292,9 @@ public class DataCatalogRestImplTest {
         mockdata.add(record1);
         mockdata.add(record2);
 
-        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenReturn(mockdata);
+        when(annotationRepository.getCountOfImagesAnnotated(anyString())).thenReturn(mockdata);
 
-        ResponseEntity result = controller.getCountOfImagesSetPerAnnotatorByOrgId("821u2e8u22iw9i2");
+        ResponseEntity result = controller.getCountOfImagesAnnotated("821u2e8u22iw9i2");
         assertEquals(200,result.getStatusCodeValue());
         List<AnnotatorImageSetCount> data = (List<AnnotatorImageSetCount>) result.getBody();
         assertEquals(20,data.get(0).getCountfImagesAnnotated());
@@ -314,9 +305,9 @@ public class DataCatalogRestImplTest {
     {
         List<Object[]> mockdata = new ArrayList<>();
 
-        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenReturn(mockdata);
+        when(annotationRepository.getCountOfImagesAnnotated(anyString())).thenReturn(mockdata);
 
-        ResponseEntity result = controller.getCountOfImagesSetPerAnnotatorByOrgId("821u2e8u22iw9i2");
+        ResponseEntity result = controller.getCountOfImagesAnnotated("821u2e8u22iw9i2");
         assertEquals(204,result.getStatusCodeValue());
     }
 
@@ -331,9 +322,9 @@ public class DataCatalogRestImplTest {
         mockdata.add(record1);
         mockdata.add(record2);
 
-        when(annotationRepository.getCountOfImageSetPerAnnotatorByorgId(anyString())).thenThrow(new RuntimeException("internal error"));
+        when(annotationRepository.getCountOfImagesAnnotated(anyString())).thenThrow(new RuntimeException("internal error"));
 
-        ResponseEntity result = controller.getCountOfImagesSetPerAnnotatorByOrgId("821u2e8u22iw9i2");
+        ResponseEntity result = controller.getCountOfImagesAnnotated("821u2e8u22iw9i2");
         assertEquals(500,result.getStatusCodeValue());
     }
 

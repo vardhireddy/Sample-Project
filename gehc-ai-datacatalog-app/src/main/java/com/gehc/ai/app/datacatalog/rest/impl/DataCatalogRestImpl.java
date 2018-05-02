@@ -1030,19 +1030,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @RequestMapping(value = "/datacatalog/image-set/annotated-image-set-count-by-user", method = RequestMethod.GET)
-    public ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesSetPerAnnotatorByOrgId(
+    public ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesAnnotated(
             @RequestParam(value = "orgId") String orgId
     ){
-        logger.info("Passing the org Id to get annotated image set count : {}", orgId);
+        logger.info("Passing the org Id to get count of images annotated : {}", orgId);
         List<AnnotatorImageSetCount> responseList = new ArrayList<>();
 
         List<Object[]> resultSet;
 
         try {
-            resultSet = annotationRepository.getCountOfImageSetPerAnnotatorByorgId(orgId);
+            resultSet = annotationRepository.getCountOfImagesAnnotated(orgId);
         }catch (Exception e)
         {
-            logger.error("Exception retrieving data in getCountOfImagesSetPerAnnotatorByOrgId : {}", e.getMessage());
+            logger.error("Exception retrieving data in getCountOfImagesAnnotated : {}", e.getMessage());
             return new ResponseEntity ("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
