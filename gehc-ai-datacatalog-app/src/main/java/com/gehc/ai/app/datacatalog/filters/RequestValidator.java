@@ -152,7 +152,7 @@ public class RequestValidator {
 	 * @param contractFiles
 	 * @param metadataJson
 	 * @throws DataCatalogException
-	 */
+
 	public static Contract validateContractAndParseMetadata(List<MultipartFile> contractFiles, MultipartFile metadataJson) throws DataCatalogException {
 		StringBuilder errorMessage = new StringBuilder();
 		Contract contract = null;
@@ -181,12 +181,37 @@ public class RequestValidator {
 				errorMessage.append(ErrorCodes.UNSUPPORTED_CONTRACT_METADATA_FILE_TYPE.getErrorMessage());
 			}
 		}
-		
+
 		// Throw error if metadata or contract file is missing
 		if(errorMessage.length() > 0){
     		throw new DataCatalogException(errorMessage.toString());
     	}
-		
+
+		return contract;
+	}
+	 */
+
+	/**
+	 *
+	 * @param contractFiles
+	 * @throws DataCatalogException
+	 */
+	public static Contract validateContractAndParseMetadata(List<MultipartFile> contractFiles) throws DataCatalogException {
+		StringBuilder errorMessage = new StringBuilder();
+		Contract contract = new Contract();
+		contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
+		checkFilesExists(contractFiles, errorMessage);
+
+		if(contractFiles != null && errorMessage.length() == 0){
+
+			validateSupportedContractFileFormats(contractFiles, errorMessage);
+		}
+
+		// Throw error if metadata or contract file is missing
+		if(errorMessage.length() > 0){
+			throw new DataCatalogException(errorMessage.toString());
+		}
+
 		return contract;
 	}
 
@@ -200,9 +225,11 @@ public class RequestValidator {
 			final String contractFileExt = FilenameUtils.getExtension(contractFile.getOriginalFilename());
 			if(!supportedContractFileFormats.containsKey(contractFileExt)){
 				errorMessage.append(ErrorCodes.UNSUPPORTED_CONTRACT_FILE_TYPE.getErrorMessage() + contractFile.getOriginalFilename());
+				logger.error("File name : "+ contractFile.getOriginalFilename() +", Error: " + ErrorCodes.UNSUPPORTED_CONTRACT_FILE_TYPE.getErrorMessage());
 			}
 			if (contractFile.getSize() == 0){
 				errorMessage.append(ErrorCodes.EMPTY_CONTRACT_FILE_TYPE.getErrorMessage() + contractFile.getOriginalFilename());
+				logger.error("File name : "+ contractFile.getOriginalFilename() +", Error: " + ErrorCodes.EMPTY_CONTRACT_FILE_TYPE.getErrorMessage());
 			}
 		});
 	}
@@ -217,10 +244,24 @@ public class RequestValidator {
 		// Check if contract file(s) is(are) present
 		if(contractFiles == null || contractFiles.isEmpty()){
 			errorMessage.append(ErrorCodes.MISSING_CONTRACT.getErrorMessage());
+			logger.error("Error: " + ErrorCodes.MISSING_CONTRACT.getErrorMessage());
 		}
 		// Check if metadata file is present
 		if(metadataJson == null || metadataJson.isEmpty() || metadataJson.getSize() == 0){
 			errorMessage.append(ErrorCodes.MISSING_CONTRACT_METADATA.getErrorMessage());
+			logger.error("Error: " + ErrorCodes.MISSING_CONTRACT_METADATA.getErrorMessage());
+		}
+	}
+
+	/** Only for 8.3 SP1
+	 * @param contractFiles
+	 * @param errorMessage
+	 */
+	private static void checkFilesExists(List<MultipartFile> contractFiles, StringBuilder errorMessage) {
+		// Check if contract file(s) is(are) present
+		if(contractFiles == null || contractFiles.isEmpty()){
+			errorMessage.append(ErrorCodes.MISSING_CONTRACT.getErrorMessage());
+			logger.error("Error: " + ErrorCodes.MISSING_CONTRACT.getErrorMessage());
 		}
 	}
 
