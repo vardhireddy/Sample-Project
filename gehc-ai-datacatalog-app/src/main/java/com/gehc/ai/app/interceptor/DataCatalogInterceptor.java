@@ -68,36 +68,26 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle( HttpServletRequest req, HttpServletResponse res, Object obj ) throws Exception {      
         if(null != req){
-//		   String orgId = req.getParameter("org-id");
-//		   logger.info("DC prehandle, org-id in request: " + orgId);
-//		   if (!StringUtils.isEmpty(orgId)) {
-//			   logger.info("DC prehandle, where org-id is passed: " + orgId);
-//				req.setAttribute("orgId", orgId);
-//				return true;
-//		   }
 		   boolean foundAuthToken = false;
-           logger.info( " ### In preHandle method, req.getMethod() = " + req.getMethod() + ", req.getServletPath() = " + req.getServletPath());
+           logger.debug( " ### In preHandle method, req.getMethod() = " + req.getMethod() + ", req.getServletPath() = " + req.getServletPath());
            if(!("OPTIONS".equalsIgnoreCase( req.getMethod() ))){
 	           Enumeration headerNames = req.getHeaderNames();
 	           String key = null;
-//	           String value = null;
 	           while (headerNames.hasMoreElements()) {
 	                   key = (String) headerNames.nextElement();
-//				       value = req.getHeader(key);
 	                   if(key.equalsIgnoreCase(HttpHeaders.AUTHORIZATION)){
-	                	   logger.info( " ### In preHandle method, found the authorization key" );
+	                	   logger.debug( " ### In preHandle method, found the authorization key" );
 	                	   foundAuthToken = true;
 	                	   break;
 	                   }
 	           }
 	           if (null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().equalsIgnoreCase("/api/v1/annotation")){
-	        	   logger.info( " +++ In preHandle method, save annotation is getting called so not looking for org id");
+	        	   logger.debug( " +++ In preHandle method, save annotation is getting called so not looking for org id");
 	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/patient")){
-	        	   logger.info( " +++ In preHandle method, save patient is getting called so not looking for org id");
+	        	   logger.debug( " +++ In preHandle method, save patient is getting called so not looking for org id");
 	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/study")){
-	        	   logger.info( " +++ In preHandle method, save study is getting called so not looking for org id");
+	        	   logger.debug( " +++ In preHandle method, save study is getting called so not looking for org id");
 	           } else if(foundAuthToken){
-	               logger.info( " +++ In preHandle method, found auth token. Calling User me API");
 	               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
 	           } else if (!foundAuthToken && !StringUtils.isEmpty(devMode) && devMode.equalsIgnoreCase("true")) {
 					   req.setAttribute("orgId", devOrgId);
@@ -105,10 +95,10 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 	        	throw new WebApplicationException( Response.status( Status.FORBIDDEN ).entity( "User is not authorized" ).build() );
 	           }
            }else{
-               logger.info( " **** In preHandle method req method is options ");
+               logger.debug( " **** In preHandle method req method is options ");
            }
         }else{
-            logger.info( " !!! In preHandle method req is null ");   
+            logger.debug( " !!! In preHandle method req is null ");   
         }
         
             return true;
@@ -118,7 +108,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      */
     @Override
     public void afterCompletion( HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3 ) throws Exception {
-        logger.info( " !!! In afterCompletion method" );        
+        logger.debug( " !!! In afterCompletion method" );        
     }
 
     /* (non-Javadoc)
@@ -126,7 +116,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
      */
     @Override
     public void postHandle( HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, ModelAndView arg3 ) throws Exception {
-        logger.info( " !!! In postHandle method" );
+        logger.debug( " !!! In postHandle method" );
         
     }
     
