@@ -62,6 +62,7 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-summary");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/ge-class-data-summary");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection/{ids}");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/contract");
   }
     
     /** The dataSource */
