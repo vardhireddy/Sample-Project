@@ -11,35 +11,36 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.common.constants.ApplicationConstants;
+import com.gehc.ai.app.common.responsegenerator.ApiResponse;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.filters.RequestValidator;
+import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
+import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,36 +57,33 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.common.constants.ApplicationConstants;
-import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.filters.RequestValidator;
-import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-import com.gehc.ai.app.datacatalog.repository.PatientRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
-import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 /**
  * @author 212071558
@@ -976,29 +974,60 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return apiResponse;
     }
 
-    /**
+
+
+    /** For 18.3 SP2
      *
      * API to upload contract
      *
      * @param contractFiles
      * @param metadataJson
      * @return
+
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
+    public ResponseEntity<DataCatalogResponse> uploadContract(
+            @RequestParam(value = "contract") List<MultipartFile> contractFiles,
+            @RequestParam(value = "metadata", required = false) MultipartFile metadataJson) {
+        Contract contract = null;
+        try {
+            contract = RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+        } catch(DataCatalogException exception){
+            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        try {
+            long contractId = dataCatalogService.uploadContract(contractFiles, contract);
+            return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+     */
+
+    /**
+     *
+     * API to upload contract
+     *
+     * @param contractFiles
+     * @return
      */
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
 	public ResponseEntity<DataCatalogResponse> uploadContract(
-			@RequestParam(value = "contract") List<MultipartFile> contractFiles,
-	        @RequestParam(value = "metadata") MultipartFile metadataJson) {
+			@RequestParam(value = "contract") List<MultipartFile> contractFiles) {
     	Contract contract = null;
     	try {
-    		contract = RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+                contract = RequestValidator.validateContractAndParseMetadata(contractFiles);
 		} catch(DataCatalogException exception){
+            logger.error("Exception occured while uploading contract : ", exception);
 			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     	try {
 			long contractId = dataCatalogService.uploadContract(contractFiles, contract);
+            logger.debug(" contract ID " + contractId);
 			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
 		} catch (Exception e) {
+            logger.error("Exception occured while uploading contract : ", e);
 			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
