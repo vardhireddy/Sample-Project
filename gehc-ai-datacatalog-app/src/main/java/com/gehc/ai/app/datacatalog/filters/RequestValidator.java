@@ -238,7 +238,7 @@ public class RequestValidator {
 	 * @param contractFiles
 	 * @param metadataJson
 	 * @param errorMessage
-	 */
+
 	private static void checkFilesExists(List<MultipartFile> contractFiles, MultipartFile metadataJson,
 			StringBuilder errorMessage) {
 		// Check if contract file(s) is(are) present
@@ -252,6 +252,7 @@ public class RequestValidator {
 			logger.error("Error: " + ErrorCodes.MISSING_CONTRACT_METADATA.getErrorMessage());
 		}
 	}
+	 */
 
 	/** Only for 8.3 SP1
 	 * @param contractFiles
