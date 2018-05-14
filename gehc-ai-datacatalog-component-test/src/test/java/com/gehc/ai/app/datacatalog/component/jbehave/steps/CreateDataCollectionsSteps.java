@@ -103,8 +103,8 @@ public class CreateDataCollectionsSteps {
     //
     /////////////////////
 
-    @When("the API which creates a data collection is invoked to create <numCollections> data collections")
-    public void whenExportAnnotationAsCsvAPICalled(@Named("numCollections") int numCollections) throws Exception {
+    @When("the API which creates a data collection is invoked to create <description>")
+    public void whenExportAnnotationAsCsvAPICalled(@Named("description") String description, @Named("numCollections") int numCollections) throws Exception {
 //        retrieveResult = mockMvc.perform(
 //                post("/api/v1/datacatalog/data-collection")
 //                        .contentType(MediaType.APPLICATION_JSON)
@@ -143,8 +143,8 @@ public class CreateDataCollectionsSteps {
         //retrieveResult.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-    @Then("the response's body should contain a JSON string that defines <numCollections> data collections")
-    public void thenResponseBodyShouldContainJsonStringDefiningDataCollections(@Named("numCollections") int numCollections) throws Exception {
+    @Then("the response's body should contain a JSON string that defines <description>")
+    public void thenResponseBodyShouldContainJsonStringDefiningDataCollections(@Named("description") String description, @Named("numCollections") int numCollections) throws Exception {
         //retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"createdBy\":\"test\",\"properties\":{},\"imageSets\":[]}")));
     }
 
