@@ -1,4 +1,4 @@
-Feature: DataCatalog Component - DataCollection
+Feature: DataCatalog Component - Create one or more data collections
 
 Narrative: As a data scientist or radiologist, I should be able to create one or more data collections.
 
