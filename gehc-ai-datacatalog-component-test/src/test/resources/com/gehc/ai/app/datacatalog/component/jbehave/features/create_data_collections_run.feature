@@ -5,18 +5,27 @@ Narrative: As a data scientist or radiologist, I should be able to create one or
 @functional
 
 @test
-Scenario Outline: Create one or more data collections from a pool of image sets
+Scenario Outline: Create one data collection from a pool of unique image sets
 Meta: @automated
 Given a pool of unique image sets
-When the API which creates a data collection is invoked to create <description>
+When the API which creates a data collection is invoked to create a single data collection
 Then the response's status code should be 201
 Then the response's content type should be JSON
-Then the response's body should contain a JSON string that defines <description>
+Then the response's body should contain a JSON string that defines a single data collection
+
+@test
+Scenario Outline: Create multiple distinct data collections from a pool of unique image sets
+Meta: @automated
+Given a pool of unique image sets
+When the API which creates a data collection is invoked to create <numCollections> data collections
+Then the response's status code should be 201
+Then the response's content type should be JSON
+Then the response's body should contain a JSON string that defines <numCollections> data collections whereby each collection does not contain an image set in another collection
 
 Examples:
-|description|numCollections|
-|a single data collection|1|
-|multiple data collections|5|
+|numCollections|
+|2|
+|5|
 
 @test
 Scenario Outline: Fail to create one or more data collections due to non unique image sets

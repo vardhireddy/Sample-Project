@@ -78,6 +78,7 @@ public class CreateDataCollectionsSteps {
 
     @Given("a pool of unique image sets")
     public void givenPoolOfUniqueImageSets() throws Exception {
+        // Create mock requestbody
 //        this.dataSet = getMockDataSet();
 //        when(dataSetRepository.save(any(DataSet.class))).thenReturn(this.dataSet);
     }
@@ -103,8 +104,26 @@ public class CreateDataCollectionsSteps {
     //
     /////////////////////
 
+    @When("the API which creates a data collection is invoked to create a single data collection")
+    public void whenApiWhichCreatesADataCollectionIsInvokedToCreateASingleDataCollection() throws Exception {
+//        retrieveResult = mockMvc.perform(
+//                post("/api/v1/datacatalog/data-collection")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(defnToJSON(this.dataSet))
+//                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500"));
+    }
+
+    @When("the API which creates a data collection is invoked to create <numCollections> data collections")
+    public void whenApiWhichCreatesADataCollectionIsInvokedToCreateMultipleDataCollections(@Named("numCollections") int numCollections) throws Exception {
+//        retrieveResult = mockMvc.perform(
+//                post("/api/v1/datacatalog/data-collection")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(defnToJSON(this.dataSet))
+//                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500"));
+    }
+
     @When("the API which creates a data collection is invoked to create <description>")
-    public void whenExportAnnotationAsCsvAPICalled(@Named("description") String description, @Named("numCollections") int numCollections) throws Exception {
+    public void whenApiWhichCreatesADataCollectionIsInvokedToCreateAnyNumberOfDataCollections(@Named("description") String description, @Named("numCollections") int numCollections) throws Exception {
 //        retrieveResult = mockMvc.perform(
 //                post("/api/v1/datacatalog/data-collection")
 //                        .contentType(MediaType.APPLICATION_JSON)
@@ -141,6 +160,16 @@ public class CreateDataCollectionsSteps {
     @Then("the response's content type should be JSON")
     public void thenResponseMediaTypeShouldBeJson() throws Exception {
         //retrieveResult.andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Then("the response's body should contain a JSON string that defines a single data collection")
+    public void thenResponseBodyShouldContainJsonStringDefiningASingleDataCollection() throws Exception {
+        //retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"createdBy\":\"test\",\"properties\":{},\"imageSets\":[]}")));
+    }
+
+    @Then("the response's body should contain a JSON string that defines <numCollections> data collections whereby each collection does not contain an image set in another collection")
+    public void thenResponseBodyShouldContainJsonStringDefiningMultipleDistinctCollections(@Named("numCollections") int numCollections) throws Exception {
+        //retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"schemaVersion\":\"123\",\"name\":\"Test\",\"description\":\"test\",\"createdDate\":\"22-01-2017 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"createdBy\":\"test\",\"properties\":{},\"imageSets\":[]}")));
     }
 
     @Then("the response's body should contain a JSON string that defines <description>")
