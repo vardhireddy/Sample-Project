@@ -1130,6 +1130,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity("Operation failed while retrieving image set ids by org id").build());
 		}
-		return null;
+		return new ArrayList<Long>();
 	}
 }
