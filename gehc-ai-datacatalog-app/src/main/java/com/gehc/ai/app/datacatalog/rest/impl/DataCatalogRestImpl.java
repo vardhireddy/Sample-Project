@@ -1011,6 +1011,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      * @param contractFiles
      * @return
      */
+    @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
 	public ResponseEntity<DataCatalogResponse> uploadContract(
 			@RequestParam(value = "contract") List<MultipartFile> contractFiles) {
