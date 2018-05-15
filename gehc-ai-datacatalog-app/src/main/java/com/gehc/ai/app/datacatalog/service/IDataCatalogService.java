@@ -66,4 +66,10 @@ public interface IDataCatalogService {
 	Long uploadContract(List<MultipartFile> contractFiles, Contract contract);
 
 	Contract getContract(Long contractId);
+	
+    /**
+     * @param params
+     * @return
+     */
+    List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
 }

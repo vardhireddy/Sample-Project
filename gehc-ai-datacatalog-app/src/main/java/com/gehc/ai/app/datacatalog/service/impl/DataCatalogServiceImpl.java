@@ -91,4 +91,9 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 
 		return dataCatalogDao.getContractDetails(contractId);
 	}
+
+	@Override
+	public List<Long> getImgSeriesIdsByFilters(Map<String, Object> params) {
+		return dataCatalogDao.getImgSeriesIdsByFilters(params);
+	}
 }
