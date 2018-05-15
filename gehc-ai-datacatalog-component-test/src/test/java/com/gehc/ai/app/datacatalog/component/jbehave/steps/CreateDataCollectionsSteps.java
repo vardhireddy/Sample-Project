@@ -142,11 +142,6 @@ public class CreateDataCollectionsSteps {
         //retrieveResult.andExpect(status().isOk());
     }
 
-    @Then("the response's status code should be 206")
-    public void thenResponseCodeShouldBe206() throws Exception {
-        //retrieveResult.andExpect(status().isOk());
-    }
-
     @Then("the response's status code should be 400")
     public void thenResponseCodeShouldBe400() throws Exception {
 
@@ -187,8 +182,8 @@ public class CreateDataCollectionsSteps {
 
     }
 
-    @Then("the response's body should contain a message saying that some but not all data collections were created")
-    public void thenResponseBodyShouldContainErrorMessageSayingSomeButNotAllDataCollectionsWereCreated() throws Exception {
+    @Then("the response's body should contain an error message saying the number of data collections to create should be greater than or equal to 1")
+    public void thenResponseBodyShouldContainErrorMessageSayingTheNumberOfDataCollectionsToCreateShouldBeGreaterThanOrEqualToOne() throws Exception {
 
     }
 
