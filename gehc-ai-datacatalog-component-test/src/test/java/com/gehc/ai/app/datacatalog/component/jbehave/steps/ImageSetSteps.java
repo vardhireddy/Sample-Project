@@ -1185,6 +1185,27 @@ public class ImageSetSteps {
         retrieveResult.andExpect(status().is(500));
     }
 
+    @Given("Get Image set id based on filter criteria with ORG ID and Modality - DataSetUp Provided")
+    public void givenImagesetIdImageBasedOnFilterCriteriaOrgId() throws Exception {
+        List<Long> imgSeries = commonSteps.getImageSeriesIds();
+        when(dataCatalogDao.getImgSeriesIdsByFilters(anyMap())).thenReturn(imgSeries);
+    }
+
+
+    @When("Get Image set id based on filter criteria with ORG ID and Modality")
+    public void getImagesetIdImageBasedOnFilterCriteriaOrgId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/image-series/ids?org_id=61939267-d195-499f-bfd8-7d92875c7035&modality=CT")
+        );
+
+    }
+
+    @Then("verify Image set id based on filter  with ORG ID and Modality")
+    public void verifyImagesetIdImageBasedOnFilterCriteriaOrgId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+       // retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+    }
+    
     private String imageSeriesToJSON(ImageSeries imageSeries) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(imageSeries);

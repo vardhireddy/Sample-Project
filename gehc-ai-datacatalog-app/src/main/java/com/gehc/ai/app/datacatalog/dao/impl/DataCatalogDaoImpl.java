@@ -173,6 +173,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 
 	protected static final List<Object> GE_CLASS_LIST = new ArrayList<Object>();
 
+	private static final String GET_IMG_SERIES_IDS_BY_FILTERS = "  select distinct x.id, x.org_id, x.patient_id "
+			+" from (  select im.id, im.org_id,im.institution, im.modality, im.anatomy, im.instance_count, p.patient_id, im.data_format, im.equipment, "
+			+ " im.series_instance_uid, CAST(im.properties as CHAR(20000)) properties, im.upload_date, im.view from patient p, image_set im "
+			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
+	
 	@Autowired
 	private EntityManager em;
 
@@ -755,5 +760,34 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	@Override
 	public Contract getContractDetails(Long contractId) {
 		return contractRepository.findOne(contractId);
+	}
+
+	@Override
+	public List<Long> getImgSeriesIdsByFilters(Map<String, Object> params) {
+		logger.info("Getting image series ids based on filters");
+		List<Long> imageSeriesIDsList = new ArrayList<Long>();
+		try{
+			StringBuilder builder = new StringBuilder();
+			builder.append(GET_IMG_SERIES_IDS_BY_FILTERS);
+			builder.append(constructQuery(params));
+			builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
+			logger.debug("Query to get image series by filters = " + builder.toString());
+			Query q = em.createNativeQuery(builder.toString());	// NOSONAR
+
+			@SuppressWarnings("unchecked")
+			List<Object[]> objList = q.getResultList();
+			if(null != objList && !objList.isEmpty()){
+				objList.stream().forEach((record) -> {
+					if (record[0] instanceof BigInteger){
+						imageSeriesIDsList.add(((BigInteger) record[0]).longValue());
+					}
+				});
+				logger.debug("Image series IDs list size " + imageSeriesIDsList.size());
+			}
+		}catch(Exception e){
+			logger.error("Dao error while getImgSeriesByFilters", e);
+			throw e;
+		}
+		return imageSeriesIDsList;
 	}
 }
