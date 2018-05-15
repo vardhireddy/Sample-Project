@@ -47,8 +47,8 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
      * @throws Exception 
      */
 	@Override
-	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params) {
-		return dataCatalogDao.getImgSeriesByFilters(params);
+	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params, int maxImageSeriesRows) {
+		return dataCatalogDao.getImgSeriesByFilters(params, maxImageSeriesRows);
 	}
 
 	@Override

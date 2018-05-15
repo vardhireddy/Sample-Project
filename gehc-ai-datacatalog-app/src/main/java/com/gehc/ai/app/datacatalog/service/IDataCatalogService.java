@@ -37,7 +37,7 @@ public interface IDataCatalogService {
      * @return
      * @throws Exception 
      */
-    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
+    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params, int maxImageSeriesRows);
 
     /**
      * Returns the annotation details for every specified image set ID as a list of beans encapsulating their JSON representations.

@@ -150,7 +150,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
@@ -160,7 +160,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("fromDate", "LABEL"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,1);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,1);
         assertEquals(getImageSeriesWithFiltersAndNullProperties().toString(), result.toString());
     }
 
@@ -185,7 +185,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "absent"));
         input.putAll(constructQueryParam("ge-class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
@@ -193,7 +193,7 @@ public class DataCatalogDaoImplTest {
     public void testgetImageSeriesByFiltersWithOutAnnoations() {
         dataSetUp();
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 

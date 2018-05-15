@@ -116,6 +116,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final int ORG_ID_LENGTH = 255;
     public static final String VIEW = "view";
 
+    public static final int MAX_IMAGE_SERIES_ROWS = 100;
+    
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
     @Value("${uom.user.me.url}")
@@ -505,7 +507,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = new ArrayList<Long>();
                 if (null != imgSeries && !imgSeries.isEmpty()) {
-                    for (int i = 0; i < imgSeries.size(); i++) {
+                    for (int i = 0; i < Math.min(imgSeries.size(), MAX_IMAGE_SERIES_ROWS) ; i++) {
                         imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
                     }
                     return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
@@ -875,7 +877,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
                 } else if (validParams.containsKey(ORG_ID)) {
                     logger.debug("Getting img series based on all filters");
-                    return dataCatalogService.getImgSeriesByFilters(validParams);
+                    return dataCatalogService.getImgSeriesByFilters(validParams, MAX_IMAGE_SERIES_ROWS);
                 }
             }
         } catch (ServiceException e) {
