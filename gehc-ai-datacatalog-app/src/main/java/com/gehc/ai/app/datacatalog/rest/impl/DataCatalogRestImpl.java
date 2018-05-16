@@ -121,6 +121,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Value("${spring.data.imageSeries.limit}")
     private int MAX_IMAGE_SERIES_ROWS;
     
+    public void setMaxImageSeriesRows(int r) {
+    	this.MAX_IMAGE_SERIES_ROWS = r;
+    }
+    
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
     @Value("${uom.user.me.url}")
@@ -501,8 +505,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
         // Note: Coolidge is using this as well
-        logger.debug("In REST , Get img series for DC id " + id);
-        List<DataSet> dsLst = new ArrayList<DataSet>();
+        logger.debug(">>>>>>>>>>>In REST , Get img series for DC id " + id);
+        List<DataSet> dsLst = null;
         if (null != id) {
             dsLst = dataSetRepository.findById(id);
             if (null != dsLst && !dsLst.isEmpty()) {
