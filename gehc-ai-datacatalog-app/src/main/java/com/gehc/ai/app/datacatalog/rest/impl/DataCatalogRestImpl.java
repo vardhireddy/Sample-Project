@@ -115,6 +115,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String DATE_TO = "dateTo";
     public static final int ORG_ID_LENGTH = 255;
     public static final String VIEW = "view";
+    private static final String LABEL_SEPARATOR = "AND";
 
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
@@ -642,7 +643,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             logger.debug("***** Data set Lst.size() = " + dsLst.size());
             if (null != dsLst.get(0).getImageSets()) {
                 List<String> types = new ArrayList<String>();
-                types.add(annotationType);
+                if(annotationType.contains(LABEL_SEPARATOR)){
+                	String[] annotations = annotationType.split(LABEL_SEPARATOR);
+                	for(int annotationCount = 0; annotationCount < annotations.length; annotationCount++){
+                		types.add(annotations[annotationCount]);
+                	}
+                }else{
+                	types.add(annotationType);
+                }
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = getImgSerIdLst(imgSeries);
                 List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdLst);
