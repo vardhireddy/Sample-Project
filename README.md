@@ -12,3 +12,4 @@ mvn clean install -P contract
 # - runs only contract tests 
 mvn clean install -P integration 
 # - runs only integration tests
+
