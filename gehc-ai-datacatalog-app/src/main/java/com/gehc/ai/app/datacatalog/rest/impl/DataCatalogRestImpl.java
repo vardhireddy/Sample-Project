@@ -75,6 +75,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -629,12 +630,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
         logger.info(" Entering method getRawTargetData --> id: " + id + " Type: " + annotationType);
         // Note: works fine with new DC which has image sets as Array of Longs
-        if ((id == null) || (id.length() == 0) || annotationType == null) {
-            logger.debug("Datacollection id and annotation type is required to get annotation for a data collection");
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Datacollection id and annotation type is required to get annotation for a data collection")
-                    .build());
-        }
+        nonNullCheckForInputParameters(id, annotationType);
         
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> annImgSetDCLst = null;
@@ -643,14 +639,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             logger.debug("***** Data set Lst.size() = " + dsLst.size());
             if (null != dsLst.get(0).getImageSets()) {
                 List<String> types = new ArrayList<String>();
-                if(annotationType.contains(LABEL_SEPARATOR)){
-                	String[] annotations = annotationType.split(LABEL_SEPARATOR);
-                	for(int annotationCount = 0; annotationCount < annotations.length; annotationCount++){
-                		types.add(annotations[annotationCount]);
-                	}
-                }else{
-                	types.add(annotationType);
-                }
+                setAnnotationTypes(annotationType, types);
+                logger.debug("Number of Annotations : "+types.size());
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = getImgSerIdLst(imgSeries);
                 List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdLst);
@@ -714,6 +704,33 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return (List) new ArrayList<AnnotationImgSetDataCol>();
 
     }
+
+	/**
+	 * @param id
+	 * @param annotationType
+	 * @throws WebApplicationException
+	 */
+	public void nonNullCheckForInputParameters(String id, String annotationType) throws WebApplicationException {
+		if ((id == null) || (id.length() == 0) || annotationType == null) {
+            logger.debug("Datacollection id and annotation type is required to get annotation for a data collection");
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Datacollection id and annotation type is required to get annotation for a data collection")
+                    .build());
+        }
+	}
+
+	/**
+	 * @param annotationType
+	 * @param types
+	 */
+	public void setAnnotationTypes(String annotationType, List<String> types) {
+		if(annotationType.contains(LABEL_SEPARATOR)){
+			String[] annotations = annotationType.split(LABEL_SEPARATOR);
+			types.addAll(Arrays.asList(annotations));
+		}else{
+			types.add(annotationType);
+		}
+	}
 
     private List<Long> getImgSerIdLst(List<Object> imgSeries) {
         List<Long> imgSerIdLst = new ArrayList<Long>();
