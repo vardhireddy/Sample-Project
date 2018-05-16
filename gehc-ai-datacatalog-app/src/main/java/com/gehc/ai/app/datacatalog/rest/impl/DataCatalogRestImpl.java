@@ -69,6 +69,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -85,7 +86,7 @@ import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 @RestController
 @Produces(MediaType.APPLICATION_JSON)
 @RequestMapping(value = "/api/v1")
-@PropertySource({"classpath:application.yml"})
+@PropertySource({ "classpath:application.yml" })
 public class DataCatalogRestImpl implements IDataCatalogRest {
     /**
      * The logger.
@@ -109,6 +110,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String DATE_TO = "dateTo";
     public static final int ORG_ID_LENGTH = 255;
     public static final String VIEW = "view";
+    private static final String LABEL_SEPARATOR = "AND";
 
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
@@ -624,12 +626,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
         logger.info(" Entering method getRawTargetData --> id: " + id + " Type: " + annotationType);
         // Note: works fine with new DC which has image sets as Array of Longs
-        if ((id == null) || (id.length() == 0) || annotationType == null) {
-            logger.debug("Datacollection id and annotation type is required to get annotation for a data collection");
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Datacollection id and annotation type is required to get annotation for a data collection")
-                    .build());
-        }
+        nonNullCheckForInputParameters(id, annotationType);
         
         ResponseBuilder responseBuilder;
         List<AnnotationImgSetDataCol> annImgSetDCLst = null;
@@ -638,7 +635,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             logger.debug("***** Data set Lst.size() = " + dsLst.size());
             if (null != dsLst.get(0).getImageSets()) {
                 List<String> types = new ArrayList<String>();
-                types.add(annotationType);
+                setAnnotationTypes(annotationType, types);
+                logger.debug("Number of Annotations : "+types.size());
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = getImgSerIdLst(imgSeries);
                 List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdLst);
@@ -702,6 +700,33 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return (List) new ArrayList<AnnotationImgSetDataCol>();
 
     }
+
+	/**
+	 * @param id
+	 * @param annotationType
+	 * @throws WebApplicationException
+	 */
+	public void nonNullCheckForInputParameters(String id, String annotationType) throws WebApplicationException {
+		if ((id == null) || (id.length() == 0) || annotationType == null) {
+            logger.debug("Datacollection id and annotation type is required to get annotation for a data collection");
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Datacollection id and annotation type is required to get annotation for a data collection")
+                    .build());
+        }
+	}
+
+	/**
+	 * @param annotationType
+	 * @param types
+	 */
+	public void setAnnotationTypes(String annotationType, List<String> types) {
+		if(annotationType.contains(LABEL_SEPARATOR)){
+			String[] annotations = annotationType.split(LABEL_SEPARATOR);
+			types.addAll(Arrays.asList(annotations));
+		}else{
+			types.add(annotationType);
+		}
+	}
 
     private List<Long> getImgSerIdLst(List<Object> imgSeries) {
         List<Long> imgSerIdLst = new ArrayList<Long>();
@@ -1029,64 +1054,66 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 	}
 
-    /**
-     * API to fetch contract
-     *
-     * @param
-     * @return
-     */
-    @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
+	/**
+	 * API to fetch contract
+	 *
+	 * @param
+	 * @return
+	 */
+	@RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
 	public ResponseEntity<DataCatalogResponse> getContracts(@PathVariable(value = "contractId") Long contractId) {
-    	Contract contract;
-    	try {
-    		RequestValidator.validateContractId(contractId);
-		} catch(DataCatalogException exception){
-			//logger.error("Exception occured while validating the contract ", exception);
-			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+		Contract contract;
+		try {
+			RequestValidator.validateContractId(contractId);
+		} catch (DataCatalogException exception) {
+			// logger.error("Exception occured while validating the contract ",
+			// exception);
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(exception.getLocalizedMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
-    	try {
-    		contract = dataCatalogService.getContract(contractId);
-			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contract),HttpStatus.OK);
+		try {
+			contract = dataCatalogService.getContract(contractId);
+			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contract), HttpStatus.OK);
 		} catch (Exception e) {
-			//logger.error("Exception occured while uploading the contract ", e);
-			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+			// logger.error("Exception occured while uploading the contract ",
+			// e);
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(e.getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-    @Override
-    @RequestMapping(value = "/datacatalog/image-set/annotated-image-set-count-by-user", method = RequestMethod.GET)
-    public ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesAnnotated(
-            @RequestParam(value = "orgId") String orgId
-    ){
-        logger.info("Passing the org Id to get count of images annotated : {}", orgId);
-        List<AnnotatorImageSetCount> responseList = new ArrayList<>();
+	@Override
+	@RequestMapping(value = "/datacatalog/image-set/annotated-image-set-count-by-user", method = RequestMethod.GET)
+	public ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesAnnotated(
+			@RequestParam(value = "orgId") String orgId) {
+		logger.info("Passing the org Id to get count of images annotated : {}", orgId);
+		List<AnnotatorImageSetCount> responseList = new ArrayList<>();
 
-        List<Object[]> resultSet;
+		List<Object[]> resultSet;
 
-        try {
-            resultSet = annotationRepository.getCountOfImagesAnnotated(orgId);
-        }catch (Exception e)
-        {
-            logger.error("Exception retrieving data in getCountOfImagesAnnotated : {}", e.getMessage());
-            return new ResponseEntity ("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
+		try {
+			resultSet = annotationRepository.getCountOfImagesAnnotated(orgId);
+		} catch (Exception e) {
+			logger.error("Exception retrieving data in getCountOfImagesAnnotated : {}", e.getMessage());
+			return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.",
+					HttpStatus.INTERNAL_SERVER_ERROR);
 
-        }
+		}
 
-        resultSet.stream().forEach(record -> {
+		resultSet.stream().forEach(record -> {
 
-            AnnotatorImageSetCount annotatorImageSetCount = new AnnotatorImageSetCount(record[0].toString(), Integer.valueOf(record[1].toString()));
-            responseList.add(annotatorImageSetCount);
+			AnnotatorImageSetCount annotatorImageSetCount = new AnnotatorImageSetCount(record[0].toString(),
+					Integer.valueOf(record[1].toString()));
+			responseList.add(annotatorImageSetCount);
 
-        });
+		});
 
-        if (responseList.isEmpty())
-        {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+		if (responseList.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
 
-        return new ResponseEntity<>(responseList,HttpStatus.OK);
-
+		return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
     @Override
@@ -1107,4 +1134,41 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         if(countOfRecordsWithGivenFilters <= 0) return new ResponseEntity<>( "Contract does not exist", HttpStatus.OK);
         return new ResponseEntity<>( "Contract exists", HttpStatus.OK);
     }
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.gehc.ai.app.datacatalog.rest.IDataCatalogRest#
+	 * getImgSeriesIdsByFilters(java.util.Map)
+	 */
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/datacatalog/image-series/ids", method = RequestMethod.GET)
+	public List<Long> getImgSeriesIdsByFilters(@RequestParam Map<String, Object> params) {
+		logger.info("[getImgSeriesIdsByFilters] Getting img series ids based on all filters");
+		try {
+			RequestValidator.validateImageSeriesFilterParamMap(params);
+		} catch (DataCatalogException exception) {
+			throw new WebApplicationException(exception.getLocalizedMessage());
+		}
+		Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
+				SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, VIEW, ANNOTATIONS, GE_CLASS, DATE_FROM, DATE_TO));
+		try {
+			if (null != validParams) {
+				logger.info("[getImgSeriesIdsByFilters] validParams is not null");
+				if (validParams.containsKey(ORG_ID)) {
+					logger.info("Getting img series ids based on all filters");
+					return dataCatalogService.getImgSeriesIdsByFilters(validParams);
+				}
+			}
+		} catch (ServiceException e) {
+			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity("Operation failed while retrieving image set ids by org id").build());
+		} catch (Exception e) {
+			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity("Operation failed while retrieving image set ids by org id").build());
+		}
+		return new ArrayList<Long>();
+	}
 }

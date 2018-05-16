@@ -293,4 +293,9 @@ public interface IDataCatalogRest {
      * @return String
      */
     ResponseEntity<String> validateContractIdAndOrgId(Long contractId, String orgId);
+    /**
+     * @param params
+     * @return
+     */
+    List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
 }
