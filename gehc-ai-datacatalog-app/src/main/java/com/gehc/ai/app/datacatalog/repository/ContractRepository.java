@@ -14,14 +14,22 @@ package com.gehc.ai.app.datacatalog.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import java.util.List;
 
 /**
  * @author dipshah
  *
  */
+@RepositoryRestResource(collectionResourceRel = "contract", path = "contract")
 public interface ContractRepository extends JpaRepository<Contract, Long> {
 
 	@Override
     <S extends Contract> S save(S entity);
-	
+
+    @Query(value = "select count( id ) from contract where id=:contractId and org_id=:orgId", nativeQuery = true)
+    int validateContractIdAndOrgId(@Param("contractId") Long contractId, @Param("orgId") String orgId);
 }

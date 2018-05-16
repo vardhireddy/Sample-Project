@@ -23,6 +23,9 @@ public class BeforeAndAfterSteps {
     private AnnotationRepository annotationRepository;
 
     @MockBean
+    private ContractRepository contractRepository;
+
+    @MockBean
     DataSetRepository dataSetRepository;
 
     @MockBean
@@ -61,6 +64,7 @@ public class BeforeAndAfterSteps {
         reset(cosNotificationRepository);
         reset(dataCatalogInterceptor);
         reset(dataCatalogDao);
+        reset(contractRepository);
 
     }
 

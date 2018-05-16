@@ -629,13 +629,13 @@ public class DataCatalogDaoImplTest {
     	assertEquals(contractId, contract.getId());
     }
 
-    @Test
+   /* @Test
     public void testgetContractDetails(){
     	Contract contract = new Contract();
-    	when(contractRepository.findOne(contract.getId())).thenReturn(contract);
+    	//when(contractRepository.findOne(contract.getId())).thenReturn(contract);
     	Contract receivedContract = dataCatalogDao.getContractDetails(contract.getId());
     	assertEquals(contract, receivedContract);
-    }
+    }*/
 
     private List<ImageSeries> getImageSeriesWithPatient() {
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
