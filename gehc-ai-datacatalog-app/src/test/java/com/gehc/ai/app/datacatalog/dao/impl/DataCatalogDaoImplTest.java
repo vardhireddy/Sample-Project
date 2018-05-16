@@ -1,6 +1,7 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -20,6 +21,7 @@ import javax.persistence.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -150,7 +152,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input,1);
+        List result = dataCatalogDao.getImgSeriesByFilters(input, 1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
@@ -719,5 +721,16 @@ public class DataCatalogDaoImplTest {
         List<Long> imageSeriesIdsList = new ArrayList<Long>();
         imageSeriesIdsList.add(1L);
         return imageSeriesIdsList;
+    }
+    
+    @Test
+    public void testGetImageSeriesByFilterWithLimits() {
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        dataCatalogDao.getImgSeriesByFilters(input, 101);
+
+        org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
+        assertTrue(argument.getValue().contains("limit 101"));
     }
 }

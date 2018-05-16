@@ -31,7 +31,8 @@ public interface IDataCatalogDao {
     Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId);
 
     /**
-     * @param params
+     * @param params attribute list for the image set filters, eg <org_id, value>, <modality, value>
+     * @maxImageSeriesRows maximum number of image series record to be returned
      * @return
      * @throws Exception
      */

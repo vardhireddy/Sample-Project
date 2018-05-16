@@ -116,7 +116,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final int ORG_ID_LENGTH = 255;
     public static final String VIEW = "view";
 
-    public static final int MAX_IMAGE_SERIES_ROWS = 100;
+    @Value("${spring.data.imageSeries.limit}")
+    private int MAX_IMAGE_SERIES_ROWS;
     
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
