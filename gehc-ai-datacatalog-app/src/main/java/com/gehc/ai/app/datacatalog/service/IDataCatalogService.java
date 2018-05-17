@@ -33,7 +33,8 @@ public interface IDataCatalogService {
     Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId);
     
     /**
-     * @param params
+     * @param params filter parameters
+     * @param maxImageSeriesRows maximum number of rows to be returned by the service
      * @return
      * @throws Exception 
      */

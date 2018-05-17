@@ -118,9 +118,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String VIEW = "view";
     private static final String LABEL_SEPARATOR = "AND";
 
+    /**
+     * this is used to limit the number of rows returned from the DB. we use this to limit the JSON output from the REST in order
+     * to restrict the time and payload for the user to receive a response within reasonable amount of time and also avoiding
+     * API gateway timeout. The value is specified in the configuration file
+     */
     @Value("${spring.data.imageSeries.limit}")
     private int MAX_IMAGE_SERIES_ROWS;
     
+    /**
+     * Setter for MAX_IMAGE_SERIES_ROWS property to facilitate unit test using Mockito
+     * @param r 
+     */
     public void setMaxImageSeriesRows(int r) {
     	this.MAX_IMAGE_SERIES_ROWS = r;
     }

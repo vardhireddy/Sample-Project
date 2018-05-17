@@ -790,4 +790,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 		return imageSeriesIDsList;
 	}
+
+	public void setEntityManager(EntityManager entityManager) {
+		this.em = entityManager;
+	}
+	
+	public EntityManager getEntityManager() {
+		return this.em;
+	}
 }

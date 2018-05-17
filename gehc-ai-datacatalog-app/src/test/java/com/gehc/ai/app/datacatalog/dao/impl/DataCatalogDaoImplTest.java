@@ -723,6 +723,9 @@ public class DataCatalogDaoImplTest {
         return imageSeriesIdsList;
     }
     
+    /**
+     * this tests calls from the image set series retrieval using filter criteria
+     */
     @Test
     public void testGetImageSeriesByFilterWithLimits() {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
@@ -731,6 +734,6 @@ public class DataCatalogDaoImplTest {
         dataCatalogDao.getImgSeriesByFilters(input, 101);
 
         org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
-        assertTrue(argument.getValue().contains("limit 101"));
+        assertTrue(argument.getValue().endsWith("limit 101"));
     }
 }
