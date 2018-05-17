@@ -286,7 +286,13 @@ public interface IDataCatalogRest {
      * @return list of Annotated ImageSetCount grouped by user
      */
     ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesAnnotated(String orgId);
-    
+
+    /**
+     * Returns a text specifying if given combination of contract-id and org-id exists
+     *
+     * @return String
+     */
+    ResponseEntity<String> validateContractIdAndOrgId(Long contractId, String orgId);
     /**
      * @param params
      * @return

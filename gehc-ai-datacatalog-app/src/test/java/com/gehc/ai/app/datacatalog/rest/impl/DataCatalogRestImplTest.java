@@ -4,13 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.sql.SQLDataException;
+import java.sql.SQLTimeoutException;
 import java.util.*;
 
+import com.gehc.ai.app.datacatalog.repository.*;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,6 +111,7 @@ public class DataCatalogRestImplTest {
     private StudyRepository studyRepository;
     @Mock
     private AnnotationRepository annotationRepository;
+    @Mock private ContractRepository contractRepository;
     @Mock
     private COSNotificationRepository cosNotificationRepository;
     @Mock
@@ -357,5 +362,30 @@ public class DataCatalogRestImplTest {
 
         assertTrue(argument.getValue().size() == limit);
     }
-}
 
+
+    @Test
+    public void testValidateContractIdAndOrgIdForValidData(){
+        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);
+        ResponseEntity<String> result = controller.validateContractIdAndOrgId(1L,"orgId");
+        assertEquals("Contract exists", result.getBody());
+        assertEquals(200, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testValidateContractIdAndOrgIdForInvalidData(){
+        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(0);
+        ResponseEntity<String> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
+        assertEquals("Contract does not exist", result.getBody());
+        assertEquals(200, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testValidateContractIdAndOrgIdForException(){
+        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<String> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
+        assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
+        assertEquals(500, result.getStatusCodeValue());
+    }
+
+}
