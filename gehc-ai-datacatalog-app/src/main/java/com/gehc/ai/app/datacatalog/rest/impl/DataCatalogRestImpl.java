@@ -29,13 +29,7 @@ import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.filters.RequestValidator;
-import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-import com.gehc.ai.app.datacatalog.repository.PatientRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.repository.*;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
@@ -136,6 +130,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     private AnnotationPropRepository annotationPropRepository;
     @Autowired
     private ImageSeriesRepository imageSeriesRepository;
+    @Autowired
+    private ContractRepository contractRepository;
 
     @Autowired
     private IDataCatalogService dataCatalogService;
@@ -1118,8 +1114,26 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 
 		return new ResponseEntity<>(responseList, HttpStatus.OK);
+    }
 
-	}
+    @Override
+    @RequestMapping(value = "/datacatalog/contract/{contractId}/orgId/{orgId}", method = RequestMethod.GET)
+    public  ResponseEntity<String> validateContractIdAndOrgId(@PathVariable("contractId") Long contractId, @PathVariable("orgId") String orgId){
+
+        logger.info("Passing in contract Id and Org Id for validation.");
+
+        int countOfRecordsWithGivenFilters = 0;
+        try {
+            countOfRecordsWithGivenFilters = contractRepository.validateContractIdAndOrgId(contractId, orgId);
+        }catch (Exception e)
+        {
+            logger.error("Error validating given parameters : {}", e.getMessage());
+            return new ResponseEntity ("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if(countOfRecordsWithGivenFilters <= 0) return new ResponseEntity<>( "Contract does not exist", HttpStatus.OK);
+        return new ResponseEntity<>( "Contract exists", HttpStatus.OK);
+    }
 
 	/*
 	 * (non-Javadoc)
