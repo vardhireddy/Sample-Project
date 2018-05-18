@@ -116,7 +116,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String DATE_TO = "dateTo";
     public static final int ORG_ID_LENGTH = 255;
     public static final String VIEW = "view";
-    private static final String LABEL_SEPARATOR = "AND";
+    private static final String LABEL_SEPARATOR = "+";
 
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
@@ -725,7 +725,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 */
 	public void setAnnotationTypes(String annotationType, List<String> types) {
 		if(annotationType.contains(LABEL_SEPARATOR)){
-			String[] annotations = annotationType.split(LABEL_SEPARATOR);
+			String[] annotations = annotationType.split("\\"+LABEL_SEPARATOR);
 			types.addAll(Arrays.asList(annotations));
 		}else{
 			types.add(annotationType);
