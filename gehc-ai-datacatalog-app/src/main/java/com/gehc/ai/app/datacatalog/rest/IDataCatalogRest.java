@@ -15,6 +15,7 @@ import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
@@ -127,11 +128,11 @@ public interface IDataCatalogRest {
     /**
      * Insert or update an DataSet
      *
-     * @param d       data set object
-     * @param request TODO
-     * @return recently saved object
+     * @param dataCollectionsCreateRequest       data set object
+     * @param request HTTP POST Request object
+     * @return recently saved Data Collection Ids
      */
-    DataSet saveDataSet(DataSet d, HttpServletRequest request);
+    ResponseEntity<?> saveDataSet(DataCollectionsCreateRequest dataCollectionsCreateRequest, HttpServletRequest request);
 
     /**
      * Insert or update an image series

@@ -23,23 +23,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "numDataCollections", "dataSet" })
+@JsonPropertyOrder({ "dataCollectionSize", "dataSet" })
 public class DataCollectionsCreateRequest {
 
-	@JsonProperty("numDataCollections")
-	private Integer numDataCollections;
+	@JsonProperty("dataCollectionSize")
+	private Integer dataCollectionSize;
 
 	@JsonProperty("dataSet")
 	private DataSet dataSet;
 
-	@JsonProperty("numDataCollections")
-	public Integer getNumDataCollections() {
-		return numDataCollections;
+	@JsonProperty("dataCollectionSize")
+	public Integer getDataCollectionSize() {
+		return dataCollectionSize;
 	}
 
-	@JsonProperty("numDataCollections")
-	public void setNumDataCollections(Integer numDataCollections) {
-		this.numDataCollections = numDataCollections;
+	@JsonProperty("dataCollectionSize")
+	public void setDataCollectionSize(Integer dataCollectionSize) {
+		this.dataCollectionSize = dataCollectionSize;
 	}
 
 	@JsonProperty("dataSet")
@@ -51,4 +51,11 @@ public class DataCollectionsCreateRequest {
 	public void setDataSet(DataSet dataSet) {
 		this.dataSet = dataSet;
 	}
+
+	@Override
+	public String toString() {
+		return "DataCollectionsCreateRequest [dataCollectionSize=" + dataCollectionSize + ", dataSet=" + dataSet + "]";
+	}
+	
+
 }
