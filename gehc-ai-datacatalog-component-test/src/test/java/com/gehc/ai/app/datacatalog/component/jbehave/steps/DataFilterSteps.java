@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -142,7 +143,7 @@ public class DataFilterSteps {
                 get("/api/v1/datacatalog/image-series?org_id=4fac7976-e58b-472a-960b-42d7e3689f20")
         );
     	System.out.println("llllll" + entityManager.getClass() + "...." + dataCatalogDao.getClass());
-    	verify(dataCatalogDao).getImgSeriesByFilters(anyObject(), queryArgument.capture());
+    	verify(dataCatalogDao).getImgSeriesByFilters(anyObject(), anyBoolean(), queryArgument.capture());
 
     }
     

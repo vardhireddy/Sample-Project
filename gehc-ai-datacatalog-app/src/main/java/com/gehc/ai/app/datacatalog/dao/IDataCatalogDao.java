@@ -32,11 +32,12 @@ public interface IDataCatalogDao {
 
     /**
      * @param params attribute list for the image set filters, eg <org_id, value>, <modality, value>
+     * @param randomize randomize output
      * @maxImageSeriesRows maximum number of image series record to be returned
      * @return
      * @throws Exception
      */
-    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params, int maxImageSeriesRows);
+    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params, boolean randomize, int maxImageSeriesRows);
 
     /**
      * Returns the annotation details for every specified image set ID as a list of beans encapsulating their JSON representations.

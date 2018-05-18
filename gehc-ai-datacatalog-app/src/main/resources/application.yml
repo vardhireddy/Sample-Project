@@ -8,6 +8,7 @@ spring:
   data:
     rest.base-path: /api/v1/dataCatalog
     imageSeries.limit: 1000
+    imageSeries.randomize: true
   jpa:
     properties:
       hibernate:

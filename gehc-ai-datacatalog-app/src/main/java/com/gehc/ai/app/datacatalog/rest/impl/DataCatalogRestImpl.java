@@ -128,6 +128,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     private int MAX_IMAGE_SERIES_ROWS;
     
     /**
+     * this is used to randomize the output for the data scientist to spot check a subset of the images displayed in the webui
+     */
+    @Value("${spring.data.imageSeries.randomize}")
+    private boolean randomize;
+    
+    /**
      * Setter for MAX_IMAGE_SERIES_ROWS property to facilitate unit test using Mockito
      * @param r 
      */
@@ -919,7 +925,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
                 } else if (validParams.containsKey(ORG_ID)) {
                     logger.debug("Getting img series based on all filters");
-                    return dataCatalogService.getImgSeriesByFilters(validParams, MAX_IMAGE_SERIES_ROWS);
+                    return dataCatalogService.getImgSeriesByFilters(validParams, randomize, MAX_IMAGE_SERIES_ROWS);
                 }
             }
         } catch (ServiceException e) {
