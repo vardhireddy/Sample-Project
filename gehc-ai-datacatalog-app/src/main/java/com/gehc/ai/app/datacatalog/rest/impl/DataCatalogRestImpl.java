@@ -11,53 +11,6 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-
-import org.hibernate.service.spi.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
@@ -80,6 +33,7 @@ import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
@@ -90,6 +44,52 @@ import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.DataCatalogUtils;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import org.hibernate.service.spi.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 /**
  * @author 212071558
@@ -121,6 +121,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	public static final String DATE_TO = "dateTo";
 	public static final int ORG_ID_LENGTH = 255;
 	public static final String VIEW = "view";
+	private static final String LABEL_SEPARATOR = "+";
 
 	@Value("${coolidge.micro.inference.url}")
 	private String coolidgeMInferenceUrl;
@@ -140,6 +141,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	private AnnotationPropRepository annotationPropRepository;
 	@Autowired
 	private ImageSeriesRepository imageSeriesRepository;
+	@Autowired
+	private ContractRepository contractRepository;
 
 	@Autowired
 	private IDataCatalogService dataCatalogService;
@@ -179,7 +182,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		logger.debug("*** In REST getPatients, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? new ArrayList<Patient>()
 				: patientRepository.findByIdInAndOrgId(getListOfLongsFromParams(ids),
-						request.getAttribute("orgId").toString());
+				request.getAttribute("orgId").toString());
 	}
 
 	@Override
@@ -277,7 +280,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 					logger.info("[In REST, Annotation exists so returning annotation with id = " + ids + "]");
 					apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-							ApplicationConstants.SUCCESS, idValue);
+							ApplicationConstants.SUCCESS,idValue);
 				} else {
 					Annotation newAnnotation = annotationRepository.save(annotation);
 
@@ -337,10 +340,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see IDataCatalogRest#getAnnotationsById(java.lang. Long)
-	 */
+     * (non-Javadoc)
+     *
+     * @see IDataCatalogRest#getAnnotationsById(java.lang. Long)
+     */
 	@Override
 	@RequestMapping(value = "/annotation/{ids}", method = RequestMethod.GET)
 	public List<Annotation> getAnnotationsById(@PathVariable String ids, HttpServletRequest request) {
@@ -406,18 +409,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return apiResponse;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see IDataCatalogRest#saveDataSet(DataSet)
-	 */
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST)
 	@Transactional
 	public ResponseEntity<?> saveDataSet(@RequestBody DataCollectionsCreateRequest dataCollectionsCreateRequest,
-			HttpServletRequest request) {
+										 HttpServletRequest request) {
 
 		logger.info("[In REST, Creating new data collection, orgId = " + request.getAttribute("orgId") + "]");
 
@@ -425,14 +423,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 		// The org ID is required to be defined
 		if (request.getAttribute("orgId") == null) {
-			return new ResponseEntity<String>("No OrgId is present in Request", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Object>(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
 		}
 
 		// The provided image set IDs are required to be unique
 		DataSet filteredDataSet = dataCollectionsCreateRequest.getDataSet();
 		List<Long> imageSetIds = filteredDataSet.getImageSets();
 		if (imageSetIds.size() != imageSetIds.stream().distinct().count()) {
-			return new ResponseEntity<String>("Imageset Ids in Filtered Dataset are not Unique", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Object>(Collections.singletonMap("response", "The provided image sets are not unique"), HttpStatus.BAD_REQUEST);
 		}
 
 		/* All gates passed! */
@@ -445,7 +443,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					dataCollectionsCreateRequest.getDataCollectionSize());
 		} catch (DataCatalogException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Failed to batch the Dataset", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to batch the provided image sets"), HttpStatus.BAD_REQUEST);
 		}
 
 		// Try saving the data collections
@@ -454,7 +452,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			savedDataSets = dataSetRepository.save(dataCollectionBatches);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Falied to save Data Collections", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to save data collections"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		// Capture the database-assigned IDs of the saved data collections and return
@@ -466,19 +464,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return new ResponseEntity<Long[]>(savedDataSetIdsArr, HttpStatus.CREATED);
 	}
 
+
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/update-institution", method = RequestMethod.PUT)
-	public ApiResponse updateInstitutionByImageSeriesList(@Valid @RequestBody InstitutionSet u,
-			HttpServletRequest request) {
+	public ApiResponse updateInstitutionByImageSeriesList(@Valid @RequestBody InstitutionSet u, HttpServletRequest request) {
 		ApiResponse apiResponse = null;
 		logger.info("[In REST, update institution = " + u.getInstitution() + u.getSeriesUIds());
 		try {
-			if (u.getSeriesUIds().length > 0) {
+			if (u.getSeriesUIds().length>0) {
 				imageSeriesRepository.updateInstitution(u.getInstitution(), u.getSeriesUIds());
 				apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-						ApplicationConstants.SUCCESS, convertStringArrayToString(u.getSeriesUIds(), ","));
+						ApplicationConstants.SUCCESS,convertStringArrayToString(u.getSeriesUIds(), ","));
 			}
 		} catch (Exception e) {
 			logger.error("Exception occured while updating institution ", e);
@@ -496,12 +494,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			sb.append(str).append(delimiter);
 		return sb.substring(0, sb.length() - 1);
 	}
-
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see IDataCatalogRest#saveImageSeries(ImageSeries)
-	 */
+     * (non-Javadoc)
+     *
+     * @see IDataCatalogRest#saveImageSeries(ImageSeries)
+     */
 	@Override
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -514,10 +511,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	/*
-	 * To get the image set based on the patient id like LIDC-IDRI-0286
-	 *
-	 * @see IDataCatalogRest#getImgSerByPatientId(java.lang. String)
-	 */
+     * To get the image set based on the patient id like LIDC-IDRI-0286
+     *
+     * @see IDataCatalogRest#getImgSerByPatientId(java.lang. String)
+     */
 	@Override
 	@RequestMapping(value = "/datacatalog/patient/{ids}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByPatientId(@PathVariable String ids, @QueryParam("orgId") String orgId) {
@@ -536,11 +533,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see IDataCatalogRest#getImgSerByDSId(java.lang.Long,
-	 * javax.servlet.http.HttpServletRequest)
-	 */
+     * (non-Javadoc)
+     *
+     * @see IDataCatalogRest#getImgSerByDSId(java.lang.Long,
+     * javax.servlet.http.HttpServletRequest)
+     */
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
 	public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
@@ -550,42 +547,34 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if (null != id) {
 			dsLst = dataSetRepository.findById(id);
 			if (null != dsLst && !dsLst.isEmpty()) {
-				@SuppressWarnings("unchecked")
-				List<Long> imgSeries = (dsLst.get(0)).getImageSets();
-				List<Long> imgSerIdLst = new ArrayList<Long>();
-				if (null != imgSeries && !imgSeries.isEmpty()) {
-					for (int i = 0; i < imgSeries.size(); i++) {
-						imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
-					}
-					return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
-					// return
-					// getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
-				}
+				List<Long> imgSerIdLst = dsLst.get(0).getImageSets();
+				return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
 			}
 		}
 		return new ArrayList<ImageSeries>();
 	}
 
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see IDataCatalogRest#getDataSetById(java.lang.Long,
-	 * javax.servlet.http.HttpServletRequest)
-	 */
+     * (non-Javadoc)
+     *
+     * @see IDataCatalogRest#getDataSetById(java.lang.Long,
+     * javax.servlet.http.HttpServletRequest)
+     */
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection/{id}", method = RequestMethod.GET)
 	public List<DataSet> getDataSetById(@PathVariable Long id, HttpServletRequest request) {
 		Object orgId = request.getAttribute("orgId");
 		logger.debug("In REST, Get DC by Id " + id + ", orgId passed = " + orgId);
-		return orgId == null ? new ArrayList<DataSet>() : dataSetRepository.findByIdAndOrgId(id, orgId.toString());
+		return orgId == null ? new ArrayList<DataSet>()
+				: dataSetRepository.findByIdAndOrgId(id, orgId.toString());
 	}
 
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see IDataCatalogRest#getDataSetByType(java.lang.String,
-	 * javax.servlet.http.HttpServletRequest)
-	 */
+     * (non-Javadoc)
+     *
+     * @see IDataCatalogRest#getDataSetByType(java.lang.String,
+     * javax.servlet.http.HttpServletRequest)
+     */
 	@Override
 	@RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.GET)
 	public List<DataSet> getDataSetByType(@QueryParam("type") String type, HttpServletRequest request) {
@@ -601,7 +590,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			}
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
 					: dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type,
-							request.getAttribute("orgId").toString());
+					request.getAttribute("orgId").toString());
 		} else {
 			return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
 					: dataSetRepository.findByOrgIdOrderByCreatedDateDesc(request.getAttribute("orgId").toString());
@@ -657,7 +646,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		logger.debug("*** In REST getStudiesByPatientDbid, orgId = " + request.getAttribute("orgId"));
 		return request.getAttribute("orgId") == null ? new ArrayList<Study>()
 				: studyRepository.findByPatientDbIdAndOrgId(Long.valueOf(ids),
-						request.getAttribute("orgId").toString());
+				request.getAttribute("orgId").toString());
 	}
 
 	@Override
@@ -669,21 +658,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	/**
-	 * returns a flat list of annotations for a collection and a given annotation
-	 * type
+	 * returns a flat list of annotations for a collection and a given annotation type
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	@RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
 	public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
 		logger.info(" Entering method getRawTargetData --> id: " + id + " Type: " + annotationType);
 		// Note: works fine with new DC which has image sets as Array of Longs
-		if ((id == null) || (id.length() == 0) || annotationType == null) {
-			logger.debug("Datacollection id and annotation type is required to get annotation for a data collection");
-			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity("Datacollection id and annotation type is required to get annotation for a data collection")
-					.build());
-		}
+		nonNullCheckForInputParameters(id, annotationType);
 
 		ResponseBuilder responseBuilder;
 		List<AnnotationImgSetDataCol> annImgSetDCLst = null;
@@ -692,15 +675,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			logger.debug("***** Data set Lst.size() = " + dsLst.size());
 			if (null != dsLst.get(0).getImageSets()) {
 				List<String> types = new ArrayList<String>();
-				types.add(annotationType);
-				List<Long> imgSeries = ((DataSet) (dsLst.get(0))).getImageSets();
-				List<Long> imgSerIdLst = getImgSerIdLst(imgSeries);
+				setAnnotationTypes(annotationType, types);
+				logger.debug("Number of Annotations : "+types.size());
+				List<Long> imgSerIdLst = dsLst.get(0).getImageSets();
 				List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdLst);
 				logger.debug("***** Got img series by id sucessfully");
 				if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
 					logger.debug(" imgSeriesLst.size() = " + imgSeriesLst.size());
 					Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
-					for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext();) {
+					for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
 						ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
 						imgSeriesMap.put(imageSeries.getId(), imageSeries);
 					}
@@ -712,7 +695,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 					if (null != annotationLst && !annotationLst.isEmpty()) {
 						logger.debug(" annotationLst.size() = " + annotationLst.size());
 						annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
-						for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext();) {
+						for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext(); ) {
 							AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
 							Annotation annotation = (Annotation) annotationItr.next();
 							annImgSetDataCol.setDcId(id);
@@ -757,14 +740,31 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 	}
 
-	private List<Long> getImgSerIdLst(List<Long> imgSeries) {
-		List<Long> imgSerIdLst = new ArrayList<Long>();
-		if (null != imgSeries && !imgSeries.isEmpty()) {
-			for (int i = 0; i < imgSeries.size(); i++) {
-				imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
-			}
+	/**
+	 * @param id
+	 * @param annotationType
+	 * @throws WebApplicationException
+	 */
+	public void nonNullCheckForInputParameters(String id, String annotationType) throws WebApplicationException {
+		if ((id == null) || (id.length() == 0) || annotationType == null) {
+			logger.debug("Datacollection id and annotation type is required to get annotation for a data collection");
+			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity("Datacollection id and annotation type is required to get annotation for a data collection")
+					.build());
 		}
-		return imgSerIdLst;
+	}
+
+	/**
+	 * @param annotationType
+	 * @param types
+	 */
+	public void setAnnotationTypes(String annotationType, List<String> types) {
+		if(annotationType.contains(LABEL_SEPARATOR)){
+			String[] annotations = annotationType.split("\\"+LABEL_SEPARATOR);
+			types.addAll(Arrays.asList(annotations));
+		}else{
+			types.add(annotationType);
+		}
 	}
 
 	@Override
@@ -855,7 +855,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
 	@RequestMapping(value = "/datacatalog/ge-class-data-summary", method = RequestMethod.GET)
 	public Map<Object, Object> geClassDataSummary(@RequestParam Map<String, String> params,
-			HttpServletRequest request) {
+												  HttpServletRequest request) {
 		logger.debug("Get ge class data summary, orgId = " + request.getAttribute("orgId"));
 
 		if (null != request.getAttribute("orgId")) {
@@ -898,9 +898,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	}
 
 	/*
-	 *   * (non-Javadoc)   *   * @see
-	 * com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()  
-	 */
+     *   * (non-Javadoc)   *   * @see
+     * com.gehc.ai.app.dc.rest.IDataCatalogRest#getDataCollection()
+     */
 	@SuppressWarnings("unchecked")
 	@Override
 	@RequestMapping(value = "/datacatalog/image-series", method = RequestMethod.GET)
@@ -946,15 +946,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		if (null != id) {
 			dsLst = dataSetRepository.findById(id);
 			if (null != dsLst && !dsLst.isEmpty()) {
-				@SuppressWarnings("unchecked")
-				List<Long> imgSeries = ((DataSet) (dsLst.get(0))).getImageSets();
-				List<Long> imgSerIdLst = new ArrayList<Long>();
-				if (!imgSeries.isEmpty()) {
-					for (int i = 0; i < imgSeries.size(); i++) {
-						imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
-					}
-					return imgSerIdLst;
-				}
+				return dsLst.get(0).getImageSets();
 			}
 		}
 		return new ArrayList<Long>();
@@ -1024,36 +1016,34 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		return apiResponse;
 	}
 
-	/**
-	 * For 18.3 SP2
+
+
+	/** For 18.3 SP2
 	 *
 	 * API to upload contract
 	 *
 	 * @param contractFiles
 	 * @param metadataJson
 	 * @return
-	 * 
-	 * @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST,
-	 *                       consumes = MediaType.MULTIPART_FORM_DATA) public
-	 *                       ResponseEntity<DataCatalogResponse> uploadContract(
-	 * @RequestParam(value = "contract") List<MultipartFile> contractFiles,
-	 * @RequestParam(value = "metadata", required = false) MultipartFile
-	 *                     metadataJson) { Contract contract = null; try { contract
-	 *                     =
-	 *                     RequestValidator.validateContractAndParseMetadata(contractFiles,
-	 *                     metadataJson); } catch(DataCatalogException exception){
-	 *                     return new
-	 *                     ResponseEntity<>(DataCatalogResponse.getErrorResponse
-	 *                     (exception.getLocalizedMessage()),
-	 *                     HttpStatus.INTERNAL_SERVER_ERROR); }
-	 * 
-	 *                     try { long contractId =
-	 *                     dataCatalogService.uploadContract(contractFiles,
-	 *                     contract); return new
-	 *                     ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
-	 *                     } catch (Exception e) { return new
-	 *                     ResponseEntity<>(DataCatalogResponse.getErrorResponse
-	 *                     (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR); } }
+
+	 @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
+	 public ResponseEntity<DataCatalogResponse> uploadContract(
+	 @RequestParam(value = "contract") List<MultipartFile> contractFiles,
+	 @RequestParam(value = "metadata", required = false) MultipartFile metadataJson) {
+	 Contract contract = null;
+	 try {
+	 contract = RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
+	 } catch(DataCatalogException exception){
+	 return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	 }
+
+	 try {
+	 long contractId = dataCatalogService.uploadContract(contractFiles, contract);
+	 return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
+	 } catch (Exception e) {
+	 return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	 }
+	 }
 	 */
 
 	/**
@@ -1063,26 +1053,25 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	 * @param contractFiles
 	 * @return
 	 */
+	@Produces(MediaType.APPLICATION_JSON)
 	@RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
 	public ResponseEntity<DataCatalogResponse> uploadContract(
 			@RequestParam(value = "contract") List<MultipartFile> contractFiles) {
 		Contract contract = null;
 		try {
 			contract = RequestValidator.validateContractAndParseMetadata(contractFiles);
-		} catch (DataCatalogException exception) {
+		} catch(DataCatalogException exception){
 			logger.error("Exception occured while uploading contract : ", exception);
-			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(exception.getLocalizedMessage()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		try {
 			long contractId = dataCatalogService.uploadContract(contractFiles, contract);
 			logger.debug(" contract ID " + contractId);
-			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId), HttpStatus.CREATED);
+			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
 		} catch (Exception e) {
 			logger.error("Exception occured while uploading contract : ", e);
-			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(e.getMessage()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -1098,7 +1087,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		try {
 			RequestValidator.validateContractId(contractId);
 		} catch (DataCatalogException exception) {
-			// logger.error("Exception occured while validating the contract ", exception);
+			// logger.error("Exception occured while validating the contract ",
+			// exception);
 			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(exception.getLocalizedMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -1107,7 +1097,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			contract = dataCatalogService.getContract(contractId);
 			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contract), HttpStatus.OK);
 		} catch (Exception e) {
-			// logger.error("Exception occured while uploading the contract ", e);
+			// logger.error("Exception occured while uploading the contract ",
+			// e);
 			return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -1144,6 +1135,61 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 
 		return new ResponseEntity<>(responseList, HttpStatus.OK);
+	}
 
+	@Override
+	@RequestMapping(value = "/datacatalog/contract/{contractId}/orgId/{orgId}", method = RequestMethod.GET)
+	public  ResponseEntity<Map<String,String>> validateContractIdAndOrgId(@PathVariable("contractId") Long contractId, @PathVariable("orgId") String orgId){
+
+		logger.info("Passing in contract Id and Org Id for validation.");
+
+		int countOfRecordsWithGivenFilters = 0;
+		try {
+			countOfRecordsWithGivenFilters = contractRepository.validateContractIdAndOrgId(contractId, orgId);
+		}catch (Exception e)
+		{
+			logger.error("Error validating given parameters : {}", e.getMessage());
+			return new ResponseEntity ("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		if(countOfRecordsWithGivenFilters <= 0) return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.OK);
+		return new ResponseEntity<>( Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.gehc.ai.app.datacatalog.rest.IDataCatalogRest#
+	 * getImgSeriesIdsByFilters(java.util.Map)
+	 */
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@RequestMapping(value = "/datacatalog/image-series/ids", method = RequestMethod.GET)
+	public List<Long> getImgSeriesIdsByFilters(@RequestParam Map<String, Object> params) {
+		logger.info("[getImgSeriesIdsByFilters] Getting img series ids based on all filters");
+		try {
+			RequestValidator.validateImageSeriesFilterParamMap(params);
+		} catch (DataCatalogException exception) {
+			throw new WebApplicationException(exception.getLocalizedMessage());
+		}
+		Map<String, Object> validParams = constructValidParams(params, Arrays.asList(ORG_ID, MODALITY, ANATOMY,
+				SERIES_INS_UID, DATA_FORMAT, INSTITUTION, EQUIPMENT, VIEW, ANNOTATIONS, GE_CLASS, DATE_FROM, DATE_TO));
+		try {
+			if (null != validParams) {
+				logger.info("[getImgSeriesIdsByFilters] validParams is not null");
+				if (validParams.containsKey(ORG_ID)) {
+					logger.info("Getting img series ids based on all filters");
+					return dataCatalogService.getImgSeriesIdsByFilters(validParams);
+				}
+			}
+		} catch (ServiceException e) {
+			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity("Operation failed while retrieving image set ids by org id").build());
+		} catch (Exception e) {
+			throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity("Operation failed while retrieving image set ids by org id").build());
+		}
+		return new ArrayList<Long>();
 	}
 }

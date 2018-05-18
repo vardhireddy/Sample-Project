@@ -218,4 +218,10 @@ public class CommonSteps {
         List<ImageSeries> imgSerLst = getImageSeriesWithFilters(imageSeries);
         return imgSerLst;
     }
+    
+    public List<Long> getImageSeriesIds() {
+        List<Long> imgSerLst = new ArrayList<Long>();
+        imgSerLst.add(1L);
+        return imgSerLst;
+    }
 }

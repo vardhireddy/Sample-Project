@@ -1,8 +1,8 @@
 /*
  * IDataCatalogRest.java
- * 
+ *
  * Copyright (c) 2016 by General Electric Company. All rights reserved.
- * 
+ *
  * The copyright to the computer software herein is the property of
  * General Electric Company. The software may be used and/or copied only
  * with the written permission of General Electric Company or in accordance
@@ -30,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +123,7 @@ public interface IDataCatalogRest {
      * @return API response with annotation id
      */
     ApiResponse saveAnnotationProperties(AnnotationProperties annotationProp);
+
 
     /**
      * Insert or update an DataSet
@@ -287,4 +287,18 @@ public interface IDataCatalogRest {
      * @return list of Annotated ImageSetCount grouped by user
      */
     ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesAnnotated(String orgId);
+
+    /**
+     * Returns a text specifying if given combination of contract-id and org-id exists
+     *
+     * @return String
+     */
+    ResponseEntity<Map<String,String>> validateContractIdAndOrgId(Long contractId, String orgId);
+    /**
+     * @param params
+     * @return
+     */
+    List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
 }
+
+

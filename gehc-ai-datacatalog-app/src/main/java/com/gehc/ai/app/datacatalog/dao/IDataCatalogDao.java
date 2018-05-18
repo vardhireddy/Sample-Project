@@ -64,4 +64,10 @@ public interface IDataCatalogDao {
 	Long ingestContractDetails(Contract contract);
 
 	Contract getContractDetails(Long contractId);
+	
+	/**
+	 * @param params
+	 * @return
+	 */
+	List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
 }

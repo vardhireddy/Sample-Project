@@ -1,15 +1,13 @@
 package com.gehc.ai.app.datacatalog.rest.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.*;
-
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,6 +17,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /*import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import Annotation;
@@ -30,14 +37,6 @@ import PatientRepository;
 import StudyRepository;
 import IDataCatalogRest;
 import IDataCatalogService;*/
-
-
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.PatientRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
 
 @RunWith ( MockitoJUnitRunner.class )
@@ -101,6 +100,7 @@ public class DataCatalogRestImplTest {
     private StudyRepository studyRepository;
     @Mock
     private AnnotationRepository annotationRepository;
+    @Mock private ContractRepository contractRepository;
     @Mock
     private COSNotificationRepository cosNotificationRepository;
     @Mock
@@ -328,5 +328,28 @@ public class DataCatalogRestImplTest {
         assertEquals(500,result.getStatusCodeValue());
     }
 
-}
+    @Test
+    public void testValidateContractIdAndOrgIdForValidData(){
+        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);
+        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"orgId");
+        assertEquals("Contract exists", result.getBody().get("response"));
+        assertEquals(200, result.getStatusCodeValue());
+    }
 
+    @Test
+    public void testValidateContractIdAndOrgIdForInvalidData(){
+        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(0);
+        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
+        assertEquals("Contract does not exist", result.getBody().get("response"));
+        assertEquals(200, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testValidateContractIdAndOrgIdForException(){
+        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
+        assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
+        assertEquals(500, result.getStatusCodeValue());
+    }
+
+}
