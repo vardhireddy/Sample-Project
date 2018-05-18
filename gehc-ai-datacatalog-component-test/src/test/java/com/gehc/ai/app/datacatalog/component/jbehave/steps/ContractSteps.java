@@ -1,5 +1,6 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
+import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -108,7 +109,7 @@ public class ContractSteps {
 
     @Then("verify the api response body contains \"Contract exists\"")
     public void verifyResponseIsContractExists() throws Exception {
-        retrieveResult.andExpect(content().string("Contract exists"));
+        retrieveResult.andExpect(content().string(containsString("Contract exists")));
     }
 
     @Given("invalid contract Id or Org Id")
@@ -128,7 +129,7 @@ public class ContractSteps {
 
     @Then("verify the api response body contains \"Contract does not exist\"")
     public void verifyResponseIsContractDosNotExist() throws Exception {
-        retrieveResult.andExpect(content().string("Contract does not exist"));
+        retrieveResult.andExpect(content().string(containsString("Contract does not exist")));
     }
 
     private Contract getContract(){
