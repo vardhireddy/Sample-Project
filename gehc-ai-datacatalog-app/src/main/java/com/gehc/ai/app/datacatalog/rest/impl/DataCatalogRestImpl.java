@@ -99,6 +99,7 @@ import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 @RequestMapping(value = "/api/v1")
 @PropertySource({ "classpath:application.yml" })
 public class DataCatalogRestImpl implements IDataCatalogRest {
+
 	/**
 	 * The logger.
 	 */
