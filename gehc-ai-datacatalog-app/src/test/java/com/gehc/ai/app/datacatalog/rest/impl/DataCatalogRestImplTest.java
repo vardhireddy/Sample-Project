@@ -357,13 +357,38 @@ public class DataCatalogRestImplTest {
     	final int limit = 1000;
 
     	controller.setMaxImageSeriesRows(limit);
+    	controller.setRandomize(true);
+     	controller.getImgSeriesByDSId(anyLong());
+     	
+ 		org.mockito.Mockito.verify(dataCatalogService).getImgSeriesWithPatientByIds(argument.capture());
+ 		assertTrue(argument.getValue().size() == limit);
+ 		Set s = new HashSet<Long>();
+ 		for (int k = 0; k < argument.getValue().size(); k++) {
+ 			assertTrue(!s.contains((Long)argument.getValue().get(k)));
+ 		}
+    }
+
+    @Test
+    public void testGetImgSeriesByDSIdWithoutRandomization() {
+    	List<DataSet> l = new ArrayList<DataSet>();
+    	DataSet ds = new DataSet();
+    	List<Long> imageSets = new ArrayList<Long>();
+    	for (int k = 0; k < 10000; k++) {
+    		imageSets.add((long) (Math.random() * 1000000));
+    	}
+    	l.add(ds);
+    	ds.setImageSets(imageSets);
+    	when(dataSetRepository.findById(anyLong())).thenReturn(l);
+    	ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+    	final int limit = 1000;
+
+    	controller.setMaxImageSeriesRows(limit);
      	controller.getImgSeriesByDSId(anyLong());
         org.mockito.Mockito.verify(dataCatalogService).getImgSeriesWithPatientByIds(argument.capture());
 
         assertTrue(argument.getValue().size() == limit);
     }
-
-
+    
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
         when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);

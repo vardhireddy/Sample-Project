@@ -734,6 +734,18 @@ public class DataCatalogDaoImplTest {
         dataCatalogDao.getImgSeriesByFilters(input, false, 101);
 
         org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
-        assertTrue(argument.getValue().endsWith("limit 101"));
+        assertTrue(argument.getValue().toLowerCase().endsWith("limit 101"));
+    }
+    
+    @Test
+    public void testGetImageSeriesByFilterWithLimitsAndRandmoization() {
+    	Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        dataCatalogDao.getImgSeriesByFilters(input, true, 101);
+
+        org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
+        assertTrue(argument.getValue().toLowerCase().endsWith("limit 101"));
+        assertTrue(argument.getValue().toUpperCase().contains("ORDER BY RAND()"));
     }
 }

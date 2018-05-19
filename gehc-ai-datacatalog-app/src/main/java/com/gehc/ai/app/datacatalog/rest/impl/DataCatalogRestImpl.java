@@ -41,6 +41,7 @@ import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import com.gehc.ai.app.datacatalog.util.exportannotations.Shuffle;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -135,10 +136,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     
     /**
      * Setter for MAX_IMAGE_SERIES_ROWS property to facilitate unit test using Mockito
-     * @param r 
+     * @param r max # of rows returned
      */
     public void setMaxImageSeriesRows(int r) {
     	this.MAX_IMAGE_SERIES_ROWS = r;
+    }
+    
+    
+    /**
+     * Setter for randomize property to facilitate unit test using Mockito
+     * @param r true if randomize is called for
+     */
+    public void setRandomize(boolean r) {
+    	this.randomize = r;
     }
     
     @Value("${coolidge.micro.inference.url}")
@@ -532,9 +542,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
                 List<Long> imgSerIdLst = new ArrayList<Long>();
                 if (null != imgSeries && !imgSeries.isEmpty()) {
-                    for (int i = 0; i < Math.min(imgSeries.size(), MAX_IMAGE_SERIES_ROWS) ; i++) {
-                        imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
-                    }
+                	int size = MAX_IMAGE_SERIES_ROWS > 0 ? Math.min(MAX_IMAGE_SERIES_ROWS, imgSeries.size()) : imgSeries.size();
+                	int [] shuffled = null;
+                	if (this.randomize) {
+                		shuffled = Shuffle.shuffle(imgSeries.size(), size, null);
+                		for (int i = 0; i < size; i++) {
+                			imgSerIdLst.add(Long.valueOf(imgSeries.get(shuffled[i]).toString()));
+                		}
+                	} else {
+                		for (int i = 0; i < size; i++) {
+                			imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+                		}
+                	}
                     return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
                   //  return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
                 }
