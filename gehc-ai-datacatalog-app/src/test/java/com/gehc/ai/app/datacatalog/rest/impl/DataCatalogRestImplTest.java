@@ -392,23 +392,23 @@ public class DataCatalogRestImplTest {
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
         when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);
-        ResponseEntity<String> result = controller.validateContractIdAndOrgId(1L,"orgId");
-        assertEquals("Contract exists", result.getBody());
+        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"orgId");
+        assertEquals("Contract exists", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
 
     @Test
     public void testValidateContractIdAndOrgIdForInvalidData(){
         when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(0);
-        ResponseEntity<String> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
-        assertEquals("Contract does not exist", result.getBody());
+        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
+        assertEquals("Contract does not exist", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
 
     @Test
     public void testValidateContractIdAndOrgIdForException(){
         when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<String> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
+        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
         assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
     }
