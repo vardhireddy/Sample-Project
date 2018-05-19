@@ -67,7 +67,17 @@ And the data collection size is less than 1
 When the API which creates a data collection is invoked
 Then the response's status code should be 400
 And the response's content type should be JSON
-And the response's body should contain an error message saying the number of data collections to create should be greater than or equal to 1
+And the response's body should contain an error message saying the image sets could be batched using the provided data collection size
+
+@test
+Scenario Outline: User shall not be able to create one or more data collections if the number of data collections to create is greater than the number of image sets
+Meta: @automated
+Given a pool of unique image sets
+And the data collection size is greater than the number of image sets
+When the API which creates a data collection is invoked
+Then the response's status code should be 400
+And the response's content type should be JSON
+And the response's body should contain an error message saying the image sets could be batched using the provided data collection size
 
 @test
 Scenario Outline: User shall not be able to create any data collections due to an internal error that causes one or more data collections to not be created
@@ -79,6 +89,3 @@ When the API which creates a data collection is invoked
 Then the response's status code should be 500
 And the response's content type should be JSON
 And the response's body should contain an error message saying there was an internal error and no collections were created
-
-
-# User passes in 1 image set and wants to split
