@@ -1094,7 +1094,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     	try {
 			long contractId = dataCatalogService.uploadContract(contractFiles, contract);
-            logger.debug(" contract ID " + contractId);
+            logger.debug("[Create contract] Created contract with ID " + contractId);
 			return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
 		} catch (Exception e) {
             logger.error("Exception occured while uploading contract : ", e);
