@@ -24,9 +24,9 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJs
 public interface IDataCatalogDao {
 
     /**
-     * @param params
-     * @param orgId
-     * @return
+     * @param params parameters 
+     * @param orgId ordId
+     * @return ge class data summary (counts) given filtering GE class parameters
      */
     Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId);
 
@@ -34,7 +34,9 @@ public interface IDataCatalogDao {
      * @param params attribute list for the image set filters, eg <org_id, value>, <modality, value>
      * @param randomize randomize output
      * @maxImageSeriesRows maximum number of image series record to be returned
-     * @return
+     * @return list of ImageSeries that satisfies query parameters, limited by a max image series rows permitted,
+     * randomized if randomize flag is set
+     * 
      * @throws Exception
      */
     List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params, boolean randomize, int maxImageSeriesRows);
@@ -61,6 +63,11 @@ public interface IDataCatalogDao {
 
     List<Integer> getAnnotationsIds(Annotation annotation);
 
+    /**
+     * 
+     * @param imgSerIdLst list of image series id's
+     * @return list of image series objects given the ids
+     */
     List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst);
 
 	Long ingestContractDetails(Contract contract);
@@ -68,8 +75,8 @@ public interface IDataCatalogDao {
 	Contract getContractDetails(Long contractId);
 	
 	/**
-	 * @param params
-	 * @return
+	 * @param params filter parameter for the image series
+	 * @return list of image series ids satisfying the filter parameters
 	 */
 	List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
 }

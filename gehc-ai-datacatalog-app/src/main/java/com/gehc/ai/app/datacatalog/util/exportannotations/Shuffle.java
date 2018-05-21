@@ -1,19 +1,29 @@
+/*
+ * Shuffle.java
+ *
+ * Copyright (c) 2018 by General Electric Company. All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of
+ * General Electric Company. The software may be used and/or copied only
+ * with the written permission of General Electric Company or in accordance
+ * with the terms and conditions stipulated in the agreement/contract
+ * under which the software has been supplied.
+ */
+
 package com.gehc.ai.app.datacatalog.util.exportannotations;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.HashSet;
-
-import org.junit.Test;
-
+/**
+ * utility functions to generate shuffled list index 
+ * @author litaoyan
+ *
+ */
 public class Shuffle {
 	/**
 	 * 
 	 * @param n total # of objects
 	 * @param m # of objects to be picked
 	 * @param indices array to store 
-	 * @return
+	 * @return indices of randomized result
 	 */
 	public static final int [] shuffle(int n, int m, int [] indices) {
 		int [] tempIndices;
@@ -39,55 +49,5 @@ public class Shuffle {
 			System.arraycopy(tempIndices, 0, indices, 0, m);
 		}
 		return indices;
-	}
-	
-	@Test
-	public void testShuffle() {
-		final int sz = 1000000;
-		final int it = 100;
-		final int [] ind = new int[sz];
-		
-		for (int k = 0; k < it; k++) {
-			System.out.println("it " + k);
-			long tt = System.currentTimeMillis();
-			shuffle(sz,sz,ind);
-			System.out.println("shuffle: " + (System.currentTimeMillis()-tt) + "ms");
-
-			assertTrue(!testDuplicates(ind));
-			assertTrue(testRange(ind));
-		}
-	}
-	
-	private boolean testRange(int [] ind) {
-		for (int k = 0; k < ind.length; k++) {
-			if (ind[k] < 0 || ind[k] > ind.length)
-				return false;
-		}
-		return true;
-	}
-	
-	private boolean testDuplicates(int [] a) {
-		long t = System.currentTimeMillis();
-		HashSet<Integer> s = new HashSet<Integer>();
-		for (int k = 0; k < a.length; k++) {
-			if (s.contains(k))
-				return true;
-			s.add(k);
-		}
-		System.out.println("test dup: " + (System.currentTimeMillis()-t) + "ms");
-		return false;
-	}
-	public static void main(String [] args) {
-		long t = System.currentTimeMillis();
-		int sz = 1000000;
-		int [] inds = shuffle(sz, sz, null);
-		t = System.currentTimeMillis() - t;
-		System.out.println("shuffling " + sz + " elements takes " + t + "ms");
-		
-		inds = shuffle(10, 10, null);
-		System.out.println(Arrays.toString(inds));
-		
-		inds = shuffle(10, 6, null);
-		System.out.println(Arrays.toString(inds));
 	}
 }

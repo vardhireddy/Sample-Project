@@ -523,6 +523,29 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return imgSerLst;
     }
 
+    /**
+     * 
+     * @param imgSeries list of image ids
+     * @return list of image series ids given contraints on max number of rows and whether randomization flag is set
+     */
+    private List<Long> getImageSeriesIdList(List<Object> imgSeries) {
+    	List<Long> imgSerIdLst = new ArrayList<Long>();
+
+    	int size = MAX_IMAGE_SERIES_ROWS > 0 ? Math.min(MAX_IMAGE_SERIES_ROWS, imgSeries.size()) : imgSeries.size();
+    	int [] shuffled = null;
+    	if (this.randomize) {
+    		shuffled = Shuffle.shuffle(imgSeries.size(), size, null);
+    		for (int i = 0; i < size; i++) {
+    			imgSerIdLst.add(Long.valueOf(imgSeries.get(shuffled[i]).toString()));
+    		}
+    	} else {
+    		for (int i = 0; i < size; i++) {
+    			imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+    		}
+    	}
+    	
+    	return imgSerIdLst;
+    }
     /*
      * (non-Javadoc)
      *
@@ -540,25 +563,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             if (null != dsLst && !dsLst.isEmpty()) {
                 @SuppressWarnings("unchecked")
                 List<Object> imgSeries = (ArrayList<Object>) ((DataSet) (dsLst.get(0))).getImageSets();
-                List<Long> imgSerIdLst = new ArrayList<Long>();
+                
+                
                 if (null != imgSeries && !imgSeries.isEmpty()) {
-                	int size = MAX_IMAGE_SERIES_ROWS > 0 ? Math.min(MAX_IMAGE_SERIES_ROWS, imgSeries.size()) : imgSeries.size();
-                	int [] shuffled = null;
-                	if (this.randomize) {
-                		shuffled = Shuffle.shuffle(imgSeries.size(), size, null);
-                		for (int i = 0; i < size; i++) {
-                			imgSerIdLst.add(Long.valueOf(imgSeries.get(shuffled[i]).toString()));
-                		}
-                	} else {
-                		for (int i = 0; i < size; i++) {
-                			imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
-                		}
-                	}
+                	List<Long> imgSerIdLst = getImageSeriesIdList(imgSeries);
                     return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
-                  //  return getPatientForImgSeriesLst(imageSeriesRepository.findByIdIn(imgSerIdLst));
                 }
             }
         }
+        // returns an empty list
         return new ArrayList<ImageSeries>();
     }
     

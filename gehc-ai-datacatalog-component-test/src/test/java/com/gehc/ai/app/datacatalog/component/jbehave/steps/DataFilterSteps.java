@@ -14,9 +14,9 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,10 +34,7 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -57,34 +54,21 @@ import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 @Component
 public class DataFilterSteps {
     private final DataSetRepository dataSetRepository;
-    private final ImageSeriesRepository imageSeriesRepository;
-    private final StudyRepository studyRepository;
-    private final CommonSteps commonSteps;
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
-    private AnnotationRepository annotationRepository;
-    private PreparedStatementSetter ps;
-    private RowMapper rm;
-    private Throwable throwable = null;
     
     private DataCatalogRestImpl controller;
 
     private DataCatalogDaoImpl dataCatalogDao;   
 
-    private String IMAGE_SERIES_WITH_INSTITUTIONS = "[{\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF, Institution,Montogmenry\",\"equipment\":\"tem\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"uploadDate\":\"2017-03-31 00:00:00\",\"patientDbId\":1}]";
-    private String IMAGE_SERIES_WITH_EQUIPMENT = "[{\"id\":1,\"modality\":\"CT\",\"anatomy\":\"Lung\",\"dataFormat\":\"dataFormat\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"seriesInstanceUid\":\"1\",\"description\":\"test\",\"institution\":\"UCSF\",\"equipment\":\" \\\"\\\\\\\"Geode Platform\\\\\\\"\\\"\",\"instanceCount\":1,\"properties\":{\"test\":\"bdd\"},\"uploadBy\":\"BDD\",\"uploadDate\":\"2017-03-31 00:00:00\",\"patientDbId\":1}]";
 	
     private EntityManager entityManager;
 	
     @Autowired
     public DataFilterSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository, CommonSteps commonSteps, DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao, DataCatalogRestImpl restImpl, EntityManager em) {
         this.mockMvc = mockMvc;
-        this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
-        this.imageSeriesRepository = imageSeriesRepository;
-        this.studyRepository = studyRepository;
-        this.commonSteps =commonSteps;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
         this.dataCatalogDao =dataCatalogDao;
         this.controller = restImpl;
@@ -111,32 +95,22 @@ public class DataFilterSteps {
     	ds.setImageSets(imageSets);
     	when(dataSetRepository.findById(anyLong())).thenReturn(l);
     	controller.setMaxImageSeriesRows(limit);
-
     }
 
-
-    @When("Get image series by data collection id")
-    public void getImageSetsFromDataCollectionId() throws Exception {
-
-        retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/data-collection/1/image-set")
-        );
-        org.mockito.Mockito.verify(dataCatalogDao).getImgSeriesWithPatientByIds(argument.capture());
-
-    }
-
-    @Then("verify image series by data collection id is capped")
-    public void verifyImageSetsFromDataCollectionId() throws Exception {
-        retrieveResult.andExpect(status().isOk());
-        assertTrue(argument.getValue().size() == limit);
-    }
-    
-    ArgumentCaptor<Integer> queryArgument = ArgumentCaptor.forClass(Integer.class);
     @Given("image series filter criteria map")
     public void givenImageSeriesFilterCriteria() throws Exception {
     	controller.setMaxImageSeriesRows(limit);
     }
  
+    @When("Get image series by data collection id")
+    public void getImageSetsFromDataCollectionId() throws Exception {
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/data-collection/1/image-set")
+        );
+        org.mockito.Mockito.verify(dataCatalogDao).getImgSeriesWithPatientByIds(argument.capture());
+    }
+
+    ArgumentCaptor<Integer> queryArgument = ArgumentCaptor.forClass(Integer.class);
     @When("image series filter criteria map")
     public void getImageSeriesFilterCriteria() throws Exception {
     	retrieveResult = mockMvc.perform(
@@ -146,6 +120,14 @@ public class DataFilterSteps {
     	verify(dataCatalogDao).getImgSeriesByFilters(anyObject(), anyBoolean(), queryArgument.capture());
 
     }
+    
+    @Then("verify image series by data collection id is capped")
+    public void verifyImageSetsFromDataCollectionId() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+        assertTrue(argument.getValue().size() == limit);
+    }
+    
+
     
     @Then("verify image series filter criteria map is capped with the limit argument")
     public void verifyImageSeriesFilterCriteria() throws Exception {
