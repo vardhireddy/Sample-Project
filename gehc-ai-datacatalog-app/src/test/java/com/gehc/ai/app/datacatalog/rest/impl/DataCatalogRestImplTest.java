@@ -1,19 +1,13 @@
 package com.gehc.ai.app.datacatalog.rest.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.sql.SQLDataException;
-import java.sql.SQLTimeoutException;
-import java.util.*;
-
-import com.gehc.ai.app.datacatalog.repository.*;
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,6 +17,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /*import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import Annotation;
@@ -34,10 +37,6 @@ import PatientRepository;
 import StudyRepository;
 import IDataCatalogRest;
 import IDataCatalogService;*/
-
-
-import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
 
 @RunWith ( MockitoJUnitRunner.class )
