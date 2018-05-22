@@ -28,7 +28,6 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.Contract.DeidStatus;
 
 
-
 /**
  * Created by dipshah on 3/26/18.
  */
@@ -41,7 +40,7 @@ public class ContractSteps {
 
     @Autowired
     public ContractSteps(MockMvc mockMvc,
-    		IDataCatalogDao dataCatalogDao, ContractRepository contractRepository) {
+                         IDataCatalogDao dataCatalogDao, ContractRepository contractRepository) {
         this.mockMvc = mockMvc;
         this.dataCatalogDao = dataCatalogDao;
         this.contractRepository = contractRepository;
@@ -56,23 +55,23 @@ public class ContractSteps {
     @When("Store contract data")
     public void StoreContractData() throws Exception {
 
-    	ClassLoader classLoader = getClass().getClassLoader();
+        ClassLoader classLoader = getClass().getClassLoader();
 
         MockMultipartFile firstFile = new MockMultipartFile("contract", "contract.pdf", MediaType.MULTIPART_FORM_DATA,
-        									classLoader.getResourceAsStream("data/contract.pdf"));
+                classLoader.getResourceAsStream("data/contract.pdf"));
         MockMultipartFile jsonFile = new MockMultipartFile("metadata", "metadata.json", MediaType.MULTIPART_FORM_DATA,
-        									classLoader.getResourceAsStream("data/metadata.json"));
+                classLoader.getResourceAsStream("data/metadata.json"));
 
         retrieveResult = mockMvc.perform(MockMvcRequestBuilders.fileUpload("/api/v1/datacatalog/contract")
-                        .file(firstFile).file(jsonFile));
+                .file(firstFile).file(jsonFile));
 
     }
 
     @Then("verify Store contract data")
     public void verifyStoreContractData() throws Exception {
-    	retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
-    	 retrieveResult.andExpect(status().isOk());
-       // retrieveResult.andExpect(status().isCreated());
+        retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
+        retrieveResult.andExpect(status().isOk());
+        // retrieveResult.andExpect(status().isCreated());
     }
 
     @Given("Retrieve contract data - DataSetUp Provided")
@@ -88,7 +87,7 @@ public class ContractSteps {
 
     @Then("verify Retrieve contract data")
     public void verifyRetrieveContractData() throws Exception {
-    	//retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
+        //retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
         retrieveResult.andExpect(status().isOk());
     }
 
@@ -115,7 +114,7 @@ public class ContractSteps {
 
     @Given("invalid contract Id or Org Id")
     public void givenInvalidContractIdAndOrgId() throws Exception {
-        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(0);
+        when(contractRepository.validateContractIdAndOrgId(anyLong(), anyString())).thenReturn(0);
     }
 
     @When("any of the given parameters are not existing in the repository")
@@ -133,25 +132,25 @@ public class ContractSteps {
         retrieveResult.andExpect(content().string(containsString("Contract does not exist")));
     }
 
-    private Contract getContract(){
-    	Contract contract = new Contract();
-    	contract.setId(1L);
-    	contract.setActive("true");
-    	contract.setBusinessCase("Business Case");
-    	contract.setContactInfo("Contact Info");
-    	contract.setContractName("Contract Name");
-    	contract.setDataOriginCountry("Data Origin Country");
-    	contract.setDeidStatus(DeidStatus.DEIDS_TO_LOCAL_STANDARDS);
-    	contract.setOrgId("orgId");
-    	contract.setProperties("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
-    	contract.setSchemaVersion("Schema Version");
-    	contract.setUploadBy("radiologist");
-    	contract.setUploadDate(LocalDateTime.now());
-    	contract.setUri("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
-    	contract.setUsageNotes("Usage Notes");
-    	contract.setUsageRights("Usage Rights");
-    	
-    	return contract;
+    private Contract getContract() {
+        Contract contract = new Contract();
+        contract.setId(1L);
+        contract.setActive("true");
+        contract.setBusinessCase("Business Case");
+        contract.setContactInfo("Contact Info");
+        contract.setContractName("Contract Name");
+        contract.setDataOriginCountry("Data Origin Country");
+        contract.setDeidStatus(DeidStatus.DEIDS_TO_LOCAL_STANDARDS);
+        contract.setOrgId("orgId");
+        contract.setProperties("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
+        contract.setSchemaVersion("Schema Version");
+        contract.setUploadBy("radiologist");
+        contract.setUploadDate(LocalDateTime.now());
+        contract.setUri("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
+        contract.setUsageNotes("Usage Notes");
+        contract.setUsageRights("Usage Rights");
+
+        return contract;
     }
 
 }
