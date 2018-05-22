@@ -126,11 +126,36 @@ public interface IDataCatalogRest {
 
 
     /**
-     * Insert or update an DataSet
+     * Creates one or more new data collection resources if it does not already exist or updates an existing data collection
+     * resource based on the resource's ID.
      *
-     * @param dataCollectionsCreateRequest       data set object
-     * @param request HTTP POST Request object
-     * @return recently saved Data Collection Ids
+     * @param dataCollectionsCreateRequest The POST request body which can contain the following two primary properties:
+     *                                     <ol>
+     *                                     <li>dataSet - (Required) The data collection to save</li>
+     *                                     <li>dataCollectionSize - (Optional) The desired size of a data collection in
+     *                                     terms of the number of image sets to comprise a data collection.
+     *                                     <ul>
+     *                                     <li>If the size is not defined, then the data collection will be saved as-is.</li>
+     *                                     <li>If the size is set to 1 image set, then the provided data collection
+     *                                     will be batched such that there will be as many data collections as there are image sets.
+     *                                     For example, if the initial data collection defines 9 image sets and the size is set to 1,
+     *                                     then the initial data collection will be split into 9 data collections with 1 image set.</li>
+     *                                     <li>If the size is set to n image sets where n is the total number of image
+     *                                     sets defined in the initial data collection,then the provided data collection
+     *                                     will be saved as a single data collection. For example, if the initial data collection
+     *                                     defines 9 image sets and the size is set to 9, then the initial data collection
+     *                                     will be saved as-is without any batching.</li>
+     *                                     <li>If the size is set to be between 1 and n image sets where n is the total number of image
+     *                                     sets defined in the initial data collection, then the provided data collection
+     *                                     will be batched such that there will be n/{$size} number of collections with {$size} image sets
+     *                                     and one collection with n%{$size} image sets. For example, if the initial data collection
+     *                                     defines 9 image sets and the size is set to 2, then the initial data collection
+     *                                     will be split into 4 collections with 2 image sets and 1 collection with 1 image set</li>
+     *                                     </ul>
+     *                                     </li>
+     *                                     <ol/>
+     * @param request                      The intercepted HTTP request object whose headers will be validated
+     * @return a {@link ResponseEntity} containing the IDs of the created or updated data collections.
      */
     ResponseEntity<?> saveDataSet(DataCollectionsCreateRequest dataCollectionsCreateRequest, HttpServletRequest request);
 
