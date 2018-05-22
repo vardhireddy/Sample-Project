@@ -174,6 +174,9 @@ public class Filters implements Serializable {
 
 	@Override
 	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		}
 		if (other == this) {
 			return true;
 		}
