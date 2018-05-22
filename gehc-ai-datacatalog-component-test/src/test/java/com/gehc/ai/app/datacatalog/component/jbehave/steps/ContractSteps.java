@@ -68,8 +68,9 @@ public class ContractSteps {
 
     @Then("verify Store contract data")
     public void verifyStoreContractData() throws Exception {
-        retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
-        retrieveResult.andExpect(status().isCreated());
+    	retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
+        retrieveResult.andExpect(status().isOk());
+       // retrieveResult.andExpect(status().isCreated());
     }
 
     @Given("Retrieve contract data - DataSetUp Provided")
