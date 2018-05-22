@@ -524,7 +524,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     /**
-     * 
+     * given a list of image set id's, return a subset of those id's in a new list. The size and order of the image
+     * set ids will be determined by the limit on max # of rows and randomization flag
      * @param imgSeries list of image ids
      * @return list of image series ids given contraints on max number of rows and whether randomization flag is set
      */
