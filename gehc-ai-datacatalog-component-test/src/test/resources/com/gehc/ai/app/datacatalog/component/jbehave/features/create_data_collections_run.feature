@@ -49,6 +49,17 @@ And the response's status code should be 201
 And the response's content type should be JSON
 
 @test
+Scenario Outline: User shall be able to update a single existing data collection
+Meta: @automated
+Given an existing data collection
+And no data collection size is specified
+And no internal errors occur
+When the API which creates a data collection is invoked
+Then 1 data collection should be updated to the database
+And the response's status code should be 201
+And the response's content type should be JSON
+
+@test
 Scenario Outline: User shall not be able to create one or more data collections if no data collection is provided
 Meta: @automated
 Given no data collection is provided

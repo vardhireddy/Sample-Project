@@ -110,6 +110,13 @@ public class CreateDataCollectionsSteps {
         this.request.setDataSet(this.dataCollection);
     }
 
+    @Given("an existing data collection")
+    public void givenAnExistingDataCollection() {
+        this.request = new DataCollectionsCreateRequest();
+        this.dataCollection = createExistingMockDataSet(this.imageSetIds, 1L);
+        this.request.setDataSet(this.dataCollection);
+    }
+
     @Given("a pool of unique image sets")
     public void givenPoolOfUniqueImageSets() {
         assumeThat(UNIQUE_IMAGE_SET_IDS.length, is(equalTo(NUM_OF_TEST_IMAGE_SET_IDS)));
@@ -261,6 +268,14 @@ public class CreateDataCollectionsSteps {
         verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
     }
 
+    @Then("1 data collection should be updated to the database")
+    public void thenOneDataCollectionShouldBeUpdatedToTheDatabase() throws Exception {
+        List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{
+                createExistingMockDataSet(new Long[]{123L, 456L, 789L, 101112L, 131415L, 161718L, 192021L}, 1L)});
+
+        verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
+    }
+
     @Then("the response's body should contain an error message saying a data collection needs to be provided")
     public void thenResponseBodyShouldContainErrorMessageSayingADataCollectionNeedsToBeProvided() throws Exception {
         result.andExpect(content().string(containsString("A data collection must be provided")));
@@ -299,7 +314,6 @@ public class CreateDataCollectionsSteps {
 
     private DataSet createMockDataSet(Long[] imageSetIds) {
         DataSet dataSet = new DataSet();
-        dataSet.setId(1L);
         dataSet.setCreatedBy("test");
         dataSet.setDescription("test");
         String dateInString = getDate();
@@ -321,6 +335,12 @@ public class CreateDataCollectionsSteps {
     private DataSet createMockDataSet(Long[] imageSetIds, int collectionSuffix) {
         DataSet dataSet = createMockDataSet(imageSetIds);
         dataSet.setName("Test - " + collectionSuffix);
+        return dataSet;
+    }
+
+    private DataSet createExistingMockDataSet(Long[] imageSetIds, long collectionId) {
+        DataSet dataSet = createMockDataSet(imageSetIds);
+        dataSet.setId(collectionId);
         return dataSet;
     }
 

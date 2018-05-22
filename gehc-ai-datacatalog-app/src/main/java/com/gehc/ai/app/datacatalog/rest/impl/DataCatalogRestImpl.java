@@ -85,6 +85,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -456,11 +457,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		// If a data collection size is specified such that it will produce multiple collections, then batch the image
 		// sets based on the specified collection size
 		final Integer dataCollectionSize = dataCollectionsCreateRequest.getDataCollectionSize();
-		if (Objects.nonNull(dataCollectionSize) && dataCollectionSize != imageSetIds.size()) {
+		final Predicate<DataSet> collectionDoesNotAlreadyExist = dc -> Objects.isNull(dc.getId());
+		final Predicate<Integer> collectionIsToBeSplitIntoMultipleCollections = collectionSize -> Objects.nonNull(collectionSize) && collectionSize != imageSetIds.size();
+
+		if (collectionDoesNotAlreadyExist.test(dataCollection) && collectionIsToBeSplitIntoMultipleCollections.test(dataCollectionSize)) {
 
 			try {
-				dataCollectionBatches = DataCatalogUtils.getDataCollectionBatches(dataCollection,
-						dataCollectionsCreateRequest.getDataCollectionSize());
+				dataCollectionBatches = DataCatalogUtils.getDataCollectionBatches(dataCollection, dataCollectionsCreateRequest.getDataCollectionSize());
 			} catch (DataCatalogException e) {
 				logger.error(e.getMessage());
 				return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to batch the provided image sets"), HttpStatus.BAD_REQUEST);
