@@ -488,10 +488,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
 
         // Return the database-assigned IDs of the saved data collections
-        List<Long> savedDataSetIds = savedDataCollections.stream().map(savedDataSet -> savedDataSet.getId())
-                .collect(Collectors.toList());
-
-        return new ResponseEntity<List<Long>>(savedDataSetIds, HttpStatus.CREATED);
+        return new ResponseEntity<List<Long>>(aggregateSavedDataCollectionsIds(savedDataCollections), HttpStatus.CREATED);
     }
 
     private boolean shouldBatchDataCollections(DataSet dataCollection, Integer dataCollectionSize, int numImageSets){
@@ -499,6 +496,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         final Predicate<Integer> collectionIsToBeSplitIntoMultipleCollections = collectionSize -> Objects.nonNull(collectionSize) && collectionSize != numImageSets;
 
         return collectionDoesNotAlreadyExist.test(dataCollection) && collectionIsToBeSplitIntoMultipleCollections.test(dataCollectionSize);
+    }
+
+    private List<Long> aggregateSavedDataCollectionsIds(List<DataSet> savedDataCollections){
+        return savedDataCollections.stream().map(savedDataSet -> savedDataSet.getId())
+                .collect(Collectors.toList());
     }
 
     @Override
