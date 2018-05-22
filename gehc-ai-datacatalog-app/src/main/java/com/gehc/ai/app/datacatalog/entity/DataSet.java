@@ -11,11 +11,15 @@
  */
 package com.gehc.ai.app.datacatalog.entity;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
-
-import java.io.Serializable;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.gehc.ai.app.datacatalog.filters.FiltersConverter;
+import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+import com.gehc.ai.app.datacatalog.filters.PropertiesConverter;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -27,17 +31,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.List;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.gehc.ai.app.datacatalog.filters.FiltersConverter;
-import com.gehc.ai.app.datacatalog.filters.JsonConverter;
-import com.gehc.ai.app.datacatalog.filters.PropertiesConverter;
+import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
 /**
  * This class holds the DataSet/DataCollection
@@ -240,16 +238,11 @@ public class DataSet implements Serializable {
 
 	@Override
 	public boolean equals(Object other) {
-		
-		System.err.println("In Equals*********");
-		System.err.println(toString());
-		System.err.println();
-		System.err.println(other.toString());
-		
+
 		if (other == this) {
 			return true;
 		}
-		if ((other instanceof DataSet) == false) {
+		if (other.getClass() != this.getClass()) {
 			return false;
 		}
 		DataSet rhs = ((DataSet) other);
