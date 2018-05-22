@@ -3,13 +3,17 @@
 *.project
 *.settings/*
 **/*.iml
+**/.DS_Store
+*.DS_Store
 /gehc-ai-datacatalog-app/gehc-ai-datacatalog-app.iml
 /gehc-ai-datacatalog-app/target/
 /gehc-ai-datacatalog-component-test/target/
 /gehc-ai-datacatalog-component-test/gehc-ai-datacatalog-component-test.iml
 /gehc-ai-datacatalog-contract-test/gehc-ai-datacatalog-contract-test.iml
 /gehc-ai-datacatalog-contract-test/target/
+/gehc-ai-datacatalog-contract-test/.settings/*.*
 /gehc-ai-datacatalog-integration-test/gehc-ai-datacatalog-integration-test.iml
 /gehc-ai-datacatalog-integration-test/target/
+/gehc-ai-datacatalog-integration-test/.settings/*.*
 /gehc-ai-datacatalog.iml
 .idea/
