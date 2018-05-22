@@ -11,15 +11,14 @@
  */
 package com.gehc.ai.app.datacatalog.entity;
 
-import java.io.Serializable;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.io.Serializable;
 
 /**
  * This class holds the GeClass for Filters
@@ -73,10 +72,13 @@ public class GeClass implements Serializable {
 
 	@Override
 	public boolean equals(Object other) {
+		if(other == null){
+			return false;
+		}
 		if (other == this) {
 			return true;
 		}
-		if ((other instanceof GeClass) == false) {
+		if (other.getClass() != this.getClass()) {
 			return false;
 		}
 		GeClass rhs = ((GeClass) other);
