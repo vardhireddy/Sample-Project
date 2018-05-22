@@ -106,14 +106,28 @@ public class CreateDataCollectionsSteps {
     @Given("no image sets are defined")
     public void giveNoImageSetsAreDefined() {
         this.request = new DataCollectionsCreateRequest();
-        this.dataCollection = createMockDataSet(null);
+        this.dataCollection = createMockDataSet(null, "Test", "Annotation");
         this.request.setDataSet(this.dataCollection);
     }
 
     @Given("an existing data collection")
     public void givenAnExistingDataCollection() {
         this.request = new DataCollectionsCreateRequest();
-        this.dataCollection = createExistingMockDataSet(this.imageSetIds, 1L);
+        this.dataCollection = createExistingMockDataSet(this.imageSetIds, "Test", "Annotation", 1L);
+        this.request.setDataSet(this.dataCollection);
+    }
+
+    @Given("a data collection that does not have a name defined")
+    public void givenNoDataCollectionNameIsDefined() {
+        this.request = new DataCollectionsCreateRequest();
+        this.dataCollection = createExistingMockDataSet(this.imageSetIds, null, "Annotation", 1L);
+        this.request.setDataSet(this.dataCollection);
+    }
+
+    @Given("a data collection that does not have a type defined")
+    public void givenNoDataCollectionTypeIsDefined() {
+        this.request = new DataCollectionsCreateRequest();
+        this.dataCollection = createExistingMockDataSet(this.imageSetIds, "Test", null, 1L);
         this.request.setDataSet(this.dataCollection);
     }
 
@@ -122,7 +136,7 @@ public class CreateDataCollectionsSteps {
         assumeThat(UNIQUE_IMAGE_SET_IDS.length, is(equalTo(NUM_OF_TEST_IMAGE_SET_IDS)));
         this.imageSetIds = UNIQUE_IMAGE_SET_IDS;
         this.request = new DataCollectionsCreateRequest();
-        this.dataCollection = createMockDataSet(this.imageSetIds);
+        this.dataCollection = createMockDataSet(this.imageSetIds, "Test", "Annotation");
     }
 
     @Given("a pool of non-unique image sets")
@@ -130,7 +144,7 @@ public class CreateDataCollectionsSteps {
         assumeThat(NON_UNIQUE_IMAGE_SET_IDS.length, is(equalTo(NUM_OF_TEST_IMAGE_SET_IDS)));
         this.imageSetIds = NON_UNIQUE_IMAGE_SET_IDS;
         this.request = new DataCollectionsCreateRequest();
-        this.dataCollection = createMockDataSet(this.imageSetIds);
+        this.dataCollection = createMockDataSet(this.imageSetIds, "Test", "Annotation");
     }
 
     @Given("no data collection size is specified")
@@ -242,10 +256,10 @@ public class CreateDataCollectionsSteps {
     @Then("the image sets should be split such that there are as many data collections saved to the database as there are image sets")
     public void thenTheImageSetsShouldBeSplitSuchThatThereAreAsManyDataCollectionsSavedToTheDatabaseAsThereAreImageSets()
             throws Exception {
-        List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{createMockDataSet(new Long[]{123L}, 1),
-                createMockDataSet(new Long[]{456L}, 2), createMockDataSet(new Long[]{789L}, 3),
-                createMockDataSet(new Long[]{101112L}, 4), createMockDataSet(new Long[]{131415L}, 5),
-                createMockDataSet(new Long[]{161718L}, 6), createMockDataSet(new Long[]{192021L}, 7)});
+        List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{createMockDataSetWithSuffix(new Long[]{123L}, "Test", "Annotation", 1),
+                createMockDataSetWithSuffix(new Long[]{456L}, "Test", "Annotation", 2), createMockDataSetWithSuffix(new Long[]{789L}, "Test", "Annotation", 3),
+                createMockDataSetWithSuffix(new Long[]{101112L}, "Test", "Annotation", 4), createMockDataSetWithSuffix(new Long[]{131415L}, "Test", "Annotation", 5),
+                createMockDataSetWithSuffix(new Long[]{161718L}, "Test", "Annotation", 6), createMockDataSetWithSuffix(new Long[]{192021L}, "Test", "Annotation", 7)});
 
         verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
     }
@@ -254,8 +268,8 @@ public class CreateDataCollectionsSteps {
     public void thenTheNumberOfDataColletionsThatHaveTheTargetCollectionSizeShouldBeTheQuotientOfTheNumberOfImageSetsDividedByTheTargetCollectionSizeAndThereShouldBeOneDataCollectionSavedThatContainsTheRemainderOfTheQuotient()
             throws Exception {
         List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{
-                createMockDataSet(new Long[]{123L, 456L}, 1), createMockDataSet(new Long[]{789L, 101112L}, 2),
-                createMockDataSet(new Long[]{131415L, 161718L}, 3), createMockDataSet(new Long[]{192021L}, 4)});
+                createMockDataSetWithSuffix(new Long[]{123L, 456L}, "Test", "Annotation",1), createMockDataSetWithSuffix(new Long[]{789L, 101112L}, "Test", "Annotation",2),
+                createMockDataSetWithSuffix(new Long[]{131415L, 161718L}, "Test", "Annotation",3), createMockDataSetWithSuffix(new Long[]{192021L}, "Test", "Annotation",4)});
 
         verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
     }
@@ -263,7 +277,7 @@ public class CreateDataCollectionsSteps {
     @Then("1 data collection should be saved to the database")
     public void thenOneDataCollectionShouldBeSavedToTheDatabase() throws Exception {
         List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{
-                createMockDataSet(new Long[]{123L, 456L, 789L, 101112L, 131415L, 161718L, 192021L})});
+                createMockDataSet(new Long[]{123L, 456L, 789L, 101112L, 131415L, 161718L, 192021L},"Test", "Annotation")});
 
         verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
     }
@@ -271,7 +285,7 @@ public class CreateDataCollectionsSteps {
     @Then("1 data collection should be updated to the database")
     public void thenOneDataCollectionShouldBeUpdatedToTheDatabase() throws Exception {
         List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{
-                createExistingMockDataSet(new Long[]{123L, 456L, 789L, 101112L, 131415L, 161718L, 192021L}, 1L)});
+                createExistingMockDataSet(new Long[]{123L, 456L, 789L, 101112L, 131415L, 161718L, 192021L}, "Test", "Annotation",1L)});
 
         verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
     }
@@ -284,6 +298,16 @@ public class CreateDataCollectionsSteps {
     @Then("the response's body should contain an error message saying image sets must defined for the data collection")
     public void thenResponseBodyShouldContainErrorMessageSayingImageSetsMustBeDefinedForTheDataCollection() throws Exception {
         result.andExpect(content().string(containsString("The data collection must define a set of image set IDs")));
+    }
+
+    @Then("the response's body should contain an error message saying a name must defined for the data collection")
+    public void thenResponseBodyShouldContainErrorMessageSayingANameMustBeDefinedForTheDataCollection() throws Exception {
+        result.andExpect(content().string(containsString("The data collection must define a name")));
+    }
+
+    @Then("the response's body should contain an error message saying a type must defined for the data collection")
+    public void thenResponseBodyShouldContainErrorMessageSayingATypeMustBeDefinedForTheDataCollection() throws Exception {
+        result.andExpect(content().string(containsString("The data collection must define a type")));
     }
 
     @Then("the response's body should contain an error message saying the provided image sets should be unique")
@@ -312,17 +336,17 @@ public class CreateDataCollectionsSteps {
         return mapper.writeValueAsString(request);
     }
 
-    private DataSet createMockDataSet(Long[] imageSetIds) {
+    private DataSet createMockDataSet(Long[] imageSetIds, String name, String type) {
         DataSet dataSet = new DataSet();
         dataSet.setCreatedBy("test");
         dataSet.setDescription("test");
         String dateInString = getDate();
         dataSet.setCreatedDate(dateInString);
-        dataSet.setName("Test");
+        dataSet.setName(name);
         dataSet.setProperties(new Properties());
         dataSet.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         dataSet.setSchemaVersion("123");
-        dataSet.setType("Annotation");
+        dataSet.setType(type);
         if (Objects.nonNull(imageSetIds)) {
             dataSet.setImageSets(Arrays.asList(imageSetIds));
         } else {
@@ -332,14 +356,14 @@ public class CreateDataCollectionsSteps {
         return dataSet;
     }
 
-    private DataSet createMockDataSet(Long[] imageSetIds, int collectionSuffix) {
-        DataSet dataSet = createMockDataSet(imageSetIds);
+    private DataSet createMockDataSetWithSuffix(Long[] imageSetIds, String name, String type, int collectionSuffix) {
+        DataSet dataSet = createMockDataSet(imageSetIds, name, type);
         dataSet.setName("Test - " + collectionSuffix);
         return dataSet;
     }
 
-    private DataSet createExistingMockDataSet(Long[] imageSetIds, long collectionId) {
-        DataSet dataSet = createMockDataSet(imageSetIds);
+    private DataSet createExistingMockDataSet(Long[] imageSetIds, String name, String type, long collectionId) {
+        DataSet dataSet = createMockDataSet(imageSetIds, name, type);
         dataSet.setId(collectionId);
         return dataSet;
     }

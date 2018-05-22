@@ -80,6 +80,26 @@ And the response's content type should be JSON
 And the response's body should contain an error message saying image sets must defined for the data collection
 
 @test
+Scenario Outline: User shall not be able to create one or more data collections if no name is defined for the data collection
+Meta: @automated
+Given a data collection that does not have a name defined
+And no internal errors occur
+When the API which creates a data collection is invoked
+Then the response's status code should be 400
+And the response's content type should be JSON
+And the response's body should contain an error message saying a name must defined for the data collection
+
+@test
+Scenario Outline: User shall not be able to create one or more data collections if no type is defined for the data collection
+Meta: @automated
+Given a data collection that does not have a type defined
+And no internal errors occur
+When the API which creates a data collection is invoked
+Then the response's status code should be 400
+And the response's content type should be JSON
+And the response's body should contain an error message saying a type must defined for the data collection
+
+@test
 Scenario Outline: User shall not be able to create one or more data collections if a pool of non-unique image sets are provided
 Meta: @automated
 Given a pool of non-unique image sets

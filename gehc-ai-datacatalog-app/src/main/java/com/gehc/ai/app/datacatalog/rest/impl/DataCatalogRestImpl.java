@@ -441,10 +441,20 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			return new ResponseEntity<Object>(Collections.singletonMap("response", "The data collection must define a set of image set IDs"), HttpStatus.BAD_REQUEST);
 		}
 
-		// Gate 4 - The provided image set IDs are required to be unique
-		if (imageSetIds.size() != imageSetIds.stream().distinct().count()) {
-			return new ResponseEntity<Object>(Collections.singletonMap("response", "The provided image sets are not unique"), HttpStatus.BAD_REQUEST);
-		}
+        // Gate 4 - The provided image set IDs are required to be unique
+        if (imageSetIds.size() != imageSetIds.stream().distinct().count()) {
+            return new ResponseEntity<Object>(Collections.singletonMap("response", "The provided image sets are not unique"), HttpStatus.BAD_REQUEST);
+        }
+
+        // Gate 5 - The data collection's name must be defined
+        if (Objects.isNull(dataCollection.getName())) {
+            return new ResponseEntity<Object>(Collections.singletonMap("response", "The data collection must define a name"), HttpStatus.BAD_REQUEST);
+        }
+
+        // Gate 6 - The data collection's type must be defined
+        if (Objects.isNull(dataCollection.getType())) {
+            return new ResponseEntity<Object>(Collections.singletonMap("response", "The data collection must define a type"), HttpStatus.BAD_REQUEST);
+        }
 
 		/* All gates passed! */
 
@@ -472,16 +482,16 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 		}
 
 		// Try saving the data collections
-		List<DataSet> savedDataSets;
+		List<DataSet> savedDataCollections;
 		try {
-			savedDataSets = dataSetRepository.save(dataCollectionBatches);
+			savedDataCollections = dataSetRepository.save(dataCollectionBatches);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to save data collections"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		// Return the database-assigned IDs of the saved data collections
-		List<Long> savedDataSetIds = savedDataSets.stream().map(savedDataSet -> savedDataSet.getId())
+		List<Long> savedDataSetIds = savedDataCollections.stream().map(savedDataSet -> savedDataSet.getId())
 				.collect(Collectors.toList());
 
 		return new ResponseEntity<List<Long>>(savedDataSetIds, HttpStatus.CREATED);
