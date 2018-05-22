@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * This class represents the Request for creating DataCollection for an
  * Experiment/Annotation/Inference
- * 
+ *
  * @author Madhu Y (305024964)
  *
  */
@@ -56,6 +56,6 @@ public class DataCollectionsCreateRequest {
 	public String toString() {
 		return "DataCollectionsCreateRequest [dataCollectionSize=" + dataCollectionSize + ", dataSet=" + dataSet + "]";
 	}
-	
+
 
 }

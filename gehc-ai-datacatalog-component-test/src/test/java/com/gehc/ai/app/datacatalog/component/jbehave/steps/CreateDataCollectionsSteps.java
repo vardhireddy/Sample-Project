@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -96,6 +97,18 @@ public class CreateDataCollectionsSteps {
     // GIVEN statements //
     //
     //////////////////////
+
+    @Given("no data collection is provided")
+    public void givenNoDataCollectionIsProvided() {
+        this.request = new DataCollectionsCreateRequest();
+    }
+
+    @Given("no image sets are defined")
+    public void giveNoImageSetsAreDefined() {
+        this.request = new DataCollectionsCreateRequest();
+        this.dataCollection = createMockDataSet(null);
+        this.request.setDataSet(this.dataCollection);
+    }
 
     @Given("a pool of unique image sets")
     public void givenPoolOfUniqueImageSets() {
@@ -248,6 +261,16 @@ public class CreateDataCollectionsSteps {
         verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
     }
 
+    @Then("the response's body should contain an error message saying a data collection needs to be provided")
+    public void thenResponseBodyShouldContainErrorMessageSayingADataCollectionNeedsToBeProvided() throws Exception {
+        result.andExpect(content().string(containsString("A data collection must be provided")));
+    }
+
+    @Then("the response's body should contain an error message saying image sets must defined for the data collection")
+    public void thenResponseBodyShouldContainErrorMessageSayingImageSetsMustBeDefinedForTheDataCollection() throws Exception {
+        result.andExpect(content().string(containsString("The data collection must define a set of image set IDs")));
+    }
+
     @Then("the response's body should contain an error message saying the provided image sets should be unique")
     public void thenResponseBodyShouldContainErrorMessageSayingProvidedImageSetsShouldBeUnique() throws Exception {
         result.andExpect(content().string(containsString("The provided image sets are not unique")));
@@ -286,7 +309,12 @@ public class CreateDataCollectionsSteps {
         dataSet.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         dataSet.setSchemaVersion("123");
         dataSet.setType("Annotation");
-        dataSet.setImageSets(Arrays.asList(imageSetIds));
+        if (Objects.nonNull(imageSetIds)) {
+            dataSet.setImageSets(Arrays.asList(imageSetIds));
+        } else {
+            dataSet.setImageSets(null);
+        }
+
         return dataSet;
     }
 

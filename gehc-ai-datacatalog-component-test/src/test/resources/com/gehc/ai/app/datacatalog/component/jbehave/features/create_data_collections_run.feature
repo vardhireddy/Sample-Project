@@ -49,6 +49,26 @@ And the response's status code should be 201
 And the response's content type should be JSON
 
 @test
+Scenario Outline: User shall not be able to create one or more data collections if no data collection is provided
+Meta: @automated
+Given no data collection is provided
+And no internal errors occur
+When the API which creates a data collection is invoked
+Then the response's status code should be 400
+And the response's content type should be JSON
+And the response's body should contain an error message saying a data collection needs to be provided
+
+@test
+Scenario Outline: User shall not be able to create one or more data collections if no image sets are defined for the data collection
+Meta: @automated
+Given no image sets are defined
+And no internal errors occur
+When the API which creates a data collection is invoked
+Then the response's status code should be 400
+And the response's content type should be JSON
+And the response's body should contain an error message saying image sets must defined for the data collection
+
+@test
 Scenario Outline: User shall not be able to create one or more data collections if a pool of non-unique image sets are provided
 Meta: @automated
 Given a pool of non-unique image sets

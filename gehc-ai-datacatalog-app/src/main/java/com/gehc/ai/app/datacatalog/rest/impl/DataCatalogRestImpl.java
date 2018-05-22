@@ -428,9 +428,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			return new ResponseEntity<Object>(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
 		}
 
-		// Gate 2 - The provided image set IDs are required to be unique
+		// Gate 2 - The data collection must be defined
 		DataSet dataCollection = dataCollectionsCreateRequest.getDataSet();
+		if(Objects.isNull(dataCollection)){
+			return new ResponseEntity<Object>(Collections.singletonMap("response", "A data collection must be provided"), HttpStatus.BAD_REQUEST);
+		}
+
+		// Gate 3 - The data collection's image set IDs must be defined
 		List<Long> imageSetIds = dataCollection.getImageSets();
+		if (Objects.isNull(imageSetIds)) {
+			return new ResponseEntity<Object>(Collections.singletonMap("response", "The data collection must define a set of image set IDs"), HttpStatus.BAD_REQUEST);
+		}
+
+		// Gate 4 - The provided image set IDs are required to be unique
 		if (imageSetIds.size() != imageSetIds.stream().distinct().count()) {
 			return new ResponseEntity<Object>(Collections.singletonMap("response", "The provided image sets are not unique"), HttpStatus.BAD_REQUEST);
 		}
