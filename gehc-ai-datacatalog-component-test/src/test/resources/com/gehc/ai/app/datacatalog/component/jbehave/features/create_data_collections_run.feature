@@ -5,9 +5,9 @@ Narrative: As a data scientist or radiologist, I should be able to create one or
 @functional
 
 @test
-Scenario Outline: User shall be able to create several data collections from a pool of unique image sets if the specified data collection size is 1
+Scenario Outline: User shall be able to create several data collections if the base collection contains a set of unique image sets and the specified data collection size is 1
 Meta: @automated
-Given a pool of unique image sets
+Given a data collection with unique image sets
 And the data collection size is 1
 And no internal errors occur
 When the API which creates a data collection is invoked
@@ -16,9 +16,9 @@ And the response's status code should be 201
 And the response's content type should be JSON
 
 @test
-Scenario Outline: User shall be able to create several data collections from a pool of unique image sets if the specified data collection size is greater than 1 and less than the number of image sets
+Scenario Outline: User shall be able to create several data collections if the base collection contains a set of unique image sets and the specified data collection size is greater than 1 and less than the number of image sets
 Meta: @automated
-Given a pool of unique image sets
+Given a data collection with unique image sets
 And the data collection size is greater than 1 and less than the number of image sets
 And no internal errors occur
 When the API which creates a data collection is invoked
@@ -27,9 +27,9 @@ And the response's status code should be 201
 And the response's content type should be JSON
 
 @test
-Scenario Outline: User shall be able to create 1 data collection from a pool of unique image sets if the specified data collection size is equal to the number of image sets
+Scenario Outline: User shall be able to create 1 data collection if the base collection contains a set of unique image sets and the specified data collection size is equal to the number of image sets
 Meta: @automated
-Given a pool of unique image sets
+Given a data collection with unique image sets
 And the data collection size is equal to the number of image sets
 And no internal errors occur
 When the API which creates a data collection is invoked
@@ -38,9 +38,9 @@ And the response's status code should be 201
 And the response's content type should be JSON
 
 @test
-Scenario Outline: User shall be able to create 1 data collection from a pool of unique image sets if no data collection size is specified
+Scenario Outline: User shall be able to create 1 data collection if the base collection contains a set of unique image sets and no data collection size is specified
 Meta: @automated
-Given a pool of unique image sets
+Given a data collection with unique image sets
 And no data collection size is specified
 And no internal errors occur
 When the API which creates a data collection is invoked
@@ -102,7 +102,7 @@ And the response's body should contain an error message saying a type must defin
 @test
 Scenario Outline: User shall not be able to create one or more data collections if a pool of non-unique image sets are provided
 Meta: @automated
-Given a pool of non-unique image sets
+Given a data collection with non-unique image sets
 And the specified data collection size doesn't matter
 And no internal errors occur
 When the API which creates a data collection is invoked
@@ -113,7 +113,7 @@ And the response's body should contain an error message saying the provided imag
 @test
 Scenario Outline: User shall not be able to create any data collections due to an internal error that causes all data collections to not be created
 Meta: @automated
-Given a pool of unique image sets
+Given a data collection with unique image sets
 And the specified data collection size doesn't matter
 And an internal error that causes no data collections to be created
 When the API which creates a data collection is invoked
@@ -124,7 +124,7 @@ And the response's body should contain an error message saying there was an inte
 @test
 Scenario Outline: User shall not be able to create one or more data collections if the number of data collections to create is specified as less than 1
 Meta: @automated
-Given a pool of unique image sets
+Given a data collection with unique image sets
 And the data collection size is less than 1
 When the API which creates a data collection is invoked
 Then the response's status code should be 400
@@ -134,7 +134,7 @@ And the response's body should contain an error message saying the image sets co
 @test
 Scenario Outline: User shall not be able to create one or more data collections if the number of data collections to create is greater than the number of image sets
 Meta: @automated
-Given a pool of unique image sets
+Given a data collection with unique image sets
 And the data collection size is greater than the number of image sets
 When the API which creates a data collection is invoked
 Then the response's status code should be 400

@@ -131,7 +131,7 @@ public class CreateDataCollectionsSteps {
         this.request.setDataSet(this.dataCollection);
     }
 
-    @Given("a pool of unique image sets")
+    @Given("a data collection with unique image sets")
     public void givenPoolOfUniqueImageSets() {
         assumeThat(UNIQUE_IMAGE_SET_IDS.length, is(equalTo(NUM_OF_TEST_IMAGE_SET_IDS)));
         this.imageSetIds = UNIQUE_IMAGE_SET_IDS;
@@ -139,7 +139,7 @@ public class CreateDataCollectionsSteps {
         this.dataCollection = createMockDataSet(this.imageSetIds, "Test", "Annotation");
     }
 
-    @Given("a pool of non-unique image sets")
+    @Given("a data collection with non-unique image sets")
     public void givenPoolOfNonUniqueImageSets() {
         assumeThat(NON_UNIQUE_IMAGE_SET_IDS.length, is(equalTo(NUM_OF_TEST_IMAGE_SET_IDS)));
         this.imageSetIds = NON_UNIQUE_IMAGE_SET_IDS;
