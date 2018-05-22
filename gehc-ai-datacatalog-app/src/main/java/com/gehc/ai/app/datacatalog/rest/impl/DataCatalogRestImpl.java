@@ -84,6 +84,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -422,29 +423,39 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
 		/* Toll gate checks */
 
-		// The org ID is required to be defined
+		// Gate 1 - The org ID is required to be defined
 		if (request.getAttribute("orgId") == null) {
 			return new ResponseEntity<Object>(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
 		}
 
-		// The provided image set IDs are required to be unique
-		DataSet filteredDataSet = dataCollectionsCreateRequest.getDataSet();
-		List<Long> imageSetIds = filteredDataSet.getImageSets();
+		// Gate 2 - The provided image set IDs are required to be unique
+		DataSet dataCollection = dataCollectionsCreateRequest.getDataSet();
+		List<Long> imageSetIds = dataCollection.getImageSets();
 		if (imageSetIds.size() != imageSetIds.stream().distinct().count()) {
 			return new ResponseEntity<Object>(Collections.singletonMap("response", "The provided image sets are not unique"), HttpStatus.BAD_REQUEST);
 		}
 
 		/* All gates passed! */
 
-		// Batch the image sets based on the specified data collection size
-		filteredDataSet.setOrgId(request.getAttribute("orgId").toString());
-		List<DataSet> dataCollectionBatches = null;
-		try {
-			dataCollectionBatches = DataCatalogUtils.getDataCollectionBatches(filteredDataSet,
-					dataCollectionsCreateRequest.getDataCollectionSize());
-		} catch (DataCatalogException e) {
-			logger.error(e.getMessage());
-			return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to batch the provided image sets"), HttpStatus.BAD_REQUEST);
+		dataCollection.setOrgId(request.getAttribute("orgId").toString());
+
+		// Initially assume that no batching of collections is required
+		List<DataSet> dataCollectionBatches = new ArrayList<>();
+		dataCollectionBatches.add(dataCollection);
+
+		// If a data collection size is specified such that it will produce multiple collections, then batch the image
+		// sets based on the specified collection size
+		final Integer dataCollectionSize = dataCollectionsCreateRequest.getDataCollectionSize();
+		if (Objects.nonNull(dataCollectionSize) && dataCollectionSize != imageSetIds.size()) {
+
+			try {
+				dataCollectionBatches = DataCatalogUtils.getDataCollectionBatches(dataCollection,
+						dataCollectionsCreateRequest.getDataCollectionSize());
+			} catch (DataCatalogException e) {
+				logger.error(e.getMessage());
+				return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to batch the provided image sets"), HttpStatus.BAD_REQUEST);
+			}
+
 		}
 
 		// Try saving the data collections
@@ -456,13 +467,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to save data collections"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		// Capture the database-assigned IDs of the saved data collections and return
-		List<Long> savedDataSetIds = savedDataSets.stream().map(dataSet -> dataSet.getId())
+		// Return the database-assigned IDs of the saved data collections
+		List<Long> savedDataSetIds = savedDataSets.stream().map(savedDataSet -> savedDataSet.getId())
 				.collect(Collectors.toList());
 
-		Long[] savedDataSetIdsArr = savedDataSetIds.toArray(new Long[savedDataSetIds.size()]);
-
-		return new ResponseEntity<Long[]>(savedDataSetIdsArr, HttpStatus.CREATED);
+		return new ResponseEntity<List<Long>>(savedDataSetIds, HttpStatus.CREATED);
 	}
 
 

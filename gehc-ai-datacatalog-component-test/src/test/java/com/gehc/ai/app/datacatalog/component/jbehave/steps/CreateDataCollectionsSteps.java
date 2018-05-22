@@ -113,6 +113,12 @@ public class CreateDataCollectionsSteps {
         this.dataCollection = createMockDataSet(this.imageSetIds);
     }
 
+    @Given("no data collection size is specified")
+    public void givenNoDataCollectionSizeIsSpecified() {
+        this.request.setDataCollectionSize(null);
+        this.request.setDataSet(this.dataCollection);
+    }
+
     @Given("the data collection size is 1")
     public void givenTheDataCollectionSizeIsOne() {
         this.request.setDataCollectionSize(1);
@@ -216,10 +222,10 @@ public class CreateDataCollectionsSteps {
     @Then("the image sets should be split such that there are as many data collections saved to the database as there are image sets")
     public void thenTheImageSetsShouldBeSplitSuchThatThereAreAsManyDataCollectionsSavedToTheDatabaseAsThereAreImageSets()
             throws Exception {
-        List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{createMockDataSet(new Long[]{123L}),
-                createMockDataSet(new Long[]{456L}), createMockDataSet(new Long[]{789L}),
-                createMockDataSet(new Long[]{101112L}), createMockDataSet(new Long[]{131415L}),
-                createMockDataSet(new Long[]{161718L}), createMockDataSet(new Long[]{192021L})});
+        List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{createMockDataSet(new Long[]{123L}, 1),
+                createMockDataSet(new Long[]{456L}, 2), createMockDataSet(new Long[]{789L}, 3),
+                createMockDataSet(new Long[]{101112L}, 4), createMockDataSet(new Long[]{131415L}, 5),
+                createMockDataSet(new Long[]{161718L}, 6), createMockDataSet(new Long[]{192021L}, 7)});
 
         verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
     }
@@ -228,8 +234,8 @@ public class CreateDataCollectionsSteps {
     public void thenTheNumberOfDataColletionsThatHaveTheTargetCollectionSizeShouldBeTheQuotientOfTheNumberOfImageSetsDividedByTheTargetCollectionSizeAndThereShouldBeOneDataCollectionSavedThatContainsTheRemainderOfTheQuotient()
             throws Exception {
         List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{
-                createMockDataSet(new Long[]{123L, 456L}), createMockDataSet(new Long[]{789L, 101112L}),
-                createMockDataSet(new Long[]{131415L, 161718L}), createMockDataSet(new Long[]{192021L})});
+                createMockDataSet(new Long[]{123L, 456L}, 1), createMockDataSet(new Long[]{789L, 101112L}, 2),
+                createMockDataSet(new Long[]{131415L, 161718L}, 3), createMockDataSet(new Long[]{192021L}, 4)});
 
         verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
     }
@@ -281,6 +287,12 @@ public class CreateDataCollectionsSteps {
         dataSet.setSchemaVersion("123");
         dataSet.setType("Annotation");
         dataSet.setImageSets(Arrays.asList(imageSetIds));
+        return dataSet;
+    }
+
+    private DataSet createMockDataSet(Long[] imageSetIds, int collectionSuffix) {
+        DataSet dataSet = createMockDataSet(imageSetIds);
+        dataSet.setName("Test - " + collectionSuffix);
         return dataSet;
     }
 
