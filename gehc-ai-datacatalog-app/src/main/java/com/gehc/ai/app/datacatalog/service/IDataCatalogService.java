@@ -33,11 +33,12 @@ public interface IDataCatalogService {
     Map<Object, Object> geClassDataSummary(Map<String, String> params, String orgId);
     
     /**
-     * @param params
+     * @param params filter parameters
+     * @param maxImageSeriesRows maximum number of rows to be returned by the service
      * @return
      * @throws Exception 
      */
-    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params);
+    List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params, boolean randomize, int maxImageSeriesRows);
 
     /**
      * Returns the annotation details for every specified image set ID as a list of beans encapsulating their JSON representations.

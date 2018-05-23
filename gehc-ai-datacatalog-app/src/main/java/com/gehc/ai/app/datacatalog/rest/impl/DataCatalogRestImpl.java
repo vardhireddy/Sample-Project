@@ -43,6 +43,7 @@ import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.DataCatalogUtils;
+import com.gehc.ai.app.datacatalog.util.exportannotations.Shuffle;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -126,6 +127,36 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public static final String VIEW = "view";
     private static final String LABEL_SEPARATOR = "+";
 
+    /**
+     * this is used to limit the number of rows returned from the DB. we use this to limit the JSON output from the REST in order
+     * to restrict the time and payload for the user to receive a response within reasonable amount of time and also avoiding
+     * API gateway timeout. The value is specified in the configuration file
+     */
+    @Value("${spring.data.imageSeries.limit}")
+    private int MAX_IMAGE_SERIES_ROWS;
+    
+    /**
+     * this is used to randomize the output for the data scientist to spot check a subset of the images displayed in the webui
+     */
+    @Value("${spring.data.imageSeries.randomize}")
+    private boolean randomize;
+    
+    /**
+     * Setter for MAX_IMAGE_SERIES_ROWS property to facilitate unit test using Mockito
+     * @param r max # of rows returned
+     */
+    public void setMaxImageSeriesRows(int r) {
+    	this.MAX_IMAGE_SERIES_ROWS = r;
+    }
+
+    /**
+     * Setter for randomize property to facilitate unit test using Mockito
+     * @param r true if randomize is called for
+     */
+    public void setRandomize(boolean r) {
+    	this.randomize = r;
+    }
+    
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
     @Value("${uom.user.me.url}")
@@ -570,6 +601,30 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return imgSerLst;
     }
 
+    /**
+     * given a list of image set id's, return a subset of those id's in a new list. The size and order of the image
+     * set ids will be determined by the limit on max # of rows and randomization flag
+     * @param imgSeries list of image ids
+     * @return list of image series ids given contraints on max number of rows and whether randomization flag is set
+     */
+    private List<Long> getImageSeriesIdList(List<Long> imgSeries) {
+    	List<Long> imgSerIdLst = new ArrayList<Long>();
+
+    	int size = MAX_IMAGE_SERIES_ROWS > 0 ? Math.min(MAX_IMAGE_SERIES_ROWS, imgSeries.size()) : imgSeries.size();
+    	int [] shuffled = null;
+    	if (this.randomize) {
+    		shuffled = Shuffle.shuffle(imgSeries.size(), size, null);
+    		for (int i = 0; i < size; i++) {
+    			imgSerIdLst.add(Long.valueOf(imgSeries.get(shuffled[i]).toString()));
+    		}
+    	} else {
+    		for (int i = 0; i < size; i++) {
+    			imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+    		}
+    	}
+    	
+    	return imgSerIdLst;
+    }
     /*
      * (non-Javadoc)
      *
@@ -580,15 +635,22 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping(value = "/datacatalog/data-collection/{id}/image-set", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
         // Note: Coolidge is using this as well
-        logger.debug("In REST , Get img series for DC id " + id);
-        List<DataSet> dsLst = new ArrayList<DataSet>();
+        logger.debug(">>>>>>>>>>>In REST , Get img series for DC id " + id);
+        List<DataSet> dsLst = null;
         if (null != id) {
             dsLst = dataSetRepository.findById(id);
             if (null != dsLst && !dsLst.isEmpty()) {
-                List<Long> imgSerIdLst = dsLst.get(0).getImageSets();
-                return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
+                @SuppressWarnings("unchecked")
+                List<Long> imgSeries = ((DataSet) (dsLst.get(0))).getImageSets();
+                
+                
+                if (null != imgSeries && !imgSeries.isEmpty()) {
+                	List<Long> imgSerIdLst = getImageSeriesIdList(imgSeries);
+                    return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
+                }
             }
         }
+        // returns an empty list
         return new ArrayList<ImageSeries>();
     }
 
@@ -963,7 +1025,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             getListOfStringsFromParams(validParams.get(ORG_ID).toString()));
                 } else if (validParams.containsKey(ORG_ID)) {
                     logger.debug("Getting img series based on all filters");
-                    return dataCatalogService.getImgSeriesByFilters(validParams);
+                    return dataCatalogService.getImgSeriesByFilters(validParams, randomize, MAX_IMAGE_SERIES_ROWS);
                 }
             }
         } catch (ServiceException e) {
