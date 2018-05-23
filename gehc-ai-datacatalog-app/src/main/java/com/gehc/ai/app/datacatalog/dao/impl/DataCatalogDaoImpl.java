@@ -286,10 +286,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			builder.append(constructQuery(params));
 			
 			builder.append(randomize ? SUFFIX_IMG_SERIES_DATA_BY_FILTERS_RANDOM: SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
-			if (maxImageSeriesRows > 0)
-				builder.append("limit " + maxImageSeriesRows);
+			
 			logger.debug("Query to get image series by filters = " + builder.toString());
-			Query q = em.createNativeQuery(builder.toString());	// NOSONAR
+			Query q = em.createNativeQuery(builder.toString() + (maxImageSeriesRows > 0 ? "limit " + maxImageSeriesRows : ""));	// NOSONAR
 
 			List<Object[]> objList = q.getResultList();
 			if(null != objList && !objList.isEmpty()){
