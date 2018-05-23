@@ -130,6 +130,69 @@ public class ContractSteps {
         retrieveResult.andExpect(content().string(containsString("Contract does not exist")));
     }
 
+    @Given("a valid contract Id")
+    public void givenValidAndActiveContractId() throws Exception {
+        Contract contract = getContract();
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
+    }
+
+    @When("the contract id exists in repository and contract is active/ in true state")
+    public void whenTheContractIsActive() throws Exception {
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1"));
+    }
+
+    @Then("verify api response status code is 200")
+    public void verifyStatusCodeIsOk200() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+    }
+
+    @Then("verify the api response body contains \"Contract is inactivated successfully\"")
+    public void verifyResponseIsContractDeletedSuccessfully() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("Contract is inactivated successfully")));
+    }
+
+    @Given("a valid contract Id - contract inactive")
+    public void givenValidAndInActiveContractId() throws Exception {
+        Contract contract = getContract();
+        contract.setActive("false");
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
+    }
+
+    @When("the contract id exists in repository but the contract is inactive/ in false state")
+    public void whenTheContractIsInActive() throws Exception {
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1"));
+    }
+
+    @Then("verify api response status code is 200 - ok")
+    public void verifyStatusCodeOk200() throws Exception {
+        retrieveResult.andExpect(status().isOk());
+    }
+
+    @Then("verify the api response body contains \"Contract with given id is already inactive\"")
+    public void verifyResponseIsContractAlreadyDeleted() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("Contract with given id is already inactive")));
+    }
+
+    @Given("a invalid contract Id")
+    public void givenInValidContractId() throws Exception {
+        when(contractRepository.findOne(anyLong())).thenReturn(null);
+    }
+
+    @When("the contract id does not exist in repository")
+    public void whenTheContractDoesNotExistInRepo() throws Exception {
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1"));
+    }
+
+    @Then("verify that the api response status code is 400")
+    public void verifyStatusCodeIs400() throws Exception {
+        retrieveResult.andExpect(status().isBadRequest());
+    }
+
+    @Then("verify the api response body contains \"No contract exists with given id\"")
+    public void verifyResponseIsContractDoesNotExist() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("No contract exists with given id")));
+    }
+
     private Contract getContract(){
         Contract contract = new Contract();
         contract.setId(1L);

@@ -27,6 +27,7 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -324,6 +325,14 @@ public interface IDataCatalogRest {
      * @return
      */
     List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+    /**
+     * A soft delete of contract by given ID through inactivating it.
+     *
+     * @param contractId
+     * @return
+     */
+    ResponseEntity<Map<String,String>> deleteContract(Long contractId);
 }
 
 

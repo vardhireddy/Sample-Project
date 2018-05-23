@@ -2,6 +2,7 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -409,6 +411,65 @@ public class DataCatalogRestImplTest {
         ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
         assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testDeleteContractWhereStateIsActive()
+    {
+        Contract contract = buildContractEntity();
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        assertEquals("Contract is inactivated successfully", result.getBody().get("response"));
+        assertEquals(200, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testDeleteContractWhereStateIsInactive()
+    {
+        Contract contract = buildContractEntity();
+        contract.setActive("false");
+
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        assertEquals("Contract with given id is already inactive", result.getBody().get("response"));
+        assertEquals(200, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testDeleteContractWhereContractDoesNotExist()
+    {
+        when(contractRepository.findOne(anyLong())).thenReturn(null);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        assertEquals("No contract exists with given id", result.getBody().get("response"));
+        assertEquals(400, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testDeleteContractForExceptionInRetrievingContract()
+    {
+        when(contractRepository.findOne(anyLong())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        assertEquals("Error retrieving contract to delete. Please contact the corresponding service assitant.", result.getBody().get("response"));
+        assertEquals(500, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testDeleteContractForExceptionInUpdatingContract()
+    {
+        Contract contract = buildContractEntity();
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
+        when(contractRepository.save(any(Contract.class))).thenThrow(new IllegalArgumentException());
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        assertEquals("Error deleting the contract. Please contact the corresponding service assitant.", result.getBody().get("response"));
+        assertEquals(500, result.getStatusCodeValue());
+    }
+
+    private Contract buildContractEntity(){
+        Contract contract = new Contract();
+        contract.setId(1L);
+        contract.setActive("true");
+
+        return contract;
     }
 
 }
