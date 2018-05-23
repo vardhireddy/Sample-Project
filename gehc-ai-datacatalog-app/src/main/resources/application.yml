@@ -7,6 +7,8 @@ spring:
     password: ${spring_datasource_password:d165376b867}
   data:
     rest.base-path: /api/v1/dataCatalog
+    imageSeries.limit: 1000
+    imageSeries.randomize: true
   jpa:
     properties:
       hibernate:
@@ -25,8 +27,8 @@ uom.user.me.url: ${uom_api_gateway_url:https://core.prdge.us-west-2.eng.gehealth
 coolidge.micro.inference.url: http://10.50.55.14:6000/mInfer
 
 dev:
-  mode: false
-  orgId: null
+  mode: true
+  orgId: f1341a2c-7a54-4d68-9f40-a8b2d14d3806
 flyway:
   enabled: ${flyway_enabled:true}
   schemas: lfdb
@@ -51,7 +53,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
     username: root
-    password: root
+    password: install
 coolidge.micro.inference.url: http://127.0.0.1:6001/mInfer
 logging:
   pattern.console: "%clr(%d{MM-dd-yyyy HH:mm:ss.SSS}){faint} %clr(%5p) %clr([${spring.application.name:-}]){yellow} %clr([%X{amzn-trace-id:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"

@@ -11,16 +11,15 @@
  */
 package com.gehc.ai.app.datacatalog.entity;
 
-import java.io.Serializable;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * This class holds the DataCollection Properties
@@ -38,7 +37,7 @@ public class Properties implements Serializable {
 	private final static long serialVersionUID = 4946996490881104109L;
 
 	@JsonProperty("annotationStatus")
-	private List<AnnotationStatus> annotationStatus = null;
+	private List<AnnotationStatus> annotationStatus;
 	@JsonProperty("annotationPropertiesTemplate")
 	private String annotationPropertiesTemplate;
 
@@ -75,10 +74,13 @@ public class Properties implements Serializable {
 
 	@Override
 	public boolean equals(Object other) {
+		if(other == null){
+			return false;
+		}
 		if (other == this) {
 			return true;
 		}
-		if ((other instanceof Properties) == false) {
+		if (other.getClass() != this.getClass()) {
 			return false;
 		}
 		Properties rhs = ((Properties) other);
