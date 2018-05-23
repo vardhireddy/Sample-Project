@@ -11,16 +11,15 @@
  */
 package com.gehc.ai.app.datacatalog.entity;
 
-import java.io.Serializable;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * This class holds the Filters that are applied on DataSet
@@ -39,25 +38,25 @@ public class Filters implements Serializable {
 	private final static long serialVersionUID = 1556079884821309586L;
 
 	@JsonProperty("modality")
-	private List<String> modality = null;
+	private List<String> modality;
 	@JsonProperty("anatomy")
-	private List<String> anatomy = null;
+	private List<String> anatomy;
 	@JsonProperty("annotations")
-	private List<String> annotations = null;
+	private List<String> annotations;
 	@JsonProperty("dateFrom")
-	private List<String> dateFrom = null;
+	private List<String> dateFrom;
 	@JsonProperty("dateTo")
-	private List<String> dateTo = null;
+	private List<String> dateTo;
 	@JsonProperty("institution")
-	private List<String> institution = null;
+	private List<String> institution;
 	@JsonProperty("equipment")
-	private List<String> equipment = null;
+	private List<String> equipment;
 	@JsonProperty("dataFormat")
-	private List<String> dataFormat = null;
+	private List<String> dataFormat;
 	@JsonProperty("view")
-	private List<String> view = null;
+	private List<String> view;
 	@JsonProperty("ge-class")
-	private List<GeClass> geClass = null;
+	private List<GeClass> geClass;
 
 	@JsonProperty("modality")
 	public List<String> getModality() {
@@ -175,10 +174,13 @@ public class Filters implements Serializable {
 
 	@Override
 	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		}
 		if (other == this) {
 			return true;
 		}
-		if ((other instanceof Filters) == false) {
+		if (other.getClass() != this.getClass()) {
 			return false;
 		}
 		Filters rhs = ((Filters) other);
