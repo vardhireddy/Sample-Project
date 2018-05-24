@@ -28,8 +28,6 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,27 +38,26 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.gehc.ai.app.datacatalog.config.DataCatalogDevConfig;
+import com.gehc.ai.app.datacatalog.config.DataCatalogRegistryConfig;
+
 /**
  * @author 212071558
  *
  */
-@PropertySource ( {"classpath:application.yml"} )
 @Component
 public class DataCatalogInterceptor implements HandlerInterceptor{
     /** The logger. */
     private static Logger logger = LoggerFactory.getLogger( DataCatalogInterceptor.class );
 
-    @Value("${uom.user.me.url}")
-    private String uomMeUrl;
-
-	@Value("${dev.mode}")
-	private String devMode;
-
-	@Value("${dev.orgId}")
-	private String devOrgId;
+    @Autowired
+	private DataCatalogDevConfig dataCatalogDevConfig;
 
     @Autowired
     private RestTemplate restTemplate;
+    
+    @Autowired
+    private DataCatalogRegistryConfig dataCatalogRegistryConfig;
  
     /* (non-Javadoc)
      * @see org.springframework.web.servlet.HandlerInterceptor#preHandle(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object)
@@ -89,8 +86,8 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 	        	   logger.debug( " +++ In preHandle method, save study is getting called so not looking for org id");
 	           } else if(foundAuthToken){
 	               req.setAttribute( "orgId", getOrgIdBasedOnSessionToken(req.getHeader( HttpHeaders.AUTHORIZATION )) );
-	           } else if (!foundAuthToken && !StringUtils.isEmpty(devMode) && devMode.equalsIgnoreCase("true")) {
-					   req.setAttribute("orgId", devOrgId);
+	           } else if (!foundAuthToken && !StringUtils.isEmpty(dataCatalogDevConfig.getMode()) && dataCatalogDevConfig.getMode().equalsIgnoreCase("true")) {
+					   req.setAttribute("orgId", dataCatalogDevConfig.getOrgId());
 			   } else {
 	        	throw new WebApplicationException( Response.status( Status.FORBIDDEN ).entity( "User is not authorized" ).build() );
 	           }
@@ -129,7 +126,7 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 			headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 			ResponseEntity<Object> responseEntity = null;
-			responseEntity = restTemplate.exchange(uomMeUrl, HttpMethod.GET, requestEntity, Object.class);
+			responseEntity = restTemplate.exchange(dataCatalogRegistryConfig.getUomUserMeUrl(), HttpMethod.GET, requestEntity, Object.class);
 			Object userObject = "{}";
 			if (null != responseEntity && responseEntity.hasBody()) {
 				userObject = responseEntity.getBody();
