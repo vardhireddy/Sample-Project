@@ -26,7 +26,4 @@ public class DataCatalogRegistryConfig {
     /** The uom user me url. */
     private String uomUserMeUrl;
 
-    /** The cloudav home page url. */
-    private String coolidgeMicroInferenceUrl;
-
 }
