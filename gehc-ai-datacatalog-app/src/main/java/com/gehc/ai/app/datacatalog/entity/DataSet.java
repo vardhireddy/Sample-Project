@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.gehc.ai.app.datacatalog.filters.FiltersConverter;
-import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+import com.gehc.ai.app.datacatalog.filters.ListOfLongConverter;
 import com.gehc.ai.app.datacatalog.filters.PropertiesConverter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -101,7 +101,7 @@ public class DataSet implements Serializable {
 	@JsonProperty("properties")
 	private Properties properties;
 	
-	@Convert(converter = JsonConverter.class)
+	@Convert(converter = ListOfLongConverter.class)
     @Column ( name = "image_sets" )
 	@NotNull
 	@JsonProperty("imageSets")
