@@ -1,0 +1,19 @@
+{
+	"name": "test collection",
+	"description": "test purpose",
+	"type": "Annotation",
+	"properties": {
+		"annotationPropertiesTemplate": "Chest X-ray"
+	},
+	"imageSets": [1293000014181, 1293000014182, 1293000014183, 1293000014184, 1293000014185, 1293000014186, 1293000014187, 1293000014188],
+	"filters": {
+		"modality": ["DX"],
+		"anatomy": ["CHEST"],
+		"annotations": ["label"],
+		"dateFrom": ["2017-10-01T07:00:00Z"],
+		"dateTo": ["2018-05-15T16:52:44Z"],
+		"ge-class": [{
+			"name": "Lobulation"
+		}]
+	}
+}

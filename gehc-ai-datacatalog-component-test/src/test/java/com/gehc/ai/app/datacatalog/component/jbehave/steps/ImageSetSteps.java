@@ -192,7 +192,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID and Modality - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteriaOrgId() throws Exception {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
     }
 
 
@@ -213,7 +213,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID , Modality and Anatomy - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteriaOrgIdModAnatomy() throws Exception {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
     }
 
 
@@ -235,7 +235,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID , Modality, Anatomy and DateRange - DataSetUp Provided")
     public void givenImagesetImageBasedOnFilterCriteriaOrgIdModAnatomyDateRange() throws Exception {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
     }
 
 
@@ -256,7 +256,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotation());
         when(annotationRepository.findByImageSetIdInAndTypeInAndOrgId(anyListOf(Long.class),anyListOf(String.class),anyList())).thenReturn(annList);
@@ -279,7 +279,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
 
@@ -300,7 +300,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID and Anatomy - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDAndAnatomyDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
 
@@ -321,7 +321,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID and Modality throws Exception - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsExceptionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenThrow(Exception.class);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenThrow(Exception.class);
     }
 
     @When("Get Image set based on filter criteria with ORG ID and Modality throws Exception")
@@ -345,7 +345,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationABSENTDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeriesWithFilterOneModality();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotationWithOutValidId());
         when(annotationRepository.findByImageSetIdIn(anyListOf(Long.class))).thenReturn(annList);
@@ -367,7 +367,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy and Annotation ABSENT with no matching ImageSeries - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyAndAnnotationABSENTWithNoMatchingImageSeriesDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotation());
         when(annotationRepository.findByImageSetIdIn(anyListOf(Long.class))).thenReturn(annList);
@@ -406,7 +406,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID ,Modality, Anatomy, GE_CLASS and Annotation - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDModalityAnatomyGE_CLASSAndAnnotationDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
         List <Annotation> annList = new ArrayList<Annotation>();
         annList.add(commonSteps.getAnnotation());
         when(annotationRepository.findByImageSetIdInAndTypeIn(anyListOf(Long.class),anyListOf(String.class))).thenReturn(annList);
@@ -433,7 +433,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithEquipmentDataSetUpProvided() throws Exception {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
     }
 
     @When("Get Image set based on filter criteria with Equipment")
@@ -453,7 +453,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithEquipmentNameContainingAcceptedSpecialCharactersLikeQuotesAndSlashesDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeriesWithEquipmentsSpecialChars();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Equipment name containing accepted special characters like quotes and slashes")
@@ -473,7 +473,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
     }
 
     @When("Get Image set based on filter criteria with Institution")
@@ -494,7 +494,7 @@ public class ImageSetSteps {
         ImageSeries imageSeries = commonSteps.getOneimageSerieswithInsitutions();
         List<ImageSeries> imgSerLst = new ArrayList<ImageSeries>();
         imgSerLst.add(imageSeries);
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSerLst);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSerLst);
     }
 
     @When("Get Image set based on filter criteria with Institution name containing accepted special characters")
@@ -514,7 +514,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with DataFormat - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithDataFormatDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with DataFormat")
@@ -533,7 +533,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Institution and Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithInstitutionAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Institution and Equipment")
@@ -552,7 +552,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with DataFormat and Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithDataFormatAndInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
     }
 
     @When("Get Image set based on filter criteria with DataFormat and Institution")
@@ -571,7 +571,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with DataFormat, Institution and Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithDataFormatInstitutionAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with DataFormat, Institution and Equipment")
@@ -590,7 +590,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with DataFormat and Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithDataFormatAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with DataFormat and Equipment")
@@ -609,7 +609,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Anatomy and DataFormat - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyAndDataFormatDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
     }
     @When("Get Image set based on filter criteria with Anatomy and DataFormat")
     public void whenGetImageSetBasedOnFilterCriteriaWithAnatomyAndDataFormat() throws Exception {
@@ -627,7 +627,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Anatomy, DataFormat and Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyDataFormatAndInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Anatomy, DataFormat and Institution")
@@ -646,7 +646,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Anatomy, DataFormat, Institution and Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyDataFormatInstitutionAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Anatomy, DataFormat, Institution and Equipment")
@@ -665,7 +665,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Anatomy, Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Anatomy, Institution")
@@ -684,7 +684,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Anatomy, Institution and Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyInstitutionAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Anatomy, Institution and Equipment")
@@ -705,7 +705,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Anatomy, Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithAnatomyEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Anatomy, Equipment")
@@ -724,7 +724,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Anatomy and DataFormat - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyAndDataFormatDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Anatomy and DataFormat")
@@ -744,7 +744,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatAndInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Institution")
@@ -764,7 +764,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Anatomy, DataFormat, Institution and Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatInstitutionAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Anatomy, DataFormat, Institution and Equipment")
@@ -784,7 +784,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Anatomy, Institution and Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyInstitutionAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Anatomy, Institution and Equipment")
@@ -804,7 +804,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Anatomy, Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Anatomy, Institution")
@@ -824,7 +824,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Anatomy, Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Anatomy, Equipment")
@@ -844,7 +844,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Equipment")
@@ -864,7 +864,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Institution")
@@ -884,7 +884,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, DataFormat - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, DataFormat")
@@ -905,7 +905,7 @@ public class ImageSetSteps {
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityAnatomyDataFormatAndEquipmentDataSetUpProvided() {
 
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Anatomy, DataFormat and Equipment")
@@ -924,7 +924,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, DataFormat,Institution And Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatInstitutionAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, DataFormat,Institution And Equipment")
@@ -943,7 +943,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, DataFormat And Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, DataFormat And Equipment")
@@ -962,7 +962,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, DataFormat And Institution - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityDataFormatAndInstitutionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, DataFormat And Institution")
@@ -981,7 +981,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with Modality, Institution and Equipment - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithModalityInstitutionAndEquipmentDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap())).thenReturn(imgSeries);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenReturn(imgSeries);
 
     }
     @When("Get Image set based on filter criteria with Modality, Institution and Equipment")
@@ -1001,7 +1001,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID and Modality throws Service Exception - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsServiceExceptionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(null)).thenThrow(ServiceException.class);
+        when(dataCatalogDao.getImgSeriesByFilters(null, anyBoolean(), anyInt())).thenThrow(ServiceException.class);
     }
     @When("Get Image set based on filter criteria with ORG ID and Modality throws Service Exception")
     public void whenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsServiceException() throws Exception {

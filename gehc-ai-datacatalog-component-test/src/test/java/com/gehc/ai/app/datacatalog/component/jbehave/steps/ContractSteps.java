@@ -1,17 +1,8 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
-import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.time.LocalDateTime;
-
-import javax.ws.rs.core.MediaType;
-
+import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.Contract.DeidStatus;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
@@ -23,9 +14,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.Contract.DeidStatus;
+import javax.ws.rs.core.MediaType;
+import java.time.LocalDateTime;
+
+import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 
@@ -41,7 +39,7 @@ public class ContractSteps {
 
     @Autowired
     public ContractSteps(MockMvc mockMvc,
-    		IDataCatalogDao dataCatalogDao, ContractRepository contractRepository) {
+                         IDataCatalogDao dataCatalogDao, ContractRepository contractRepository) {
         this.mockMvc = mockMvc;
         this.dataCatalogDao = dataCatalogDao;
         this.contractRepository = contractRepository;
@@ -56,22 +54,23 @@ public class ContractSteps {
     @When("Store contract data")
     public void StoreContractData() throws Exception {
 
-    	ClassLoader classLoader = getClass().getClassLoader();
+        ClassLoader classLoader = getClass().getClassLoader();
 
         MockMultipartFile firstFile = new MockMultipartFile("contract", "contract.pdf", MediaType.MULTIPART_FORM_DATA,
-        									classLoader.getResourceAsStream("data/contract.pdf"));
+                classLoader.getResourceAsStream("data/contract.pdf"));
         MockMultipartFile jsonFile = new MockMultipartFile("metadata", "metadata.json", MediaType.MULTIPART_FORM_DATA,
-        									classLoader.getResourceAsStream("data/metadata.json"));
+                classLoader.getResourceAsStream("data/metadata.json"));
 
         retrieveResult = mockMvc.perform(MockMvcRequestBuilders.fileUpload("/api/v1/datacatalog/contract")
-                        .file(firstFile).file(jsonFile));
+                .file(firstFile).file(jsonFile));
 
     }
 
     @Then("verify Store contract data")
     public void verifyStoreContractData() throws Exception {
     	retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
-        retrieveResult.andExpect(status().isCreated());
+        retrieveResult.andExpect(status().isOk());
+       // retrieveResult.andExpect(status().isCreated());
     }
 
     @Given("Retrieve contract data - DataSetUp Provided")
@@ -87,7 +86,7 @@ public class ContractSteps {
 
     @Then("verify Retrieve contract data")
     public void verifyRetrieveContractData() throws Exception {
-    	//retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
+        //retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
         retrieveResult.andExpect(status().isOk());
     }
 
@@ -133,24 +132,24 @@ public class ContractSteps {
     }
 
     private Contract getContract(){
-    	Contract contract = new Contract();
-    	contract.setId(1L);
-    	contract.setActive("true");
-    	contract.setBusinessCase("Business Case");
-    	contract.setContactInfo("Contact Info");
-    	contract.setContractName("Contract Name");
-    	contract.setDataOriginCountry("Data Origin Country");
-    	contract.setDeidStatus(DeidStatus.DEIDS_TO_LOCAL_STANDARDS);
-    	contract.setOrgId("orgId");
-    	contract.setProperties("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
-    	contract.setSchemaVersion("Schema Version");
-    	contract.setUploadBy("radiologist");
-    	contract.setUploadDate(LocalDateTime.now());
-    	contract.setUri("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
-    	contract.setUsageNotes("Usage Notes");
-    	contract.setUsageRights("Usage Rights");
-    	
-    	return contract;
+        Contract contract = new Contract();
+        contract.setId(1L);
+        contract.setActive("true");
+        contract.setBusinessCase("Business Case");
+        contract.setContactInfo("Contact Info");
+        contract.setContractName("Contract Name");
+        contract.setDataOriginCountry("Data Origin Country");
+        contract.setDeidStatus(DeidStatus.DEIDS_TO_LOCAL_STANDARDS);
+        contract.setOrgId("orgId");
+        contract.setProperties("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
+        contract.setSchemaVersion("Schema Version");
+        contract.setUploadBy("radiologist");
+        contract.setUploadDate(LocalDateTime.now());
+        contract.setUri("[\"CKGS USA - Passport _ How To Apply.pdf\",\"CKGS USA - Passport _ How To Apply.pdf\" ]");
+        contract.setUsageNotes("Usage Notes");
+        contract.setUsageRights("Usage Rights");
+
+        return contract;
     }
 
 }

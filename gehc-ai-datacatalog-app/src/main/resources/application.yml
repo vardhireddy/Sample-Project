@@ -8,6 +8,8 @@ spring:
     password: ${spring_datasource_password:d165376b867}
   data:
     rest.base-path: /api/v1/dataCatalog
+    imageSeries.limit: 1000
+    imageSeries.randomize: true
   jpa:
     properties:
       hibernate:
@@ -49,7 +51,7 @@ spring:
   datasource:
     url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST&useSSL=false}
     user: ${spring_datatsource_username:root}
-    password: ${spring_datasource_password:root}
+    password: ${spring_datasource_password:install}
 
 logging:
   pattern.console: "%clr(%d{MM-dd-yyyy HH:mm:ss.SSS}){faint} %clr(%5p) %clr([${spring.application.name:-}]){yellow} %clr([%X{amzn-trace-id:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"

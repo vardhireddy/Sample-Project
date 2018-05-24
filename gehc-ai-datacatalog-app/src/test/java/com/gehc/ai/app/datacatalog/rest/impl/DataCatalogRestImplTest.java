@@ -1,21 +1,20 @@
 package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.sql.SQLDataException;
-import java.sql.SQLTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.gehc.ai.app.datacatalog.repository.*;
-import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -23,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
+
+import com.gehc.ai.app.datacatalog.entity.DataSet;
 
 /*import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
 import Annotation;
@@ -36,7 +37,14 @@ import IDataCatalogRest;
 import IDataCatalogService;*/
 
 
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 
 
@@ -106,6 +114,9 @@ public class DataCatalogRestImplTest {
     private COSNotificationRepository cosNotificationRepository;
     @Mock
     private RestTemplate restTemplate;
+
+    @Mock
+    private DataSetRepository dataSetRepository;
 
     @InjectMocks
     private DataCatalogRestImpl controller;
@@ -328,7 +339,54 @@ public class DataCatalogRestImplTest {
         ResponseEntity result = controller.getCountOfImagesAnnotated("821u2e8u22iw9i2");
         assertEquals(500,result.getStatusCodeValue());
     }
+    
+    @Test
+    public void testGetImgSeriesByDSId() {
+    	List<DataSet> l = new ArrayList<DataSet>();
+    	DataSet ds = new DataSet();
+    	List<Long> imageSets = new ArrayList<Long>();
+    	for (int k = 0; k < 10000; k++) {
+    		imageSets.add((long) (Math.random() * 1000000));
+    	}
+    	l.add(ds);
+    	ds.setImageSets(imageSets);
+    	when(dataSetRepository.findById(anyLong())).thenReturn(l);
+    	ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+    	final int limit = 1000;
 
+    	controller.setMaxImageSeriesRows(limit);
+    	controller.setRandomize(true);
+     	controller.getImgSeriesByDSId(anyLong());
+     	
+ 		org.mockito.Mockito.verify(dataCatalogService).getImgSeriesWithPatientByIds(argument.capture());
+ 		assertTrue(argument.getValue().size() == limit);
+ 		Set s = new HashSet<Long>();
+ 		for (int k = 0; k < argument.getValue().size(); k++) {
+ 			assertTrue(!s.contains((Long)argument.getValue().get(k)));
+ 		}
+    }
+
+    @Test
+    public void testGetImgSeriesByDSIdWithoutRandomization() {
+    	List<DataSet> l = new ArrayList<DataSet>();
+    	DataSet ds = new DataSet();
+    	List<Long> imageSets = new ArrayList<Long>();
+    	for (int k = 0; k < 10000; k++) {
+    		imageSets.add((long) (Math.random() * 1000000));
+    	}
+    	l.add(ds);
+    	ds.setImageSets(imageSets);
+    	when(dataSetRepository.findById(anyLong())).thenReturn(l);
+    	ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+    	final int limit = 1000;
+
+    	controller.setMaxImageSeriesRows(limit);
+     	controller.getImgSeriesByDSId(anyLong());
+        org.mockito.Mockito.verify(dataCatalogService).getImgSeriesWithPatientByIds(argument.capture());
+
+        assertTrue(argument.getValue().size() == limit);
+    }
+    
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
         when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);

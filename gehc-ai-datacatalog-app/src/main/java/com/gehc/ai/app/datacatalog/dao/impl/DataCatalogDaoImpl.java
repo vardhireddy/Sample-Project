@@ -100,6 +100,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			+ " im.series_instance_uid, CAST(im.properties as CHAR(20000)) properties, im.upload_date, im.view from patient p, image_set im "
 			+ " where p.id = im.patient_dbid  and p.org_id= im.org_id) x ";
 	private static final String SUFFIX_IMG_SERIES_DATA_BY_FILTERS = "  order by x.patient_id ";
+	private static final String SUFFIX_IMG_SERIES_DATA_BY_FILTERS_RANDOM = "   ORDER BY RAND() ";
+
 	private static final String ANNOTATION_ABSENT_QUERY = " where x.id not in (select image_set from annotation an where x.org_id = an.org_id) and ";
 
 	/*private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, an.id, an.type, "
@@ -276,15 +278,17 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params) {
+	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params, boolean randomize, int maxImageSeriesRows) {
 		List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
 		try{
 			StringBuilder builder = new StringBuilder();
 			builder.append(GET_IMG_SERIES_DATA_BY_FILTERS);
 			builder.append(constructQuery(params));
-			builder.append(SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
+			
+			builder.append(randomize ? SUFFIX_IMG_SERIES_DATA_BY_FILTERS_RANDOM: SUFFIX_IMG_SERIES_DATA_BY_FILTERS);
+			
 			logger.debug("Query to get image series by filters = " + builder.toString());
-			Query q = em.createNativeQuery(builder.toString());	// NOSONAR
+			Query q = em.createNativeQuery(builder.toString() + (maxImageSeriesRows > 0 ? "limit " + maxImageSeriesRows : ""));	// NOSONAR
 
 			List<Object[]> objList = q.getResultList();
 			if(null != objList && !objList.isEmpty()){
@@ -789,5 +793,13 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 			throw e;
 		}
 		return imageSeriesIDsList;
+	}
+
+	public void setEntityManager(EntityManager entityManager) {
+		this.em = entityManager;
+	}
+	
+	public EntityManager getEntityManager() {
+		return this.em;
 	}
 }
