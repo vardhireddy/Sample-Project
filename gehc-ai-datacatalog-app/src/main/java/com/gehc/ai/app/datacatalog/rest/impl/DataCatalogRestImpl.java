@@ -1299,4 +1299,45 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return new ArrayList<Long>();
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.DELETE)
+    public ResponseEntity<Map<String,String>> deleteContract(@PathVariable("contractId") Long contractId){
+
+        logger.info("Passing contract id to delete contract :", contractId);
+        String status = "false";
+
+        Contract contractToBeDeleted;
+        try{
+            contractToBeDeleted = contractRepository.findOne(contractId);
+        }catch (Exception e)
+        {
+            logger.error("Error retrieving contract to delete: {}", e.getMessage());
+            return new ResponseEntity<>( Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (contractToBeDeleted == null)
+        {
+            logger.info("No contract exists with given id :", contractId);
+            return new ResponseEntity<>( Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.BAD_REQUEST);
+        }
+
+        String contractStatus = contractToBeDeleted.getActive();
+        if (contractStatus.equalsIgnoreCase(status))
+        {
+            return new ResponseEntity<>( Collections.singletonMap("response", "Contract with given id is already inactive"), HttpStatus.OK);
+        }
+
+        try {
+            contractToBeDeleted.setActive(status);
+            contractRepository.save(contractToBeDeleted);
+        }catch (Exception e)
+        {
+            logger.error("Error deleting the contract : {}", e.getMessage());
+            return new ResponseEntity<>( Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>( Collections.singletonMap("response", "Contract is inactivated successfully"), HttpStatus.OK);
+
+    }
 }

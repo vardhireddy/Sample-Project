@@ -324,6 +324,14 @@ public interface IDataCatalogRest {
      * @return
      */
     List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+    /**
+     * A soft delete of contract by given ID through inactivating it.
+     *
+     * @param contractId
+     * @return
+     */
+    ResponseEntity<Map<String,String>> deleteContract(Long contractId);
 }
 
 
