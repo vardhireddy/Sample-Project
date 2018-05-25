@@ -1306,6 +1306,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ResponseEntity<Map<String,String>> deleteContract(@PathVariable("contractId") Long contractId){
 
         logger.info("Passing contract id to delete contract :", contractId);
+        String status = "false";
 
         Contract contractToBeDeleted;
         try{
@@ -1323,13 +1324,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
 
         String contractStatus = contractToBeDeleted.getActive();
-        if (contractStatus.equalsIgnoreCase("FALSE"))
+        if (contractStatus.equalsIgnoreCase(status))
         {
             return new ResponseEntity<>( Collections.singletonMap("response", "Contract with given id is already inactive"), HttpStatus.OK);
         }
 
         try {
-            contractToBeDeleted.setActive("false");
+            contractToBeDeleted.setActive(status);
             contractRepository.save(contractToBeDeleted);
         }catch (Exception e)
         {
