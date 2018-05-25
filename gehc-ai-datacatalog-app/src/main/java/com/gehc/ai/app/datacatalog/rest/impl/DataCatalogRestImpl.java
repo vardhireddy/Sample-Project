@@ -11,6 +11,7 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
@@ -817,6 +818,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                             annImgSetDataCol.setAnnotationItem(o);
                             annImgSetDataCol.setImId(annotation.getImageSet().getId().toString());
                             ImageSeries imageSeries = imgSeriesMap.get(annotation.getImageSet().getId());
+                            try {
+                                logger.debug("imageSeries: " + mapper.writeValueAsString(imageSeries));
+                            } catch (JsonProcessingException jpe) {
+                                jpe.printStackTrace();
+                                logger.error(jpe.getMessage());
+                            }
                             annImgSetDataCol.setPatientDbid(imageSeries.getPatientDbId().toString());
                             annImgSetDataCol.setUri(imageSeries.getUri());
                             annImgSetDataCol.setDataFormat(imageSeries.getDataFormat());
