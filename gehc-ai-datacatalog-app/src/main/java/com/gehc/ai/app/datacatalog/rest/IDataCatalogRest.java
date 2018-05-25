@@ -14,6 +14,7 @@ package com.gehc.ai.app.datacatalog.rest;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
@@ -27,6 +28,7 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -324,6 +326,26 @@ public interface IDataCatalogRest {
      * @return
      */
     List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+    /**
+     * Saves the provided contract details.
+     *
+     * @param contract The contract details to save.  The required details are the following:
+     *                 <ul>
+     *                 <li>The contract's name</li>
+     *                 <li>The email address of the primary contact</li>
+     *                 <li>The deidentification status of the contract's data</li>
+     *                 <li>The start date of the contract</li>
+     *                 <li>The length of use of the contract's data</li>
+     *                 <li>A list of countries from which contract's data originated</li>
+     *                 <li>A specification of who can use the contract's data</li>
+     *                 <li>A specification of how the contract's data can be used</li>
+     *                 <li>A specification of where the contract's data may reside</li>
+     *                 </ul>
+     * @param request  The intercepted HTTP request object whose headers will be validated
+     * @return a {@link ResponseEntity} containing a JSON representation of the contract entity that was saved
+     */
+    ResponseEntity<?> saveContract(Contract contract, HttpServletRequest request);
 }
 
 

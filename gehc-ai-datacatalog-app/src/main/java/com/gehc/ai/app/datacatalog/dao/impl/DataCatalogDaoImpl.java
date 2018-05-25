@@ -748,17 +748,15 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 	}
 
 	@Override
-	public Long ingestContractDetails(Contract contract) {
+	public Contract saveContract(Contract contract) {
+		try {
+			return contractRepository.save(contract);
+		} catch (Exception e) {
+			logger.error("Error in db");
+			e.printStackTrace();
+		}
 
-		 try{
-			 contract = contractRepository.save(contract);
-		 return contract.getId();
-		 }catch(Exception e){
-			 logger.error("Error in db");
-			 e.printStackTrace();
-		 }
-
-		 return null;
+		return null;
 	}
 
 	@Override

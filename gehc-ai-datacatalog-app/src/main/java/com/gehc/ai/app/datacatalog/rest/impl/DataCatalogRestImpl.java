@@ -61,7 +61,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -1123,63 +1122,34 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return apiResponse;
     }
 
+    @Override
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    public ResponseEntity<?> saveContract(
+            @RequestBody Contract contract, HttpServletRequest request) {
 
+		/* Toll gate checks */
 
-    /** For 18.3 SP2
-     *
-     * API to upload contract
-     *
-     * @param contractFiles
-     * @param metadataJson
-     * @return
-
-     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
-     public ResponseEntity<DataCatalogResponse> uploadContract(
-     @RequestParam(value = "contract") List<MultipartFile> contractFiles,
-     @RequestParam(value = "metadata", required = false) MultipartFile metadataJson) {
-     Contract contract = null;
-     try {
-     contract = RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
-     } catch(DataCatalogException exception){
-     return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-     }
-
-     try {
-     long contractId = dataCatalogService.uploadContract(contractFiles, contract);
-     return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
-     } catch (Exception e) {
-     return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-     }
-     }
-     */
-
-    /**
-     *
-     * API to upload contract
-     *
-     * @param contractFiles
-     * @return
-     */
-    @Produces(MediaType.APPLICATION_JSON)
-    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
-    public ResponseEntity<DataCatalogResponse> uploadContract(
-            @RequestParam(value = "contract") List<MultipartFile> contractFiles) {
-        Contract contract = null;
-        try {
-            contract = RequestValidator.validateContractAndParseMetadata(contractFiles);
-        } catch(DataCatalogException exception){
-            logger.error("Exception occured while uploading contract : ", exception);
-            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        // Gate 1 - The org ID is required to be defined
+        if (request.getAttribute("orgId") == null) {
+            return new ResponseEntity<Object>(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
         }
 
+        // TODO: Implement validation of required attributes for Contract entity
+
+        /* All gates passed */
+
+        Contract savedContract;
+
         try {
-            long contractId = dataCatalogService.uploadContract(contractFiles, contract);
-            logger.debug("Created contract with ID " + contractId);
-            return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.OK);
+            contract.setActive("Inactive");
+            savedContract = dataCatalogService.saveContract(contract);
+            logger.debug("Created contract with ID " + savedContract.getId());
+            return new ResponseEntity<Contract>(savedContract, HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Exception occured while uploading contract : ", e);
-            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(Collections.singletonMap("response", "Could not save contract due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
 
     /**
