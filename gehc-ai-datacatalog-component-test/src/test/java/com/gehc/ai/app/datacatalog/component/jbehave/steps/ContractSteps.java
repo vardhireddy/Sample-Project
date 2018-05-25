@@ -173,7 +173,7 @@ public class ContractSteps {
         retrieveResult.andExpect(content().string(containsString("Contract with given id is already inactive")));
     }
 
-    @Given("a invalid contract Id")
+    @Given("an invalid contract Id")
     public void givenInValidContractId() throws Exception {
         when(contractRepository.findOne(anyLong())).thenReturn(null);
     }
