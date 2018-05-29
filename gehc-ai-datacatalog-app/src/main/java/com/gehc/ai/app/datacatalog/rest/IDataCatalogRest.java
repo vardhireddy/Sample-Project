@@ -1,8 +1,8 @@
 /*
  * IDataCatalogRest.java
- * 
+ *
  * Copyright (c) 2016 by General Electric Company. All rights reserved.
- * 
+ *
  * The copyright to the computer software herein is the property of
  * General Electric Company. The software may be used and/or copied only
  * with the written permission of General Electric Company or in accordance
@@ -15,6 +15,7 @@ import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
@@ -29,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -124,14 +124,40 @@ public interface IDataCatalogRest {
      */
     ApiResponse saveAnnotationProperties(AnnotationProperties annotationProp);
 
+
     /**
-     * Insert or update an DataSet
+     * Creates one or more new data collection resources if it does not already exist or updates an existing data collection
+     * resource based on the resource's ID.
      *
-     * @param d       data set object
-     * @param request TODO
-     * @return recently saved object
+     * @param dataCollectionsCreateRequest The POST request body which can contain the following two primary properties:
+     *                                     <ol>
+     *                                     <li>dataSet - (Required) The data collection to save</li>
+     *                                     <li>dataCollectionSize - (Optional) The desired size of a data collection in
+     *                                     terms of the number of image sets to comprise a data collection.
+     *                                     <ul>
+     *                                     <li>If the size is not defined, then the data collection will be saved as-is.</li>
+     *                                     <li>If the size is set to 1 image set, then the provided data collection
+     *                                     will be batched such that there will be as many data collections as there are image sets.
+     *                                     For example, if the initial data collection defines 9 image sets and the size is set to 1,
+     *                                     then the initial data collection will be split into 9 data collections with 1 image set.</li>
+     *                                     <li>If the size is set to n image sets where n is the total number of image
+     *                                     sets defined in the initial data collection,then the provided data collection
+     *                                     will be saved as a single data collection. For example, if the initial data collection
+     *                                     defines 9 image sets and the size is set to 9, then the initial data collection
+     *                                     will be saved as-is without any batching.</li>
+     *                                     <li>If the size is set to be between 1 and n image sets where n is the total number of image
+     *                                     sets defined in the initial data collection, then the provided data collection
+     *                                     will be batched such that there will be n/{$size} number of collections with {$size} image sets
+     *                                     and one collection with n%{$size} image sets. For example, if the initial data collection
+     *                                     defines 9 image sets and the size is set to 2, then the initial data collection
+     *                                     will be split into 4 collections with 2 image sets and 1 collection with 1 image set</li>
+     *                                     </ul>
+     *                                     </li>
+     *                                     <ol/>
+     * @param request                      The intercepted HTTP request object whose headers will be validated
+     * @return a {@link ResponseEntity} containing the IDs of the created or updated data collections.
      */
-    DataSet saveDataSet(DataSet d, HttpServletRequest request);
+    ResponseEntity<?> saveDataSet(DataCollectionsCreateRequest dataCollectionsCreateRequest, HttpServletRequest request);
 
     /**
      * Insert or update an image series
@@ -286,4 +312,26 @@ public interface IDataCatalogRest {
      * @return list of Annotated ImageSetCount grouped by user
      */
     ResponseEntity<List<AnnotatorImageSetCount>> getCountOfImagesAnnotated(String orgId);
+
+    /**
+     * Returns a text specifying if given combination of contract-id and org-id exists
+     *
+     * @return String
+     */
+    ResponseEntity<Map<String,String>> validateContractIdAndOrgId(Long contractId, String orgId);
+    /**
+     * @param params
+     * @return
+     */
+    List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+    /**
+     * A soft delete of contract by given ID through inactivating it.
+     *
+     * @param contractId
+     * @return
+     */
+    ResponseEntity<Map<String,String>> deleteContract(Long contractId);
 }
+
+

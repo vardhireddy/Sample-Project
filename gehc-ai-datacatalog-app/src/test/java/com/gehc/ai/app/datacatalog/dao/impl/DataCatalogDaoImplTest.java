@@ -1,6 +1,7 @@
 package com.gehc.ai.app.datacatalog.dao.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -20,6 +21,7 @@ import javax.persistence.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -150,7 +152,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input, false, 1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
@@ -160,7 +162,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("fromDate", "LABEL"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,false,1);
     }
 
     @Test
@@ -175,7 +177,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,false,1);
         assertEquals(getImageSeriesWithFiltersAndNullProperties().toString(), result.toString());
     }
 
@@ -185,7 +187,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "absent"));
         input.putAll(constructQueryParam("ge-class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,false,1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
@@ -193,7 +195,7 @@ public class DataCatalogDaoImplTest {
     public void testgetImageSeriesByFiltersWithOutAnnoations() {
         dataSetUp();
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
-        List result = dataCatalogDao.getImgSeriesByFilters(input);
+        List result = dataCatalogDao.getImgSeriesByFilters(input,false,1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
@@ -660,5 +662,90 @@ public class DataCatalogDaoImplTest {
         imgSeries.setUploadDate(getUploadDate());
         imageSeriesList.add(imgSeries);
         return imageSeriesList;
+    }
+    
+    @Test
+    public void testgetImageSeriesIdsByFilters() {
+        dataSetUp();
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "LABEL"));
+        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        List result = dataCatalogDao.getImgSeriesIdsByFilters(input);
+        assertEquals(getImageSeriesIdsWithFilters().toString(), result.toString());
+    }
+
+    @Test(expected = Exception.class)
+    public void testgetImageSeriesIdsByFiltersThrowsException() {
+        // dataSetUp();
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "LABEL"));
+        input.putAll(constructQueryParam("fromDate", "LABEL"));
+        List result = dataCatalogDao.getImgSeriesIdsByFilters(input);
+    }
+
+    @Test
+    public void testgetImageSeriesIdsByFiltersWithNullProperties() {
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), anyObject())).thenReturn(null);
+        List expectedList = new ArrayList();
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30"), "AP" };
+        expectedList.add(newObj);
+        when(query.getResultList()).thenReturn(expectedList);
+
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "LABEL"));
+        input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        List result = dataCatalogDao.getImgSeriesIdsByFilters(input);
+        assertEquals(getImageSeriesIdsWithFilters().toString(), result.toString());
+    }
+
+    @Test
+    public void testgetImageSeriesIdsByFiltersWithAnnoationsAbsent() {
+        dataSetUp();
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        input.putAll(constructQueryParam("annotations", "absent"));
+        input.putAll(constructQueryParam("ge-class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
+        List result = dataCatalogDao.getImgSeriesIdsByFilters(input);
+        assertEquals(getImageSeriesIdsWithFilters().toString(), result.toString());
+    }
+
+    @Test
+    public void testgetImageSeriesIdsByFiltersWithOutAnnoations() {
+        dataSetUp();
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        List result = dataCatalogDao.getImgSeriesIdsByFilters(input);
+        assertEquals(getImageSeriesIdsWithFilters().toString(), result.toString());
+    }
+    
+    private List<Long> getImageSeriesIdsWithFilters() {
+        List<Long> imageSeriesIdsList = new ArrayList<Long>();
+        imageSeriesIdsList.add(1L);
+        return imageSeriesIdsList;
+    }
+    
+    /**
+     * this tests calls from the image set series retrieval using filter criteria
+     */
+    @Test
+    public void testGetImageSeriesByFilterWithLimits() {
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        dataCatalogDao.getImgSeriesByFilters(input, false, 101);
+
+        org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
+        assertTrue(argument.getValue().toLowerCase().endsWith("limit 101"));
+    }
+    
+    @Test
+    public void testGetImageSeriesByFilterWithLimitsAndRandmoization() {
+    	Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
+        when(entityManager.createNativeQuery(anyString())).thenReturn(query);
+        dataCatalogDao.getImgSeriesByFilters(input, true, 101);
+
+        org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
+        assertTrue(argument.getValue().toLowerCase().endsWith("limit 101"));
+        assertTrue(argument.getValue().toUpperCase().contains("ORDER BY RAND()"));
     }
 }

@@ -47,8 +47,8 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
      * @throws Exception 
      */
 	@Override
-	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params) {
-		return dataCatalogDao.getImgSeriesByFilters(params);
+	public List<ImageSeries> getImgSeriesByFilters(Map<String, Object> params, boolean randomize, int maxImageSeriesRows) {
+		return dataCatalogDao.getImgSeriesByFilters(params, randomize, maxImageSeriesRows);
 	}
 
 	@Override
@@ -90,5 +90,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	public Contract getContract(Long contractId) {
 
 		return dataCatalogDao.getContractDetails(contractId);
+	}
+
+	@Override
+	public List<Long> getImgSeriesIdsByFilters(Map<String, Object> params) {
+		return dataCatalogDao.getImgSeriesIdsByFilters(params);
 	}
 }

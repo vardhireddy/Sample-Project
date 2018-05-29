@@ -32,5 +32,7 @@ public interface DataSetRepository extends JpaRepository<DataSet, Long> {
 	 List<DataSet> findById(@Param("id") Long id);
 	 @Override
 	 <S extends DataSet> S save(S entity);
+	 @Override
+	 <S extends DataSet> List<S> save(Iterable<S> entity);
 	 void delete(DataSet deleted);
 }
