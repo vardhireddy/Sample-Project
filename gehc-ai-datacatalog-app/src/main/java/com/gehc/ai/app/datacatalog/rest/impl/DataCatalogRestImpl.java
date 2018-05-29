@@ -1122,12 +1122,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return apiResponse;
     }
 
-    @Override
+   /* @Override
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     public ResponseEntity<?> saveContract(
             @RequestBody Contract contract, HttpServletRequest request) {
 
-		/* Toll gate checks */
+		 Toll gate checks 
 
         // Gate 1 - The org ID is required to be defined
         if (request.getAttribute("orgId") == null) {
@@ -1136,7 +1136,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         // TODO: Implement validation of required attributes for Contract entity
 
-        /* All gates passed */
+         All gates passed 
 
         Contract savedContract;
 
@@ -1150,7 +1150,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity<Object>(Collections.singletonMap("response", "Could not save contract due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-    }
+    }*/
 
     /**
      * API to fetch contract
@@ -1269,4 +1269,77 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return new ArrayList<Long>();
     }
+
+	@Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST)
+	public ResponseEntity<?> saveContract(@RequestBody Contract contract, HttpServletRequest request) {
+			/* Toll gate checks */
+			if(null != request){
+		        logger.debug("Creating a new contract, orgId = " + request.getAttribute("orgId"));
+		        // Gate 1 - The org ID is required to be defined
+		        if (request.getAttribute("orgId") == null) {
+		            return new ResponseEntity<Object>(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
+		        }
+			}
+	        // Gate 2 - The contract must be defined
+	        if(Objects.isNull(contract)){
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "A contract must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+	        // Gate 3 - An agreement name must be provided
+	        if (Objects.isNull(contract.getAgreementName())) {
+	        	return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        
+	        	        
+/*	        // Gate 4 - The primary contact email must be provided
+	        if (Objects.isNull(contract.getPrimaryContactEmail()) && !contract.getPrimaryContactEmail().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+	        // Gate 5 - The de-identified status must be provided
+	        if (Objects.isNull(contract.getDeidStatus()) && !contract.getDeidStatus().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // Gate 6 - An agreement begin date must be provided
+	        if (Objects.isNull(contract.getAgreementBeginDate())) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // Gate 7 - The data usage period must be provided
+	        if (Objects.isNull(contract.getDataUsagePeriod()) && !contract.getDataUsagePeriod().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // Gate 8 - The data origin country must be provided
+	        if (Objects.isNull(contract.getDataOriginCountry()) && !contract.getDataOriginCountry().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // Gate 8 - The data use cases must be provided
+	        if (Objects.isNull(contract.getUseCases()) && !contract.getUseCases().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        }*/
+	        // TODO: Implement validation of required attributes for Contract entity
+
+	        /* All gates passed! */
+	        // Now save the contract
+	        Contract contractObj;
+			try {
+				contractObj = contractRepository.save(contract);
+			} catch (Exception e1) {
+				logger.error(e1.getMessage());
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "Could not save contract due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			if(null != contractObj){
+				logger.debug("Contract id " + contractObj.getId());
+			}
+            // Return the recently saved contract
+            return new ResponseEntity<Contract>(contractObj, HttpStatus.CREATED);
+	}
+    
 }

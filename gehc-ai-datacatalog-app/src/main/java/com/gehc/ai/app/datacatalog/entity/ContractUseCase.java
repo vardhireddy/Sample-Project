@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 /**
  * {@code ContractUseCase} represents who and how data associated with a contract can be used.
  *
- * @author andrew.c.wong@ge.com (212069153), uma.tabib1@ge.com (212691936)
+ * @author andrew.c.wong@ge.com (212069153), monika.jain@ge.com (212071558), uma.tabib1@ge.com (212691936)
  */
 @JsonInclude(Include.NON_NULL)
 public class ContractUseCase {
@@ -28,16 +28,27 @@ public class ContractUseCase {
 
 	}
 
-	@NotNull
+	//@NotNull
 	private DataUser dataUser;
 
-	@NotNull
+	//@NotNull
 	private DataUsage dataUsage;
+	
+	private String dataNotes;
 
-	public ContractUseCase(DataUser dataUser, DataUsage dataUsage) {
+	public ContractUseCase(DataUser dataUser, DataUsage dataUsage, String dataNotes) {
 		super();
 		this.dataUser = dataUser;
 		this.dataUsage = dataUsage;
+		this.dataNotes = dataNotes;
+	}
+
+	public String getDataNotes() {
+		return dataNotes;
+	}
+
+	public void setDataNotes(String dataNotes) {
+		this.dataNotes = dataNotes;
 	}
 
 	public enum DataUser {
@@ -104,4 +115,5 @@ public class ContractUseCase {
 		result = 31 * result + getDataUsage().hashCode();
 		return result;
 	}
+	
 }

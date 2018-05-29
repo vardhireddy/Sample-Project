@@ -196,10 +196,10 @@ public class RequestValidator {
 	 * @param contractFiles
 	 * @throws DataCatalogException
 	 */
-	public static Contract validateContractAndParseMetadata(List<MultipartFile> contractFiles) throws DataCatalogException {
+/*	public static Contract validateContractAndParseMetadata(List<MultipartFile> contractFiles) throws DataCatalogException {
 		StringBuilder errorMessage = new StringBuilder();
 		Contract contract = new Contract();
-		contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
+		//contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
 		checkFilesExists(contractFiles, errorMessage);
 
 		if(contractFiles != null && errorMessage.length() == 0){
@@ -213,13 +213,13 @@ public class RequestValidator {
 		}
 
 		return contract;
-	}
+	}*/
 
 	/**
 	 * @param contractFiles
 	 * @param errorMessage
 	 */
-	private static void validateSupportedContractFileFormats(List<MultipartFile> contractFiles,
+	/*private static void validateSupportedContractFileFormats(List<MultipartFile> contractFiles,
 			StringBuilder errorMessage) {
 		contractFiles.forEach(contractFile -> {
 			final String contractFileExt = FilenameUtils.getExtension(contractFile.getOriginalFilename());
@@ -232,7 +232,7 @@ public class RequestValidator {
 				logger.error("File name : "+ contractFile.getOriginalFilename() +", Error: " + ErrorCodes.EMPTY_CONTRACT_FILE_TYPE.getErrorMessage());
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * @param contractFiles
@@ -258,13 +258,13 @@ public class RequestValidator {
 	 * @param contractFiles
 	 * @param errorMessage
 	 */
-	private static void checkFilesExists(List<MultipartFile> contractFiles, StringBuilder errorMessage) {
+/*	private static void checkFilesExists(List<MultipartFile> contractFiles, StringBuilder errorMessage) {
 		// Check if contract file(s) is(are) present
 		if(contractFiles == null || contractFiles.isEmpty()){
 			errorMessage.append(ErrorCodes.MISSING_CONTRACT.getErrorMessage());
 			logger.error("Error: " + ErrorCodes.MISSING_CONTRACT.getErrorMessage());
 		}
-	}
+	}*/
 
 	/**
 	 * Validates the contract Id required for fetching contract details

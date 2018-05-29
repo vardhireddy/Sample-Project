@@ -1,11 +1,20 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.nio.charset.Charset;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
@@ -16,22 +25,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-
-import static com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
-import static com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
 /**
  * {@code CreateContractSteps} implements the test scenarios defined by
@@ -43,7 +41,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CreateContractSteps {
 
     private final DataCatalogInterceptor dataCatalogInterceptor;
-    private final DataCatalogDaoImpl dataCatalogDao;
+  //  private final DataCatalogDaoImpl dataCatalogDao;
+    private final ContractRepository contractRepository;
 
     private MockMvc mockMvc;
     private ResultActions result;
@@ -62,14 +61,21 @@ public class CreateContractSteps {
     // Test scenario setup //
     //
     /////////////////////////
-
+/*
     @Autowired
     public CreateContractSteps(MockMvc mockMvc, DataCatalogDaoImpl dataCatalogDaoImpl, DataCatalogInterceptor dataCatalogInterceptor) {
         this.mockMvc = mockMvc;
         this.dataCatalogDao = dataCatalogDaoImpl;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
     }
-
+*/
+    @Autowired
+    public CreateContractSteps(MockMvc mockMvc, ContractRepository contractRepository,
+                                      DataCatalogInterceptor dataCatalogInterceptor) {
+        this.mockMvc = mockMvc;
+        this.contractRepository = contractRepository;
+        this.dataCatalogInterceptor = dataCatalogInterceptor;
+    }
     @BeforeScenario
     public void setUp() throws Exception {
         when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class), any(HttpServletResponse.class),
@@ -89,12 +95,12 @@ public class CreateContractSteps {
 
     @Given("no internal errors occur")
     public void givenNoInternalErrorsOccur() {
-        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(createMockCompleteContract());
+        when(contractRepository.save(any(Contract.class))).thenReturn(createMockCompleteContract());
     }
 
     @Given("an internal error occurs")
     public void givenAnInternalErrorOccurs() {
-        when(dataCatalogDao.saveContract(any(Contract.class))).thenThrow(Exception.class);
+        when(contractRepository.save(any(Contract.class))).thenThrow(Exception.class);
     }
 
     @Given("not all required legal meta data are provided")
@@ -152,10 +158,10 @@ public class CreateContractSteps {
     public void thenASingleContractShouldBeSavedToTheDatabase()
             throws Exception {
 
-        verify(dataCatalogDao, times(1)).saveContract(createMockCompleteContract());
+        verify(contractRepository, times(1)).save(createMockCompleteContract());
     }
 
-    @Then("the response's body should contain an error message saying not all required legal meta were provided")
+/*    @Then("the response's body should contain an error message saying not all required legal meta were provided")
     public void thenResponseBodyShouldContainErrorMessageSayingADataCollectionNeedsToBeProvided() throws Exception {
         result.andExpect(content().string(containsString("All legal meta data must be provided")));
     }
@@ -167,6 +173,21 @@ public class CreateContractSteps {
 
     @Then("the response's body should contain an error message saying an internal error occurred")
     public void thenResponseBodyShouldContainErrorMessageSayingANameMustBeDefinedForTheDataCollection() throws Exception {
+        result.andExpect(content().string(containsString("Could not save contract due to an internal error")));
+    }*/
+    
+    @Then("the response's body should contain an error message saying not all required legal meta were provided")
+    public void thenResponseBodyShouldContainErrorMessageSayingAllLegalMetaDateNeedsToBeProvided() throws Exception {
+        result.andExpect(content().string(containsString("All legal meta data must be provided")));
+    }
+
+    @Then("the response's body should contain an error message saying an org ID must be provided")
+    public void thenResponseBodyShouldContainErrorMessageSayingAnOrgIdMustBeProvided() throws Exception {
+        result.andExpect(content().string(containsString("An organization ID must be provided")));
+    }
+
+    @Then("the response's body should contain an error message saying an internal error occurred")
+    public void thenResponseBodyShouldContainErrorMessageSayingAnInternalServerErrorOccured() throws Exception {
         result.andExpect(content().string(containsString("Could not save contract due to an internal error")));
     }
 
@@ -185,16 +206,17 @@ public class CreateContractSteps {
     private Contract createMockContractRequest() {
         Contract contract = new Contract();
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
-        contract.setContractName("Test contract name");
-        contract.setContactInfo("john.doe@ge.com");
-        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
-        contract.setContractStartDate(null);
-        contract.setUsageLength(365);
-        contract.setDataOriginCountries(Arrays.asList(new String[]{"USA", "China"}));
-        contract.setState("CA");
-        contract.setTerritory("Test Territory");
-        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT)}));
-        contract.setDataResidence(Contract.DataResidence.GLOBAL);
+        contract.setAgreementName("Test contract name");
+        contract.setPrimaryContactEmail("john.doe@ge.com");
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
+        contract.setAgreementBeginDate(null);
+        contract.setDataUsagePeriod("365");
+        contract.setDataOriginCountry("USA");
+        contract.setDataOriginState("CA");
+        contract.setActive("inactive");
+    //    contract.setTerritory("Test Territory");
+    //    contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT)}));
+     //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
 
         return contract;
     }
@@ -202,17 +224,16 @@ public class CreateContractSteps {
     private Contract createMockCompleteContract() {
         Contract contract = new Contract();
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
-        contract.setContractName("Test contract name");
-        contract.setContactInfo("john.doe@ge.com");
-        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
-        contract.setContractStartDate(null);
-        contract.setUsageLength(365);
-        contract.setDataOriginCountries(Arrays.asList(new String[]{"USA", "China"}));
-        contract.setState("CA");
-        contract.setTerritory("Test Territory");
-        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT)}));
-        contract.setDataResidence(Contract.DataResidence.GLOBAL);
-        contract.setActive("Inactive");
+        contract.setAgreementName("Test contract name");
+        contract.setPrimaryContactEmail("john.doe@ge.com");
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
+        contract.setAgreementBeginDate(null);
+        contract.setDataUsagePeriod("365");
+        contract.setDataOriginCountry("USA");
+        contract.setDataOriginState("CA");
+      //  contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT)}));
+     //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
+        contract.setActive("inactive");
 
         return contract;
     }

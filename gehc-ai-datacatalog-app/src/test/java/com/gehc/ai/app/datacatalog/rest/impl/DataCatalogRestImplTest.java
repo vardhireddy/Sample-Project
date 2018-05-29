@@ -12,12 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -410,5 +414,4 @@ public class DataCatalogRestImplTest {
         assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
     }
-
 }
