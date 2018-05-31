@@ -25,6 +25,7 @@ import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.http.ResponseEntity;
@@ -354,6 +355,14 @@ public interface IDataCatalogRest {
      * @return Contract
      */
     ResponseEntity<Contract> getContracts(Long contractId);
+
+    /**
+     * Gives the ability to update the status and uri of the contract
+     *
+     * @param contractId
+     * @return updated Contract object
+     */
+    ResponseEntity<Contract> updateContract(Long contractId, UpdateContractRequest updateRequest);
 }
 
 
