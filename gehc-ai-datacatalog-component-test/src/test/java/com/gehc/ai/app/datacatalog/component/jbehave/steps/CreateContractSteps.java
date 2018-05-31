@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
@@ -24,12 +25,16 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+
+import static org.mockito.Matchers.anyLong;
 
 /**
  * {@code CreateContractSteps} implements the test scenarios defined by
@@ -41,7 +46,7 @@ import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 public class CreateContractSteps {
 
     private final DataCatalogInterceptor dataCatalogInterceptor;
-  //  private final DataCatalogDaoImpl dataCatalogDao;
+    private final DataCatalogDaoImpl dataCatalogDao;
     private final ContractRepository contractRepository;
 
     private MockMvc mockMvc;
@@ -71,10 +76,11 @@ public class CreateContractSteps {
 */
     @Autowired
     public CreateContractSteps(MockMvc mockMvc, ContractRepository contractRepository,
-                                      DataCatalogInterceptor dataCatalogInterceptor) {
+                               DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
         this.mockMvc = mockMvc;
         this.contractRepository = contractRepository;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
+        this.dataCatalogDao = dataCatalogDao;
     }
     @BeforeScenario
     public void setUp() throws Exception {
@@ -108,6 +114,25 @@ public class CreateContractSteps {
         this.contract = new Contract();
     }
 
+    @Given("a valid and active contract ID to retrieve")
+    public void ValidActiveContractIdToRetrieve(){
+        Contract contract = createMockCompleteContract();
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+    }
+
+    @Given("a valid and inactive contract ID to retrieve")
+    public void ValidInActiveContractIdToRetrieve(){
+        Contract contract = createMockCompleteContract();
+        contract.setActive("false");
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+    }
+
+    @Given("an invalid contract ID to retrieve")
+    public void InValidContractIdToRetrieve(){
+        Contract contract = new Contract();
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+    }
+
     /////////////////////
     //
     // WHEN statements //
@@ -126,11 +151,31 @@ public class CreateContractSteps {
                 .content(requestToJSON(this.contract)));
     }
 
+    @When("the API which retrieves a contract is invoked with a valid and active contract ID")
+    public void whenTheAPIWhichRetrievesAContractIsInvoked() throws Exception {
+        result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1"));
+    }
+
+    @When("the API which retrieves a contract is invoked with a valid and inactive contract ID")
+    public void whenTheAPIWhichRetrievesAContractIsInvokedWithInactiveID() throws Exception {
+        result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1"));
+    }
+
+    @When("the API which retrieves a contract is invoked with an invalid contract ID")
+    public void whenTheAPIWhichRetrievesAContractIsInvokedWithInvalidID() throws Exception {
+        result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1"));
+    }
+
     /////////////////////
     //
     // THEN statements //
     //
     /////////////////////
+
+    @Then("the response's status code should be 200")
+    public void thenResponseCodeShouldBe200() throws Exception {
+        result.andExpect(status().isOk());
+    }
 
     @Then("the response's status code should be 201")
     public void thenResponseCodeShouldBe201() throws Exception {
@@ -191,6 +236,21 @@ public class CreateContractSteps {
         result.andExpect(content().string(containsString("Could not save contract due to an internal error")));
     }
 
+    @Then("verify Retrieve contract data")
+    public void verifyGetContractData() throws Exception {
+        result.andExpect(content().string(containsString("true")));
+    }
+
+    @Then("verify response is \"Contract associated with given Id is inactive\"")
+    public void verifyGetContract() throws Exception {
+        result.andExpect(content().string(containsString("Contract associated with given Id is inactive")));
+    }
+
+    @Then("verify response is \"No Contract Exists with the given Id\"")
+    public void verifyGetContractBadRequest() throws Exception {
+        result.andExpect(content().string(containsString("No Contract Exists with the given Id")));
+    }
+
     /////////////
     //
     // Helpers //
@@ -213,7 +273,7 @@ public class CreateContractSteps {
         contract.setDataUsagePeriod("365");
         contract.setDataOriginCountry("USA");
         contract.setDataOriginState("CA");
-        contract.setActive("inactive");
+        contract.setActive("true");
     //    contract.setTerritory("Test Territory");
     //    contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT)}));
      //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
@@ -233,7 +293,7 @@ public class CreateContractSteps {
         contract.setDataOriginState("CA");
       //  contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT)}));
      //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
-        contract.setActive("inactive");
+        contract.setActive("true");
 
         return contract;
     }

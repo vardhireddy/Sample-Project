@@ -28,6 +28,7 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -346,6 +347,13 @@ public interface IDataCatalogRest {
      * @return a {@link ResponseEntity} containing a JSON representation of the contract entity that was saved
      */
     ResponseEntity<?> saveContract(Contract contract, HttpServletRequest request);
+
+    /**
+     * Returns the contract details if given contract ID is valid and active
+     * @param contractId
+     * @return Contract
+     */
+    ResponseEntity<Contract> getContracts(Long contractId);
 }
 
 

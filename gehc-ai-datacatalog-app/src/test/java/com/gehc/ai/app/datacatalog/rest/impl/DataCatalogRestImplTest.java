@@ -6,14 +6,8 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
+import java.util.*;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -390,7 +384,7 @@ public class DataCatalogRestImplTest {
 
         assertTrue(argument.getValue().size() == limit);
     }
-    
+
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
         when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);
@@ -414,4 +408,57 @@ public class DataCatalogRestImplTest {
         assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
     }
+
+    //get contract unit test cases
+    @Test
+    public void testGetContractForValidActiveContractId(){
+        Contract contract = buildContractEntity();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        ResponseEntity<Contract> result = controller.getContracts(1L);
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals("true",result.getBody().getActive());
+    }
+
+    @Test
+    public void testGetContractForValidInActiveContractId(){
+        Contract contract = buildContractEntity();
+        contract.setActive("false");
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        ResponseEntity<Contract> result = controller.getContracts(1L);
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response", "Contract associated with given Id is inactive"),result.getBody());
+    }
+
+    @Test
+    public void testGetContractForInValidContractId(){
+        Contract contract = new Contract();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        ResponseEntity<Contract> result = controller.getContracts(1L);
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id"),result.getBody());
+    }
+
+    @Test
+    public void testGetContractForExceptionRetriveingData(){
+        when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException("internal error"));
+        ResponseEntity<Contract> result = controller.getContracts(1L);
+        assertEquals(500, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Exception retrieving the contract"),result.getBody());
+    }
+
+    @Test
+    public void testGetContractForExceptionValidatingContractId(){
+        ResponseEntity<Contract> result = controller.getContracts(null);
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Please pass a valid contract ID"),result.getBody());
+    }
+
+    private Contract buildContractEntity(){
+        Contract contract = new Contract();
+        contract.setId(1L);
+        contract.setActive("true");
+
+        return contract;
+    }
+
 }
