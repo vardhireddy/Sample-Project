@@ -1355,7 +1355,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         logger.info("Validating contract update request body : {}", updateRequest.toString());
 
         if (updateRequest == null ||
-                (updateRequest.getStatus() == null && updateRequest.getUri() == null))
+                (updateRequest.getStatus() == null && updateRequest.getUri() == null)
+                || (updateRequest.getStatus().isEmpty() && updateRequest.getUri().toString().length() < 5))
         {
             return new ResponseEntity(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), HttpStatus.BAD_REQUEST);
 
