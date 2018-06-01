@@ -1,8 +1,8 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,11 +11,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
+import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
@@ -34,8 +38,6 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
-import static org.mockito.Matchers.anyLong;
-
 /**
  * {@code CreateContractSteps} implements the test scenarios defined by
  * the {@code create_contract_run.feature} file.
@@ -46,13 +48,15 @@ import static org.mockito.Matchers.anyLong;
 public class CreateContractSteps {
 
     private final DataCatalogInterceptor dataCatalogInterceptor;
-    private final DataCatalogDaoImpl dataCatalogDao;
     private final ContractRepository contractRepository;
+    private final DataCatalogServiceImpl dataCatalogService;
 
     private MockMvc mockMvc;
     private ResultActions result;
 
     private Contract contract;
+
+    private UpdateContractRequest updateRequest = buildContractEntityForUpdate();
 
     ///////////////
     //
@@ -76,11 +80,11 @@ public class CreateContractSteps {
 */
     @Autowired
     public CreateContractSteps(MockMvc mockMvc, ContractRepository contractRepository,
-                               DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
+                               DataCatalogInterceptor dataCatalogInterceptor,DataCatalogServiceImpl dataCatalogService) {
         this.mockMvc = mockMvc;
         this.contractRepository = contractRepository;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
-        this.dataCatalogDao = dataCatalogDao;
+        this.dataCatalogService = dataCatalogService;
     }
     @BeforeScenario
     public void setUp() throws Exception {
@@ -99,7 +103,7 @@ public class CreateContractSteps {
         this.contract = createMockContractRequest();
     }
 
-    @Given("no internal errors occur")
+    @Given("no internal errors occurs")
     public void givenNoInternalErrorsOccur() {
         when(contractRepository.save(any(Contract.class))).thenReturn(createMockCompleteContract());
     }
@@ -114,23 +118,24 @@ public class CreateContractSteps {
         this.contract = new Contract();
     }
 
+    //get contract API test cases
     @Given("a valid and active contract ID to retrieve")
     public void ValidActiveContractIdToRetrieve(){
         Contract contract = createMockCompleteContract();
-        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
     }
 
     @Given("a valid and inactive contract ID to retrieve")
     public void ValidInActiveContractIdToRetrieve(){
         Contract contract = createMockCompleteContract();
         contract.setActive("false");
-        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
     }
 
     @Given("an invalid contract ID to retrieve")
     public void InValidContractIdToRetrieve(){
         Contract contract = new Contract();
-        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
     }
 
     /////////////////////
@@ -151,6 +156,7 @@ public class CreateContractSteps {
                 .content(requestToJSON(this.contract)));
     }
 
+    //get contract API test cases
     @When("the API which retrieves a contract is invoked with a valid and active contract ID")
     public void whenTheAPIWhichRetrievesAContractIsInvoked() throws Exception {
         result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1"));
@@ -172,27 +178,27 @@ public class CreateContractSteps {
     //
     /////////////////////
 
-    @Then("the response's status code should be 200")
+    @Then("the response status code should be 200")
     public void thenResponseCodeShouldBe200() throws Exception {
         result.andExpect(status().isOk());
     }
 
-    @Then("the response's status code should be 201")
+    @Then("the response status code should be 201")
     public void thenResponseCodeShouldBe201() throws Exception {
         result.andExpect(status().isCreated());
     }
 
-    @Then("the response's status code should be 400")
+    @Then("the response status code should be 400")
     public void thenResponseCodeShouldBe400() throws Exception {
         result.andExpect(status().isBadRequest());
     }
 
-    @Then("the response's status code should be 500")
+    @Then("the response status code should be 500")
     public void thenResponseCodeShouldBe500() throws Exception {
         result.andExpect(status().isInternalServerError());
     }
 
-    @Then("the response's content type should be JSON")
+    @Then("the response content type should be JSON")
     public void thenResponseMediaTypeShouldBeJson() throws Exception {
         MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
                 MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -236,17 +242,18 @@ public class CreateContractSteps {
         result.andExpect(content().string(containsString("Could not save contract due to an internal error")));
     }
 
+    //get Contract then test cases
     @Then("verify Retrieve contract data")
     public void verifyGetContractData() throws Exception {
         result.andExpect(content().string(containsString("true")));
     }
 
-    @Then("verify response is \"Contract associated with given Id is inactive\"")
+    @Then("the response's body should contain a message saying the contract associated with given ID is inactive")
     public void verifyGetContract() throws Exception {
         result.andExpect(content().string(containsString("Contract associated with given Id is inactive")));
     }
 
-    @Then("verify response is \"No Contract Exists with the given Id\"")
+    @Then("the response's body should contain a message saying no contract exists with the given ID")
     public void verifyGetContractBadRequest() throws Exception {
         result.andExpect(content().string(containsString("No Contract Exists with the given Id")));
     }
@@ -263,17 +270,25 @@ public class CreateContractSteps {
         return str;
     }
 
+    private String requestToJSON(UpdateContractRequest updateRequest) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String str = mapper.writeValueAsString(updateRequest);
+        return str;
+    }
+
     private Contract createMockContractRequest() {
         Contract contract = new Contract();
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
-        contract.setAgreementBeginDate(null);
         contract.setDataUsagePeriod("365");
         contract.setDataOriginCountry("USA");
         contract.setDataOriginState("CA");
+        contract.setUri("[\"bla.pdf\"]");
         contract.setActive("true");
+        contract.setAgreementBeginDate(null);
+
     //    contract.setTerritory("Test Territory");
     //    contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT)}));
      //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
@@ -291,6 +306,7 @@ public class CreateContractSteps {
         contract.setDataUsagePeriod("365");
         contract.setDataOriginCountry("USA");
         contract.setDataOriginState("CA");
+        contract.setUri("[\"bla.pdf\"]");
       //  contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT)}));
      //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
         contract.setActive("true");
@@ -298,4 +314,19 @@ public class CreateContractSteps {
         return contract;
     }
 
+    private UpdateContractRequest buildContractEntityForUpdate(){
+
+        UpdateContractRequest updateContractRequest = new UpdateContractRequest("updatedStatus","[\"bla.pdf\"]");
+
+        return updateContractRequest;
+    }
+
+    public Date getSqldate() throws Exception{
+        String startDate="30-03-2013";
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
+        java.util.Date date = sdf1.parse(startDate);
+        java.sql.Date sqlStartDate = new java.sql.Date(date.getTime());
+        System.out.print(sqlStartDate);
+        return sqlStartDate;
+    }
 }
