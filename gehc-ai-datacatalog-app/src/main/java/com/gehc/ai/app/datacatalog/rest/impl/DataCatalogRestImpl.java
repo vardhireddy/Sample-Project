@@ -21,6 +21,7 @@ import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataCollectionWithNumImageSets;
 import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
@@ -101,7 +102,7 @@ import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 @RestController
 @Produces(MediaType.APPLICATION_JSON)
 @RequestMapping(value = "/api/v1")
-@PropertySource({ "classpath:application.yml" })
+@PropertySource({"classpath:application.yml"})
 public class DataCatalogRestImpl implements IDataCatalogRest {
 
     /**
@@ -135,29 +136,31 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
     @Value("${spring.data.imageSeries.limit}")
     private int MAX_IMAGE_SERIES_ROWS;
-    
+
     /**
      * this is used to randomize the output for the data scientist to spot check a subset of the images displayed in the webui
      */
     @Value("${spring.data.imageSeries.randomize}")
     private boolean randomize;
-    
+
     /**
      * Setter for MAX_IMAGE_SERIES_ROWS property to facilitate unit test using Mockito
+     *
      * @param r max # of rows returned
      */
     public void setMaxImageSeriesRows(int r) {
-    	this.MAX_IMAGE_SERIES_ROWS = r;
+        this.MAX_IMAGE_SERIES_ROWS = r;
     }
 
     /**
      * Setter for randomize property to facilitate unit test using Mockito
+     *
      * @param r true if randomize is called for
      */
     public void setRandomize(boolean r) {
-    	this.randomize = r;
+        this.randomize = r;
     }
-    
+
     @Value("${coolidge.micro.inference.url}")
     private String coolidgeMInferenceUrl;
     @Value("${uom.user.me.url}")
@@ -315,7 +318,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
                     logger.info("[In REST, Annotation exists so returning annotation with id = " + ids + "]");
                     apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                            ApplicationConstants.SUCCESS,idValue);
+                            ApplicationConstants.SUCCESS, idValue);
                 } else {
                     Annotation newAnnotation = annotationRepository.save(annotation);
 
@@ -463,7 +466,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         // Gate 2 - The data collection must be defined
         DataSet dataCollection = dataCollectionsCreateRequest.getDataSet();
-        if(Objects.isNull(dataCollection)){
+        if (Objects.isNull(dataCollection)) {
             return new ResponseEntity<Object>(Collections.singletonMap("response", "A data collection must be provided"), HttpStatus.BAD_REQUEST);
         }
 
@@ -523,14 +526,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return new ResponseEntity<List<Long>>(aggregateSavedDataCollectionsIds(savedDataCollections), HttpStatus.CREATED);
     }
 
-    private boolean shouldBatchDataCollections(DataSet dataCollection, Integer dataCollectionSize, int numImageSets){
+    private boolean shouldBatchDataCollections(DataSet dataCollection, Integer dataCollectionSize, int numImageSets) {
         final Predicate<DataSet> collectionDoesNotAlreadyExist = dc -> Objects.isNull(dc.getId());
         final Predicate<Integer> collectionIsToBeSplitIntoMultipleCollections = collectionSize -> Objects.nonNull(collectionSize) && collectionSize != numImageSets;
 
         return collectionDoesNotAlreadyExist.test(dataCollection) && collectionIsToBeSplitIntoMultipleCollections.test(dataCollectionSize);
     }
 
-    private List<Long> aggregateSavedDataCollectionsIds(List<DataSet> savedDataCollections){
+    private List<Long> aggregateSavedDataCollectionsIds(List<DataSet> savedDataCollections) {
         return savedDataCollections.stream().map(savedDataSet -> savedDataSet.getId())
                 .collect(Collectors.toList());
     }
@@ -543,10 +546,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         ApiResponse apiResponse = null;
         logger.info("[In REST, update institution = " + u.getInstitution() + u.getSeriesUIds());
         try {
-            if (u.getSeriesUIds().length>0) {
+            if (u.getSeriesUIds().length > 0) {
                 imageSeriesRepository.updateInstitution(u.getInstitution(), u.getSeriesUIds());
                 apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
-                        ApplicationConstants.SUCCESS,convertStringArrayToString(u.getSeriesUIds(), ","));
+                        ApplicationConstants.SUCCESS, convertStringArrayToString(u.getSeriesUIds(), ","));
             }
         } catch (Exception e) {
             logger.error("Exception occured while updating institution ", e);
@@ -564,6 +567,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             sb.append(str).append(delimiter);
         return sb.substring(0, sb.length() - 1);
     }
+
     /*
      * (non-Javadoc)
      *
@@ -605,27 +609,29 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     /**
      * given a list of image set id's, return a subset of those id's in a new list. The size and order of the image
      * set ids will be determined by the limit on max # of rows and randomization flag
+     *
      * @param imgSeries list of image ids
      * @return list of image series ids given contraints on max number of rows and whether randomization flag is set
      */
     private List<Long> getImageSeriesIdList(List<Long> imgSeries) {
-    	List<Long> imgSerIdLst = new ArrayList<Long>();
+        List<Long> imgSerIdLst = new ArrayList<Long>();
 
-    	int size = MAX_IMAGE_SERIES_ROWS > 0 ? Math.min(MAX_IMAGE_SERIES_ROWS, imgSeries.size()) : imgSeries.size();
-    	int [] shuffled = null;
-    	if (this.randomize) {
-    		shuffled = Shuffle.shuffle(imgSeries.size(), size, null);
-    		for (int i = 0; i < size; i++) {
-    			imgSerIdLst.add(Long.valueOf(imgSeries.get(shuffled[i]).toString()));
-    		}
-    	} else {
-    		for (int i = 0; i < size; i++) {
-    			imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
-    		}
-    	}
-    	
-    	return imgSerIdLst;
+        int size = MAX_IMAGE_SERIES_ROWS > 0 ? Math.min(MAX_IMAGE_SERIES_ROWS, imgSeries.size()) : imgSeries.size();
+        int[] shuffled = null;
+        if (this.randomize) {
+            shuffled = Shuffle.shuffle(imgSeries.size(), size, null);
+            for (int i = 0; i < size; i++) {
+                imgSerIdLst.add(Long.valueOf(imgSeries.get(shuffled[i]).toString()));
+            }
+        } else {
+            for (int i = 0; i < size; i++) {
+                imgSerIdLst.add(Long.valueOf(imgSeries.get(i).toString()));
+            }
+        }
+
+        return imgSerIdLst;
     }
+
     /*
      * (non-Javadoc)
      *
@@ -643,10 +649,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             if (null != dsLst && !dsLst.isEmpty()) {
                 @SuppressWarnings("unchecked")
                 List<Long> imgSeries = ((DataSet) (dsLst.get(0))).getImageSets();
-                
-                
+
+
                 if (null != imgSeries && !imgSeries.isEmpty()) {
-                	List<Long> imgSerIdLst = getImageSeriesIdList(imgSeries);
+                    List<Long> imgSerIdLst = getImageSeriesIdList(imgSeries);
                     return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
                 }
             }
@@ -670,32 +676,39 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 : dataSetRepository.findByIdAndOrgId(id, orgId.toString());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see IDataCatalogRest#getDataSetByType(java.lang.String,
-     * javax.servlet.http.HttpServletRequest)
-     */
     @Override
     @RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.GET)
-    public List<DataSet> getDataSetByType(@QueryParam("type") String type, HttpServletRequest request) {
+    public ResponseEntity<?> getDataSetByType(@QueryParam("type") String type, HttpServletRequest request) {
         logger.debug("In REST, Get DC for type " + type);
-        if (null != type) {
+
+        /* Common toll gate checks */
+
+        if (Objects.isNull(request.getAttribute("orgId"))) {
+            logger.error("BAD REQUEST : data collection type is not valid");
+            return new ResponseEntity<Object>(Collections.singletonMap("response", "An org ID must be provided in the request headers"), HttpStatus.BAD_REQUEST);
+        }
+
+        /* All common gates passed */
+
+        List<DataSet> matchingDataCollections;
+
+        if (Objects.nonNull(type)) {
             String patternStr = DATA_SET_TYPE;
             Pattern pattern = Pattern.compile(patternStr);
             Matcher matcher = pattern.matcher(type);
             boolean matchFound = matcher.matches();
+
             if (!matchFound) {
-                logger.debug("BAD REQUEST : type is not valid");
-                return new ArrayList<DataSet>();
+                logger.error("BAD REQUEST : data collection type is not valid");
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "Invalid data collection type was provided"), HttpStatus.BAD_REQUEST);
             }
-            return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
-                    : dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type,
-                    request.getAttribute("orgId").toString());
+
+            matchingDataCollections = dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type, request.getAttribute("orgId").toString());
         } else {
-            return request.getAttribute("orgId") == null ? new ArrayList<DataSet>()
-                    : dataSetRepository.findByOrgIdOrderByCreatedDateDesc(request.getAttribute("orgId").toString());
+            matchingDataCollections = dataSetRepository.findByOrgIdOrderByCreatedDateDesc(request.getAttribute("orgId").toString());
         }
+
+        return new ResponseEntity<List<DataCollectionWithNumImageSets>>(DataCollectionWithNumImageSets.fromDataSetEntities(matchingDataCollections), HttpStatus.OK);
     }
 
     private List<String> getListOfStringsFromParams(String values) throws DataCatalogException {
@@ -777,7 +790,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             if (null != dsLst.get(0).getImageSets()) {
                 List<String> types = new ArrayList<String>();
                 setAnnotationTypes(annotationType, types);
-                logger.debug("Number of Annotations : "+types.size());
+                logger.debug("Number of Annotations : " + types.size());
                 List<Long> imgSerIdLst = dsLst.get(0).getImageSets();
                 List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdLst);
                 logger.debug("***** Got img series by id sucessfully");
@@ -866,10 +879,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      * @param types
      */
     public void setAnnotationTypes(String annotationType, List<String> types) {
-        if(annotationType.contains(LABEL_SEPARATOR)){
-            String[] annotations = annotationType.split("\\"+LABEL_SEPARATOR);
+        if (annotationType.contains(LABEL_SEPARATOR)) {
+            String[] annotations = annotationType.split("\\" + LABEL_SEPARATOR);
             types.addAll(Arrays.asList(annotations));
-        }else{
+        } else {
             types.add(annotationType);
         }
     }
@@ -1124,7 +1137,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
 
-
     /** For 18.3 SP2
      *
      * API to upload contract
@@ -1154,7 +1166,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      */
 
     /**
-     *
      * API to upload contract
      *
      * @param contractFiles
@@ -1167,18 +1178,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         Contract contract = null;
         try {
             contract = RequestValidator.validateContractAndParseMetadata(contractFiles);
-        } catch(DataCatalogException exception){
+        } catch (DataCatalogException exception) {
             logger.error("Exception occured while uploading contract : ", exception);
-            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         try {
             long contractId = dataCatalogService.uploadContract(contractFiles, contract);
             logger.debug("Created contract with ID " + contractId);
-            return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.OK);
+            return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Exception occured while uploading contract : ", e);
-            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -1246,25 +1257,25 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @RequestMapping(value = "/datacatalog/contract/{contractId}/orgId/{orgId}", method = RequestMethod.GET)
-    public  ResponseEntity<Map<String,String>> validateContractIdAndOrgId(@PathVariable("contractId") Long contractId, @PathVariable("orgId") String orgId){
+    public ResponseEntity<Map<String, String>> validateContractIdAndOrgId(@PathVariable("contractId") Long contractId, @PathVariable("orgId") String orgId) {
 
         logger.info("Passing in contract Id and Org Id for validation.");
 
         int countOfRecordsWithGivenFilters = 0;
         try {
             countOfRecordsWithGivenFilters = contractRepository.validateContractIdAndOrgId(contractId, orgId);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Error validating given parameters : {}", e.getMessage());
-            return new ResponseEntity ("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if(countOfRecordsWithGivenFilters <= 0) return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.OK);
-        return new ResponseEntity<>( Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
+        if (countOfRecordsWithGivenFilters <= 0)
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.OK);
+        return new ResponseEntity<>(Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
     }
 
 	/*
-	 * (non-Javadoc)
+     * (non-Javadoc)
 	 *
 	 * @see com.gehc.ai.app.datacatalog.rest.IDataCatalogRest#
 	 * getImgSeriesIdsByFilters(java.util.Map)
@@ -1303,41 +1314,37 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings("unchecked")
     @Override
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Map<String,String>> deleteContract(@PathVariable("contractId") Long contractId){
+    public ResponseEntity<Map<String, String>> deleteContract(@PathVariable("contractId") Long contractId) {
 
         logger.info("Passing contract id to delete contract :", contractId);
         String status = "false";
 
         Contract contractToBeDeleted;
-        try{
+        try {
             contractToBeDeleted = contractRepository.findOne(contractId);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Error retrieving contract to delete: {}", e.getMessage());
-            return new ResponseEntity<>( Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (contractToBeDeleted == null)
-        {
+        if (contractToBeDeleted == null) {
             logger.info("No contract exists with given id :", contractId);
-            return new ResponseEntity<>( Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.BAD_REQUEST);
         }
 
         String contractStatus = contractToBeDeleted.getActive();
-        if (contractStatus.equalsIgnoreCase(status))
-        {
-            return new ResponseEntity<>( Collections.singletonMap("response", "Contract with given id is already inactive"), HttpStatus.OK);
+        if (contractStatus.equalsIgnoreCase(status)) {
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract with given id is already inactive"), HttpStatus.OK);
         }
 
         try {
             contractToBeDeleted.setActive(status);
             contractRepository.save(contractToBeDeleted);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Error deleting the contract : {}", e.getMessage());
-            return new ResponseEntity<>( Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>( Collections.singletonMap("response", "Contract is inactivated successfully"), HttpStatus.OK);
+        return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactivated successfully"), HttpStatus.OK);
 
     }
 }

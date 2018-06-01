@@ -15,16 +15,16 @@ Then the image sets should be split such that there are as many data collections
 And the response's status code should be 201
 And the response's content type should be JSON
 
-@test
-Scenario Outline: User shall be able to create several data collections if the base collection contains a set of unique image sets and the specified data collection size is greater than 1 and less than the number of image sets
-Meta: @automated
-Given a data collection with unique image sets
-And the data collection size is greater than 1 and less than the number of image sets
-And no internal errors occur
-When the API which creates a data collection is invoked
-Then the number of data collections that have the target collection size should be quotient of the number of image sets divided by the target collection size and there should be one data collection saved that contains the remainder of the quotient
-And the response's status code should be 201
-And the response's content type should be JSON
+#@test
+#Scenario Outline: User shall be able to create several data collections if the base collection contains a set of unique image sets and the specified data collection size is greater than 1 and less than the number of image sets
+#Meta: @automated
+#Given a data collection with unique image sets
+#And the data collection size is greater than 1 and less than the number of image sets
+#And no internal errors occur
+#When the API which creates a data collection is invoked
+#Then the number of data collections that have the target collection size should be quotient of the number of image sets divided by the target collection size and there should be one data collection saved that contains the remainder of the quotient
+#And the response's status code should be 201
+#And the response's content type should be JSON
 
 @test
 Scenario Outline: User shall be able to create 1 data collection if the base collection contains a set of unique image sets and the specified data collection size is equal to the number of image sets
