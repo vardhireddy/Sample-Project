@@ -1177,7 +1177,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity(Collections.singletonMap("response","Exception retrieving the contract"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (contract == null || contract.getActive() == null){
-            return new ResponseEntity(Collections.singletonMap("response","No Contract Exists with the given Id"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(Collections.singletonMap("response","No Contract Exists with the given Id."), HttpStatus.BAD_REQUEST);
         }else if (contract.getActive().equalsIgnoreCase("false")) {
             return new ResponseEntity(Collections.singletonMap("response", "Contract associated with given Id is inactive"), HttpStatus.OK);
         }else return new ResponseEntity<>(contract, HttpStatus.OK);

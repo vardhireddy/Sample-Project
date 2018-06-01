@@ -437,7 +437,7 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
         ResponseEntity<Contract> result = controller.getContracts(1L);
         assertEquals(400, result.getStatusCodeValue());
-        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id"),result.getBody());
+        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id."),result.getBody());
     }
 
     @Test

@@ -57,6 +57,7 @@ public class CreateContractSteps {
     private Contract contract;
 
     private UpdateContractRequest updateRequest = buildContractEntityForUpdate();
+    private UpdateContractRequest emptyUpdateRequest = new UpdateContractRequest();
 
     ///////////////
     //
@@ -138,6 +139,79 @@ public class CreateContractSteps {
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
     }
 
+    //update contract API test cases
+    @Given("a valid and active contract ID, valid update request")
+    public void validIdAndData(){
+        Contract contract = createMockContractRequest();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("a valid and active contract ID, invalid/empty update request")
+    public void validIdAndInvalidData(){
+        Contract contract = createMockContractRequest();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("a valid and inactive contract ID to retrieve, valid request")
+    public void inactiveIdAndValidData(){
+        Contract contract = createMockContractRequest();
+        contract.setActive("false");
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("a valid and inactive contract ID to retrieve, invalid request (update request is validated first)")
+    public void inactiveIdAndInValidData(){
+        Contract contract = createMockContractRequest();
+        contract.setActive("false");
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("an invalid contract ID to update, valid update request")
+    public void invalidIdAndValidData(){
+        Contract contract = new Contract();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("an invalid contract ID to update, invalid/empty update request")
+    public void invalidIdAndInValidData(){
+        Contract contract = new Contract();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("a valid and active contract ID, valid status value only")
+    public void validIdAndValidStatusOnly(){
+        Contract contract = createMockContractRequest();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("a valid and active contract ID, valid uri value only")
+    public void validIdAndValidUriOnly(){
+        Contract contract = createMockContractRequest();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("a valid contract ID, valid data but exception in retrieving contract")
+    public void validDataButExceptionRetrievingData(){
+        Contract contract = new Contract();
+        when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException(""));
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+    }
+
+    @Given("a valid contract ID, valid data but exception in saving updated contract")
+    public void validDataButExceptionSavingData(){
+        Contract contract = createMockContractRequest();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenThrow(new RuntimeException(""));
+    }
+
     /////////////////////
     //
     // WHEN statements //
@@ -170,6 +244,67 @@ public class CreateContractSteps {
     @When("the API which retrieves a contract is invoked with an invalid contract ID")
     public void whenTheAPIWhichRetrievesAContractIsInvokedWithInvalidID() throws Exception {
         result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1"));
+    }
+
+    //update contract API test cases
+    @When("the API which updates a contract is invoked with a valid and active contract ID, valid update request")
+    public void whenValidIdAndValidData() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.updateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with a valid and active contract ID, invalid/empty update request")
+    public void whenValidIdAndInValidData() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.emptyUpdateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with a valid and inactive contract ID, valid request")
+    public void whenInactiveIdAndValidData() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.updateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with a valid and inactive contract ID, invalid request")
+    public void whenInactiveIdAndInValidData() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.emptyUpdateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with an invalid contract ID, valid update request")
+    public void whenInValidIdAndValidData() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.updateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with an invalid contract ID, invalid/empty update request")
+    public void whenInValidIdAndInValidData() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.emptyUpdateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with a valid and active contract ID, valid status value")
+    public void whenValidIdAndValidStatusOnly() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.updateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with a valid and active contract ID, valid uri value")
+    public void whenValidIdAndValidUriOnly() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.updateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with a valid ID, valid data but internal exception rises in retrieving")
+    public void whenValidIdAndValidDataIntrenalExceptionRetrieving() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.updateRequest)));
+    }
+
+    @When("the API which updates a contract is invoked with a valid ID, valid data but internal exception rises in saving the contract")
+    public void whenValidIdAndValidDataIntrenalExceptionSaving() throws Exception{
+        result = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/datacatalog/contract/1").contentType(MediaType.APPLICATION_JSON)
+                .content(requestToJSON(this.updateRequest)));
     }
 
     /////////////////////
@@ -253,10 +388,50 @@ public class CreateContractSteps {
         result.andExpect(content().string(containsString("Contract associated with given Id is inactive")));
     }
 
-    @Then("the response's body should contain a message saying no contract exists with the given ID")
-    public void verifyGetContractBadRequest() throws Exception {
-        result.andExpect(content().string(containsString("No Contract Exists with the given Id")));
+    //update contract test cases
+    @Then("response and database contract data should reflect the updated details")
+    public void thenValidIdAndData() throws Exception{
+        result.andExpect(content().string(containsString("updatedStatus")));
     }
+
+    @Then("the response's body should contain a message saying the update request cannot be empty. Either status or uri must be provided")
+    public void thenValidIdAndInvalidData() throws Exception{
+        result.andExpect(content().string(containsString("Update request cannot be empty. Either status or uri must be provided.")));
+    }
+
+    @Then("the response's body should contain a message saying the contract associated with given Id is inactive and contract shall not be updated")
+    public void thenInactiveIdAndValidData() throws Exception{
+        result.andExpect(content().string(containsString("Contract associated with given Id is inactive. Contract shall not be updated.")));
+    }
+
+    @Then("the response's body should contain a message saying no contract exists with the given ID")
+    public void thenInValidIdAndValidData() throws Exception{
+        result.andExpect(content().string(containsString("{\"response\":\"No Contract Exists with the given Id.\"}")));
+    }
+
+    @Then("response and database contract data should reflect the updated details with change only in status")
+    public void thenValidIdAndStatusOnlyInData() throws Exception{
+        result.andExpect(content().string(containsString("updatedStatus")));
+    }
+
+    @Then("response and database contract data should reflect the updated details with change only in uri")
+    public void thenValidIdAndUriOnlyInData() throws Exception{
+        result.andExpect(content().string(containsString("{\"id\":1,\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\"," +
+                "\"uri\":\"[\\\"bla.pdf\\\"]\",\"deidStatus\":\"HIPAA Compliant\",\"dataOriginCountry\":\"USA\"," +
+                "\"active\":\"true\",\"agreementName\":\"Test contract name\",\"primaryContactEmail\":\"john.doe@ge.com\"," +
+                "\"dataUsagePeriod\":\"365\",\"dataOriginState\":\"CA\",\"status\":\"updatedStatus\"}"))); }
+
+    @Then("response's body should contain a message exception retrieving the contract")
+    public void thenValidIdAndDataExceptionRetrievingContract() throws Exception{
+        result.andExpect(content().string(containsString("Exception retrieving the contract.")));
+    }
+
+
+    @Then("response's body should contain a message exception saving the updated contract")
+    public void thenValidIdAndDataExceptionSavingUpdatedContract() throws Exception{
+        result.andExpect(content().string(containsString("Exception saving the updated contract.")));
+    }
+
 
     /////////////
     //
@@ -278,6 +453,7 @@ public class CreateContractSteps {
 
     private Contract createMockContractRequest() {
         Contract contract = new Contract();
+        contract.setId(1L);
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
@@ -298,6 +474,7 @@ public class CreateContractSteps {
 
     private Contract createMockCompleteContract() {
         Contract contract = new Contract();
+        contract.setId(1L);
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
