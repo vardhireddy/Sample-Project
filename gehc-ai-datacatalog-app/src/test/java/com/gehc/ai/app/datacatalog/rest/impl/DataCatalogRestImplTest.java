@@ -2,18 +2,14 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
+import java.util.*;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -390,7 +386,7 @@ public class DataCatalogRestImplTest {
 
         assertTrue(argument.getValue().size() == limit);
     }
-    
+
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
         when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);
@@ -414,4 +410,172 @@ public class DataCatalogRestImplTest {
         assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
     }
+
+    //get contract unit test cases
+    @Test
+    public void testGetContractForValidActiveContractId(){
+        Contract contract = buildContractEntity();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        ResponseEntity<Contract> result = controller.getContracts(1L);
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals("true",result.getBody().getActive());
+    }
+
+    @Test
+    public void testGetContractForValidInActiveContractId(){
+        Contract contract = buildContractEntity();
+        contract.setActive("false");
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        ResponseEntity<Contract> result = controller.getContracts(1L);
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response", "Contract associated with given Id is inactive"),result.getBody());
+    }
+
+    @Test
+    public void testGetContractForInValidContractId(){
+        Contract contract = new Contract();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        ResponseEntity<Contract> result = controller.getContracts(1L);
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id."),result.getBody());
+    }
+
+    @Test
+    public void testGetContractForExceptionRetriveingData(){
+        when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException("internal error"));
+        ResponseEntity<Contract> result = controller.getContracts(1L);
+        assertEquals(500, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Exception retrieving the contract"),result.getBody());
+    }
+
+    @Test
+    public void testGetContractForExceptionValidatingContractId(){
+        ResponseEntity<Contract> result = controller.getContracts(null);
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Please pass a valid contract ID"),result.getBody());
+    }
+
+    //update contract unit test cases
+    @Test
+    public void testUpdateContractWithAllData(){
+        Contract contract = buildContractEntity();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
+        UpdateContractRequest updateRequest = new UpdateContractRequest("updateNow","[\"blapu.pdf\"]");
+        ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals("updateNow", result.getBody().getStatus());
+        assertEquals("[\"blapu.pdf\"]",result.getBody().getUri());
+    }
+
+    @Test
+    public void testUpdateContractWithStatus(){
+        Contract contract = buildContractEntity();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
+        UpdateContractRequest updateRequest = new UpdateContractRequest("updateCurrent",null);
+        ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals("updateCurrent", result.getBody().getStatus());
+        assertEquals("[\"bla.pdf\"]",result.getBody().getUri());
+    }
+
+    @Test
+    public void testUpdateContractWithUri(){
+        Contract contract = buildContractEntity();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
+        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals("updated", result.getBody().getStatus());
+        assertEquals("[\"blabla.pdf\"]",result.getBody().getUri());
+    }
+
+    @Test
+    public void testUpdateContractWithNullRequest(){
+        Contract contract = buildContractEntity();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
+        UpdateContractRequest updateRequest = new UpdateContractRequest();
+        ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), result.getBody());
+    }
+
+
+    @Test
+    public void testUpdateContractWithInactiveContractID(){
+        Contract contract = buildContractEntity();
+        contract.setActive("false");
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
+        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Contract associated with given Id is inactive. Contract shall not be updated."), result.getBody());
+    }
+
+    @Test
+    public void testUpdateContractWithInvalidContractID(){
+        Contract contract = buildContractEntity();
+        contract.setActive("false");
+        when(dataCatalogService.getContract(anyLong())).thenReturn(null);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
+        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id."), result.getBody());
+    }
+
+    @Test
+    public void testUpdateContractForExceptionInRetrievingFromDB(){
+        Contract contract = buildContractEntity();
+        contract.setActive("false");
+        when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException(""));
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
+        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
+        assertEquals(500, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Exception retrieving the contract."), result.getBody());
+    }
+
+    @Test
+    public void testUpdateContractForExceptionInSavingContractToDB(){
+        Contract contract = buildContractEntity();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenThrow(new RuntimeException(""));
+
+        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
+        assertEquals(500, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Exception saving the updated contract."), result.getBody());
+    }
+
+    private Contract buildContractEntity(){
+
+        Contract contract = new Contract();
+        contract.setId(1L);
+        contract.setActive("true");
+        contract.setStatus("updated");
+        contract.setUri("[\"bla.pdf\"]");
+
+        return contract;
+    }
+
 }
