@@ -45,7 +45,6 @@ public class RetrieveDataCollectionsSteps {
     private ResultActions result;
 
     private List<DataSet> dataSets;
-    private String collectionType = "Annotation";
 
     ///////////////
     //
