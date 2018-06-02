@@ -48,19 +48,19 @@ Given Retrieve DataCatalog with ID DataSetUp Provided
 When Get data collection details by its id
 Then verify data collection details by its id
 
-@test_53606
-Scenario: Retrieve DataSet by Org ID
-Meta: @automated
-Given Retrieve DataCatalog with Org ID DataSetUp Provided
-When Get data collection by Org Id
-Then verify data collection by Org Id
+#@test_53606
+#Scenario: Retrieve DataSet by Org ID
+#Meta: @automated
+#Given Retrieve DataCatalog with Org ID DataSetUp Provided
+#When Get data collection by Org Id
+#Then verify data collection by Org Id
 
-@test_53607
-Scenario: Retrieve DataSet by Type
-Meta: @automated
-Given Retrieve DataSet by Type DataSetUp Provided
-When Get data collection by Type -  Annotation
-Then verify data collection by Type -  Annotation
+#@test_53607
+#Scenario: Retrieve DataSet by Type
+#Meta: @automated
+#Given Retrieve DataSet by Type DataSetUp Provided
+#When Get data collection by Type -  Annotation
+#Then verify data collection by Type -  Annotation
 
 @test_53608
 Scenario: Save DataSet
@@ -160,12 +160,12 @@ Given  Multiple Data Collections by ids
 When Delete Data collection by ids API is called
 Then verify Data Collection by ids has been deleted
 
-@test_54805
-Scenario: Retrieve DataSet by Type return empty
-Meta: @automated
-Given Return empty array list
-When Get data collection by Type is not valid
-Then verify data collection by Type is not valid
+#@test_54805
+#Scenario: Retrieve DataSet by Type return empty
+#Meta: @automated
+#Given Return empty array list
+#When Get data collection by Type is not valid
+#Then verify data collection by Type is not valid
 
 @test_54806
 Scenario: Retrieve DataSummary for GE-Class with invalid annotation type
