@@ -23,11 +23,11 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 
 /**
- * {@code DataCollectionWithNumImageSetsTest} evaluates the behavior of {@link DataCollectionWithNumImageSets}.
+ * {@code CondensedDataCollectionTest} evaluates the behavior of {@link CondensedDataCollection}.
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public class DataCollectionWithNumImageSetsTest {
+public class CondensedDataCollectionTest {
 
     ////////////////
     //
@@ -38,8 +38,8 @@ public class DataCollectionWithNumImageSetsTest {
     @Test
     public void equalsContract() {
         EqualsVerifier
-                .forClass(DataCollectionWithNumImageSets.class)
-                .withNonnullFields("id", "name", "schemaVersion", "type", "createdBy", "createdDate", "orgId", "numImageSets", "filters")
+                .forClass(CondensedDataCollection.class)
+                .withNonnullFields("id", "name", "type", "createdBy", "createdDate", "orgId", "numImageSets")
                 .verify();
     }
 
@@ -47,10 +47,10 @@ public class DataCollectionWithNumImageSetsTest {
     public void itShouldConvertADataSetToADataCollectionWithNumImageSets() {
         // ARRANGE
         DataSet dataSetToConvert = createMockDataSet();
-        DataCollectionWithNumImageSets expectedConvertedDataSet = createMockDataCollectionWithNumImageSets();
+        CondensedDataCollection expectedConvertedDataSet = createMockDataCollectionWithNumImageSets();
 
         // ACT
-        DataCollectionWithNumImageSets actualConvertedDataSet = DataCollectionWithNumImageSets.fromDataSetEntity(dataSetToConvert);
+        CondensedDataCollection actualConvertedDataSet = CondensedDataCollection.fromDataSetEntity(dataSetToConvert);
 
         // ASSERT
         assertThat(actualConvertedDataSet, is(equalTo(expectedConvertedDataSet)));
@@ -65,14 +65,14 @@ public class DataCollectionWithNumImageSetsTest {
 
         List<DataSet> dataSetsToConvert = Arrays.asList(new DataSet[]{firstDataSetToConvert, secondDataSetToConvert, thirdDataSetToConvert});
 
-        DataCollectionWithNumImageSets firstExpectedConvertedDataSet = createMockDataCollectionWithNumImageSets();
-        DataCollectionWithNumImageSets secondExpectedConvertedDataSet = createMockDataCollectionWithNumImageSets();
-        DataCollectionWithNumImageSets thirdExpectedConvertedDataSet = createMockDataCollectionWithNumImageSets();
+        CondensedDataCollection firstExpectedConvertedDataSet = createMockDataCollectionWithNumImageSets();
+        CondensedDataCollection secondExpectedConvertedDataSet = createMockDataCollectionWithNumImageSets();
+        CondensedDataCollection thirdExpectedConvertedDataSet = createMockDataCollectionWithNumImageSets();
 
-        List<DataCollectionWithNumImageSets> expectedConvertedDataSets = Arrays.asList(new DataCollectionWithNumImageSets[]{firstExpectedConvertedDataSet, secondExpectedConvertedDataSet, thirdExpectedConvertedDataSet});
+        List<CondensedDataCollection> expectedConvertedDataSets = Arrays.asList(new CondensedDataCollection[]{firstExpectedConvertedDataSet, secondExpectedConvertedDataSet, thirdExpectedConvertedDataSet});
 
         // ACT
-        List<DataCollectionWithNumImageSets> actualConvertedDataSets = DataCollectionWithNumImageSets.fromDataSetEntities(dataSetsToConvert);
+        List<CondensedDataCollection> actualConvertedDataSets = CondensedDataCollection.fromDataSetEntities(dataSetsToConvert);
 
         // ASSERT
         assertEquals(expectedConvertedDataSets, actualConvertedDataSets);
@@ -86,35 +86,29 @@ public class DataCollectionWithNumImageSetsTest {
 
     private static final Long MOCK_ID = 1L;
     private static final String MOCK_NAME = "mock name";
-    private static final String MOCK_SCHEMA_VERSION = "mock schema version";
     private static final String MOCK_DESCRIPTION = "mock description";
     private static final String MOCK_COLLECTION_TYPE = "mock collection type";
     private static final String MOCK_CREATED_BY = "mock created by";
     private static final String MOCK_CREATED_DATE = "mock created date";
     private static final String MOCK_ORG_ID = "mock org ID";
-    private static final Properties MOCK_PROPERTIES = new Properties();
     private static final List<Long> MOCK_IMAGE_SET_IDS = Arrays.asList(new Long[]{1L, 2L, 3L});
-    private static final Filters MOCK_FILTERS = new Filters();
 
     private DataSet createMockDataSet() {
         DataSet dataSet = new DataSet();
         dataSet.setId(MOCK_ID);
         dataSet.setName(MOCK_NAME);
-        dataSet.setSchemaVersion(MOCK_SCHEMA_VERSION);
         dataSet.setDescription(MOCK_DESCRIPTION);
         dataSet.setType(MOCK_COLLECTION_TYPE);
         dataSet.setCreatedBy(MOCK_CREATED_BY);
         dataSet.setCreatedDate(MOCK_CREATED_DATE);
         dataSet.setOrgId(MOCK_ORG_ID);
-        dataSet.setProperties(MOCK_PROPERTIES);
         dataSet.setImageSets(MOCK_IMAGE_SET_IDS);
-        dataSet.setFilters(MOCK_FILTERS);
 
         return dataSet;
     }
 
-    private DataCollectionWithNumImageSets createMockDataCollectionWithNumImageSets() {
-        return new DataCollectionWithNumImageSets(MOCK_ID, MOCK_NAME, MOCK_SCHEMA_VERSION, MOCK_DESCRIPTION, MOCK_COLLECTION_TYPE, MOCK_CREATED_BY, MOCK_CREATED_DATE, MOCK_ORG_ID, MOCK_PROPERTIES, MOCK_IMAGE_SET_IDS.size(), MOCK_FILTERS);
+    private CondensedDataCollection createMockDataCollectionWithNumImageSets() {
+        return new CondensedDataCollection(MOCK_ID, MOCK_NAME, MOCK_DESCRIPTION, MOCK_COLLECTION_TYPE, MOCK_CREATED_BY, MOCK_CREATED_DATE, MOCK_ORG_ID, MOCK_IMAGE_SET_IDS.size());
     }
 
 }

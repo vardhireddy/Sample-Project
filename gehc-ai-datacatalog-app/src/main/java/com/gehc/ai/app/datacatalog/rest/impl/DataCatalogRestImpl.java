@@ -21,7 +21,7 @@ import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataCollectionWithNumImageSets;
+import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
 import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
@@ -708,7 +708,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             matchingDataCollections = dataSetRepository.findByOrgIdOrderByCreatedDateDesc(request.getAttribute("orgId").toString());
         }
 
-        return new ResponseEntity<List<DataCollectionWithNumImageSets>>(DataCollectionWithNumImageSets.fromDataSetEntities(matchingDataCollections), HttpStatus.OK);
+        return new ResponseEntity<List<CondensedDataCollection>>(CondensedDataCollection.fromDataSetEntities(matchingDataCollections), HttpStatus.OK);
     }
 
     private List<String> getListOfStringsFromParams(String values) throws DataCatalogException {

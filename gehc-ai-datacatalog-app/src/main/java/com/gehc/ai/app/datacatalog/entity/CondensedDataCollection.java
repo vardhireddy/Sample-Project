@@ -15,12 +15,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * {@code DataCollectionWithNumImageSets} is a POJO that is structurally similar to the {@link DataSet} entity with the distinction
- * that it does not store the list of image IDs like the {@code DataSet} entity and instead stores the number of image sets.
+ * {@code CondensedDataCollection} is a POJO that is structurally similar to the {@link DataSet} entity with the following differences:
+ *
+ * <ul>
+ *     <li>It does not store the list of image IDs like the {@code DataSet} entity and instead stores the number of image sets.</li>
+ *     <li>It does not store the schema version, properties, or filters like the {@code DataSet} entity</li>
+ * </ul>
  *
  * @author andrew.c.wong@ge.com (212069153)
  */
-public final class DataCollectionWithNumImageSets {
+public final class CondensedDataCollection {
 
     ////////////////
     //
@@ -32,8 +36,6 @@ public final class DataCollectionWithNumImageSets {
 
     private final String name;
 
-    private final String schemaVersion;
-
     private final String description;
 
     private final String type;
@@ -44,11 +46,7 @@ public final class DataCollectionWithNumImageSets {
 
     private final String orgId;
 
-    private final Properties properties;
-
     private final Integer numImageSets;
-
-    private final Filters filters;
 
     /////////////////
     //
@@ -56,18 +54,15 @@ public final class DataCollectionWithNumImageSets {
     //
     /////////////////
 
-    public DataCollectionWithNumImageSets(Long id, String name, String schemaVersion, String description, String type, String createdBy, String createdDate, String orgId, Properties properties, Integer numImageSets, Filters filters) {
+    public CondensedDataCollection(Long id, String name, String description, String type, String createdBy, String createdDate, String orgId, Integer numImageSets) {
         this.id = id;
         this.name = name;
-        this.schemaVersion = schemaVersion;
         this.description = description;
         this.type = type;
         this.createdBy = createdBy;
         this.createdDate = createdDate;
         this.orgId = orgId;
-        this.properties = properties;
         this.numImageSets = numImageSets;
-        this.filters = filters;
     }
 
     /////////////
@@ -82,10 +77,6 @@ public final class DataCollectionWithNumImageSets {
 
     public String getName() {
         return name;
-    }
-
-    public String getSchemaVersion() {
-        return schemaVersion;
     }
 
     public String getDescription() {
@@ -108,14 +99,6 @@ public final class DataCollectionWithNumImageSets {
         return orgId;
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public Filters getFilters() {
-        return filters;
-    }
-
     public Integer getNumImageSets() {
         return numImageSets;
     }
@@ -127,72 +110,63 @@ public final class DataCollectionWithNumImageSets {
     //////////////////
 
     /**
-     * Returns the provided {@code List} of {@link DataSet} entities as a {@code List} of {@link DataCollectionWithNumImageSets}.
+     * Returns the provided {@code List} of {@link DataSet} entities as a {@code List} of {@link CondensedDataCollection}.
      *
      * @param dataSets the {@code List} of {@code DataSet}s to convert.
-     * @return a {@code List} of {@code DataCollectionWithNumImageSets}
+     * @return a {@code List} of {@code CondensedDataCollection}
      */
-    public static List<DataCollectionWithNumImageSets> fromDataSetEntities(List<DataSet> dataSets) {
-        return dataSets.stream().map(DataCollectionWithNumImageSets::fromDataSetEntity).collect(Collectors.toList());
+    public static List<CondensedDataCollection> fromDataSetEntities(List<DataSet> dataSets) {
+        return dataSets.stream().map(CondensedDataCollection::fromDataSetEntity).collect(Collectors.toList());
     }
 
     /**
-     * Returns the provided {@link DataSet} entity as a {@link DataCollectionWithNumImageSets}.
+     * Returns the provided {@link DataSet} entity as a {@link CondensedDataCollection}.
      *
      * @param dataSet the {@code DataSet}s to convert.
-     * @return a {@code DataCollectionWithNumImageSets}
+     * @return a {@code CondensedDataCollection}
      */
-    public static DataCollectionWithNumImageSets fromDataSetEntity(DataSet dataSet) {
-        return new DataCollectionWithNumImageSets(
+    public static CondensedDataCollection fromDataSetEntity(DataSet dataSet) {
+        return new CondensedDataCollection(
                 dataSet.getId(),
                 dataSet.getName(),
-                dataSet.getSchemaVersion(),
                 dataSet.getDescription(),
                 dataSet.getType(),
                 dataSet.getCreatedBy(),
                 dataSet.getCreatedDate(),
                 dataSet.getOrgId(),
-                dataSet.getProperties(),
-                dataSet.getImageSets().size(),
-                dataSet.getFilters()
+                dataSet.getImageSets().size()
         );
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+        if (o.getClass() != this.getClass()) return false;
 
-        DataCollectionWithNumImageSets that = (DataCollectionWithNumImageSets) o;
+        CondensedDataCollection that = (CondensedDataCollection) o;
 
         if (!getId().equals(that.getId())) return false;
         if (!getName().equals(that.getName())) return false;
-        if (!getSchemaVersion().equals(that.getSchemaVersion())) return false;
         if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
             return false;
         if (!getType().equals(that.getType())) return false;
         if (!getCreatedBy().equals(that.getCreatedBy())) return false;
         if (!getCreatedDate().equals(that.getCreatedDate())) return false;
         if (!getOrgId().equals(that.getOrgId())) return false;
-        if (getProperties() != null ? !getProperties().equals(that.getProperties()) : that.getProperties() != null)
-            return false;
-        if (!getNumImageSets().equals(that.getNumImageSets())) return false;
-        return getFilters().equals(that.getFilters());
+        return getNumImageSets().equals(that.getNumImageSets());
     }
 
     @Override
     public int hashCode() {
         int result = getId().hashCode();
         result = 31 * result + getName().hashCode();
-        result = 31 * result + getSchemaVersion().hashCode();
         result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
         result = 31 * result + getType().hashCode();
         result = 31 * result + getCreatedBy().hashCode();
         result = 31 * result + getCreatedDate().hashCode();
         result = 31 * result + getOrgId().hashCode();
-        result = 31 * result + (getProperties() != null ? getProperties().hashCode() : 0);
         result = 31 * result + getNumImageSets().hashCode();
-        result = 31 * result + getFilters().hashCode();
         return result;
     }
 }

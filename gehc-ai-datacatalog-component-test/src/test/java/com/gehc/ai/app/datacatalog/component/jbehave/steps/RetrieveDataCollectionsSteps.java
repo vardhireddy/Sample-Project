@@ -1,9 +1,7 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
-import com.gehc.ai.app.datacatalog.entity.DataCollectionWithNumImageSets;
+import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.Filters;
-import com.gehc.ai.app.datacatalog.entity.Properties;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 import org.jbehave.core.annotations.BeforeScenario;
@@ -22,6 +20,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.times;
@@ -30,7 +29,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.core.StringContains.containsString;
 
 /**
  * {@code RetrieveDataCollectionsSteps} implements the test scenarios defined by the
@@ -57,15 +55,12 @@ public class RetrieveDataCollectionsSteps {
 
     private static final Long MOCK_ID = 1L;
     private static final String MOCK_NAME = "mock name";
-    private static final String MOCK_SCHEMA_VERSION = "mock schema version";
     private static final String MOCK_DESCRIPTION = "mock description";
     private static final String MOCK_COLLECTION_TYPE = "Annotation";
     private static final String MOCK_CREATED_BY = "mock created by";
     private static final String MOCK_CREATED_DATE = "mock created date";
     private static final String MOCK_ORG_ID = "mock org ID";
-    private static final Properties MOCK_PROPERTIES = new Properties();
     private static final List<Long> MOCK_IMAGE_SET_IDS = Arrays.asList(new Long[]{1L, 2L, 3L});
-    private static final Filters MOCK_FILTERS = new Filters();
 
     /////////////////////////
     //
@@ -191,21 +186,18 @@ public class RetrieveDataCollectionsSteps {
         DataSet dataSet = new DataSet();
         dataSet.setId(MOCK_ID);
         dataSet.setName(MOCK_NAME);
-        dataSet.setSchemaVersion(MOCK_SCHEMA_VERSION);
         dataSet.setDescription(MOCK_DESCRIPTION);
         dataSet.setType(MOCK_COLLECTION_TYPE);
         dataSet.setCreatedBy(MOCK_CREATED_BY);
         dataSet.setCreatedDate(MOCK_CREATED_DATE);
         dataSet.setOrgId(MOCK_ORG_ID);
-        dataSet.setProperties(MOCK_PROPERTIES);
         dataSet.setImageSets(MOCK_IMAGE_SET_IDS);
-        dataSet.setFilters(MOCK_FILTERS);
 
         return dataSet;
     }
 
-    private DataCollectionWithNumImageSets createMockDataCollectionWithNumImageSets() {
-        return new DataCollectionWithNumImageSets(MOCK_ID, MOCK_NAME, MOCK_SCHEMA_VERSION, MOCK_DESCRIPTION, MOCK_COLLECTION_TYPE, MOCK_CREATED_BY, MOCK_CREATED_DATE, MOCK_ORG_ID, MOCK_PROPERTIES, MOCK_IMAGE_SET_IDS.size(), MOCK_FILTERS);
+    private CondensedDataCollection createMockDataCollectionWithNumImageSets() {
+        return new CondensedDataCollection(MOCK_ID, MOCK_NAME, MOCK_DESCRIPTION, MOCK_COLLECTION_TYPE, MOCK_CREATED_BY, MOCK_CREATED_DATE, MOCK_ORG_ID, MOCK_IMAGE_SET_IDS.size());
     }
 
 }
