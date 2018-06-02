@@ -135,7 +135,7 @@ public class ContractSteps {
         Contract contract = new Contract();
         contract.setId(1L);
         contract.setActive("true");
-        contract.setDataOriginCountry("Data Origin Country");
+        //contract.setDataOriginCountry("Data Origin Country");
         contract.setOrgId("orgId");
 
         return contract;
