@@ -1334,10 +1334,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 return new ResponseEntity<Object>(Collections.singletonMap("response", "The data allowed location must be provided"), HttpStatus.BAD_REQUEST);
             }
 
-
-
-	        // TODO: Implement validation of required attributes for Contract entity
-
 	        /* All gates passed! */
 	        // Now save the contract
 	        Contract contractObj;

@@ -109,8 +109,7 @@ public class CreateContractSteps {
 
     @Given("no internal errors occur when saving the contract")
     public void givenNoInternalErrorsOccurWhenSavingTheContract() {
-        Contract c = createMockCompleteContract();
-        when(contractRepository.save(any(Contract.class))).thenReturn(c);
+        when(contractRepository.save(any(Contract.class))).thenReturn(createMockCompleteContract());
     }
 
     @Given("an internal error occur when saving the contract")
@@ -265,10 +264,8 @@ public class CreateContractSteps {
     }
 
     @Then("a single contract should be saved to the database")
-    public void thenASingleContractShouldBeSavedToTheDatabase()
-            throws Exception {
-        Contract c = createMockCompleteContract();
-        verify(contractRepository, times(1)).save(c);
+    public void thenASingleContractShouldBeSavedToTheDatabase() throws Exception {
+        verify(contractRepository, times(1)).save(createMockCompleteContract());
     }
 
     @Then("the response's body should contain an error message saying not all required legal meta were provided")
@@ -353,49 +350,17 @@ public class CreateContractSteps {
         return str;
     }
 
-    private Date getDate() {
-        String str = "2017-03-02";
-        return Date.valueOf(str);
-    }
-
-    private Date getDate2() {
-        java.util.Date utilDate = new java.util.Date();
-        java.sql.Date date = new java.sql.Date(utilDate.getTime());
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            java.util.Date utilDate1 = dateFormat.parse("2018-03-30");
-            date = new java.sql.Date(utilDate1.getTime());
-        }catch (Exception e){}
-        return date;
-    }
-
-    public Date getSqldate() throws Exception{
-        String startDate="30-03-2013";
-        SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
-        java.util.Date date = sdf1.parse(startDate);
-        java.sql.Date sqlStartDate = new java.sql.Date(date.getTime());
-        System.out.print(sqlStartDate);
-        return sqlStartDate;
-    }
 
     private Contract createMockContractRequest() {
         Contract contract = new Contract();
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
-//        Date date = getDate();
         contract.setAgreementBeginDate("2017-03-02");
         contract.setDataUsagePeriod("365");
-        contract.setDataOriginCountry("USA");
-        contract.setDataOriginState("CA");
-        //contract.setActive("true");
-
-        //    contract.setTerritory("Test Territory");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
         contract.setDataLocationAllowed("USA");
-        //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
-
         return contract;
     }
 
@@ -407,11 +372,8 @@ public class CreateContractSteps {
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
         contract.setAgreementBeginDate("2017-03-02");
         contract.setDataUsagePeriod("365");
-        contract.setDataOriginCountry("USA");
-        contract.setDataOriginState("CA");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
-        //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
         contract.setActive("true");
         contract.setDataLocationAllowed("USA");
 
@@ -426,11 +388,8 @@ public class CreateContractSteps {
         contract.setDeidStatus(deidStatus);
         contract.setAgreementBeginDate(agreementBeginDate);
         contract.setDataUsagePeriod(dataUsagePeriod);
-        contract.setDataOriginCountry("USA");
-        contract.setDataOriginState("CA");
         contract.setUseCases(useCases);
         contract.setDataOriginCountriesStates(dataOriginCountriesStates);
-        //   contract.setDataResidence(Contract.DataResidence.GLOBAL);
         contract.setActive("true");
         contract.setDataLocationAllowed(dataLocationAllowed);
 

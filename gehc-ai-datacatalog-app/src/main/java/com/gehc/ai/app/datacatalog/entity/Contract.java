@@ -42,11 +42,10 @@ public class Contract{
 		super();
 	}
 	public Contract(Long id, @Size(max = 50) String schemaVersion, @NotNull @Size(min = 0, max = 255) String orgId,
-			Object uri, String deidStatus, @Size(min = 0, max = 255) String dataOriginCountry,
+			Object uri, String deidStatus, @Size(min = 0, max = 255)
 			@Size(min = 0, max = 50) String active, @Size(min = 0, max = 255) String uploadBy, Date uploadDate,
 			@Size(min = 0, max = 255) String agreementName, @Size(min = 0, max = 50) String primaryContactEmail,
-			String agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod,
-			@Size(min = 0, max = 100) String dataOriginState, List<ContractUseCase> useCases,List<ContractDataOriginCountriesStates> dataOriginCountriesStates, String dataLocationAllowed,
+			String agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod, List<ContractUseCase> useCases,List<ContractDataOriginCountriesStates> dataOriginCountriesStates, String dataLocationAllowed,
 			@Size(min = 0, max = 50) String status) {
 		super();
 		this.id = id;
@@ -54,7 +53,6 @@ public class Contract{
 		this.orgId = orgId;
 		this.uri = uri;
 		this.deidStatus = deidStatus;
-		this.dataOriginCountry = dataOriginCountry;
 		this.active = active;
 		this.uploadBy = uploadBy;
 		this.uploadDate = uploadDate;
@@ -62,7 +60,6 @@ public class Contract{
 		this.primaryContactEmail = primaryContactEmail;
 		this.agreementBeginDate = agreementBeginDate;
 		this.dataUsagePeriod = dataUsagePeriod;
-		this.dataOriginState = dataOriginState;
 		this.useCases = useCases;
 		this.dataOriginCountriesStates = dataOriginCountriesStates;
 		this.status = status;
@@ -90,10 +87,6 @@ public class Contract{
 	//@NotNull
 	@Column(name = "deid_status")
 	private String deidStatus;
-
-	@Size(min=0, max=255)
-	@Column(name = "data_origin_country")
-	private String dataOriginCountry;
 	
 	@Size(min=0, max=50)
 	private String active;	
@@ -135,10 +128,6 @@ public class Contract{
 	@Size(min=0, max=50)
 	@Column(name = "data_usage_period")	
 	private String dataUsagePeriod;
-
-	@Size(min=0, max=100)
-	@Column(name = "data_origin_state")
-	private String dataOriginState;
 
 	@Convert(converter = JsonConverter.class)
 	@Column(name = "use_cases")
@@ -200,12 +189,6 @@ public class Contract{
 //		this.businessCase = businessCase;
 //	}
 
-//	public String getDataOriginCountry() {
-//		return dataOriginCountry;
-//	}
-//	public void setDataOriginCountry(String dataOriginCountry) {
-//		this.dataOriginCountry = dataOriginCountry;
-//	}
 //	public String getUsageRights() {
 //		return usageRights;
 //	}
@@ -378,12 +361,6 @@ public class Contract{
 	public void setUri(Object uri) {
 		this.uri = uri;
 	}
-	public String getDataOriginCountry() {
-		return dataOriginCountry;
-	}
-	public void setDataOriginCountry(String dataOriginCountry) {
-		this.dataOriginCountry = dataOriginCountry;
-	}
 	public String getDeidStatus() {
 		return deidStatus;
 	}
@@ -414,12 +391,6 @@ public class Contract{
 	public void setDataUsagePeriod(String dataUsagePeriod) {
 		this.dataUsagePeriod = dataUsagePeriod;
 	}
-	public String getDataOriginState() {
-		return dataOriginState;
-	}
-	public void setDataOriginState(String dataOriginState) {
-		this.dataOriginState = dataOriginState;
-	}
 
 	public String getDataLocationAllowed() {
 		return dataLocationAllowed;
@@ -431,10 +402,10 @@ public class Contract{
 	@Override
 	public String toString() {
 		return "Contract [id=" + id + ", schemaVersion=" + schemaVersion + ", orgId=" + orgId + ", uri=" + uri
-				+ ", deidStatus=" + deidStatus + ", dataOriginCountry=" + dataOriginCountry + ", active=" + active
+				+ ", deidStatus=" + deidStatus + ", active=" + active
 				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", agreementName=" + agreementName
 				+ ", primaryContactEmail=" + primaryContactEmail + ", agreementBeginDate=" + agreementBeginDate
-				+ ", dataUsagePeriod=" + dataUsagePeriod + ", dataOriginState=" + dataOriginState + ", useCases="
+				+ ", dataUsagePeriod=" + dataUsagePeriod + ", useCases="
 				+ useCases + ", dataOriginCountriesStates=" + dataOriginCountriesStates + ", dataLocationAllowed=" + dataLocationAllowed + ", status=" + status + "]";
 	}
 	@Override
@@ -444,8 +415,6 @@ public class Contract{
 		result = prime * result + ((active == null) ? 0 : active.hashCode());
 		result = prime * result + ((agreementBeginDate == null) ? 0 : agreementBeginDate.hashCode());
 		result = prime * result + ((agreementName == null) ? 0 : agreementName.hashCode());
-		result = prime * result + ((dataOriginCountry == null) ? 0 : dataOriginCountry.hashCode());
-		result = prime * result + ((dataOriginState == null) ? 0 : dataOriginState.hashCode());
 		result = prime * result + ((dataUsagePeriod == null) ? 0 : dataUsagePeriod.hashCode());
 		result = prime * result + ((deidStatus == null) ? 0 : deidStatus.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -484,16 +453,6 @@ public class Contract{
 			if (other.agreementName != null)
 				return false;
 		} else if (!agreementName.equals(other.agreementName))
-			return false;
-		if (dataOriginCountry == null) {
-			if (other.dataOriginCountry != null)
-				return false;
-		} else if (!dataOriginCountry.equals(other.dataOriginCountry))
-			return false;
-		if (dataOriginState == null) {
-			if (other.dataOriginState != null)
-				return false;
-		} else if (!dataOriginState.equals(other.dataOriginState))
 			return false;
 		if (dataUsagePeriod == null) {
 			if (other.dataUsagePeriod != null)
@@ -631,7 +590,6 @@ public class Contract{
 		result = prime * result + ((businessCase == null) ? 0 : businessCase.hashCode());
 		result = prime * result + ((contactInfo == null) ? 0 : contactInfo.hashCode());
 		result = prime * result + ((contractName == null) ? 0 : contractName.hashCode());
-		result = prime * result + ((dataOriginCountry == null) ? 0 : dataOriginCountry.hashCode());
 		result = prime * result + ((deidStatus == null) ? 0 : deidStatus.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());
@@ -674,11 +632,6 @@ public class Contract{
 			if (other.contractName != null)
 				return false;
 		} else if (!contractName.equals(other.contractName))
-			return false;
-		if (dataOriginCountry == null) {
-			if (other.dataOriginCountry != null)
-				return false;
-		} else if (!dataOriginCountry.equals(other.dataOriginCountry))
 			return false;
 		if (deidStatus != other.deidStatus)
 			return false;

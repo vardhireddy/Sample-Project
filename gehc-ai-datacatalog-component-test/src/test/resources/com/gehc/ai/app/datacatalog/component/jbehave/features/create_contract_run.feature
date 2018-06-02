@@ -35,14 +35,6 @@ And the create contract response's content type should be JSON
 And the response's body should contain an error message saying could not save contract due to an internal error
 
 @test
-Scenario: User shall be able to retrieve contract data for valid and active contract Id
-Meta: @automated
-Given a valid and active contract ID to retrieve
-When the API which retrieves a contract is invoked with a valid and active contract ID
-Then the validate contract response's status code should be 200
-Then verify Retrieve contract data
-
-@test
 Scenario: User shall not be able to create a contract if agreement name is not provided
 Meta: @automated
 Given required legal meta data - agreement name is not provided
@@ -121,3 +113,11 @@ When the API which creates a contract is invoked with an org ID
 Then the create contract response's status code should be 400
 And the create contract response's content type should be JSON
 And the response's body should contain an error message saying the the data allowed location must be provided
+
+@test
+Scenario: User shall be able to retrieve contract data for valid and active contract Id
+Meta: @automated
+Given a valid and active contract ID to retrieve
+When the API which retrieves a contract is invoked with a valid and active contract ID
+Then the validate contract response's status code should be 200
+Then verify Retrieve contract data
