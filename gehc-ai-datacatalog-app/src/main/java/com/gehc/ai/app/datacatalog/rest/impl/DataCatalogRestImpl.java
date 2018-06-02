@@ -446,7 +446,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST)
+    @RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON} )
     @Transactional
     public ResponseEntity<?> saveDataSet(@RequestBody DataCollectionsCreateRequest dataCollectionsCreateRequest,
                                          HttpServletRequest request) {
@@ -1273,63 +1273,77 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST)
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
 	public ResponseEntity<?> saveContract(@RequestBody Contract contract, HttpServletRequest request) {
+        logger.debug("Creating a new contract, orgId = " + request.getAttribute("orgId"));
+
 			/* Toll gate checks */
-			if(null != request){
-		        logger.debug("Creating a new contract, orgId = " + request.getAttribute("orgId"));
-		        // Gate 1 - The org ID is required to be defined
-		        if (request.getAttribute("orgId") == null) {
-		            return new ResponseEntity<Object>(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
-		        }
+
+            // Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+			if(Objects.isNull(request)){
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "HTTP request object was not found"), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-	        // Gate 2 - The contract must be defined
+
+            // Gate 2 - The org ID is required to be defined
+            if (Objects.isNull(request.getAttribute("orgId"))) {
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
+            }
+
+	        // Gate 3 - The contract must be defined
 	        if(Objects.isNull(contract)){
 	            return new ResponseEntity<Object>(Collections.singletonMap("response", "A contract must be provided"), HttpStatus.BAD_REQUEST);
 	        }
 
-	        // Gate 3 - An agreement name must be provided
-	        if (Objects.isNull(contract.getAgreementName())) {
-	        	return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        // Gate 4 - An agreement name must be provided
+	        if (Objects.isNull(contract.getAgreementName()) || contract.getAgreementName().isEmpty()) {
+	        	return new ResponseEntity<Object>(Collections.singletonMap("response", "An agreement name must be provided"), HttpStatus.BAD_REQUEST);
 	        }
 	        
-	        
-	        	        
-/*	        // Gate 4 - The primary contact email must be provided
-	        if (Objects.isNull(contract.getPrimaryContactEmail()) && !contract.getPrimaryContactEmail().isEmpty()) {
-	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        // Gate 5 - The primary contact email must be provided
+	        if (Objects.isNull(contract.getPrimaryContactEmail()) || contract.getPrimaryContactEmail().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "A primary contact email must be provided"), HttpStatus.BAD_REQUEST);
 	        }
 
-	        // Gate 5 - The de-identified status must be provided
-	        if (Objects.isNull(contract.getDeidStatus()) && !contract.getDeidStatus().isEmpty()) {
-	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	        // Gate 6 - The de-identified status must be provided
+	        if (Objects.isNull(contract.getDeidStatus()) || contract.getDeidStatus().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The de-identified status must be provided"), HttpStatus.BAD_REQUEST);
 	        }
 	        
-	        // Gate 6 - An agreement begin date must be provided
+	        // Gate 7 - An agreement begin date must be provided
 	        if (Objects.isNull(contract.getAgreementBeginDate())) {
-	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "An agreement begin date must be provided"), HttpStatus.BAD_REQUEST);
 	        }
-	        
-	        // Gate 7 - The data usage period must be provided
-	        if (Objects.isNull(contract.getDataUsagePeriod()) && !contract.getDataUsagePeriod().isEmpty()) {
-	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+
+	        // Gate 8 - The data usage period must be provided
+	        if (Objects.isNull(contract.getDataUsagePeriod()) || contract.getDataUsagePeriod().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The data usage period must be provided"), HttpStatus.BAD_REQUEST);
 	        }
-	        
-	        // Gate 8 - The data origin country must be provided
-	        if (Objects.isNull(contract.getDataOriginCountry()) && !contract.getDataOriginCountry().isEmpty()) {
-	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
+
+	        // Gate 9 - The data origin country and state must be provided
+	        if (Objects.isNull(contract.getDataOriginCountriesStates()) || contract.getDataOriginCountriesStates().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The data origin country and state must be provided"), HttpStatus.BAD_REQUEST);
 	        }
-	        
-	        // Gate 8 - The data use cases must be provided
-	        if (Objects.isNull(contract.getUseCases()) && !contract.getUseCases().isEmpty()) {
-	            return new ResponseEntity<Object>(Collections.singletonMap("response", "All legal meta data must be provided"), HttpStatus.BAD_REQUEST);
-	        }*/
+
+	        // Gate 10 - The data use cases must be provided
+	        if (Objects.isNull(contract.getUseCases()) || contract.getUseCases().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The data use cases must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+            // Gate 11 - The data allowed location must be provided
+            if (Objects.isNull(contract.getDataLocationAllowed()) || contract.getDataLocationAllowed().isEmpty()) {
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "The data allowed location must be provided"), HttpStatus.BAD_REQUEST);
+            }
+
+
+
 	        // TODO: Implement validation of required attributes for Contract entity
 
 	        /* All gates passed! */
 	        // Now save the contract
 	        Contract contractObj;
 			try {
+			    contract.setOrgId(request.getAttribute("orgId").toString());
+			    contract.setActive("true");
 				contractObj = contractRepository.save(contract);
 			} catch (Exception e1) {
 				logger.error(e1.getMessage());

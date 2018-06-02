@@ -45,8 +45,8 @@ public class Contract{
 			Object uri, String deidStatus, @Size(min = 0, max = 255) String dataOriginCountry,
 			@Size(min = 0, max = 50) String active, @Size(min = 0, max = 255) String uploadBy, Date uploadDate,
 			@Size(min = 0, max = 255) String agreementName, @Size(min = 0, max = 50) String primaryContactEmail,
-			Date agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod,
-			@Size(min = 0, max = 100) String dataOriginState, List<ContractUseCase> useCases,
+			String agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod,
+			@Size(min = 0, max = 100) String dataOriginState, List<ContractUseCase> useCases,List<ContractDataOriginCountriesStates> dataOriginCountriesStates, String dataLocationAllowed,
 			@Size(min = 0, max = 50) String status) {
 		super();
 		this.id = id;
@@ -64,7 +64,9 @@ public class Contract{
 		this.dataUsagePeriod = dataUsagePeriod;
 		this.dataOriginState = dataOriginState;
 		this.useCases = useCases;
+		this.dataOriginCountriesStates = dataOriginCountriesStates;
 		this.status = status;
+		this.dataLocationAllowed = dataLocationAllowed;
 	}
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -125,9 +127,10 @@ public class Contract{
 	public void setPrimaryContactEmail(String primaryContactEmail) {
 		this.primaryContactEmail = primaryContactEmail;
 	}
+
 	@JsonFormat(pattern="yyyy-MM-dd")
 	@Column(name = "agreement_begin_date")
-    private Date agreementBeginDate;  
+    private String agreementBeginDate;
 
 	@Size(min=0, max=50)
 	@Column(name = "data_usage_period")	
@@ -140,6 +143,14 @@ public class Contract{
 	@Convert(converter = JsonConverter.class)
 	@Column(name = "use_cases")
 	private List<ContractUseCase> useCases; // NOSONAR
+
+	@Convert(converter = JsonConverter.class)
+	@Column(name = "data_origin_countries_states")
+	private List<ContractDataOriginCountriesStates> dataOriginCountriesStates; // NOSONAR
+
+	//@NotNull
+	@Column(name = "data_location_allowed")
+	private String dataLocationAllowed;
 	
 	@Size(min=0, max=50)
 	private String status;
@@ -149,6 +160,12 @@ public class Contract{
 	}
 	public void setUseCases(List<ContractUseCase> useCases) {
 		this.useCases = useCases;
+	}
+	public List<ContractDataOriginCountriesStates> getDataOriginCountriesStates() {
+		return dataOriginCountriesStates;
+	}
+	public void setDataOriginCountriesStates(List<ContractDataOriginCountriesStates> dataOriginCountriesStates) {
+		this.dataOriginCountriesStates = dataOriginCountriesStates;
 	}
 	public String getStatus() {
 		return status;
@@ -323,6 +340,22 @@ public class Contract{
 		}
 	}
 
+	public enum DataLocationAllowed {
+
+		ONSHORE_ONLY_WHERE_THE_DATA_WAS_HARVESTED("Onshore Only (Where the data was harvested)"), GLOBAL("Global");
+
+		private String displayName;
+
+		private DataLocationAllowed(String displayName){
+			this.displayName = displayName;
+		}
+
+		@Override
+		public String toString(){
+			return this.displayName;
+		}
+	}
+
 	public enum DataResidence{
 		ONSHORE_ONLY("Onshore Only"), GLOBAL("Global");
 
@@ -369,10 +402,10 @@ public class Contract{
 	public void setAgreementName(String agreementName) {
 		this.agreementName = agreementName;
 	}
-	public Date getAgreementBeginDate() {
+	public String getAgreementBeginDate() {
 		return agreementBeginDate;
 	}
-	public void setAgreementBeginDate(Date agreementBeginDate) {
+	public void setAgreementBeginDate(String agreementBeginDate) {
 		this.agreementBeginDate = agreementBeginDate;
 	}
 	public String getDataUsagePeriod() {
@@ -387,6 +420,14 @@ public class Contract{
 	public void setDataOriginState(String dataOriginState) {
 		this.dataOriginState = dataOriginState;
 	}
+
+	public String getDataLocationAllowed() {
+		return dataLocationAllowed;
+	}
+	public void setDataLocationAllowed(String dataLocationAllowed) {
+		this.dataLocationAllowed = dataLocationAllowed;
+	}
+
 	@Override
 	public String toString() {
 		return "Contract [id=" + id + ", schemaVersion=" + schemaVersion + ", orgId=" + orgId + ", uri=" + uri
@@ -394,7 +435,7 @@ public class Contract{
 				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", agreementName=" + agreementName
 				+ ", primaryContactEmail=" + primaryContactEmail + ", agreementBeginDate=" + agreementBeginDate
 				+ ", dataUsagePeriod=" + dataUsagePeriod + ", dataOriginState=" + dataOriginState + ", useCases="
-				+ useCases + ", status=" + status + "]";
+				+ useCases + ", dataOriginCountriesStates=" + dataOriginCountriesStates + ", dataLocationAllowed=" + dataLocationAllowed + ", status=" + status + "]";
 	}
 	@Override
 	public int hashCode() {
@@ -416,6 +457,8 @@ public class Contract{
 		result = prime * result + ((uploadDate == null) ? 0 : uploadDate.hashCode());
 		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
 		result = prime * result + ((useCases == null) ? 0 : useCases.hashCode());
+		result = prime * result + ((dataOriginCountriesStates == null) ? 0 : dataOriginCountriesStates.hashCode());
+		result = prime * result + ((dataLocationAllowed == null) ? 0 : dataLocationAllowed.hashCode());
 		return result;
 	}
 	@Override
@@ -506,6 +549,16 @@ public class Contract{
 			if (other.useCases != null)
 				return false;
 		} else if (!useCases.equals(other.useCases))
+			return false;
+		if (dataOriginCountriesStates == null) {
+			if (other.dataOriginCountriesStates != null)
+				return false;
+		} else if (!dataOriginCountriesStates.equals(other.dataOriginCountriesStates))
+			return false;
+		if (dataLocationAllowed == null) {
+			if (other.dataLocationAllowed != null)
+				return false;
+		} else if (!dataLocationAllowed.equals(other.dataLocationAllowed))
 			return false;
 		return true;
 	}
