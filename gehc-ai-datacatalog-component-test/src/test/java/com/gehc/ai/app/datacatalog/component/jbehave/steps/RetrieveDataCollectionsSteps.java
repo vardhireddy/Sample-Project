@@ -9,6 +9,7 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -92,18 +94,18 @@ public class RetrieveDataCollectionsSteps {
 
     @Given("no internal errors occur when retrieving the data collections for the target org ID")
     public void givenNoInternalErrorsOccurWhenRetrievingTheDataCollectionsForTheTargetOrgId() {
-        when(dataSetRepository.findByOrgIdOrderByCreatedDateDesc(any(String.class))).thenReturn(this.dataSets);
+        when(dataSetRepository.findByOrgIdOrderByCreatedDateDesc(any(Pageable.class), any(String.class))).thenReturn(this.dataSets);
     }
 
     @Given("no internal errors occur when retrieving the data collections of a target collection type for the target org ID")
     public void givenNoInternalErrorsOccurWhenRetrievingTheDataCollectionsOfATargetCollectionTypeForTheTargetOrgId() {
-        when(dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(any(String.class), any(String.class))).thenReturn(this.dataSets);
+        when(dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(any(Pageable.class), any(String.class), any(String.class))).thenReturn(this.dataSets);
     }
 
     @SuppressWarnings("unchecked")
     @Given("an internal error occurs that causes the data collection retrieval for the target org ID to fail")
     public void givenAnInternalErrorOccursThatCausesTheDataCollectionRetrievalToFail() throws Exception {
-        when(dataSetRepository.findByOrgIdOrderByCreatedDateDesc(any(String.class))).thenThrow(Exception.class);
+        when(dataSetRepository.findByOrgIdOrderByCreatedDateDesc(any(Pageable.class), any(String.class))).thenThrow(Exception.class);
     }
 
     /////////////////////
@@ -157,12 +159,12 @@ public class RetrieveDataCollectionsSteps {
 
     @Then("a single request to retrieve all data collections for the target org ID should be made")
     public void thenASingleRequestToRetrieveAllDataCollectionForTheTargetOrgIdShouldBeMade() throws Exception {
-        verify(dataSetRepository, times(1)).findByOrgIdOrderByCreatedDateDesc(MOCK_ORG_ID);
+        verify(dataSetRepository, times(1)).findByOrgIdOrderByCreatedDateDesc(any(Pageable.class), eq(MOCK_ORG_ID));
     }
 
     @Then("a single request to retrieve all data collections of the target collection type for the target org ID should be made")
     public void thenASingleRequestToRetrieveAllDataCollectionOfTheTargetCollectionTypeForTheTargetOrgIdShouldBeMade() throws Exception {
-        verify(dataSetRepository, times(1)).findByTypeAndOrgIdOrderByCreatedDateDesc(MOCK_COLLECTION_TYPE, MOCK_ORG_ID);
+        verify(dataSetRepository, times(1)).findByTypeAndOrgIdOrderByCreatedDateDesc(any(Pageable.class), eq(MOCK_COLLECTION_TYPE), eq(MOCK_ORG_ID));
     }
 
     @Then("the body resulting from retrieving the data collections should contain an error message saying an org ID needs to be provided")

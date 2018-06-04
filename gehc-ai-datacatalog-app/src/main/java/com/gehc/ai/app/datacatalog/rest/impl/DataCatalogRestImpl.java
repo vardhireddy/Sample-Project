@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -678,7 +679,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.GET)
-    public ResponseEntity<?> getDataSetByType(@QueryParam("type") String type, HttpServletRequest request) {
+    public ResponseEntity<?> getDataSetByType(@QueryParam("type") String type, Pageable page, HttpServletRequest request) {
         logger.debug("In REST, Get DC for type " + type);
 
         /* Common toll gate checks */
@@ -703,9 +704,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 return new ResponseEntity<Object>(Collections.singletonMap("response", "Invalid data collection type was provided"), HttpStatus.BAD_REQUEST);
             }
 
-            matchingDataCollections = dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(type, request.getAttribute("orgId").toString());
+            matchingDataCollections = dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(page, type, request.getAttribute("orgId").toString());
         } else {
-            matchingDataCollections = dataSetRepository.findByOrgIdOrderByCreatedDateDesc(request.getAttribute("orgId").toString());
+            matchingDataCollections = dataSetRepository.findByOrgIdOrderByCreatedDateDesc(page, request.getAttribute("orgId").toString());
         }
 
         return new ResponseEntity<List<CondensedDataCollection>>(CondensedDataCollection.fromDataSetEntities(matchingDataCollections), HttpStatus.OK);
