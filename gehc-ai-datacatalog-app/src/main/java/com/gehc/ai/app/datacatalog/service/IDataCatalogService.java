@@ -11,17 +11,15 @@
  */
 package com.gehc.ai.app.datacatalog.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+
+import java.util.List;
+import java.util.Map;
 
 public interface IDataCatalogService {
     
@@ -64,7 +62,7 @@ public interface IDataCatalogService {
     
     List<ImageSeries> getImgSeriesWithPatientByIds(List<Long> imgSerIdLst);
 
-	Long uploadContract(List<MultipartFile> contractFiles, Contract contract);
+	Contract saveContract(Contract contract);
 
 	Contract getContract(Long contractId);
 	

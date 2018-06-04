@@ -49,10 +49,17 @@ spring:
     name: Datacatalog
   profiles: local
   datasource:
+<<<<<<< HEAD
     url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST&useSSL=false}
     user: ${spring_datatsource_username:root}
     password: ${spring_datasource_password:install}
 
+=======
+    url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
+    username: root
+    password: root
+coolidge.micro.inference.url: http://127.0.0.1:6001/mInfer
+>>>>>>> e691b1750fe67f499970742daa89c3bec6d2ce94
 logging:
   pattern.console: "%clr(%d{MM-dd-yyyy HH:mm:ss.SSS}){faint} %clr(%5p) %clr([${spring.application.name:-}]){yellow} %clr([%X{amzn-trace-id:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
   level:
