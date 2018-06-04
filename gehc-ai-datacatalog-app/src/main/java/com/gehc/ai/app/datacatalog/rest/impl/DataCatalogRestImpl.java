@@ -449,7 +449,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON} )
     @Transactional
     public ResponseEntity<?> saveDataSet(@RequestBody DataCollectionsCreateRequest dataCollectionsCreateRequest,

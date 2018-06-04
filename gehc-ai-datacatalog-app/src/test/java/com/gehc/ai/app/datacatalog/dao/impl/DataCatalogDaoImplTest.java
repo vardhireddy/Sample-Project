@@ -619,24 +619,6 @@ public class DataCatalogDaoImplTest {
         assertEquals(result.toString(), getImageSeriesWithPatient().toString());
     }
 
-//    @Test
-//    public void testingestContractDetails(){
-//    	Contract contract = new Contract();
-//    	contract.setOrgId("test_123");
-//    	contract.setId(1L);
-//    	when(contractRepository.save(contract)).thenReturn(contract);
-//    	Long contractId = dataCatalogDao.ingestContractDetails(contract);
-//    	assertEquals(contractId, contract.getId());
-//    }
-
-/*    @Test
-    public void testgetContractDetails(){
-    	Contract contract = new Contract();
-    	when(contractRepository.findOne(contract.getId())).thenReturn(contract);
-    	Contract receivedContract = dataCatalogDao.getContractDetails(contract.getId());
-    	assertEquals(contract, receivedContract);
-    }*/
-
     private List<ImageSeries> getImageSeriesWithPatient() {
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
         ImageSeries imgSeries = new ImageSeries();

@@ -44,51 +44,6 @@ public class ContractSteps {
         this.contractRepository = contractRepository;
     }
 
-//    @Given("Store contract data - DataSetUp Provided")
-//    public void givenStoreContractData() throws Exception {
-//        Contract contract = getContract();
-//        when(dataCatalogDao.ingestContractDetails(any(Contract.class))).thenReturn(contract.getId());
-//    }
-//
-//    @When("Store contract data")
-//    public void StoreContractData() throws Exception {
-//
-//        ClassLoader classLoader = getClass().getClassLoader();
-//
-//        MockMultipartFile firstFile = new MockMultipartFile("contract", "contract.pdf", MediaType.MULTIPART_FORM_DATA,
-//                classLoader.getResourceAsStream("data/contract.pdf"));
-//        MockMultipartFile jsonFile = new MockMultipartFile("metadata", "metadata.json", MediaType.MULTIPART_FORM_DATA,
-//                classLoader.getResourceAsStream("data/metadata.json"));
-//
-//        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.fileUpload("/api/v1/datacatalog/contract")
-//                .file(firstFile).file(jsonFile));
-//
-//    }
-//
-//    @Then("verify Store contract data")
-//    public void verifyStoreContractData() throws Exception {
-//    	retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
-//        retrieveResult.andExpect(status().isOk());
-//       // retrieveResult.andExpect(status().isCreated());
-//    }
-//
-//    @Given("Retrieve contract data - DataSetUp Provided")
-//    public void givenRetrieveContractData() throws Exception {
-//        Contract contract = getContract();
-//        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
-//    }
-//
-//    @When("Retrieve contract data")
-//    public void RetrieveContractData() throws Exception {
-//        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1"));
-//    }
-//
-//    @Then("verify Retrieve contract data")
-//    public void verifyRetrieveContractData() throws Exception {
-//        //retrieveResult.andExpect(content().json("{\"status\": \"SUCCESS\",\"responseObject\": 1}"));
-//        retrieveResult.andExpect(status().isOk());
-//    }
-
     @Given("contract Id and Org Id")
     public void givenContractIdAndOrgId() throws Exception {
         when(contractRepository.validateContractIdAndOrgId(anyLong(), anyString())).thenReturn(1);

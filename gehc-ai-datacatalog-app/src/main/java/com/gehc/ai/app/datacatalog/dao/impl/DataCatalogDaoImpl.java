@@ -749,14 +749,15 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 
 	@Override
 	public Contract saveContract(Contract contract) {
+		Contract contractResult = null;
 		try {
-			return contractRepository.save(contract);
+			contractResult = contractRepository.save(contract);
 		} catch (Exception e) {
 			logger.error("Error in db");
 			e.printStackTrace();
 		}
 
-		return null;
+		return contractResult;
 	}
 
 	@Override
