@@ -148,7 +148,7 @@ public final class CondensedDataCollection {
 
         if (!getId().equals(that.getId())) return false;
         if (!getName().equals(that.getName())) return false;
-        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
+        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : (that.getDescription() != null))
             return false;
         if (!getType().equals(that.getType())) return false;
         if (!getCreatedBy().equals(that.getCreatedBy())) return false;
