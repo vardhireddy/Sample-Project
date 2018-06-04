@@ -41,6 +41,7 @@ import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
@@ -62,7 +63,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -449,8 +449,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST)
+    @RequestMapping(value = "/datacatalog/data-collection", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON} )
     @Transactional
     public ResponseEntity<?> saveDataSet(@RequestBody DataCollectionsCreateRequest dataCollectionsCreateRequest,
                                          HttpServletRequest request) {
@@ -1136,90 +1135,35 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return apiResponse;
     }
 
-
-    /** For 18.3 SP2
-     *
-     * API to upload contract
-     *
-     * @param contractFiles
-     * @param metadataJson
-     * @return
-
-     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
-     public ResponseEntity<DataCatalogResponse> uploadContract(
-     @RequestParam(value = "contract") List<MultipartFile> contractFiles,
-     @RequestParam(value = "metadata", required = false) MultipartFile metadataJson) {
-     Contract contract = null;
-     try {
-     contract = RequestValidator.validateContractAndParseMetadata(contractFiles, metadataJson);
-     } catch(DataCatalogException exception){
-     return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-     }
-
-     try {
-     long contractId = dataCatalogService.uploadContract(contractFiles, contract);
-     return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId),HttpStatus.CREATED);
-     } catch (Exception e) {
-     return new ResponseEntity<>(DataCatalogResponse.getErrorResponse (e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-     }
-     }
-     */
-
-    /**
-     * API to upload contract
-     *
-     * @param contractFiles
-     * @return
-     */
-    @Produces(MediaType.APPLICATION_JSON)
-    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA)
-    public ResponseEntity<DataCatalogResponse> uploadContract(
-            @RequestParam(value = "contract") List<MultipartFile> contractFiles) {
-        Contract contract = null;
-        try {
-            contract = RequestValidator.validateContractAndParseMetadata(contractFiles);
-        } catch (DataCatalogException exception) {
-            logger.error("Exception occured while uploading contract : ", exception);
-            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(exception.getLocalizedMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        try {
-            long contractId = dataCatalogService.uploadContract(contractFiles, contract);
-            logger.debug("Created contract with ID " + contractId);
-            return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contractId), HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Exception occured while uploading contract : ", e);
-            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     /**
      * API to fetch contract
      *
      * @param
      * @return
      */
+    @Override
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
-    public ResponseEntity<DataCatalogResponse> getContracts(@PathVariable(value = "contractId") Long contractId) {
+    public ResponseEntity<Contract> getContracts(@PathVariable(value = "contractId") Long contractId) {
         Contract contract;
         try {
             RequestValidator.validateContractId(contractId);
         } catch (DataCatalogException exception) {
-            // logger.error("Exception occured while validating the contract ",
-            // exception);
-            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(exception.getLocalizedMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Exception occured while validating the contract ", exception.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response","Please pass a valid contract ID"), HttpStatus.BAD_REQUEST);
         }
 
         try {
             contract = dataCatalogService.getContract(contractId);
-            return new ResponseEntity<>(DataCatalogResponse.getSuccessResponse(contract), HttpStatus.OK);
         } catch (Exception e) {
-            // logger.error("Exception occured while uploading the contract ",
-            // e);
-            return new ResponseEntity<>(DataCatalogResponse.getErrorResponse(e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Exception retrieving the contract ", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response","Exception retrieving the contract"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if (contract == null || contract.getActive() == null){
+            return new ResponseEntity(Collections.singletonMap("response","No Contract Exists with the given Id."), HttpStatus.BAD_REQUEST);
+        }else if (contract.getActive().equalsIgnoreCase("false")) {
+            return new ResponseEntity(Collections.singletonMap("response", "Contract associated with given Id is inactive"), HttpStatus.OK);
+        }else return new ResponseEntity<>(contract, HttpStatus.OK);
+
     }
 
     @Override
@@ -1309,6 +1253,140 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     .entity("Operation failed while retrieving image set ids by org id").build());
         }
         return new ArrayList<Long>();
+    }
+
+	@Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
+	public ResponseEntity<?> saveContract(@RequestBody Contract contract, HttpServletRequest request) {
+        logger.debug("Creating a new contract, orgId = " + request.getAttribute("orgId"));
+
+			/* Toll gate checks */
+
+            // Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+			if(Objects.isNull(request)){
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "HTTP request object was not found"), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+            // Gate 2 - The org ID is required to be defined
+            if (Objects.isNull(request.getAttribute("orgId"))) {
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
+            }
+
+	        // Gate 3 - The contract must be defined
+	        if(Objects.isNull(contract)){
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "A contract must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+	        // Gate 4 - An agreement name must be provided
+	        if (Objects.isNull(contract.getAgreementName()) || contract.getAgreementName().isEmpty()) {
+	        	return new ResponseEntity<Object>(Collections.singletonMap("response", "An agreement name must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // Gate 5 - The primary contact email must be provided
+	        if (Objects.isNull(contract.getPrimaryContactEmail()) || contract.getPrimaryContactEmail().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "A primary contact email must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+	        // Gate 6 - The de-identified status must be provided
+	        if (Objects.isNull(contract.getDeidStatus()) || contract.getDeidStatus().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The de-identified status must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+	        
+	        // Gate 7 - An agreement begin date must be provided
+	        if (Objects.isNull(contract.getAgreementBeginDate()) || contract.getAgreementBeginDate().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "An agreement begin date must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+	        // Gate 8 - The data usage period must be provided
+	        if (Objects.isNull(contract.getDataUsagePeriod()) || contract.getDataUsagePeriod().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The data usage period must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+	        // Gate 9 - The data origin country and state must be provided
+	        if (Objects.isNull(contract.getDataOriginCountriesStates()) || contract.getDataOriginCountriesStates().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The data origin country and state must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+	        // Gate 10 - The data use cases must be provided
+	        if (Objects.isNull(contract.getUseCases()) || contract.getUseCases().isEmpty()) {
+	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The data use cases must be provided"), HttpStatus.BAD_REQUEST);
+	        }
+
+            // Gate 11 - The data allowed location must be provided
+            if (Objects.isNull(contract.getDataLocationAllowed()) || contract.getDataLocationAllowed().isEmpty()) {
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "The data allowed location must be provided"), HttpStatus.BAD_REQUEST);
+            }
+
+	        /* All gates passed! */
+	        // Now save the contract
+	        Contract contractObj;
+			try {
+			    contract.setOrgId(request.getAttribute("orgId").toString());
+			    contract.setActive("true");
+				contractObj = contractRepository.save(contract);
+			} catch (Exception e1) {
+				logger.error(e1.getMessage());
+                return new ResponseEntity<Object>(Collections.singletonMap("response", "Could not save contract due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			if(null != contractObj){
+				logger.debug("Contract id " + contractObj.getId());
+			}
+            // Return the recently saved contract
+            return new ResponseEntity<Contract>(contractObj, HttpStatus.CREATED);
+	}
+
+	@Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.PUT)
+    public ResponseEntity<Contract> updateContract(@PathVariable Long contractId,
+                                                    @Valid @RequestBody UpdateContractRequest updateRequest){
+
+        logger.info("Validating contract update request body : {}", updateRequest.toString());
+
+        if (updateRequest == null ||
+                (updateRequest.getStatus() == null && updateRequest.getUri() == null)
+                || (updateRequest.getStatus().isEmpty() && updateRequest.getUri().toString().length() < 5))
+        {
+            return new ResponseEntity(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), HttpStatus.BAD_REQUEST);
+
+        }
+
+        Contract contractToBeUpdated;
+
+        try{
+            contractToBeUpdated = dataCatalogService.getContract(contractId);
+        }catch (Exception e)
+        {
+            logger.error("Exception retrieving the contract ", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response","Exception retrieving the contract."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (contractToBeUpdated == null || contractToBeUpdated.getActive() == null){
+            return new ResponseEntity(Collections.singletonMap("response","No Contract Exists with the given Id."), HttpStatus.BAD_REQUEST);
+        }else if (contractToBeUpdated.getActive().equalsIgnoreCase("false")) {
+            return new ResponseEntity(Collections.singletonMap("response", "Contract associated with given Id is inactive. Contract shall not be updated."), HttpStatus.OK);
+        }else {
+
+            contractToBeUpdated.setStatus(updateRequest.getStatus().isEmpty()
+                    ?contractToBeUpdated.getStatus()
+                    :updateRequest.getStatus());
+            contractToBeUpdated.setUri((updateRequest.getUri() == null
+                    || updateRequest.getUri().toString().length() < 5)
+                    ?contractToBeUpdated.getUri()
+                    :updateRequest.getUri());
+
+            try {
+                contractToBeUpdated = dataCatalogService.saveContract(contractToBeUpdated);
+            }catch (Exception e1){
+                logger.error("Exception saving the contract object", e1.getMessage());
+                return new ResponseEntity(Collections.singletonMap("response","Exception saving the updated contract."), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(contractToBeUpdated, HttpStatus.OK);
+        }
+
     }
 
     @SuppressWarnings("unchecked")
