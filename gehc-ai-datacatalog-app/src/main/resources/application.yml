@@ -1,7 +1,6 @@
 ### AWS
 spring:
-  application:
-    name: Datacatalog
+  application.name: Datacatalog
   datasource:
     url: ${spring_datasource_url:jdbc:mysql://dd13e7t1i438cg0.cum7uudlheyn.us-east-1.rds.amazonaws.com:3306/lfdb}
     username: ${spring_datatsource_username:dbadmin123}
@@ -16,24 +15,28 @@ spring:
         show_sql: false
         use_sql_comments: true
         format_sql: false
-        dialect: org.hibernate.dialect.MySQL5Dialect
+experiment:
+  targetData:
+    gtMaskLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
+    imgLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
+    locationType: s3
+uom.user.me.url: ${uom_api_gateway_url:https://core.prdge.us-west-2.eng.gehealthcloud.io/idam_uomapi}/v1/user/me?level.value=2
+#Sandbox
+#coolidge.micro.inference.url: http://10.202.102.166:6000/mInfer
+#DEV_APPS
+coolidge.micro.inference.url: http://10.50.55.14:6000/mInfer
 
+dev:
+  mode: true
+  orgId: f1341a2c-7a54-4d68-9f40-a8b2d14d3806
 flyway:
   enabled: ${flyway_enabled:true}
-  schemas: ${flyway_schemas:lfdb}
+  schemas: lfdb
   baselineOnMigrate: true
   validateOnMigrate: false
   url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST}
   user: ${spring_datatsource_username:root}
   password: ${spring_datasource_password:root}
-
-datacatalog:
-  config:
-    uomUserMeUrl: ${uom_api_gateway_url:https://core.prdge.us-west-2.eng.gehealthcloud.io/idam_uomapi}/v1/user/me?level.value=2
-  devConfig:
-    mode: true
-    orgId: f1341a2c-7a54-4d68-9f40-a8b2d14d3806
-
 logging:
   pattern.console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr([${spring.application.name:-}]){yellow} %clr([%X{amzn-trace-id:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
   level:
@@ -45,28 +48,18 @@ logging:
 ##Local
 ## Use -Dspring.profiles.active=local as part of the JVM arguments when running locally
 spring:
-  application:
-    name: Datacatalog
+  application.name: Datacatalog
   profiles: local
   datasource:
-<<<<<<< HEAD
-    url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST&useSSL=false}
-    user: ${spring_datatsource_username:root}
-    password: ${spring_datasource_password:install}
-
-=======
     url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
     username: root
     password: root
 coolidge.micro.inference.url: http://127.0.0.1:6001/mInfer
->>>>>>> e691b1750fe67f499970742daa89c3bec6d2ce94
 logging:
   pattern.console: "%clr(%d{MM-dd-yyyy HH:mm:ss.SSS}){faint} %clr(%5p) %clr([${spring.application.name:-}]){yellow} %clr([%X{amzn-trace-id:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
   level:
     org: ${thirdparty_log_level:WARN}
     java: ${thirdparty_log_level:WARN}
     com.gehc.ai.app: ${application_log_level:DEBUG}  
-
 flyway:
   enabled: ${flyway_enabled:false}
-  
