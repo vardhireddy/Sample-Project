@@ -1344,7 +1344,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ResponseEntity<Contract> updateContract(@PathVariable Long contractId,
                                                     @Valid @RequestBody UpdateContractRequest updateRequest){
 
-        logger.info("Validating contract update request body : {}", updateRequest.toString());
+        logger.info("Validating contract update request body.");
 
         if (updateRequest == null ||
                 (updateRequest.getStatus() == null && updateRequest.getUri() == null)
