@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Response;
 import java.util.List;
 import java.util.Map;
 
@@ -205,7 +206,7 @@ public interface IDataCatalogRest {
      * @param request, to get an org id based on authentication token
      * @return list of Data Set
      */
-    List<DataSet> getDataSetByType(String type, HttpServletRequest request);
+    ResponseEntity<?> getDataSetByType(String type, HttpServletRequest request);
 
     /**
      * Get Image Series by Series Instance UUId
@@ -363,6 +364,13 @@ public interface IDataCatalogRest {
      * @return updated Contract object
      */
     ResponseEntity<Contract> updateContract(Long contractId, UpdateContractRequest updateRequest);
+
+    /* * A soft delete of contract by given ID through inactivating it.
+     *
+     * @param contractId
+     * @return
+     */
+    ResponseEntity<Map<String,String>> deleteContract(Long contractId);
 }
 
 
