@@ -30,6 +30,12 @@ public class ContractUseCase {
     private String dataNotes;
 
     /**
+     * Creates a new {@code ContractUseCase}.
+     */
+    public ContractUseCase() {
+    }
+
+    /**
      * Creates a new {@code ContractUseCase} using the specified data user type, data usage type, and data notes.
      *
      * @param dataUser  The type of user that can use a particular data asset.
