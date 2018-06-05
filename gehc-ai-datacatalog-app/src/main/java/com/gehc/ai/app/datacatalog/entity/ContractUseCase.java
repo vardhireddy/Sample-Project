@@ -14,8 +14,6 @@ package com.gehc.ai.app.datacatalog.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * {@code ContractUseCase} represents who and how data associated with a contract can be used.
  *
@@ -24,96 +22,107 @@ import javax.validation.constraints.NotNull;
 @JsonInclude(Include.NON_NULL)
 public class ContractUseCase {
 
-	public ContractUseCase(){
+    private DataUser dataUser;
 
-	}
+    private DataUsage dataUsage;
 
-	//@NotNull
-	private DataUser dataUser;
+    private String dataNotes;
 
-	//@NotNull
-	private DataUsage dataUsage;
-	
-	private String dataNotes;
+    /**
+     * Creates a new {@code ContractUseCase} using the specified data user type, data usage type, and data notes.
+     *
+     * @param dataUser The type of user that can use a particular data asset.
+     * @param dataUsage The manner in which a particular data asset can be used.
+     * @param dataNotes Additional notes that describe who and how a particular data asset can be used.
+     */
+    public ContractUseCase(DataUser dataUser, DataUsage dataUsage, String dataNotes) {
+        super();
+        this.dataUser = dataUser;
+        this.dataUsage = dataUsage;
+        this.dataNotes = dataNotes;
+    }
 
-	public ContractUseCase(DataUser dataUser, DataUsage dataUsage, String dataNotes) {
-		super();
-		this.dataUser = dataUser;
-		this.dataUsage = dataUsage;
-		this.dataNotes = dataNotes;
-	}
+    /**
+     * {@code DataUser} enumerates the types of user that can use a particular data asset.
+     */
+    public enum DataUser {
+        GE_ONSHORE("geOnshore"),
+        GE_GLOBAL("geGlobal"),
+        THIRD_PARTY_PARTNERS_ONSHORE("partnersOnshore"),
+        THIRD_PARTY_PARTNERS_GLOBAL("partnersGlobal");
 
-	public String getDataNotes() {
-		return dataNotes;
-	}
+        private String displayName;
 
-	public void setDataNotes(String dataNotes) {
-		this.dataNotes = dataNotes;
-	}
+        DataUser(String displayName) {
+            this.displayName = displayName;
+        }
 
-	public enum DataUser {
+        @Override
+        public String toString() {
+            return this.displayName;
+        }
+    }
 
-		GE_ONSHORE("GE Onshore"), GE_GLOBAL("GE Global"), THIRD_PARTY_PARTNERS_ONSHORE("3rd Party Partners Onshore"), THIRD_PARTY_PARTNERS_GLOBAL("3rd Party Partners Global");
+    /**
+     * {@code DataUsage} enumerates the manners in which a data asset can be used by a data user.
+     */
+    public enum DataUsage {
+        TRAINING_AND_MODEL_DEVELOPMENT("trainingAndModel"),
+        ANNOTATION_AND_CURATION("annotationAndCuration"),
+        DATA_SHARING("dataSharing");
 
-		private String displayName;
+        private String displayName;
 
-		private DataUser(String displayName){
-			this.displayName = displayName;
-		}
+        DataUsage(String displayName) {
+            this.displayName = displayName;
+        }
 
-		@Override
-		public String toString(){
-			return this.displayName;
-		}
-	}
+        @Override
+        public String toString() {
+            return this.displayName;
+        }
+    }
 
-	public enum DataUsage {
-		TRAINING_AND_MODEL_DEVELOPMENT("Training and Model Development"), ANNOTATION_AND_CURATION("Annotation and Curation");
+    public String getDataNotes() {
+        return dataNotes;
+    }
 
-		private String displayName;
+    public void setDataNotes(String dataNotes) {
+        this.dataNotes = dataNotes;
+    }
 
-		private DataUsage(String displayName){
-			this.displayName = displayName;
-		}
+    public DataUser getDataUser() {
+        return dataUser;
+    }
 
-		@Override
-		public String toString(){
-			return this.displayName;
-		}
-	}
+    public void setDataUser(DataUser dataUser) {
+        this.dataUser = dataUser;
+    }
 
-	public DataUser getDataUser() {
-		return dataUser;
-	}
+    public DataUsage getDataUsage() {
+        return dataUsage;
+    }
 
-	public void setDataUser(DataUser dataUser) {
-		this.dataUser = dataUser;
-	}
+    public void setDataUsage(DataUsage dataUsage) {
+        this.dataUsage = dataUsage;
+    }
 
-	public DataUsage getDataUsage() {
-		return dataUsage;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-	public void setDataUsage(DataUsage dataUsage) {
-		this.dataUsage = dataUsage;
-	}
+        ContractUseCase that = (ContractUseCase) o;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+        if (getDataUser() != that.getDataUser()) return false;
+        return getDataUsage() == that.getDataUsage();
+    }
 
-		ContractUseCase that = (ContractUseCase) o;
+    @Override
+    public int hashCode() {
+        int result = getDataUser().hashCode();
+        result = 31 * result + getDataUsage().hashCode();
+        return result;
+    }
 
-		if (getDataUser() != that.getDataUser()) return false;
-		return getDataUsage() == that.getDataUsage();
-	}
-
-	@Override
-	public int hashCode() {
-		int result = getDataUser().hashCode();
-		result = 31 * result + getDataUsage().hashCode();
-		return result;
-	}
-	
 }
