@@ -21,9 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -213,7 +211,7 @@ public class DataCatalogRestImplTest {
     public void testSaveAnnotationStatusSuccess() {
         Annotation annotation = new Annotation();
         when( annotationRepository.save(annotation)).thenReturn( annotationList.get( 0 ) );
-        assertEquals( "SUCCESS", dataCatalogRest.saveAnnotation( annotation ).getStatus() );
+        assertEquals( "SUCCESS", dataCatalogRest.saveAnnotation( annotation ).getUploadStatus() );
     }*/
 
 /*    @Test
@@ -470,11 +468,11 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("blapu.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("updateNow",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
-        assertEquals("updateNow", result.getBody().getStatus());
+        assertEquals(Contract.UploadStatus.UPLOAD_IN_PROGRESS, result.getBody().getUploadStatus());
     }
 
     @Test
@@ -483,11 +481,11 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
         when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
 
-        UpdateContractRequest updateRequest = new UpdateContractRequest("updateCurrent",null);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,null);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
-        assertEquals("updateCurrent", result.getBody().getStatus());
+        assertEquals(Contract.UploadStatus.UPLOAD_IN_PROGRESS, result.getBody().getUploadStatus());
     }
 
     @Test
@@ -498,11 +496,11 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("blabla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
-        assertEquals("updated", result.getBody().getStatus());
+        assertEquals(Contract.UploadStatus.UPLOAD_IN_PROGRESS, result.getBody().getUploadStatus());
     }
 
     @Test
@@ -528,11 +526,11 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(Collections.singletonMap("response","Contract associated with given Id is inactive. Contract shall not be updated."), result.getBody());
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Given contract ID does not exist or is inactive."), result.getBody());
     }
 
     @Test
@@ -544,11 +542,11 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(400, result.getStatusCodeValue());
-        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id."), result.getBody());
+        assertEquals(Collections.singletonMap("response","Given contract ID does not exist or is inactive."), result.getBody());
     }
 
     @Test
@@ -560,7 +558,7 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(500, result.getStatusCodeValue());
@@ -575,7 +573,7 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(500, result.getStatusCodeValue());
@@ -637,7 +635,7 @@ public class DataCatalogRestImplTest {
         Contract contract = new Contract();
         contract.setId(1L);
         contract.setActive("true");
-        contract.setStatus("updated");
+        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         contract.setUri(uriList);

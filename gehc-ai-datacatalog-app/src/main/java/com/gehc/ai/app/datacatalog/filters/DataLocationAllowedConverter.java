@@ -11,26 +11,24 @@
  */
 package com.gehc.ai.app.datacatalog.filters;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gehc.ai.app.datacatalog.entity.Contract.DataLocationAllowed;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gehc.ai.app.datacatalog.entity.Contract.DeidStatus;
-
 import java.io.IOException;
 
 @Converter(autoApply = false)
-public class DeidStatusConverter implements AttributeConverter<DeidStatus, String> {
+public class DataLocationAllowedConverter implements AttributeConverter<DataLocationAllowed, String> {
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(DeidStatus deidStatus) {
+    public String convertToDatabaseColumn(DataLocationAllowed dataLocationAllowed) {
         try {
-            if (null != deidStatus) {
-                return objectMapper.writeValueAsString(deidStatus);
+            if (null != dataLocationAllowed) {
+                return objectMapper.writeValueAsString(dataLocationAllowed);
             } else {
                 return null;
             }
@@ -40,10 +38,10 @@ public class DeidStatusConverter implements AttributeConverter<DeidStatus, Strin
     }
 
     @Override
-    public DeidStatus convertToEntityAttribute(String dbData) {
+    public DataLocationAllowed convertToEntityAttribute(String dbData) {
         try {
             if (null != dbData) {
-                return objectMapper.readValue(dbData, DeidStatus.class);
+                return objectMapper.readValue(dbData, DataLocationAllowed.class);
             } else {
                 return null;
             }

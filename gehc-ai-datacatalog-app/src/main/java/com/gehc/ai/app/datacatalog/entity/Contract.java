@@ -26,9 +26,12 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.gehc.ai.app.common.constants.ValidationConstants;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gehc.ai.app.datacatalog.filters.DataLocationAllowedConverter;
+import com.gehc.ai.app.datacatalog.filters.DeidStatusConverter;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
+import com.gehc.ai.app.datacatalog.filters.StatusConverter;
 
 /**
  * {@code Contract} represents data contract.
@@ -43,11 +46,10 @@ public final class Contract {
 		super();
 	}
 	public Contract(Long id, @Size(max = 50) String schemaVersion, @NotNull @Size(min = 0, max = 255) String orgId,
-			List<String> uri, String deidStatus, @Size(min = 0, max = 255)
+			List<String> uri, DeidStatus deidStatus, @Size(min = 0, max = 255)
 			@Size(min = 0, max = 50) String active, @Size(min = 0, max = 255) String uploadBy, Date uploadDate,
 			@Size(min = 0, max = 255) String agreementName, @Size(min = 0, max = 50) String primaryContactEmail,
-			String agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod, List<ContractUseCase> useCases,List<ContractDataOriginCountriesStates> dataOriginCountriesStates, String dataLocationAllowed,
-			@Size(min = 0, max = 50) String status) {
+			String agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod, List<ContractUseCase> useCases,List<ContractDataOriginCountriesStates> dataOriginCountriesStates, DataLocationAllowed dataLocationAllowed, UploadStatus uploadStatus) {
 		super();
 		this.id = id;
 		this.schemaVersion = schemaVersion;
@@ -63,7 +65,7 @@ public final class Contract {
 		this.dataUsagePeriod = dataUsagePeriod;
 		this.useCases = useCases;
 		this.dataOriginCountriesStates = dataOriginCountriesStates;
-		this.status = status;
+		this.uploadStatus = uploadStatus;
 		this.dataLocationAllowed = dataLocationAllowed;
 	}
 	@Id
@@ -87,7 +89,8 @@ public final class Contract {
 
 	//@NotNull
 	@Column(name = "deid_status")
-	private String deidStatus;
+	@Convert(converter = DeidStatusConverter.class)
+	private DeidStatus deidStatus;
 	
 	@Size(min=0, max=50)
 	private String active;	
@@ -140,10 +143,13 @@ public final class Contract {
 
 	//@NotNull
 	@Column(name = "data_location_allowed")
-	private String dataLocationAllowed;
-	
-	@Size(min=0, max=50)
-	private String status;
+	@Convert(converter = DataLocationAllowedConverter.class)
+	private DataLocationAllowed dataLocationAllowed;
+
+	//@NotNull
+	@Column(name = "status")
+	@Convert(converter = StatusConverter.class)
+	private UploadStatus uploadStatus;
 
 	public List<ContractUseCase> getUseCases() {
 		return useCases;
@@ -157,11 +163,11 @@ public final class Contract {
 	public void setDataOriginCountriesStates(List<ContractDataOriginCountriesStates> dataOriginCountriesStates) {
 		this.dataOriginCountriesStates = dataOriginCountriesStates;
 	}
-	public String getStatus() {
-		return status;
+	public UploadStatus getUploadStatus() {
+		return uploadStatus;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setUploadStatus(UploadStatus uploadStatus) {
+		this.uploadStatus = uploadStatus;
 	}
 	public Long getId() {
 		return id;
@@ -201,68 +207,34 @@ public final class Contract {
 
 	public enum DeidStatus {
 
-		HIPAA_COMPLIANT(ValidationConstants.HIPAA_COMPLIANT),
-		DEIDS_TO_LOCAL_STANDARDS(ValidationConstants.DEIDS_TO_LOCAL_STANDARDS);
+		@JsonProperty("hippaCustomer")
+		HIPAA_COMPLIANT,
+		@JsonProperty("customerLocalStandards")
+		DEIDS_TO_LOCAL_STANDARDS
 
-		private String displayName;
+	}
 
-		DeidStatus(String displayName) {
-			this.displayName = displayName;
-		}
+	public enum UploadStatus {
 
-		public String getDisplayName() {
-			return displayName;
-		}
+		@JsonProperty("uploadInProgress")
+		UPLOAD_IN_PROGRESS,
+		@JsonProperty("uploadCompleted")
+		UPLOAD_COMPLETED,
+		@JsonProperty("uploadFailed")
+		UPLOAD_FAILED
 
-		// Optionally and/or additionally, toString.
-		@Override
-		public String toString() {
-			return displayName;
-		}
-
-		public static DeidStatus fromDisplayName(String displayName) {
-			switch (displayName) {
-				case ValidationConstants.HIPAA_COMPLIANT:
-					return DeidStatus.HIPAA_COMPLIANT;
-				case ValidationConstants.DEIDS_TO_LOCAL_STANDARDS:
-					return DeidStatus.DEIDS_TO_LOCAL_STANDARDS;
-				default:
-					throw new IllegalArgumentException("DeidStatus [" + displayName + "] not supported");
-			}
-		}
 	}
 
 	public enum DataLocationAllowed {
 
-		ONSHORE_ONLY_WHERE_THE_DATA_WAS_HARVESTED("Onshore Only (Where the data was harvested)"), GLOBAL("Global");
+		@JsonProperty("onshore")
+		ONSHORE_ONLY_WHERE_THE_DATA_WAS_HARVESTED,
 
-		private String displayName;
-
-		private DataLocationAllowed(String displayName){
-			this.displayName = displayName;
-		}
-
-		@Override
-		public String toString(){
-			return this.displayName;
-		}
+		@JsonProperty("global")
+		GLOBAL
 	}
 
-	public enum DataResidence{
-		ONSHORE_ONLY("Onshore Only"), GLOBAL("Global");
 
-		private DataResidence(String displayName) {
-			this.displayName = displayName;
-		}
-
-		private String displayName;
-
-		@Override
-		public String toString(){
-			return this.displayName;
-		}
-
-	}
 
 	public List<String> getUri() {
 		return uri;
@@ -270,10 +242,10 @@ public final class Contract {
 	public void setUri(List<String> uri) {
 		this.uri = uri;
 	}
-	public String getDeidStatus() {
+	public DeidStatus getDeidStatus() {
 		return deidStatus;
 	}
-	public void setDeidStatus(String deidStatus) {
+	public void setDeidStatus(DeidStatus deidStatus) {
 		this.deidStatus = deidStatus;
 	}
 	public Date getUploadDate() {
@@ -302,10 +274,10 @@ public final class Contract {
 		this.dataUsagePeriod = dataUsagePeriod;
 	}
 
-	public String getDataLocationAllowed() {
+	public DataLocationAllowed getDataLocationAllowed() {
 		return dataLocationAllowed;
 	}
-	public void setDataLocationAllowed(String dataLocationAllowed) {
+	public void setDataLocationAllowed(DataLocationAllowed dataLocationAllowed) {
 		this.dataLocationAllowed = dataLocationAllowed;
 	}
 
@@ -316,7 +288,7 @@ public final class Contract {
 				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", agreementName=" + agreementName
 				+ ", primaryContactEmail=" + primaryContactEmail + ", agreementBeginDate=" + agreementBeginDate
 				+ ", dataUsagePeriod=" + dataUsagePeriod + ", useCases="
-				+ useCases + ", dataOriginCountriesStates=" + dataOriginCountriesStates + ", dataLocationAllowed=" + dataLocationAllowed + ", status=" + status + "]";
+				+ useCases + ", dataOriginCountriesStates=" + dataOriginCountriesStates + ", dataLocationAllowed=" + dataLocationAllowed + ", uploadStatus=" + uploadStatus + "]";
 	}
 
 	@Override
@@ -342,7 +314,7 @@ public final class Contract {
 		if (!getUseCases().equals(contract.getUseCases())) return false;
 		if (!getDataOriginCountriesStates().equals(contract.getDataOriginCountriesStates())) return false;
 		if (!getDataLocationAllowed().equals(contract.getDataLocationAllowed())) return false;
-		return getStatus().equals(contract.getStatus());
+		return getUploadStatus().equals(contract.getUploadStatus());
 	}
 
 	@Override
@@ -362,7 +334,7 @@ public final class Contract {
 		result = 31 * result + getUseCases().hashCode();
 		result = 31 * result + getDataOriginCountriesStates().hashCode();
 		result = 31 * result + getDataLocationAllowed().hashCode();
-		result = 31 * result + getStatus().hashCode();
+		result = 31 * result + getUploadStatus().hashCode();
 		return result;
 	}
 

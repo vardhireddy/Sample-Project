@@ -11,18 +11,20 @@
  */
 package com.gehc.ai.app.datacatalog.rest.request;
 
-import javax.validation.constraints.NotNull;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+
 import java.util.List;
 
 public class UpdateContractRequest {
 
-    private String status;
+    private Contract.UploadStatus status;
+
     private List<String> uri;
 
     public UpdateContractRequest() {
     }
 
-    public UpdateContractRequest(String status, List<String> uri) {
+    public UpdateContractRequest(Contract.UploadStatus status, List<String> uri) {
         this.status = status;
         this.uri = uri;
     }
@@ -35,7 +37,7 @@ public class UpdateContractRequest {
                 '}';
     }
 
-    public String getStatus() {
+    public Contract.UploadStatus getUploadStatus() {
         return status;
     }
 
