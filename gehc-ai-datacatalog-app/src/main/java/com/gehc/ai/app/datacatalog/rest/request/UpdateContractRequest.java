@@ -1,16 +1,17 @@
 package com.gehc.ai.app.datacatalog.rest.request;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class UpdateContractRequest {
 
     private String status;
-    private Object uri;
+    private List<String> uri;
 
     public UpdateContractRequest() {
     }
 
-    public UpdateContractRequest(String status, Object uri) {
+    public UpdateContractRequest(String status, List<String> uri) {
         this.status = status;
         this.uri = uri;
     }
@@ -27,7 +28,7 @@ public class UpdateContractRequest {
         return status;
     }
 
-    public Object getUri() {
+    public List<String> getUri() {
         return uri;
     }
 }
