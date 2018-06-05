@@ -37,7 +37,7 @@ import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
  */
 @Entity
 @JsonInclude(Include.NON_NULL)
-public final class Contract implements Cloneable{
+public final class Contract {
 
 	public Contract() {
 		super();
@@ -326,14 +326,14 @@ public final class Contract implements Cloneable{
 
 		Contract contract = (Contract) o;
 
-		if (getId() != null ? !getId().equals(contract.getId()) : contract.getId() != null) return false;
+		if (getId() != null ? !getId().equals(contract.getId()) : (contract.getId() != null)) return false;
 		if (!getSchemaVersion().equals(contract.getSchemaVersion())) return false;
 		if (!getOrgId().equals(contract.getOrgId())) return false;
-		if (getUri() != null ? !getUri().equals(contract.getUri()) : contract.getUri() != null) return false;
+		if (getUri() != null ? !getUri().equals(contract.getUri()) : (contract.getUri() != null)) return false;
 		if (!getDeidStatus().equals(contract.getDeidStatus())) return false;
 		if (!getActive().equals(contract.getActive())) return false;
 		if (!getUploadBy().equals(contract.getUploadBy())) return false;
-		if (getUploadDate() != null ? !getUploadDate().equals(contract.getUploadDate()) : contract.getUploadDate() != null)
+		if (getUploadDate() != null ? !getUploadDate().equals(contract.getUploadDate()) : (contract.getUploadDate() != null))
 			return false;
 		if (!getAgreementName().equals(contract.getAgreementName())) return false;
 		if (!getPrimaryContactEmail().equals(contract.getPrimaryContactEmail())) return false;
@@ -365,4 +365,5 @@ public final class Contract implements Cloneable{
 		result = 31 * result + getStatus().hashCode();
 		return result;
 	}
+
 }

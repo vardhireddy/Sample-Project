@@ -75,13 +75,6 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		return dataCatalogDao.saveContract(contract);
 	}
 
-	private List<String> uploadFileToS3(List<MultipartFile> contractFiles) {
-		List<String> uriList = new ArrayList<String>();
-		// TODO : Add code to upload files to S3
-		contractFiles.forEach(contractFile -> uriList.add(contractFile.getOriginalFilename()));
-		return uriList;
-	}
-
 	@Override
 	public Contract getContract(Long contractId) {
 

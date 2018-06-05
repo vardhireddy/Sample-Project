@@ -64,7 +64,7 @@ public class ContractDataOriginCountriesStates {
 		ContractDataOriginCountriesStates that = (ContractDataOriginCountriesStates) o;
 
 		if (!getCountry().equals(that.getCountry())) return false;
-		return getState() != null ? getState().equals(that.getState()) : that.getState() == null;
+		return getState() != null ? getState().equals(that.getState()) : (that.getState() == null);
 	}
 
 	@Override
