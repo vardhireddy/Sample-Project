@@ -60,15 +60,17 @@ public class ContractDataOriginCountriesStates {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
+
 		ContractDataOriginCountriesStates that = (ContractDataOriginCountriesStates) o;
-		return Objects.equals(country, that.country) &&
-				Objects.equals(state, that.state);
+
+		if (!getCountry().equals(that.getCountry())) return false;
+		return getState() != null ? getState().equals(that.getState()) : (that.getState() == null);
 	}
 
 	@Override
 	public int hashCode() {
-
-		return Objects.hash(country, state);
+		int result = getCountry().hashCode();
+		result = 31 * result + (getState() != null ? getState().hashCode() : 0);
+		return result;
 	}
-	
 }
