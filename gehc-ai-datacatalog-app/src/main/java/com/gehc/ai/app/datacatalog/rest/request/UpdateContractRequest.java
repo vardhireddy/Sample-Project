@@ -12,11 +12,14 @@
 package com.gehc.ai.app.datacatalog.rest.request;
 
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.filters.StatusConverter;
 
+import javax.persistence.Convert;
 import java.util.List;
 
 public class UpdateContractRequest {
 
+    @Convert(converter = StatusConverter.class)
     private Contract.UploadStatus status;
 
     private List<String> uri;
