@@ -531,8 +531,8 @@ public class DataCatalogRestImplTest {
         UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(Collections.singletonMap("response","Contract associated with given Id is inactive. Contract shall not be updated."), result.getBody());
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Given contract ID does not exist or is inactive."), result.getBody());
     }
 
     @Test
@@ -548,7 +548,7 @@ public class DataCatalogRestImplTest {
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(400, result.getStatusCodeValue());
-        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id."), result.getBody());
+        assertEquals(Collections.singletonMap("response","Given contract ID does not exist or is inactive."), result.getBody());
     }
 
     @Test

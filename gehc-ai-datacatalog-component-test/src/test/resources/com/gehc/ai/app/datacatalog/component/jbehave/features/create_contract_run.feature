@@ -166,8 +166,8 @@ Scenario: User shall not be able to update contract data for valid and inactive 
 Meta: @automated
 Given a valid and inactive contract ID to retrieve, valid request
 When the API which updates a contract is invoked with a valid and inactive contract ID, valid request
-Then the update contract response status code should be 200
-Then the response's body should contain a message saying the contract associated with given Id is inactive and contract shall not be updated
+Then the update contract response status code should be 400
+Then the response's body should contain a message saying the contract ID does not exist or is inactive
 
 @test_4
 Scenario: User shall not be able to update contract data for valid and inactive contract Id, invalid/empty update request
@@ -183,7 +183,7 @@ Meta: @automated
 Given an invalid contract ID to update, valid update request
 When the API which updates a contract is invoked with an invalid contract ID, valid update request
 Then the update contract response status code should be 400
-Then the response's body should contain a message saying no contract exists with the given ID
+Then the response's body should contain a message saying the contract ID does not exist or is inactive
 
 @test_6
 Scenario: User shall not be able to update contract data for invalid contract Id, invalid/empty update request

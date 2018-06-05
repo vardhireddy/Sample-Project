@@ -505,11 +505,10 @@ public class CreateContractSteps {
         result.andExpect(content().string(containsString("Update request cannot be empty. Either status or uri must be provided.")));
     }
 
-    @Then("the response's body should contain a message saying the contract associated with given Id is inactive and contract shall not be updated")
+    @Then("the response's body should contain a message saying the contract ID does not exist or is inactive")
     public void thenInactiveIdAndValidData() throws Exception{
-        result.andExpect(content().string(containsString("Contract associated with given Id is inactive. Contract shall not be updated.")));
+        result.andExpect(content().string(containsString("Given contract ID does not exist or is inactive.")));
     }
-
     @Then("the response's body should contain a message saying no contract exists with the given ID")
     public void thenInValidIdAndValidData() throws Exception{
         result.andExpect(content().string(containsString("{\"response\":\"No Contract Exists with the given Id.\"}")));

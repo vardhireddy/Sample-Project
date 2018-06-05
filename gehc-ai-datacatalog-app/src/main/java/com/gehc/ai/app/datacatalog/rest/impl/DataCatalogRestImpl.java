@@ -43,7 +43,6 @@ import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
-import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.DataCatalogUtils;
 import com.gehc.ai.app.datacatalog.util.exportannotations.Shuffle;
@@ -1347,47 +1346,70 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         logger.info("Validating contract update request body.");
 
-        if (updateRequest == null ||
-                (updateRequest.getStatus() == null && updateRequest.getUri() == null)
-                || (updateRequest.getStatus().isEmpty() && updateRequest.getUri().isEmpty()))
+        if (validateUpdateRequest(updateRequest) == false)
         {
             return new ResponseEntity(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), HttpStatus.BAD_REQUEST);
-
         }
 
         Contract contractToBeUpdated;
-
-        try{
+        try
+        {
             contractToBeUpdated = dataCatalogService.getContract(contractId);
         }catch (Exception e)
+            {
+                logger.error("Exception retrieving the contract ", e.getMessage());
+                return new ResponseEntity(Collections.singletonMap("response","Exception retrieving the contract."), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        if(validateContractTobeUpdated(contractToBeUpdated) == false)
         {
-            logger.error("Exception retrieving the contract ", e.getMessage());
-            return new ResponseEntity(Collections.singletonMap("response","Exception retrieving the contract."), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            logger.error("Invalid/Inactive contract ID passed in request : {}", contractId);
+            return new ResponseEntity(Collections.singletonMap("response","Given contract ID does not exist or is inactive."), HttpStatus.BAD_REQUEST);
+        }else
+            {
+                contractToBeUpdated = updateContractHelper(contractToBeUpdated, updateRequest);
+            }
 
-        if (contractToBeUpdated == null || contractToBeUpdated.getActive() == null){
-            return new ResponseEntity(Collections.singletonMap("response","No Contract Exists with the given Id."), HttpStatus.BAD_REQUEST);
-        }else if (contractToBeUpdated.getActive().equalsIgnoreCase("false")) {
-            return new ResponseEntity(Collections.singletonMap("response", "Contract associated with given Id is inactive. Contract shall not be updated."), HttpStatus.OK);
-        }else {
-
-            contractToBeUpdated.setStatus(updateRequest.getStatus().isEmpty()
-                    ?contractToBeUpdated.getStatus()
-                    :updateRequest.getStatus());
-            contractToBeUpdated.setUri((updateRequest.getUri() == null
-                    || updateRequest.getUri().isEmpty())
-                    ?contractToBeUpdated.getUri()
-                    :updateRequest.getUri());
-
-            try {
-                contractToBeUpdated = dataCatalogService.saveContract(contractToBeUpdated);
-            }catch (Exception e1){
+        try
+        {
+            contractToBeUpdated = dataCatalogService.saveContract(contractToBeUpdated);
+        }catch (Exception e1)
+            {
                 logger.error("Exception saving the contract object", e1.getMessage());
                 return new ResponseEntity(Collections.singletonMap("response","Exception saving the updated contract."), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            return new ResponseEntity<>(contractToBeUpdated, HttpStatus.OK);
-        }
+        return new ResponseEntity<>(contractToBeUpdated, HttpStatus.OK);
+    }
 
+    private boolean validateUpdateRequest(UpdateContractRequest updateRequest){
+        if (updateRequest == null
+                || ((updateRequest.getStatus() == null || updateRequest.getStatus().isEmpty())
+                      && (updateRequest.getUri() == null || updateRequest.getUri().isEmpty())))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateContractTobeUpdated(Contract contractToBeUpdated){
+
+        if (contractToBeUpdated == null
+                || contractToBeUpdated.getActive() == null
+                || (contractToBeUpdated.getActive().equalsIgnoreCase("false"))){
+            return false;
+        }else { return true; }
+    }
+
+    private Contract updateContractHelper(Contract contractToBeUpdated, UpdateContractRequest updateRequest){
+
+        contractToBeUpdated.setStatus((updateRequest.getStatus() == null || updateRequest.getStatus().isEmpty())
+                ? contractToBeUpdated.getStatus()
+                : updateRequest.getStatus());
+        contractToBeUpdated.setUri((updateRequest.getUri() == null || updateRequest.getUri().isEmpty())
+                ? contractToBeUpdated.getUri()
+                : updateRequest.getUri());
+
+        return contractToBeUpdated;
     }
 
     @SuppressWarnings("unchecked")
@@ -1426,4 +1448,5 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactivated successfully"), HttpStatus.OK);
 
     }
+
 }
