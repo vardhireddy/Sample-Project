@@ -468,12 +468,13 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
         when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
 
-        UpdateContractRequest updateRequest = new UpdateContractRequest("updateNow","[\"blapu.pdf\"]");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("blapu.pdf");
+        UpdateContractRequest updateRequest = new UpdateContractRequest("updateNow",uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals("updateNow", result.getBody().getStatus());
-        assertEquals("[\"blapu.pdf\"]",result.getBody().getUri());
     }
 
     @Test
@@ -487,7 +488,6 @@ public class DataCatalogRestImplTest {
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals("updateCurrent", result.getBody().getStatus());
-        assertEquals("[\"bla.pdf\"]",result.getBody().getUri());
     }
 
     @Test
@@ -496,12 +496,13 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
         when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
 
-        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("blabla.pdf");
+        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals("updated", result.getBody().getStatus());
-        assertEquals("[\"blabla.pdf\"]",result.getBody().getUri());
     }
 
     @Test
@@ -525,7 +526,9 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
         when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
 
-        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
@@ -539,7 +542,9 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenReturn(null);
         when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
 
-        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(400, result.getStatusCodeValue());
@@ -553,7 +558,9 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException(""));
         when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
 
-        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(500, result.getStatusCodeValue());
@@ -566,7 +573,9 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
         when(dataCatalogService.saveContract(any(Contract.class))).thenThrow(new RuntimeException(""));
 
-        UpdateContractRequest updateRequest = new UpdateContractRequest("","[\"blabla.pdf\"]");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(500, result.getStatusCodeValue());
@@ -629,7 +638,9 @@ public class DataCatalogRestImplTest {
         contract.setId(1L);
         contract.setActive("true");
         contract.setStatus("updated");
-        contract.setUri("[\"bla.pdf\"]");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        contract.setUri(uriList);
         return contract;
     }
 

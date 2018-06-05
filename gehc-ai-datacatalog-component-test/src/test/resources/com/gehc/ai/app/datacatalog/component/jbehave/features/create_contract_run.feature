@@ -207,7 +207,7 @@ Meta: @automated
 Given a valid and active contract ID, valid uri value only
 When the API which updates a contract is invoked with a valid and active contract ID, valid uri value
 Then the update contract response status code should be 200
-Then response and database contract data should reflect the updated details with change only in uri
+Then the contract's uri should be updated
 
 @test_9
 Scenario: User shall not be able to update contract data for valid contract Id, valid data due to exception in retrieving contract

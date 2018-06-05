@@ -1260,7 +1260,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
 	public ResponseEntity<?> saveContract(@RequestBody Contract contract, HttpServletRequest request) {
-        logger.debug("Creating a new contract, orgId = " + request.getAttribute("orgId"));
+        logger.debug("Creating a new contract.");
 
 			/* Toll gate checks */
 
@@ -1348,7 +1348,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         if (updateRequest == null ||
                 (updateRequest.getStatus() == null && updateRequest.getUri() == null)
-                || (updateRequest.getStatus().isEmpty() && updateRequest.getUri().toString().length() < 5))
+                || (updateRequest.getStatus().isEmpty() && updateRequest.getUri().size() == 0))
         {
             return new ResponseEntity(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), HttpStatus.BAD_REQUEST);
 
@@ -1374,7 +1374,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     ?contractToBeUpdated.getStatus()
                     :updateRequest.getStatus());
             contractToBeUpdated.setUri((updateRequest.getUri() == null
-                    || updateRequest.getUri().toString().length() < 5)
+                    || updateRequest.getUri().size() == 0)
                     ?contractToBeUpdated.getUri()
                     :updateRequest.getUri());
 

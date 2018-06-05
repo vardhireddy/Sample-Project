@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.sql.Date;
@@ -24,14 +25,15 @@ import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import gherkin.lexer.Da;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
-import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,7 +62,6 @@ public class CreateContractSteps {
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private final DataCatalogDaoImpl dataCatalogDao;
     private final ContractRepository contractRepository;
-    private final DataCatalogServiceImpl dataCatalogService;
 
     private MockMvc mockMvc;
     private ResultActions result;
@@ -70,33 +71,18 @@ public class CreateContractSteps {
     private UpdateContractRequest updateRequest = buildContractEntityForUpdate();
     private UpdateContractRequest emptyUpdateRequest = new UpdateContractRequest();
 
-    ///////////////
-    //
-    // Constants //
-    //
-    ///////////////
-
-
     /////////////////////////
     //
     // Test scenario setup //
     //
     /////////////////////////
-/*
+
     @Autowired
-    public CreateContractSteps(MockMvc mockMvc, DataCatalogDaoImpl dataCatalogDaoImpl, DataCatalogInterceptor dataCatalogInterceptor) {
-        this.mockMvc = mockMvc;
-        this.dataCatalogDao = dataCatalogDaoImpl;
-        this.dataCatalogInterceptor = dataCatalogInterceptor;
-    }
-*/
-    @Autowired
-    public CreateContractSteps(MockMvc mockMvc, ContractRepository contractRepository,DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao, DataCatalogServiceImpl dataCatalogService) {
+    public CreateContractSteps(MockMvc mockMvc, ContractRepository contractRepository,DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
         this.mockMvc = mockMvc;
         this.contractRepository = contractRepository;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
         this.dataCatalogDao = dataCatalogDao;
-        this.dataCatalogService = dataCatalogService;
 
     }
     @BeforeScenario
@@ -117,11 +103,11 @@ public class CreateContractSteps {
     }
 
     @Given("no internal errors occur when saving the contract")
-    public void givenNoInternalErrorsOccurWhenSavingTheContract() {
+    public void givenNoInternalErrorsOccurWhenSavingTheContract() throws Exception{
         when(contractRepository.save(any(Contract.class))).thenReturn(createMockCompleteContract());
     }
     @Given("no internal errors occurs")
-    public void givenNoInternalErrorsOccur() {
+    public void givenNoInternalErrorsOccur() throws Exception{
         when(contractRepository.save(any(Contract.class))).thenReturn(createMockCompleteContract());
     }
 
@@ -186,93 +172,89 @@ public class CreateContractSteps {
 
     //get contract API test cases
     @Given("a valid and active contract ID to retrieve")
-    public void ValidActiveContractIdToRetrieve(){
+    public void ValidActiveContractIdToRetrieve() throws Exception{
         Contract contract = createMockCompleteContract();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
     }
 
     @Given("a valid and inactive contract ID to retrieve")
-    public void ValidInActiveContractIdToRetrieve(){
+    public void ValidInActiveContractIdToRetrieve() throws Exception{
         Contract contract = createMockCompleteContract();
         contract.setActive("false");
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
     }
 
     //update contract API test cases
     @Given("a valid and active contract ID, valid update request")
-    public void validIdAndData(){
-        //Contract contract = createMockContractRequest();
+    public void validIdAndData() throws Exception{
         Contract contract = createMockUpdateContract();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("a valid and active contract ID, invalid/empty update request")
     public void validIdAndInvalidData(){
         Contract contract = createMockContractRequest();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("a valid and inactive contract ID to retrieve, valid request")
     public void inactiveIdAndValidData(){
         Contract contract = createMockContractRequest();
         contract.setActive("false");
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("a valid and inactive contract ID to retrieve, invalid request (update request is validated first)")
     public void inactiveIdAndInValidData(){
         Contract contract = createMockContractRequest();
         contract.setActive("false");
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("an invalid contract ID to update, valid update request")
     public void invalidIdAndValidData(){
         Contract contract = new Contract();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("an invalid contract ID to update, invalid/empty update request")
     public void invalidIdAndInValidData(){
         Contract contract = new Contract();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("a valid and active contract ID, valid status value only")
-    public void validIdAndValidStatusOnly(){
-        //Contract contract = createMockContractRequest();
+    public void validIdAndValidStatusOnly() throws Exception{
         Contract contract = createMockUpdateContract();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("a valid and active contract ID, valid uri value only")
-    public void validIdAndValidUriOnly(){
-        //Contract contract = createMockContractRequest();
+    public void validIdAndValidUriOnly() throws Exception{
         Contract contract = createMockUpdateContract();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("a valid contract ID, valid data but exception in retrieving contract")
     public void validDataButExceptionRetrievingData(){
         Contract contract = new Contract();
-        when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException(""));
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+        when(dataCatalogDao.getContractDetails(anyLong())).thenThrow(new RuntimeException(""));
+        when(dataCatalogDao.saveContract(any(Contract.class))).thenReturn(contract);
     }
 
     @Given("a valid contract ID, valid data but exception in saving updated contract")
-    public void validDataButExceptionSavingData(){
+    public void validDataButExceptionSavingData() throws Exception{
         Contract contract = createMockUpdateContract();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-//        when(dataCatalogService.saveContract(any(Contract.class))).thenThrow(new RuntimeException(""));
-        when(dataCatalogService.saveContract(contract)).thenThrow(new RuntimeException(""));
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.saveContract(contract)).thenThrow(new RuntimeException(""));
     }
 
     /////////////////////
@@ -424,11 +406,6 @@ public class CreateContractSteps {
         result.andExpect(status().isOk());
     }
 
-//    @Then("the response status code should be 201")
-//    public void thenResponseCodeShouldBe201() throws Exception {
-//        result.andExpect(status().isCreated());
-//    }
-
     @Then("the update contract response status code should be 400")
     public void thenUpdateContractResponseCodeShouldBe400() throws Exception {
         result.andExpect(status().isBadRequest());
@@ -438,13 +415,6 @@ public class CreateContractSteps {
     public void thenUpdateContractResponseCodeShouldBe500() throws Exception {
         result.andExpect(status().isInternalServerError());
     }
-
-//    @Then("the response content type should be JSON")
-//    public void thenResponseMediaTypeShouldBeJson() throws Exception {
-//        MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
-//                MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-//        result.andExpect(content().contentType(APPLICATION_JSON_UTF8));
-//    }
 
     @Then("a single contract should be saved to the database")
     public void thenASingleContractShouldBeSavedToTheDatabase() throws Exception {
@@ -518,14 +488,15 @@ public class CreateContractSteps {
         result.andExpect(content().string(containsString("Contract associated with given Id is inactive")));
     }
 
-//    @Then("the response's body should contain a message saying no contract exists with the given ID")
-//    public void verifyGetContractBadRequest() throws Exception {
-//        result.andExpect(content().string(containsString("No Contract Exists with the given Id")));
-//    }
-
     //update contract test cases
     @Then("response and database contract data should reflect the updated details")
     public void thenValidIdAndData() throws Exception{
+        Contract savedContract = createMockUpdateContract();
+        List<String> newUriList = new ArrayList<>();
+        newUriList.add("bla.pdf");
+        savedContract.setUri(newUriList);
+        savedContract.setStatus("updatedStatus");
+        verify(dataCatalogDao, times(1)).saveContract(savedContract);
         result.andExpect(content().string(containsString("updatedStatus")));
     }
 
@@ -546,18 +517,21 @@ public class CreateContractSteps {
 
     @Then("response and database contract data should reflect the updated details with change only in status")
     public void thenValidIdAndStatusOnlyInData() throws Exception{
+
+        Contract savedContract = createMockUpdateContract();
+        savedContract.setStatus("updatedStatus");
         result.andExpect(content().string(containsString("updatedStatus")));
+        verify(dataCatalogDao, times(1)).saveContract(savedContract);
     }
 
-    @Then("response and database contract data should reflect the updated details with change only in uri")
-    public void thenValidIdAndUriOnlyInData() throws Exception{
-//        result.andExpect(content().string(containsString("{\"id\":1,\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\"," +
-//                "\"uri\":\"[\\\"bla.pdf\\\"]\",\"deidStatus\":\"HIPAA Compliant\",\"dataOriginCountry\":\"USA\"," +
-//                "\"active\":\"true\",\"agreementName\":\"Test contract name\",\"primaryContactEmail\":\"john.doe@ge.com\"," +
-//                "\"dataUsagePeriod\":\"365\",\"dataOriginState\":\"CA\",\"status\":\"updatedStatus\"}")));
-
-        result.andExpect(content().string(containsString("{\"id\":1,\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"uri\":\"[\\\"bla.pdf\\\"]\",\"deidStatus\":\"HIPAA Compliant\",\"active\":\"true\",\"agreementName\":\"Test contract name\",\"primaryContactEmail\":\"john.doe@ge.com\",\"agreementBeginDate\":\"2017-03-02\",\"dataUsagePeriod\":\"365\",\"useCases\":[{\"dataUser\":\"GE_GLOBAL\",\"dataUsage\":\"TRAINING_AND_MODEL_DEVELOPMENT\",\"dataNotes\":\"\"}],\"dataOriginCountriesStates\":[{\"country\":\"USA\",\"state\":\"CA\"}],\"dataLocationAllowed\":\"USA\",\"status\":\"updatedStatus\"}")));
-
+    @Then("the contract's uri should be updated")
+    public void thenValidIdAndUriOnlyInData() throws Exception {
+        Contract savedContract = createMockUpdateContract();
+        List<String> newUriList = new ArrayList<>();
+        newUriList.add("bla.pdf");
+        savedContract.setUri(newUriList);
+        verify(dataCatalogDao, times(1)).saveContract(savedContract);
+        result.andExpect(content().string(containsString("[\"bla.pdf\"]")));
     }
 
     @Then("response's body should contain a message exception retrieving the contract")
@@ -588,6 +562,7 @@ public class CreateContractSteps {
         Contract contract = new Contract();
         //contract.setId(1L);
         contract.setAgreementName("Test contract name");
+        contract.setSchemaVersion("v1");
         contract.setPrimaryContactEmail("john.doe@ge.com");
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
         contract.setAgreementBeginDate("2017-03-02");
@@ -595,6 +570,8 @@ public class CreateContractSteps {
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
         contract.setDataLocationAllowed("USA");
+        contract.setUploadBy("user");
+        contract.setStatus("uploaded");
         return contract;
     }
 
@@ -604,13 +581,11 @@ public class CreateContractSteps {
         return str;
     }
 
-
-
-
-    private Contract createMockCompleteContract() {
+    private Contract createMockCompleteContract() throws Exception{
         Contract contract = new Contract();
         //contract.setId(1L);
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
+        contract.setSchemaVersion("v1");
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
@@ -620,14 +595,22 @@ public class CreateContractSteps {
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
         contract.setActive("true");
         contract.setDataLocationAllowed("USA");
+        contract.setUploadBy("user");
+        contract.setStatus("uploaded");
 
         return contract;
     }
 
-    private Contract createMockUpdateContract() {
+    private Contract createMockUpdateContract() throws Exception{
         Contract contract = new Contract();
         contract.setId(1L);
+        contract.setStatus("updatedStatus");
+        contract.setActive("true");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        contract.setUri(uriList);
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
+        contract.setSchemaVersion("v1");
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
@@ -635,10 +618,8 @@ public class CreateContractSteps {
         contract.setDataUsagePeriod("365");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
-        contract.setActive("true");
         contract.setDataLocationAllowed("USA");
-        contract.setStatus("updatedStatus");
-        contract.setUri("[\"bla.pdf\"]");
+        contract.setUploadBy("user");
 
         return contract;
     }
@@ -660,39 +641,12 @@ public class CreateContractSteps {
 
     private UpdateContractRequest buildContractEntityForUpdate(){
 
-        UpdateContractRequest updateContractRequest = new UpdateContractRequest("updatedStatus","[\"bla.pdf\"]");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        UpdateContractRequest updateContractRequest = new UpdateContractRequest("updatedStatus",uriList);
 
         return updateContractRequest;
     }
 
-    public Date getSqldate() throws Exception{
-        String startDate="30-03-2013";
-        SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
-        java.util.Date date = sdf1.parse(startDate);
-        java.sql.Date sqlStartDate = new java.sql.Date(date.getTime());
-        System.out.print(sqlStartDate);
-        return sqlStartDate;
-    }
 }
-
-
-/*
-@test
-Scenario: User shall not be able to retrieve contract data for valid and inactive contract Id
-Meta: @automated
-Given a valid and inactive contract ID to retrieve
-When the API which retrieves a contract is invoked with a valid and inactive contract ID
-Then the validate contract response's status code should be 200
-Then the response's body should contain a message saying the contract associated with given ID is inactive
-
-@test
-Scenario: User shall not be able to retrieve contract data for invalid contract Id
-Meta: @automated
-Given an invalid contract ID to retrieve
-When the API which retrieves a contract is invoked with an invalid contract ID
-Then the validate contract response's status code should be 400
-Then the response's body should contain a message saying no contract exists with the given ID
- */
-
-
 

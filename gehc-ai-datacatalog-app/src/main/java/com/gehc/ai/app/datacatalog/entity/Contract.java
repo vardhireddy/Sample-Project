@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.gehc.ai.app.common.constants.ValidationConstants;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
+import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
 
 /**
  * {@code Contract} represents data contract.
@@ -36,13 +37,13 @@ import com.gehc.ai.app.datacatalog.filters.JsonConverter;
  */
 @Entity
 @JsonInclude(Include.NON_NULL)
-public class Contract{
+public final class Contract implements Cloneable{
 
 	public Contract() {
 		super();
 	}
 	public Contract(Long id, @Size(max = 50) String schemaVersion, @NotNull @Size(min = 0, max = 255) String orgId,
-			Object uri, String deidStatus, @Size(min = 0, max = 255)
+			List<String> uri, String deidStatus, @Size(min = 0, max = 255)
 			@Size(min = 0, max = 50) String active, @Size(min = 0, max = 255) String uploadBy, Date uploadDate,
 			@Size(min = 0, max = 255) String agreementName, @Size(min = 0, max = 50) String primaryContactEmail,
 			String agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod, List<ContractUseCase> useCases,List<ContractDataOriginCountriesStates> dataOriginCountriesStates, String dataLocationAllowed,
@@ -81,8 +82,8 @@ public class Contract{
 	private String orgId;
 
 	//@NotNull
-	@Convert(converter = JsonConverter.class)
-	private Object uri; // NOSONAR
+	@Convert(converter = ListOfStringConverter.class)
+	private List<String> uri;
 
 	//@NotNull
 	@Column(name = "deid_status")
@@ -182,33 +183,6 @@ public class Contract{
 		this.uploadBy = uploadBy;
 	}
 
-//	public String getBusinessCase() {
-//		return businessCase;
-//	}
-//	public void setBusinessCase(String businessCase) {
-//		this.businessCase = businessCase;
-//	}
-
-//	public String getUsageRights() {
-//		return usageRights;
-//	}
-//	public void setUsageRights(String usageRights) {
-//		this.usageRights = usageRights;
-//	}
-//	public String getUsageNotes() {
-//		return usageNotes;
-//	}
-//	public void setUsageNotes(String usageNotes) {
-//		this.usageNotes = usageNotes;
-//	}
-
-//	public Object getUri() {
-//		return uri;
-//	}
-//	public void setUri(Object uri) {
-//		this.uri = uri;
-//	}
-//
 	public String getActive() {
 		return active;
 	}
@@ -216,15 +190,7 @@ public class Contract{
 	public void setActive(String active) {
 		this.active = active;
 	}
-//
-//	public Object getProperties() {
-//		return properties;
-//	}
-//
-//	public void setProperties(Object properties) {
-//		this.properties = properties;
-//	}
-//
+
 	public String getSchemaVersion() {
 		return schemaVersion;
 	}
@@ -232,63 +198,6 @@ public class Contract{
 	public void setSchemaVersion(String schemaVersion) {
 		this.schemaVersion = schemaVersion;
 	}
-
-/*	public List<ContractUseCase> getUseCases() {
-		return useCases;
-	}
-
-	public void setUseCases(List<ContractUseCase> useCases) {
-		this.useCases = useCases;
-	}
-
-	public LocalDateTime getContractStartDate() {
-		return contractStartDate;
-	}
-
-	public void setContractStartDate(LocalDateTime contractStartDate) {
-		this.contractStartDate = contractStartDate;
-	}
-
-	public List<String> getDataOriginCountries() {
-		return dataOriginCountries;
-	}
-
-	public void setDataOriginCountries(List<String> dataOriginCountries) {
-		this.dataOriginCountries = dataOriginCountries;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getTerritory() {
-		return territory;
-	}
-
-	public void setTerritory(String territory) {
-		this.territory = territory;
-	}*/
-
-/*	public DataResidence getDataResidence() {
-		return dataResidence;
-	}
-
-	public void setDataResidence(DataResidence dataResidence) {
-		this.dataResidence = dataResidence;
-	}*/
-
-	/**
-	 * updates the update_date column with the current date for each newly
-	 * created object
-	 */
-	//@PrePersist TODO: This annotation breaks component test; is there any alternative?
-/*	protected void onCreate() {
-		uploadDate = LocalDateTime.now();
-	}*/
 
 	public enum DeidStatus {
 
@@ -355,10 +264,10 @@ public class Contract{
 
 	}
 
-	public Object getUri() {
+	public List<String> getUri() {
 		return uri;
 	}
-	public void setUri(Object uri) {
+	public void setUri(List<String> uri) {
 		this.uri = uri;
 	}
 	public String getDeidStatus() {
@@ -371,7 +280,8 @@ public class Contract{
 		return uploadDate;
 	}
 	public void setUploadDate(Date uploadDate) {
-		this.uploadDate = uploadDate;
+		Date original =  uploadDate;
+		this.uploadDate = new Date(original.getTime());
 	}
 	public String getAgreementName() {
 		return agreementName;
@@ -408,281 +318,51 @@ public class Contract{
 				+ ", dataUsagePeriod=" + dataUsagePeriod + ", useCases="
 				+ useCases + ", dataOriginCountriesStates=" + dataOriginCountriesStates + ", dataLocationAllowed=" + dataLocationAllowed + ", status=" + status + "]";
 	}
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((active == null) ? 0 : active.hashCode());
-		result = prime * result + ((agreementBeginDate == null) ? 0 : agreementBeginDate.hashCode());
-		result = prime * result + ((agreementName == null) ? 0 : agreementName.hashCode());
-		result = prime * result + ((dataUsagePeriod == null) ? 0 : dataUsagePeriod.hashCode());
-		result = prime * result + ((deidStatus == null) ? 0 : deidStatus.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());
-		result = prime * result + ((primaryContactEmail == null) ? 0 : primaryContactEmail.hashCode());
-		result = prime * result + ((schemaVersion == null) ? 0 : schemaVersion.hashCode());
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
-		result = prime * result + ((uploadBy == null) ? 0 : uploadBy.hashCode());
-		result = prime * result + ((uploadDate == null) ? 0 : uploadDate.hashCode());
-		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
-		result = prime * result + ((useCases == null) ? 0 : useCases.hashCode());
-		result = prime * result + ((dataOriginCountriesStates == null) ? 0 : dataOriginCountriesStates.hashCode());
-		result = prime * result + ((dataLocationAllowed == null) ? 0 : dataLocationAllowed.hashCode());
-		return result;
-	}
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Contract other = (Contract) obj;
-		if (active == null) {
-			if (other.active != null)
-				return false;
-		} else if (!active.equals(other.active))
-			return false;
-		if (agreementBeginDate == null) {
-			if (other.agreementBeginDate != null)
-				return false;
-		} else if (!agreementBeginDate.equals(other.agreementBeginDate))
-			return false;
-		if (agreementName == null) {
-			if (other.agreementName != null)
-				return false;
-		} else if (!agreementName.equals(other.agreementName))
-			return false;
-		if (dataUsagePeriod == null) {
-			if (other.dataUsagePeriod != null)
-				return false;
-		} else if (!dataUsagePeriod.equals(other.dataUsagePeriod))
-			return false;
-		if (deidStatus == null) {
-			if (other.deidStatus != null)
-				return false;
-		} else if (!deidStatus.equals(other.deidStatus))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (orgId == null) {
-			if (other.orgId != null)
-				return false;
-		} else if (!orgId.equals(other.orgId))
-			return false;
-		if (primaryContactEmail == null) {
-			if (other.primaryContactEmail != null)
-				return false;
-		} else if (!primaryContactEmail.equals(other.primaryContactEmail))
-			return false;
-		if (schemaVersion == null) {
-			if (other.schemaVersion != null)
-				return false;
-		} else if (!schemaVersion.equals(other.schemaVersion))
-			return false;
-		if (status == null) {
-			if (other.status != null)
-				return false;
-		} else if (!status.equals(other.status))
-			return false;
-		if (uploadBy == null) {
-			if (other.uploadBy != null)
-				return false;
-		} else if (!uploadBy.equals(other.uploadBy))
-			return false;
-		if (uploadDate == null) {
-			if (other.uploadDate != null)
-				return false;
-		} else if (!uploadDate.equals(other.uploadDate))
-			return false;
-		if (uri == null) {
-			if (other.uri != null)
-				return false;
-		} else if (!uri.equals(other.uri))
-			return false;
-		if (useCases == null) {
-			if (other.useCases != null)
-				return false;
-		} else if (!useCases.equals(other.useCases))
-			return false;
-		if (dataOriginCountriesStates == null) {
-			if (other.dataOriginCountriesStates != null)
-				return false;
-		} else if (!dataOriginCountriesStates.equals(other.dataOriginCountriesStates))
-			return false;
-		if (dataLocationAllowed == null) {
-			if (other.dataLocationAllowed != null)
-				return false;
-		} else if (!dataLocationAllowed.equals(other.dataLocationAllowed))
-			return false;
-		return true;
-	}
 
-/*	@Override
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		Contract contract = (Contract) o;
 
-		if (getUsageLength() != contract.getUsageLength()) return false;
 		if (getId() != null ? !getId().equals(contract.getId()) : contract.getId() != null) return false;
-		if (getSchemaVersion() != null ? !getSchemaVersion().equals(contract.getSchemaVersion()) : contract.getSchemaVersion() != null)
+		if (!getSchemaVersion().equals(contract.getSchemaVersion())) return false;
+		if (!getOrgId().equals(contract.getOrgId())) return false;
+		if (getUri() != null ? !getUri().equals(contract.getUri()) : contract.getUri() != null) return false;
+		if (!getDeidStatus().equals(contract.getDeidStatus())) return false;
+		if (!getActive().equals(contract.getActive())) return false;
+		if (!getUploadBy().equals(contract.getUploadBy())) return false;
+		if (getUploadDate() != null ? !getUploadDate().equals(contract.getUploadDate()) : contract.getUploadDate() != null)
 			return false;
-		if (getOrgId() != null ? !getOrgId().equals(contract.getOrgId()) : contract.getOrgId() != null) return false;
-		if (uri != null ? !uri.equals(contract.uri) : contract.uri != null) return false;
-		if (getContractName() != null ? !getContractName().equals(contract.getContractName()) : contract.getContractName() != null)
-			return false;
-		if (getDeidStatus() != contract.getDeidStatus()) return false;
-		if (getContactInfo() != null ? !getContactInfo().equals(contract.getContactInfo()) : contract.getContactInfo() != null)
-			return false;
-		if (getActive() != null ? !getActive().equals(contract.getActive()) : contract.getActive() != null)
-			return false;
-		if (getUseCases() != null ? !getUseCases().equals(contract.getUseCases()) : contract.getUseCases() != null)
-			return false;
-		if (getContractStartDate() != null ? !getContractStartDate().equals(contract.getContractStartDate()) : contract.getContractStartDate() != null)
-			return false;
-		if (getDataOriginCountries() != null ? !getDataOriginCountries().equals(contract.getDataOriginCountries()) : contract.getDataOriginCountries() != null)
-			return false;
-		if (getState() != null ? !getState().equals(contract.getState()) : contract.getState() != null) return false;
-		if (getTerritory() != null ? !getTerritory().equals(contract.getTerritory()) : contract.getTerritory() != null)
-			return false;
-		if (getDataResidence() != contract.getDataResidence()) return false;
-		if (getUploadBy() != null ? !getUploadBy().equals(contract.getUploadBy()) : contract.getUploadBy() != null)
-			return false;
-		return getUploadDate() != null ? getUploadDate().equals(contract.getUploadDate()) : contract.getUploadDate() == null;
-	}*/
-
-/*	@Override
-	public int hashCode() {
-		int result = getId() != null ? getId().hashCode() : 0;
-		result = 31 * result + (getSchemaVersion() != null ? getSchemaVersion().hashCode() : 0);
-		result = 31 * result + (getOrgId() != null ? getOrgId().hashCode() : 0);
-		result = 31 * result + (uri != null ? uri.hashCode() : 0);
-		result = 31 * result + (getContractName() != null ? getContractName().hashCode() : 0);
-		result = 31 * result + (getDeidStatus() != null ? getDeidStatus().hashCode() : 0);
-		result = 31 * result + getUsageLength();
-		result = 31 * result + (getContactInfo() != null ? getContactInfo().hashCode() : 0);
-		result = 31 * result + (getActive() != null ? getActive().hashCode() : 0);
-		result = 31 * result + (getUseCases() != null ? getUseCases().hashCode() : 0);
-		result = 31 * result + (getContractStartDate() != null ? getContractStartDate().hashCode() : 0);
-		result = 31 * result + (getDataOriginCountries() != null ? getDataOriginCountries().hashCode() : 0);
-		result = 31 * result + (getState() != null ? getState().hashCode() : 0);
-		result = 31 * result + (getTerritory() != null ? getTerritory().hashCode() : 0);
-		result = 31 * result + (getDataResidence() != null ? getDataResidence().hashCode() : 0);
-		result = 31 * result + (getUploadBy() != null ? getUploadBy().hashCode() : 0);
-		result = 31 * result + (getUploadDate() != null ? getUploadDate().hashCode() : 0);
-		return result;
-	}*/
-
-/*DO NOT DELETE. This code is required,
-	but commented because it is breaking sonar because of condition coverage. 
-	Comented to ensure RSNA build is delivered*/
-	/*@Override
-	public int hashCode() {//NOSONAR
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((active == null) ? 0 : active.hashCode());
-		result = prime * result + ((businessCase == null) ? 0 : businessCase.hashCode());
-		result = prime * result + ((contactInfo == null) ? 0 : contactInfo.hashCode());
-		result = prime * result + ((contractName == null) ? 0 : contractName.hashCode());
-		result = prime * result + ((deidStatus == null) ? 0 : deidStatus.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());
-		result = prime * result + ((properties == null) ? 0 : properties.hashCode());
-		result = prime * result + ((schemaVersion == null) ? 0 : schemaVersion.hashCode());
-		result = prime * result + ((uploadBy == null) ? 0 : uploadBy.hashCode());
-		result = prime * result + ((uploadDate == null) ? 0 : uploadDate.hashCode());
-		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
-		result = prime * result + usageLength;
-		result = prime * result + ((usageNotes == null) ? 0 : usageNotes.hashCode());
-		result = prime * result + ((usageRights == null) ? 0 : usageRights.hashCode());
-		return result;
+		if (!getAgreementName().equals(contract.getAgreementName())) return false;
+		if (!getPrimaryContactEmail().equals(contract.getPrimaryContactEmail())) return false;
+		if (!getAgreementBeginDate().equals(contract.getAgreementBeginDate())) return false;
+		if (!getDataUsagePeriod().equals(contract.getDataUsagePeriod())) return false;
+		if (!getUseCases().equals(contract.getUseCases())) return false;
+		if (!getDataOriginCountriesStates().equals(contract.getDataOriginCountriesStates())) return false;
+		if (!getDataLocationAllowed().equals(contract.getDataLocationAllowed())) return false;
+		return getStatus().equals(contract.getStatus());
 	}
 
 	@Override
-	public boolean equals(Object obj) {//NOSONAR
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Contract other = (Contract) obj;
-		if (active == null) {
-			if (other.active != null)
-				return false;
-		} else if (!active.equals(other.active))
-			return false;
-		if (businessCase == null) {
-			if (other.businessCase != null)
-				return false;
-		} else if (!businessCase.equals(other.businessCase))
-			return false;
-		if (contactInfo == null) {
-			if (other.contactInfo != null)
-				return false;
-		} else if (!contactInfo.equals(other.contactInfo))
-			return false;
-		if (contractName == null) {
-			if (other.contractName != null)
-				return false;
-		} else if (!contractName.equals(other.contractName))
-			return false;
-		if (deidStatus != other.deidStatus)
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (orgId == null) {
-			if (other.orgId != null)
-				return false;
-		} else if (!orgId.equals(other.orgId))
-			return false;
-		if (properties == null) {
-			if (other.properties != null)
-				return false;
-		} else if (!properties.equals(other.properties))
-			return false;
-		if (schemaVersion == null) {
-			if (other.schemaVersion != null)
-				return false;
-		} else if (!schemaVersion.equals(other.schemaVersion))
-			return false;
-		if (uploadBy == null) {
-			if (other.uploadBy != null)
-				return false;
-		} else if (!uploadBy.equals(other.uploadBy))
-			return false;
-		if (uploadDate == null) {
-			if (other.uploadDate != null)
-				return false;
-		} else if (!uploadDate.equals(other.uploadDate))
-			return false;
-		if (uri == null) {
-			if (other.uri != null)
-				return false;
-		} else if (!uri.equals(other.uri))
-			return false;
-		if (usageLength != other.usageLength)
-			return false;
-		if (usageNotes == null) {
-			if (other.usageNotes != null)
-				return false;
-		} else if (!usageNotes.equals(other.usageNotes))
-			return false;
-		if (usageRights == null) {
-			if (other.usageRights != null)
-				return false;
-		} else if (!usageRights.equals(other.usageRights))
-			return false;
-		return true;
-	}*/
-	
+	public int hashCode() {
+		int result = getId() != null ? getId().hashCode() : 0;
+		result = 31 * result + getSchemaVersion().hashCode();
+		result = 31 * result + getOrgId().hashCode();
+		result = 31 * result + (getUri() != null ? getUri().hashCode() : 0);
+		result = 31 * result + getDeidStatus().hashCode();
+		result = 31 * result + getActive().hashCode();
+		result = 31 * result + getUploadBy().hashCode();
+		result = 31 * result + (getUploadDate() != null ? getUploadDate().hashCode() : 0);
+		result = 31 * result + getAgreementName().hashCode();
+		result = 31 * result + getPrimaryContactEmail().hashCode();
+		result = 31 * result + getAgreementBeginDate().hashCode();
+		result = 31 * result + getDataUsagePeriod().hashCode();
+		result = 31 * result + getUseCases().hashCode();
+		result = 31 * result + getDataOriginCountriesStates().hashCode();
+		result = 31 * result + getDataLocationAllowed().hashCode();
+		result = 31 * result + getStatus().hashCode();
+		return result;
+	}
 }
