@@ -753,8 +753,8 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		try {
 			contractResult = contractRepository.save(contract);
 		} catch (Exception e) {
-			logger.error("Error in db");
-			e.printStackTrace();
+			logger.error("Exception saving the contract");
+			throw e;
 		}
 
 		return contractResult;
