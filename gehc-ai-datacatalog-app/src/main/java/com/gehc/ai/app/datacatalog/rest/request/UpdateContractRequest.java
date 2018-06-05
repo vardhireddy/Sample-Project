@@ -11,17 +11,22 @@
  */
 package com.gehc.ai.app.datacatalog.rest.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.filters.StatusConverter;
 
 import javax.persistence.Convert;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UpdateContractRequest {
 
+    @JsonProperty("status")
     @Convert(converter = StatusConverter.class)
     private Contract.UploadStatus status;
 
+    @JsonProperty("uri")
     private List<String> uri;
 
     public UpdateContractRequest() {

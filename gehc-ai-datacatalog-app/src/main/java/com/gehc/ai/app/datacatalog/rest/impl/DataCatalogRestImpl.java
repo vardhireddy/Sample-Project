@@ -1343,7 +1343,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.PUT)
     public ResponseEntity<Contract> updateContract(@PathVariable Long contractId,
-                                                   @Valid @RequestBody UpdateContractRequest updateRequest) {
+                                                   @RequestBody UpdateContractRequest updateRequest) {
 
         logger.info("Validating contract update request body.");
 
@@ -1380,7 +1380,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     private boolean validateUpdateRequest(UpdateContractRequest updateRequest) {
         if (updateRequest == null
                 || ((updateRequest.getUploadStatus() == null)
-                && (updateRequest.getUri() == null || updateRequest.getUri().isEmpty()))) {
+                        && (updateRequest.getUri() == null || updateRequest.getUri().isEmpty()))) {
             return false;
         }
         return true;
