@@ -120,11 +120,6 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
 
-    @Given("Retrieve DataCatalog with Org ID DataSetUp Provided")
-    public void givenDataSetForOrgId() throws Exception {
-        dataCollectionSetUpForOrgId();
-    }
-
     @When("Get data collection by Org Id")
     public void getdataSet() throws Exception {
 
@@ -196,11 +191,6 @@ public class DataCollectionSteps {
 		// 10:20:56\",\"type\":\"Annotation\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"createdBy\":\"test\",\"properties\":{},\"imageSets\":[]}")));
 	}
 
-    @Given("Retrieve DataSet by Type DataSetUp Provided")
-    public void givenDataSetByType() throws Exception {
-        dataCollectionSetUpByType();
-    }
-
     @When("Get data collection by Type -  Annotation")
     public void getDataCollectionByType() throws Exception {
         retrieveResult = mockMvc.perform(
@@ -216,12 +206,6 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("{\"id\":1,\"createdBy\":\"test\"}")));
     }
-
-    @Given("Return empty array list")
-    public void givenReturnEmptyArrayList() {
-        dataCollectionSetUpByType();
-    }
-
 
     @When("Get data collection by Type is not valid")
     public void whenGetDataCollectionByTypeIsNotValid() throws Exception {
@@ -774,25 +758,9 @@ public class DataCollectionSteps {
         return dataSets;
     }
 
-
-    private void dataCollectionSetUpByType() {
-        List<DataSet> dataSets = getDataSets();
-        when(dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(anyString(), anyString())).thenReturn(dataSets);
-    }
-
     private void dataCollectionSetUpForId() {
         List<DataSet> dataSets = getDataSets();
         when(dataSetRepository.findByIdAndOrgId(anyLong(), anyString())).thenReturn(dataSets);
-    }
-
-    private void dataCollectionSetUpForOrgId() {
-        List<DataSet> dataSets = getDataSets();
-        when(dataSetRepository.findByOrgIdOrderByCreatedDateDesc(anyString())).thenReturn(dataSets);
-    }
-
-    private void dataCollectionSetUpForType() {
-        List<DataSet> dataSets = getDataSets();
-        when(dataSetRepository.findByTypeAndOrgIdOrderByCreatedDateDesc(anyString(), anyString())).thenReturn(dataSets);
     }
 
     private void dataCollectionSetUpForImageSet() {

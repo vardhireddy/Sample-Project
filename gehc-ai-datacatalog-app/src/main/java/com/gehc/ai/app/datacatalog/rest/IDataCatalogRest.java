@@ -28,6 +28,7 @@ import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -200,13 +201,14 @@ public interface IDataCatalogRest {
     List<DataSet> getDataSetById(Long id, HttpServletRequest request);
 
     /**
-     * Get Data Set by type
+     * Returns all data collections associated with the provided collection type and org ID embedded in the request headers.
      *
-     * @param type
-     * @param request, to get an org id based on authentication token
-     * @return list of Data Set
+     * @param type (Optional) The type of data collection to return
+     * @param pageable (Optional) A {@link Pageable} object that will determine what subset of data collections will be returned
+     * @param request The intercepted HTTP request object whose headers should contain the authorization token for the target org ID
+     * @return A JSON string containing all matching data collections
      */
-    ResponseEntity<?> getDataSetByType(String type, HttpServletRequest request);
+    ResponseEntity<?> getDataSetByType(String type, Pageable pageable, HttpServletRequest request);
 
     /**
      * Get Image Series by Series Instance UUId
