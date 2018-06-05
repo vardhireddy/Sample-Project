@@ -118,49 +118,49 @@ public class CreateContractSteps {
 
     @Given("required legal meta data - agreement name is not provided")
     public void givenRequiredLegalMetaDataAgreementNameNotProvided() {
-        this.contract = createMockInCompleteContract(null,"john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT.toString(), "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}),Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), "USA");
+        this.contract = createMockInCompleteContract(null,"john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT, "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}),Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), Contract.DataLocationAllowed.GLOBAL);
 
     }
 
     @Given("required legal meta data - primary contact email is not provided")
     public void givenRequiredLegalMetaDataPrimaryContactEmailNotProvided() {
-        this.contract = createMockInCompleteContract("agreeName",null, Contract.DeidStatus.HIPAA_COMPLIANT.toString(), "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), "USA");
+        this.contract = createMockInCompleteContract("agreeName",null, Contract.DeidStatus.HIPAA_COMPLIANT, "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), Contract.DataLocationAllowed.GLOBAL);
 
     }
 
     @Given("required legal meta data - de-identified status is not provided")
     public void givenRequiredLegalMetaDeIdentifiedStatusNotProvided() {
-        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", null, "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), "USA");
+        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", null, "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), Contract.DataLocationAllowed.GLOBAL);
 
     }
 
     @Given("required legal meta data - agreement begin date is not provided")
     public void givenRequiredLegalMetaDataAgreementBeginDateNotProvided() {
-        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT.toString(), null,"365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), "USA");
+        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT, null,"365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), Contract.DataLocationAllowed.GLOBAL);
 
     }
 
     @Given("required legal meta data - data usage period is not provided")
     public void givenRequiredLegalMetaDataUsagePeriodNotProvided() {
-        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT.toString(), "2015-03-31",null, Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), "USA");
+        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT, "2015-03-31",null, Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), Contract.DataLocationAllowed.GLOBAL);
 
     }
 
     @Given("required legal meta data - data use cases are not provided")
     public void givenRequiredLegalMetaDataUseCasesNotProvided() {
-        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT.toString(), "2015-03-31","365", null,Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}),"USA");
+        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT, "2015-03-31","365", null,Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}),Contract.DataLocationAllowed.GLOBAL);
 
     }
 
     @Given("required legal meta data - data origin country and state are not provided")
     public void givenRequiredLegalMetaDataOriginCountryStateNotProvided() {
-        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT.toString(), "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), null, "USA");
+        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT, "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), null, Contract.DataLocationAllowed.GLOBAL);
 
     }
 
     @Given("required legal meta data - data allowed location is not provided")
     public void givenRequiredLegalMetaDataAllowedLocationNotProvided() {
-        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT.toString(), "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), null);
+        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT, "2015-03-31","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), null);
 
     }
 
@@ -495,9 +495,8 @@ public class CreateContractSteps {
         List<String> newUriList = new ArrayList<>();
         newUriList.add("bla.pdf");
         savedContract.setUri(newUriList);
-        savedContract.setStatus("updatedStatus");
+        savedContract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
         verify(dataCatalogDao, times(1)).saveContract(savedContract);
-        result.andExpect(content().string(containsString("updatedStatus")));
     }
 
     @Then("the response's body should contain a message saying the update request cannot be empty. Either status or uri must be provided")
@@ -518,8 +517,7 @@ public class CreateContractSteps {
     public void thenValidIdAndStatusOnlyInData() throws Exception{
 
         Contract savedContract = createMockUpdateContract();
-        savedContract.setStatus("updatedStatus");
-        result.andExpect(content().string(containsString("updatedStatus")));
+        savedContract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
         verify(dataCatalogDao, times(1)).saveContract(savedContract);
     }
 
@@ -559,18 +557,16 @@ public class CreateContractSteps {
 
     private Contract createMockContractRequest() {
         Contract contract = new Contract();
-        //contract.setId(1L);
         contract.setAgreementName("Test contract name");
         contract.setSchemaVersion("v1");
         contract.setPrimaryContactEmail("john.doe@ge.com");
-        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
         contract.setAgreementBeginDate("2017-03-02");
         contract.setDataUsagePeriod("365");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
-        contract.setDataLocationAllowed("USA");
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
         contract.setUploadBy("user");
-        contract.setStatus("uploaded");
         return contract;
     }
 
@@ -582,20 +578,19 @@ public class CreateContractSteps {
 
     private Contract createMockCompleteContract() throws Exception{
         Contract contract = new Contract();
-        //contract.setId(1L);
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         contract.setSchemaVersion("v1");
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
-        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
         contract.setAgreementBeginDate("2017-03-02");
         contract.setDataUsagePeriod("365");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
         contract.setActive("true");
-        contract.setDataLocationAllowed("USA");
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
         contract.setUploadBy("user");
-        contract.setStatus("uploaded");
+        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
 
         return contract;
     }
@@ -603,7 +598,7 @@ public class CreateContractSteps {
     private Contract createMockUpdateContract() throws Exception{
         Contract contract = new Contract();
         contract.setId(1L);
-        contract.setStatus("updatedStatus");
+        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
         contract.setActive("true");
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
@@ -612,18 +607,18 @@ public class CreateContractSteps {
         contract.setSchemaVersion("v1");
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
-        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
         contract.setAgreementBeginDate("2017-03-02");
         contract.setDataUsagePeriod("365");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
-        contract.setDataLocationAllowed("USA");
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
         contract.setUploadBy("user");
 
         return contract;
     }
 
-    private Contract createMockInCompleteContract(String agreementName, String primaryContactEmail, String deidStatus, String agreementBeginDate, String dataUsagePeriod, List<ContractUseCase> useCases, List<ContractDataOriginCountriesStates> dataOriginCountriesStates, String dataLocationAllowed) {
+    private Contract createMockInCompleteContract(String agreementName, String primaryContactEmail, Contract.DeidStatus deidStatus, String agreementBeginDate, String dataUsagePeriod, List<ContractUseCase> useCases, List<ContractDataOriginCountriesStates> dataOriginCountriesStates, Contract.DataLocationAllowed dataLocationAllowed) {
         Contract contract = new Contract();
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         contract.setAgreementName(agreementName);
@@ -642,10 +637,9 @@ public class CreateContractSteps {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateContractRequest = new UpdateContractRequest("updatedStatus",uriList);
+        UpdateContractRequest updateContractRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
 
         return updateContractRequest;
     }
 
 }
-

@@ -22,7 +22,7 @@ public class ContractEntityTest {
                 .forClass(Contract.class)
                 .withPrefabValues(Contract.class, contract, contract1)
                 .withPrefabValues(Date.class, date1, date2)
-                .withNonnullFields("schemaVersion", "orgId", "deidStatus", "agreementBeginDate", "active", "uploadBy", "agreementName", "primaryContactEmail", "dataUsagePeriod", "useCases", "dataOriginCountriesStates", "dataLocationAllowed", "status")
+                .withNonnullFields("schemaVersion", "orgId", "deidStatus", "agreementBeginDate", "active", "uploadBy", "agreementName", "primaryContactEmail", "dataUsagePeriod", "useCases", "dataOriginCountriesStates", "dataLocationAllowed", "uploadStatus")
                 .verify();
     }
 
@@ -32,18 +32,18 @@ public class ContractEntityTest {
         contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
         contract.setAgreementName("Test contract name");
         contract.setPrimaryContactEmail("john.doe@ge.com");
-        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT.toString());
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
         contract.setAgreementBeginDate("2017-03-02");
         contract.setDataUsagePeriod("365");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(ContractUseCase.DataUser.GE_GLOBAL, ContractUseCase.DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
         contract.setActive("true");
-        contract.setDataLocationAllowed("USA");
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
         contract.setSchemaVersion("v1");
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         contract.setUri(uriList);
-        contract.setStatus("uploaded");
+        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
         contract.setUploadBy("user");
         contract.setUploadDate(Date.valueOf("2017-03-31"));
         return contract;
