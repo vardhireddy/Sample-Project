@@ -11,15 +11,15 @@
  */
 package com.gehc.ai.app.datacatalog.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+
+import java.util.List;
+import java.util.Map;
 
 public interface IDataCatalogDao {
 
@@ -85,7 +85,7 @@ public interface IDataCatalogDao {
      * @param contract contract to be ingested
      * @return contract id created for the ingested contract
      */
-	Long ingestContractDetails(Contract contract);
+	Contract saveContract(Contract contract);
 
 	/**
 	 * given a contract id, return the contract details

@@ -20,7 +20,9 @@ import com.gehc.ai.app.datacatalog.entity.Contract.DeidStatus;
  * @author dipshah
  *
  */
-@Converter(autoApply = true)
+//
+//@Converter(autoApply = true)
+@Converter(autoApply = false)
 public class DeidStatusConverter implements AttributeConverter<DeidStatus, String>{
 	@Override
 	public String convertToDatabaseColumn(DeidStatus deidStatus) {

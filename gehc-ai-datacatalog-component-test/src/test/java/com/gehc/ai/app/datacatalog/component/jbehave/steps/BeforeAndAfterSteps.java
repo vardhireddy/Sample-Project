@@ -3,6 +3,7 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.repository.*;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.ScenarioType;
@@ -65,7 +66,6 @@ public class BeforeAndAfterSteps {
         reset(dataCatalogInterceptor);
         reset(dataCatalogDao);
         reset(contractRepository);
-
     }
 
 }
