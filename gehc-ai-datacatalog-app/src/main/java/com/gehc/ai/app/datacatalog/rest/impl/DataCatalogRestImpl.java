@@ -1349,7 +1349,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         if (updateRequest == null ||
                 (updateRequest.getStatus() == null && updateRequest.getUri() == null)
-                || (updateRequest.getStatus().isEmpty() && updateRequest.getUri().size() == 0))
+                || (updateRequest.getStatus().isEmpty() && updateRequest.getUri().isEmpty()))
         {
             return new ResponseEntity(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), HttpStatus.BAD_REQUEST);
 
@@ -1375,7 +1375,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     ?contractToBeUpdated.getStatus()
                     :updateRequest.getStatus());
             contractToBeUpdated.setUri((updateRequest.getUri() == null
-                    || updateRequest.getUri().size() == 0)
+                    || updateRequest.getUri().isEmpty())
                     ?contractToBeUpdated.getUri()
                     :updateRequest.getUri());
 
