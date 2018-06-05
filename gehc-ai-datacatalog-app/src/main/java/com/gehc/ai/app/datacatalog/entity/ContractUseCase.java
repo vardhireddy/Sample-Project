@@ -13,6 +13,7 @@ package com.gehc.ai.app.datacatalog.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * {@code ContractUseCase} represents who and how data associated with a contract can be used.
@@ -31,7 +32,7 @@ public class ContractUseCase {
     /**
      * Creates a new {@code ContractUseCase} using the specified data user type, data usage type, and data notes.
      *
-     * @param dataUser The type of user that can use a particular data asset.
+     * @param dataUser  The type of user that can use a particular data asset.
      * @param dataUsage The manner in which a particular data asset can be used.
      * @param dataNotes Additional notes that describe who and how a particular data asset can be used.
      */
@@ -46,41 +47,26 @@ public class ContractUseCase {
      * {@code DataUser} enumerates the types of user that can use a particular data asset.
      */
     public enum DataUser {
-        GE_ONSHORE("geOnshore"),
-        GE_GLOBAL("geGlobal"),
-        THIRD_PARTY_PARTNERS_ONSHORE("partnersOnshore"),
-        THIRD_PARTY_PARTNERS_GLOBAL("partnersGlobal");
-
-        private String displayName;
-
-        DataUser(String displayName) {
-            this.displayName = displayName;
-        }
-
-        @Override
-        public String toString() {
-            return this.displayName;
-        }
+        @JsonProperty("geOnshore")
+        GE_ONSHORE,
+        @JsonProperty("geGlobal")
+        GE_GLOBAL,
+        @JsonProperty("partnersOnshore")
+        THIRD_PARTY_PARTNERS_ONSHORE,
+        @JsonProperty("partnersGlobal")
+        THIRD_PARTY_PARTNERS_GLOBAL
     }
 
     /**
      * {@code DataUsage} enumerates the manners in which a data asset can be used by a data user.
      */
     public enum DataUsage {
-        TRAINING_AND_MODEL_DEVELOPMENT("trainingAndModel"),
-        ANNOTATION_AND_CURATION("annotationAndCuration"),
-        DATA_SHARING("dataSharing");
-
-        private String displayName;
-
-        DataUsage(String displayName) {
-            this.displayName = displayName;
-        }
-
-        @Override
-        public String toString() {
-            return this.displayName;
-        }
+        @JsonProperty("trainingAndModel")
+        TRAINING_AND_MODEL_DEVELOPMENT,
+        @JsonProperty("annotationAndCuration")
+        ANNOTATION_AND_CURATION,
+        @JsonProperty("dataSharing")
+        DATA_SHARING
     }
 
     public String getDataNotes() {
