@@ -49,6 +49,10 @@ TestingVars:
    test_contract_command: mvn -q verify -P contract
    test_unit_command: mvn -q test -P unit
    test_integration_command: mvn -q verify -P integration
+   publish_component_test: true
+   component_report_name: Component Test Report
+   component_report_directory : gehc-ai-datacatalog-component-test/target/jbehave/
+   component_report_file : view/index.html
 
 DevEnvVars:
    aws_dev_cluster_name: dev-lf-cluster-dev-lf-LFCluster-1XYJNH6IDC34O
