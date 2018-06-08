@@ -23,9 +23,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
-import com.google.common.base.Predicates;
 
-import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -55,7 +53,6 @@ public class AppConfig extends WebMvcConfigurerAdapter{
         return new Docket(DocumentationType.SWAGGER_2)//<3>
                 .select()//<4>
                 .apis(RequestHandlerSelectors.basePackage("com.gehc.ai.app.datacatalog"))//<5>
-                .paths(Predicates.not(PathSelectors.regex("/error.*")))
                 .build();
     }
     
