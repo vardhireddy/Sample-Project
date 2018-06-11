@@ -94,13 +94,13 @@ public class RetrieveContractsSteps {
     @When("the api that gets contracts associated with the image sets of that data collection")
     public void whenApiReturnsDataForDatSetId() throws Exception{
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/dataset/1"));
+                get("/api/v1/datacatalog/contract/data-collection/1"));
     }
 
     @When("the api that gets contracts associated with the image sets of that data collection is hit")
     public void whenApiReturnsDataForDatSetIdIsHit() throws Exception{
         retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/dataset/12").contentType(MediaType.APPLICATION_JSON));
+                get("/api/v1/datacatalog/contract/data-collection/12").contentType(MediaType.APPLICATION_JSON));
     }
 
     /////////////////////
