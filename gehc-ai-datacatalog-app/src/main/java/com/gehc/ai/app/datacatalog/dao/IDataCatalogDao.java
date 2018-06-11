@@ -109,5 +109,10 @@ public interface IDataCatalogDao {
 	 */
 	List<Long> getImageSetIdListByDataSetId(Long datasetId);
 
+	/**
+	 * Returns list of contracts
+	 * @param imagesetIdList
+	 * @return
+	 */
 	List<Contract> getContractsByImageSetidList(List<Long> imagesetIdList);
 }

@@ -74,5 +74,10 @@ public interface IDataCatalogService {
     List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
 
 
+    /**
+     * Returns a map of active and inactive contracts
+     * @param datasetId
+     * @return
+     */
     Map<String,List<ContractByDataSetId>> getContractsByDatasetId(Long datasetId);
 }
