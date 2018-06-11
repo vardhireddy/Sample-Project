@@ -48,6 +48,12 @@ import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.DataCatalogUtils;
 import com.gehc.ai.app.datacatalog.util.exportannotations.Shuffle;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponses;
+
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +107,7 @@ import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
  * @author 212071558
  */
 @RestController
+@Api(value = "DataCatalogRestController", description = "REST APIs related to DataCatalog Service")
 @Produces(MediaType.APPLICATION_JSON)
 @RequestMapping(value = "/api/v1")
 @PropertySource({"classpath:application.yml"})
@@ -1143,8 +1150,21 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      * @return
      */
     @Override
+    @ApiOperation(value = "Get Contract By Id ", httpMethod = "GET", response = Contract.class, tags = "Retrieve Contract")
+    @ApiResponses(value = {
+    		@io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Contract.class),
+    		@io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+    		@io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+    		@io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+    		@io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+    		@io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+    		@io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+    		@io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+    		@io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+    		@io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+    		@io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
-    public ResponseEntity<Contract> getContracts(@PathVariable(value = "contractId") Long contractId) {
+    public ResponseEntity<Contract> getContracts(@ApiParam(value = "Id of Contract") @PathVariable(value = "contractId") Long contractId) {
         Contract contract;
         try {
             RequestValidator.validateContractId(contractId);
@@ -1259,6 +1279,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Create Contract", httpMethod = "POST", response = Contract.class, tags = "Create Contract")
+    @ApiResponses(value = {
+    		@io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Contract.class),
+    		@io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+    		@io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+    		@io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+    		@io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+    		@io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+    		@io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+    		@io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+    		@io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+    		@io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
 	public ResponseEntity<?> saveContract(@RequestBody Contract contract, HttpServletRequest request) {
         logger.debug("Creating a new contract.");

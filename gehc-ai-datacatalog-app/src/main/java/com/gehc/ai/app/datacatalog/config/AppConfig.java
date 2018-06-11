@@ -11,7 +11,8 @@
  */
 package com.gehc.ai.app.datacatalog.config;
 
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,15 +22,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import javax.sql.DataSource;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
 /**
  * @author 212071558
  *
  */
+@Configuration
 @ComponentScan ( {"com.gehc"} )
 @PropertySource({"classpath:application.yml"})
-@Configuration
 public class AppConfig extends WebMvcConfigurerAdapter{
 
     /*
