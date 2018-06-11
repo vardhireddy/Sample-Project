@@ -27,6 +27,7 @@ import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -373,6 +374,8 @@ public interface IDataCatalogRest {
      * @return
      */
     ResponseEntity<Map<String,String>> deleteContract(Long contractId);
+
+    ResponseEntity<?> getContractsForDataCollection(Long datasetId);
 }
 
 

@@ -43,6 +43,7 @@ import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.DataCatalogUtils;
 import com.gehc.ai.app.datacatalog.util.exportannotations.Shuffle;
@@ -1445,6 +1446,31 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactivated successfully"), HttpStatus.OK);
 
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @RequestMapping(value = "/datacatalog/dataset/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getContractsForDataCollection(@PathVariable("id") Long datasetId) {
+
+        logger.info("Data collection/set ID to get contracts id :{}",datasetId);
+
+        Map<String,List<ContractByDataSetId>> resultListOfContracts;
+
+        try {
+            resultListOfContracts = dataCatalogService.getContractsByDatasetId(datasetId);
+        }catch (Exception e){
+            logger.error("Error retrieving contracts associated with the dataset : {}", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Error retrieving contracts associated with the dataset." +
+                    " Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (resultListOfContracts.get("active").size() == 0 && resultListOfContracts.get("inactive").size() == 0)
+        {
+            return new ResponseEntity(Collections.singletonMap("response", "No contracts exist for the given dataSet ID."), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(resultListOfContracts, HttpStatus.OK);
     }
 
 }

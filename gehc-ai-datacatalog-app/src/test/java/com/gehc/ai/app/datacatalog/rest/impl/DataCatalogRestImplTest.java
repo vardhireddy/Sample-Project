@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -631,6 +634,57 @@ public class DataCatalogRestImplTest {
         assertEquals(500, result.getStatusCodeValue());
     }
 
+    //test cases for getContractsForDataCollection
+    @Test
+    public void testGetContractsForDataCollection()
+    {
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",contractByDataSetIdList);
+        data.put("inactive",contractByDataSetIdList);
+        when(dataCatalogService.getContractsByDatasetId(anyLong())).thenReturn(data);
+
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        assertEquals(200, result.getStatusCodeValue());
+//        assertEquals(1,result.getBody().get("active").size());
+//        assertEquals(1,result.getBody().get("inactive").size());
+    }
+
+    @Test
+    public void testGetContractsForDataCollectionForBadRequest()
+    {
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",new ArrayList<>());
+        data.put("inactive",new ArrayList<>());
+        when(dataCatalogService.getContractsByDatasetId(anyLong())).thenReturn(data);
+
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        assertEquals(400, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testGetContractsForDataCollectionForInternalException()
+    {
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",new ArrayList<>());
+        data.put("inactive",new ArrayList<>());
+        when(dataCatalogService.getContractsByDatasetId(anyLong())).thenThrow(new RuntimeException());
+
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        assertEquals(500, result.getStatusCodeValue());
+    }
+
     private Contract buildContractEntity(){
         Contract contract = new Contract();
         contract.setId(1L);
@@ -639,6 +693,24 @@ public class DataCatalogRestImplTest {
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         contract.setUri(uriList);
+        return contract;
+    }
+
+    private ContractByDataSetId buildContractByDataSetId(){
+        ContractByDataSetId contract = new ContractByDataSetId();
+        contract.setId(1L);
+        contract.setAgreementName("Test contract name");
+        contract.setPrimaryContactEmail("john.doe@ge.com");
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
+        contract.setAgreementBeginDate("9999-06-08");
+        contract.setDataUsagePeriod("12");
+        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(ContractUseCase.DataUser.GE_GLOBAL, ContractUseCase.DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
+        contract.setActive("true");
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
+        contract.setUploadBy("user");
+        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
+        contract.setHasContractExpired(false);
+
         return contract;
     }
 
