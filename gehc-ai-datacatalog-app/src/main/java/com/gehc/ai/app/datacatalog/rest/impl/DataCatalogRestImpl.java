@@ -1482,7 +1482,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings("unchecked")
     @Override
-    @RequestMapping(value = "/datacatalog/dataset/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/datacatalog/contract/data-collection/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getContractsForDataCollection(@PathVariable("id") Long datasetId) {
 
         logger.info("Data collection/set ID to get contracts id :{}",datasetId);
