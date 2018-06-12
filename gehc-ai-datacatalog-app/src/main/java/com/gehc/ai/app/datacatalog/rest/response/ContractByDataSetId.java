@@ -104,7 +104,7 @@ public final class ContractByDataSetId {
     }
 
     public List<ContractUseCase> getUseCases() {
-        return Collections.unmodifiableList(useCases);
+        return useCases;
     }
 
     public Contract.UploadStatus getUploadStatus() {
@@ -112,7 +112,7 @@ public final class ContractByDataSetId {
     }
 
     public List<ContractDataOriginCountriesStates> getDataOriginCountriesAndStates() {
-        return Collections.unmodifiableList(dataOriginCountriesAndStates);
+        return dataOriginCountriesAndStates;
     }
 
     public Contract.DataLocationAllowed getDataLocationAllowed() {

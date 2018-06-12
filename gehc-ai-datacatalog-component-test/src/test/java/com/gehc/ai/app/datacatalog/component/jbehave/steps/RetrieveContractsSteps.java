@@ -54,7 +54,7 @@ public class RetrieveContractsSteps {
 
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
         when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(imageSetIdList);
-        when(dataCatalogDao.getContractsByImageSetIds(imageSetIdList)).thenReturn(contractByDataSetIdList);
+        when(dataCatalogDao.getContractsByImageSetIds(anyList())).thenReturn(contractByDataSetIdList);
     }
 
     @Given("a data collection/set ID not supported by LF")
