@@ -1,17 +1,34 @@
+/*
+ * ContractByDataSetId.java
+ *
+ * Copyright (c) 2016 by General Electric Company. All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of
+ * General Electric Company. The software may be used and/or copied only
+ * with the written permission of General Electric Company or in accordance
+ * with the terms and conditions stipulated in the agreement/contract
+ * under which the software has been supplied.
+ */
+
 package com.gehc.ai.app.datacatalog.rest.response;
 
+import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class ContractByDataSetId {
+    private static Logger logger = LoggerFactory.getLogger(ContractByDataSetId.class);
 
     private final Long id;
     private final Contract.DeidStatus deidStatus;
@@ -87,7 +104,7 @@ public final class ContractByDataSetId {
     }
 
     public List<ContractUseCase> getUseCases() {
-        return useCases;
+        return Collections.unmodifiableList(useCases);
     }
 
     public Contract.UploadStatus getUploadStatus() {
@@ -95,7 +112,7 @@ public final class ContractByDataSetId {
     }
 
     public List<ContractDataOriginCountriesStates> getDataOriginCountriesAndStates() {
-        return dataOriginCountriesAndStates;
+        return Collections.unmodifiableList(dataOriginCountriesAndStates);
     }
 
     public Contract.DataLocationAllowed getDataLocationAllowed() {
@@ -220,7 +237,9 @@ public final class ContractByDataSetId {
         try {
             //convert String agreementBeginDate to util.Date
             agreementDate = formatter.parse(agreementBeginDate);
-        }catch (Exception e){}
+        }catch (Exception e){
+            logger.error("Error parsing agreementBeginDate :{}", e.getMessage());
+        }
 
         c.setTime(agreementDate);
 

@@ -20,11 +20,15 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
-import com.gehc.ai.app.datacatalog.entity.*;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationDetailsExporter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.JsonAnnotationDetailsExporter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
@@ -807,7 +811,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     public List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId) {
 
         DataSet dataSet = dataSetRepository.findOne(dataCollectionId);
-        if (dataSet == null || dataSet.getImageSets() == null) return null;
+        if (dataSet == null || dataSet.getImageSets() == null) return new ArrayList<>();
         else return dataSet.getImageSets();
     }
 
