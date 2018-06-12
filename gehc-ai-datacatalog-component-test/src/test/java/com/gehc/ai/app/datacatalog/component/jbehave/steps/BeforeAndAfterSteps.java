@@ -1,22 +1,24 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 
-import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
-import com.gehc.ai.app.datacatalog.repository.*;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
-import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import static org.mockito.Mockito.reset;
+
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.ScenarioType;
-import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import static org.mockito.Mockito.reset;
+import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
+import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.service.IRemoteService;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
 @Component
 public class BeforeAndAfterSteps {
@@ -50,6 +52,9 @@ public class BeforeAndAfterSteps {
 
     @MockBean
     DataCatalogDaoImpl dataCatalogDao;
+    
+    @MockBean
+    IRemoteService remoteServiceImpl;
 
     @BeforeScenario(uponType = ScenarioType.ANY)
     public void initStorageBeforeScenario() {
@@ -67,6 +72,7 @@ public class BeforeAndAfterSteps {
         reset(dataCatalogInterceptor);
         reset(dataCatalogDao);
         reset(contractRepository);
+        reset(remoteServiceImpl);
     }
 
 }
