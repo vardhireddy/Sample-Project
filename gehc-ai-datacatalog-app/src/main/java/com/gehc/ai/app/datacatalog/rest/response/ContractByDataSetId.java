@@ -58,7 +58,7 @@ public final class ContractByDataSetId {
         return active;
     }
 
-    public boolean isHasContractExpired() {
+    public boolean hasContractExpired() {
         return hasContractExpired;
     }
 
@@ -109,7 +109,7 @@ public final class ContractByDataSetId {
 
         ContractByDataSetId that = (ContractByDataSetId) o;
 
-        if (isHasContractExpired() != that.isHasContractExpired()) return false;
+        if (hasContractExpired() != that.hasContractExpired()) return false;
         if (!getId().equals(that.getId())) return false;
         if (getDeidStatus() != that.getDeidStatus()) return false;
         if (!getActive().equals(that.getActive())) return false;
@@ -130,7 +130,7 @@ public final class ContractByDataSetId {
         int result = getId().hashCode();
         result = 31 * result + getDeidStatus().hashCode();
         result = 31 * result + getActive().hashCode();
-        result = 31 * result + (isHasContractExpired() ? 1 : 0);
+        result = 31 * result + (hasContractExpired() ? 1 : 0);
         result = 31 * result + getUploadBy().hashCode();
         result = 31 * result + getUploadDate().hashCode();
         result = 31 * result + getAgreementName().hashCode();
