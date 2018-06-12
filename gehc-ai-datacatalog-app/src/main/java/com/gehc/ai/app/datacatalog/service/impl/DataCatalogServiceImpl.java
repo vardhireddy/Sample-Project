@@ -27,7 +27,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @Configuration
 @Component
@@ -108,7 +111,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
         mapOfContracts.put(inactive, new ArrayList<>());
         mapOfContracts.put(active, new ArrayList<>());
 
-		if (imageSetIdList == null)
+		if (imageSetIdList == null || imageSetIdList.isEmpty())
 		{
 			return mapOfContracts;
 		}
