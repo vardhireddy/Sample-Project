@@ -18,6 +18,6 @@ public interface IRemoteService {
 	 * @return
 	 * @throws Exception
 	 */
-	String getOrgIdBasedOnSessionToken(String authToken) throws Exception;
+	String getOrgIdBasedOnSessionToken(String authToken);
     
 }
