@@ -51,7 +51,7 @@ spring:
   application.name: Datacatalog
   profiles: local
   datasource:
-    url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST&showSql=true
+    url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
     username: root
     password: root
 coolidge.micro.inference.url: http://127.0.0.1:6001/mInfer

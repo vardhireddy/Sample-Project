@@ -804,7 +804,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     }
 
     @Override
-    public List<Long> getImageSetIdListByDataSetId(Long datasetId) {
+    public List<Long> getImageSetIdsByDataCollectionId(Long datasetId) {
 
         DataSet dataSet = dataSetRepository.findOne(datasetId);
         if (dataSet == null || dataSet.getImageSets() == null) return null;
@@ -812,9 +812,15 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     }
 
     @Override
-    public List<Contract> getContractsByImageSetidList(List<Long> imagesetIdList) {
-        List<Contract> contractList = new ArrayList<>();
-        contractList = contractRepository.getContractsByImageSetidList(imagesetIdList);
-        return contractList;
+    public List<Contract> getContractsByImageSetIds(List<Long> imagesetIdList) {
+        List<Contract> contractList = contractRepository.getContractsByImageSetidList(imagesetIdList);
+        if(contractList == null)
+        {
+            return new ArrayList<>();
+        }
+        else
+        {
+            return contractList;
+        }
     }
 }

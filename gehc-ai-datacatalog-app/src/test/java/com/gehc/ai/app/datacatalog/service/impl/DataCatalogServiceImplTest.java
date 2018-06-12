@@ -33,68 +33,87 @@ public class DataCatalogServiceImplTest {
 
     //test cases for getContractsByDataSetID
     @Test
-    public void testGetContractsByDatasetId() {
+    public void itShouldReturnMapOfActiveAndInactiveContracts() {
 
+        //ARRANGE
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
-        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenReturn(imageSetIdList);
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(imageSetIdList);
 
         List<Contract> contractList = new ArrayList<>();
         Contract contract = buildContractEntity();
         contractList.add(contract);
+        int expectedInactiveContracts = 1;
 
         Contract contract1 = buildContractEntity();
         contract1.setActive("false");
         contract1.setAgreementBeginDate("2017-06-08");
         contractList.add(contract1);
+        int expectedActiveContracts = 1;
 
-        when(dataCatalogDao.getContractsByImageSetidList(anyList())).thenReturn(contractList);
+        when(dataCatalogDao.getContractsByImageSetIds(anyList())).thenReturn(contractList);
 
-        Map<String, List<ContractByDataSetId>> result = service.getContractsByDatasetId(1L);
-        assertEquals(1, result.get("inactive").size());
-        assertEquals(1, result.get("active").size());
+        //ACT
+        Map<String, List<ContractByDataSetId>> result = service.getContractsByDataCollectionId(1L);
+
+        //ASSERT
+        assertEquals(expectedInactiveContracts, result.get("inactive").size());
+        assertEquals(expectedActiveContracts, result.get("active").size());
     }
 
     @Test
-    public void testGetContractsByDatasetIdForUnSupportedDataSetID() {
-
+    public void itShouldReturnAnEmptyHashMap() {
+        //ARRANGE
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
-        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenReturn(null);
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(null);
 
-        Map<String, List<ContractByDataSetId>> result = service.getContractsByDatasetId(1L);
-        assertEquals(0, result.get("inactive").size());
-        assertEquals(0, result.get("active").size());
+        int expectedInactiveContracts = 0;
+        int expectedActiveContracts = 0;
+
+        //ACT
+        Map<String, List<ContractByDataSetId>> result = service.getContractsByDataCollectionId(1L);
+        //ASSERT
+        assertEquals(expectedInactiveContracts, result.get("inactive").size());
+        assertEquals(expectedActiveContracts, result.get("active").size());
     }
 
     @Test
-    public void testGetContractsByDatasetIdWhenContractIsEmpty() {
-
+    public void itShouldAlsoReturnEmptyHashMap() {
+        //ARRANGE
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
-        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenReturn(imageSetIdList);
-        when(dataCatalogDao.getContractsByImageSetidList(anyList())).thenReturn(new ArrayList());
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(imageSetIdList);
+        when(dataCatalogDao.getContractsByImageSetIds(anyList())).thenReturn(new ArrayList());
+        int expectedInactiveContracts = 0;
+        int expectedActiveContracts = 0;
 
-        Map<String, List<ContractByDataSetId>> result = service.getContractsByDatasetId(1L);
-        assertEquals(0, result.get("inactive").size());
-        assertEquals(0, result.get("active").size());
+        //ACT
+        Map<String, List<ContractByDataSetId>> result = service.getContractsByDataCollectionId(1L);
+        //ASSERT
+        assertEquals(expectedInactiveContracts, result.get("inactive").size());
+        assertEquals(expectedActiveContracts, result.get("active").size());
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testGetContractsByDatasetIdExceptionRetruevingImageSetList() {
+    @Test(expected = RuntimeException.class)//ASSERT
+    public void testGetContractsByDatasetIdForExceptionRetrievingImageSetList() {
 
+        //ARRANGE
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
-        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenThrow(new RuntimeException());
-        when(dataCatalogDao.getContractsByImageSetidList(anyList())).thenReturn(new ArrayList());
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenThrow(new RuntimeException());
+        when(dataCatalogDao.getContractsByImageSetIds(anyList())).thenReturn(new ArrayList());
 
-        service.getContractsByDatasetId(1L);
+        //ACT
+        service.getContractsByDataCollectionId(1L);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testGetContractsByDatasetIdExceptionRetruevingContractList() {
+    @Test(expected = RuntimeException.class)//ASSERT
+    public void testGetContractsByDatasetIdForExceptionRetrievingContractList() {
 
+        //ARRANGE
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
-        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenReturn(imageSetIdList);
-        when(dataCatalogDao.getContractsByImageSetidList(anyList())).thenThrow(new RuntimeException());
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(imageSetIdList);
+        when(dataCatalogDao.getContractsByImageSetIds(anyList())).thenThrow(new RuntimeException());
 
-        service.getContractsByDatasetId(1L);
+        //ACT
+        service.getContractsByDataCollectionId(1L);
     }
 
 

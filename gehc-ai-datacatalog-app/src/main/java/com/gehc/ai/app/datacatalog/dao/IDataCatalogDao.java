@@ -103,16 +103,16 @@ public interface IDataCatalogDao {
 	List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
 
 	/**
-	 * Returns image set id list for given datasetId
+	 * Returns image set id list for given data collection id
 	 * @param datasetId
-	 * @return
+	 * @return list of image set ids
 	 */
-	List<Long> getImageSetIdListByDataSetId(Long datasetId);
+	List<Long> getImageSetIdsByDataCollectionId(Long datasetId);
 
 	/**
-	 * Returns list of contracts
+	 * Returns list of contracts for given list of image set ids
 	 * @param imagesetIdList
-	 * @return
+	 * @return list of contract objects
 	 */
-	List<Contract> getContractsByImageSetidList(List<Long> imagesetIdList);
+	List<Contract> getContractsByImageSetIds(List<Long> imagesetIdList);
 }

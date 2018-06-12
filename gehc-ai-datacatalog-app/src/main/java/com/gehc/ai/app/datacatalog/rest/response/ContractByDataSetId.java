@@ -5,7 +5,12 @@ import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ContractByDataSetId {
 
@@ -24,6 +29,25 @@ public class ContractByDataSetId {
     private List<ContractDataOriginCountriesStates> DataOriginCountriesAndStates;
     private Contract.DataLocationAllowed DataLocationAllowed;
 
+    public ContractByDataSetId() {
+    }
+
+    public ContractByDataSetId(Long id, Contract.DeidStatus deidStatus, String active, boolean hasContractExpired, String uploadBy, Date uploadDate, String agreementName, String primaryContactEmail, String agreementBeginDate, String dataUsagePeriod, List<ContractUseCase> useCases, Contract.UploadStatus uploadStatus, List<ContractDataOriginCountriesStates> dataOriginCountriesAndStates, Contract.DataLocationAllowed dataLocationAllowed) {
+        this.id = id;
+        this.deidStatus = deidStatus;
+        this.active = active;
+        this.hasContractExpired = hasContractExpired;
+        this.uploadBy = uploadBy;
+        this.uploadDate = uploadDate;
+        this.agreementName = agreementName;
+        this.primaryContactEmail = primaryContactEmail;
+        this.agreementBeginDate = agreementBeginDate;
+        this.dataUsagePeriod = dataUsagePeriod;
+        this.useCases = useCases;
+        this.uploadStatus = uploadStatus;
+        DataOriginCountriesAndStates = dataOriginCountriesAndStates;
+        DataLocationAllowed = dataLocationAllowed;
+    }
 
     public Long getId() {
         return id;
@@ -129,11 +153,105 @@ public class ContractByDataSetId {
         DataLocationAllowed = dataLocationAllowed;
     }
 
-    public boolean isHasContractExpired() {
+    public boolean hasContractExpired() {
         return hasContractExpired;
     }
 
     public void setHasContractExpired(boolean hasContractExpired) {
         this.hasContractExpired = hasContractExpired;
     }
+
+    /*public static Map<String,List<ContractByDataSetId>> convertContractEntityToContractByDataSetId(List<Contract> contractEntityList, Map<String,List<ContractByDataSetId>> mapOfContracts){
+
+
+        for (Contract contract : contractEntityList) {
+
+            ContractByDataSetId contractByDataSetId = new ContractByDataSetId();
+            contractByDataSetId.setId(contract.getId());
+            contractByDataSetId.setActive(contract.getActive());
+            contractByDataSetId.setAgreementBeginDate(contract.getAgreementBeginDate());
+            contractByDataSetId.setAgreementName(contract.getAgreementName());
+            contractByDataSetId.setDataLocationAllowed(contract.getDataLocationAllowed());
+            contractByDataSetId.setDataOriginCountriesAndStates(contract.getDataOriginCountriesStates());
+            contractByDataSetId.setDeidStatus(contract.getDeidStatus());
+            contractByDataSetId.setPrimaryContactEmail(contract.getPrimaryContactEmail());
+            contractByDataSetId.setUploadBy(contract.getUploadBy());
+            contractByDataSetId.setUploadDate(contract.getUploadDate());
+            contractByDataSetId.setDataUsagePeriod(contract.getDataUsagePeriod());
+            contractByDataSetId.setUseCases(contract.getUseCases());
+
+            boolean isExpired;
+            //calculate if contract expired
+            isExpired = isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
+            contractByDataSetId.setHasContractExpired(isExpired);
+
+            if(contract.getActive().equalsIgnoreCase("false"))
+            {
+                mapOfContracts.get("inactive").add(contractByDataSetId);
+            }else
+            {
+                mapOfContracts.get("active").add(contractByDataSetId);
+            }
+        }
+
+        return mapOfContracts;
+
+    }*/
+
+
+    public static Map<String,List<ContractByDataSetId>> fromDataSetEntities(List<Contract> contractList) {
+        return contractList.stream().map(ContractByDataSetId::fromContractEntity)
+                .collect(Collectors.groupingBy(ContractByDataSetId::getActive));
+    }
+
+    public static ContractByDataSetId fromContractEntity(Contract contract){
+
+        boolean contractExpired = isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
+
+        return new ContractByDataSetId(contract.getId(),
+                contract.getDeidStatus(),
+                contract.getActive(),
+                contractExpired,
+                contract.getUploadBy(),
+                contract.getUploadDate(),
+                contract.getAgreementName(),
+                contract.getPrimaryContactEmail(),
+                contract.getAgreementBeginDate(),
+                contract.getDataUsagePeriod(),
+                contract.getUseCases(),
+                contract.getUploadStatus(),
+                contract.getDataOriginCountriesStates(),
+                contract.getDataLocationAllowed());
+    }
+
+    public static boolean isContractExpired(String agreementBeginDate, String dataUsagePeriod){
+        //set the current system date
+        java.util.Date currentDate = new java.util.Date();
+
+        // convert date to calendar
+        Calendar c = Calendar.getInstance();
+
+        //specify the input string date format
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        java.util.Date agreementDate = new java.util.Date();
+
+        try {
+            //convert String agreementBeginDate to util.Date
+            agreementDate = formatter.parse(agreementBeginDate);
+        }catch (Exception e){}
+
+        c.setTime(agreementDate);
+
+        int yearsToAdd = Integer.valueOf(dataUsagePeriod)/12;
+        // manipulate date
+        c.add(Calendar.YEAR, yearsToAdd);
+
+        // convert calendar to date
+        java.util.Date expirationDate = c.getTime();
+
+        return currentDate.equals(expirationDate) || currentDate.after(expirationDate);
+    }
+
+
 }

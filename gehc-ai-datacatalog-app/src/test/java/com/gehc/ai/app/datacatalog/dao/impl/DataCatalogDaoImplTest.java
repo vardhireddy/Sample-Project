@@ -5,7 +5,6 @@ import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
 import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImplTest;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import org.junit.Test;
@@ -726,30 +725,37 @@ public class DataCatalogDaoImplTest {
         assertTrue(argument.getValue().toUpperCase().contains("ORDER BY RAND()"));
     }
 
-    //test cases for getImageSetIdListByDataSetId
+    //test cases for getImageSetIdsByDataCollectionId
     @Test
-    public void testGetImageSetIdListByDataSetId() {
+    public void itShouldReturnListOfImageSetIds() {
+        // ARRANGE
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
         DataSet dataSet = new DataSet();
         dataSet.setImageSets(imageSetIdList);
        when(dataSetRepository.findOne(anyLong())).thenReturn(dataSet);
-       List<Long> result = dataCatalogDao.getImageSetIdListByDataSetId(1L);
-       assertEquals(4,result.size());
+        // ACT
+       List<Long> result = dataCatalogDao.getImageSetIdsByDataCollectionId(1L);
+       assertEquals(imageSetIdList.size(),result.size());
     }
 
     @Test
-    public void testGetImageSetIdListByDataSetIdEmptyDataSet() {
+    public void itShouldReturnNullForGivenInputDataCollectionId() {
+        // ARRANGE
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
         DataSet dataSet = new DataSet();
         dataSet.setImageSets(imageSetIdList);
         when(dataSetRepository.findOne(anyLong())).thenReturn(null);
-        List<Long> result = dataCatalogDao.getImageSetIdListByDataSetId(1L);
+        // ACT
+        List<Long> result = dataCatalogDao.getImageSetIdsByDataCollectionId(1L);
+
+        // ASSERT
         assertEquals(null,result);
     }
 
-    //test cases for getContractsByImageSetidList
+    //test cases for getContractsByImageSetIds
     @Test
-    public void TestgetContractsByImageSetidList(){
+    public void itShouldReturnListOfContractForGivenListOfImageSetIds(){
+        // ARRANGE
         List<Contract> contractList = new ArrayList<>();
         Contract contract = buildContractEntity();
         contractList.add(contract);
@@ -757,8 +763,11 @@ public class DataCatalogDaoImplTest {
 
         when(contractRepository.getContractsByImageSetidList(anyList())).thenReturn(contractList);
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
-        List<Contract> result = dataCatalogDao.getContractsByImageSetidList(imageSetIdList);
-        assertEquals(2,result.size());
+        // ACT
+        List<Contract> result = dataCatalogDao.getContractsByImageSetIds(imageSetIdList);
+
+        // ASSERT
+        assertEquals(contractList.size(),result.size());
     }
 
     private Contract buildContractEntity(){

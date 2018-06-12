@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
@@ -638,6 +637,7 @@ public class DataCatalogRestImplTest {
     @Test
     public void testGetContractsForDataCollection()
     {
+        //ARRANGE
         Map<String, List<ContractByDataSetId>> data = new HashMap<>();
         List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
         ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
@@ -645,17 +645,18 @@ public class DataCatalogRestImplTest {
 
         data.put("active",contractByDataSetIdList);
         data.put("inactive",contractByDataSetIdList);
-        when(dataCatalogService.getContractsByDatasetId(anyLong())).thenReturn(data);
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenReturn(data);
 
+        //ACT
         ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
         assertEquals(200, result.getStatusCodeValue());
-//        assertEquals(1,result.getBody().get("active").size());
-//        assertEquals(1,result.getBody().get("inactive").size());
     }
 
     @Test
     public void testGetContractsForDataCollectionForBadRequest()
     {
+        //ARRANGE
         Map<String, List<ContractByDataSetId>> data = new HashMap<>();
         List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
         ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
@@ -663,15 +664,16 @@ public class DataCatalogRestImplTest {
 
         data.put("active",new ArrayList<>());
         data.put("inactive",new ArrayList<>());
-        when(dataCatalogService.getContractsByDatasetId(anyLong())).thenReturn(data);
-
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenReturn(data);
+        //ACT
         ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
         assertEquals(400, result.getStatusCodeValue());
     }
 
     @Test
-    public void testGetContractsForDataCollectionForInternalException()
-    {
+    public void testGetContractsByDataCollectionIdForInternalException()
+    {//ARRANGE
         Map<String, List<ContractByDataSetId>> data = new HashMap<>();
         List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
         ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
@@ -679,9 +681,11 @@ public class DataCatalogRestImplTest {
 
         data.put("active",new ArrayList<>());
         data.put("inactive",new ArrayList<>());
-        when(dataCatalogService.getContractsByDatasetId(anyLong())).thenThrow(new RuntimeException());
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenThrow(new RuntimeException());
 
+        //ACT
         ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
         assertEquals(500, result.getStatusCodeValue());
     }
 

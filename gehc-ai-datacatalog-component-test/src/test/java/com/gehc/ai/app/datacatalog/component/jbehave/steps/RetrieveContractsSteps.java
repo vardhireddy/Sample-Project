@@ -1,42 +1,20 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.*;
-import com.gehc.ai.app.datacatalog.entity.Properties;
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
-import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.LabelAnnotationJson;
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
-import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -75,13 +53,13 @@ public class RetrieveContractsSteps {
         contractByDataSetIdList.add(contractByDataSetId2);
 
         List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
-        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenReturn(imageSetIdList);
-        when(dataCatalogDao.getContractsByImageSetidList(imageSetIdList)).thenReturn(contractByDataSetIdList);
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(imageSetIdList);
+        when(dataCatalogDao.getContractsByImageSetIds(imageSetIdList)).thenReturn(contractByDataSetIdList);
     }
 
     @Given("a data collection/set ID not supported by LF")
     public void givenDataSetIdNotSupportedByLF(){
-        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenReturn(new ArrayList<>());
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(new ArrayList<>());
     }
 
     /////////////////////

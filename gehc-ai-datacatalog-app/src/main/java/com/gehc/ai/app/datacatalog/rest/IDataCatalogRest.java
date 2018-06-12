@@ -27,16 +27,12 @@ import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
-import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Response;
 import java.util.List;
 import java.util.Map;
 
@@ -375,7 +371,10 @@ public interface IDataCatalogRest {
      */
     ResponseEntity<Map<String,String>> deleteContract(Long contractId);
 
-    ResponseEntity<?> getContractsForDataCollection(Long datasetId);
+    /**
+     * Returns a map of active and inactive contracts associated with a given data collection id
+     * @param dataCollectionId
+     * @return Map<String,List<ContactsByDataSetId>>, where the keys will be "active" and "inactive". If "dataCollectionId" does not exist an empty map will be returned
+     */
+    ResponseEntity<?> getContractsForDataCollection(Long dataCollectionId);
 }
-
-
