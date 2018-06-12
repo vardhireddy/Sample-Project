@@ -9,28 +9,25 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ContractByDataSetId {
+public final class ContractByDataSetId {
 
-    private Long id;
-    private Contract.DeidStatus deidStatus;
-    private String active;
-    private boolean hasContractExpired;
-    private String uploadBy;
-    private Date uploadDate;
-    private String agreementName;
-    private String primaryContactEmail;
-    private String agreementBeginDate;
-    private String dataUsagePeriod;
-    private List<ContractUseCase> useCases;
-    private Contract.UploadStatus uploadStatus;
-    private List<ContractDataOriginCountriesStates> DataOriginCountriesAndStates;
-    private Contract.DataLocationAllowed DataLocationAllowed;
+    private final Long id;
+    private final Contract.DeidStatus deidStatus;
+    private final String active;
+    private final boolean hasContractExpired;
+    private final String uploadBy;
+    private final Date uploadDate;
+    private final String agreementName;
+    private final String primaryContactEmail;
+    private final String agreementBeginDate;
+    private final String dataUsagePeriod;
+    private final List<ContractUseCase> useCases;
+    private final Contract.UploadStatus uploadStatus;
+    private final List<ContractDataOriginCountriesStates> dataOriginCountriesAndStates;
+    private final Contract.DataLocationAllowed dataLocationAllowed;
 
-    public ContractByDataSetId() {
-    }
 
     public ContractByDataSetId(Long id, Contract.DeidStatus deidStatus, String active, boolean hasContractExpired, String uploadBy, Date uploadDate, String agreementName, String primaryContactEmail, String agreementBeginDate, String dataUsagePeriod, List<ContractUseCase> useCases, Contract.UploadStatus uploadStatus, List<ContractDataOriginCountriesStates> dataOriginCountriesAndStates, Contract.DataLocationAllowed dataLocationAllowed) {
         this.id = id;
@@ -45,120 +42,126 @@ public class ContractByDataSetId {
         this.dataUsagePeriod = dataUsagePeriod;
         this.useCases = useCases;
         this.uploadStatus = uploadStatus;
-        DataOriginCountriesAndStates = dataOriginCountriesAndStates;
-        DataLocationAllowed = dataLocationAllowed;
+        this.dataOriginCountriesAndStates = dataOriginCountriesAndStates;
+        this.dataLocationAllowed = dataLocationAllowed;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Contract.DeidStatus getDeidStatus() {
         return deidStatus;
-    }
-
-    public void setDeidStatus(Contract.DeidStatus deidStatus) {
-        this.deidStatus = deidStatus;
     }
 
     public String getActive() {
         return active;
     }
 
-    public void setActive(String active) {
-        this.active = active;
+    public boolean isHasContractExpired() {
+        return hasContractExpired;
     }
 
     public String getUploadBy() {
         return uploadBy;
     }
 
-    public void setUploadBy(String uploadBy) {
-        this.uploadBy = uploadBy;
-    }
-
     public Date getUploadDate() {
         return uploadDate;
-    }
-
-    public void setUploadDate(Date uploadDate) {
-        this.uploadDate = uploadDate;
     }
 
     public String getAgreementName() {
         return agreementName;
     }
 
-    public void setAgreementName(String agreementName) {
-        this.agreementName = agreementName;
-    }
-
     public String getPrimaryContactEmail() {
         return primaryContactEmail;
-    }
-
-    public void setPrimaryContactEmail(String primaryContactEmail) {
-        this.primaryContactEmail = primaryContactEmail;
     }
 
     public String getAgreementBeginDate() {
         return agreementBeginDate;
     }
 
-    public void setAgreementBeginDate(String agreementBeginDate) {
-        this.agreementBeginDate = agreementBeginDate;
-    }
-
     public String getDataUsagePeriod() {
         return dataUsagePeriod;
-    }
-
-    public void setDataUsagePeriod(String dataUsagePeriod) {
-        this.dataUsagePeriod = dataUsagePeriod;
     }
 
     public List<ContractUseCase> getUseCases() {
         return useCases;
     }
 
-    public void setUseCases(List<ContractUseCase> useCases) {
-        this.useCases = useCases;
-    }
-
     public Contract.UploadStatus getUploadStatus() {
         return uploadStatus;
     }
 
-    public void setUploadStatus(Contract.UploadStatus uploadStatus) {
-        this.uploadStatus = uploadStatus;
-    }
-
     public List<ContractDataOriginCountriesStates> getDataOriginCountriesAndStates() {
-        return DataOriginCountriesAndStates;
-    }
-
-    public void setDataOriginCountriesAndStates(List<ContractDataOriginCountriesStates> dataOriginCountriesAndStates) {
-        DataOriginCountriesAndStates = dataOriginCountriesAndStates;
+        return dataOriginCountriesAndStates;
     }
 
     public Contract.DataLocationAllowed getDataLocationAllowed() {
-        return DataLocationAllowed;
+        return dataLocationAllowed;
     }
 
-    public void setDataLocationAllowed(Contract.DataLocationAllowed dataLocationAllowed) {
-        DataLocationAllowed = dataLocationAllowed;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ContractByDataSetId that = (ContractByDataSetId) o;
+
+        if (isHasContractExpired() != that.isHasContractExpired()) return false;
+        if (!getId().equals(that.getId())) return false;
+        if (getDeidStatus() != that.getDeidStatus()) return false;
+        if (!getActive().equals(that.getActive())) return false;
+        if (!getUploadBy().equals(that.getUploadBy())) return false;
+        if (!getUploadDate().equals(that.getUploadDate())) return false;
+        if (!getAgreementName().equals(that.getAgreementName())) return false;
+        if (!getPrimaryContactEmail().equals(that.getPrimaryContactEmail())) return false;
+        if (!getAgreementBeginDate().equals(that.getAgreementBeginDate())) return false;
+        if (!getDataUsagePeriod().equals(that.getDataUsagePeriod())) return false;
+        if (!getUseCases().equals(that.getUseCases())) return false;
+        if (getUploadStatus() != that.getUploadStatus()) return false;
+        if (!getDataOriginCountriesAndStates().equals(that.getDataOriginCountriesAndStates())) return false;
+        return getDataLocationAllowed() == that.getDataLocationAllowed();
     }
 
-    public boolean hasContractExpired() {
-        return hasContractExpired;
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getDeidStatus().hashCode();
+        result = 31 * result + getActive().hashCode();
+        result = 31 * result + (isHasContractExpired() ? 1 : 0);
+        result = 31 * result + getUploadBy().hashCode();
+        result = 31 * result + getUploadDate().hashCode();
+        result = 31 * result + getAgreementName().hashCode();
+        result = 31 * result + getPrimaryContactEmail().hashCode();
+        result = 31 * result + getAgreementBeginDate().hashCode();
+        result = 31 * result + getDataUsagePeriod().hashCode();
+        result = 31 * result + getUseCases().hashCode();
+        result = 31 * result + getUploadStatus().hashCode();
+        result = 31 * result + getDataOriginCountriesAndStates().hashCode();
+        result = 31 * result + getDataLocationAllowed().hashCode();
+        return result;
     }
 
-    public void setHasContractExpired(boolean hasContractExpired) {
-        this.hasContractExpired = hasContractExpired;
+    @Override
+    public String toString() {
+        return "ContractByDataSetId{" +
+                "id=" + id +
+                ", deidStatus=" + deidStatus +
+                ", active='" + active + '\'' +
+                ", hasContractExpired=" + hasContractExpired +
+                ", uploadBy='" + uploadBy + '\'' +
+                ", uploadDate=" + uploadDate +
+                ", agreementName='" + agreementName + '\'' +
+                ", primaryContactEmail='" + primaryContactEmail + '\'' +
+                ", agreementBeginDate='" + agreementBeginDate + '\'' +
+                ", dataUsagePeriod='" + dataUsagePeriod + '\'' +
+                ", useCases=" + useCases +
+                ", uploadStatus=" + uploadStatus +
+                ", dataOriginCountriesAndStates=" + dataOriginCountriesAndStates +
+                ", dataLocationAllowed=" + dataLocationAllowed +
+                '}';
     }
 
     /**

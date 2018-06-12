@@ -7,8 +7,10 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.sql.Date;
 import java.util.*;
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
@@ -701,21 +703,20 @@ public class DataCatalogRestImplTest {
     }
 
     private ContractByDataSetId buildContractByDataSetId(){
-        ContractByDataSetId contract = new ContractByDataSetId();
-        contract.setId(1L);
-        contract.setAgreementName("Test contract name");
-        contract.setPrimaryContactEmail("john.doe@ge.com");
-        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
-        contract.setAgreementBeginDate("9999-06-08");
-        contract.setDataUsagePeriod("12");
-        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(ContractUseCase.DataUser.GE_GLOBAL, ContractUseCase.DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
-        contract.setActive("true");
-        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
-        contract.setUploadBy("user");
-        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
-        contract.setHasContractExpired(false);
-
-        return contract;
+        return new ContractByDataSetId(2L,
+                Contract.DeidStatus.HIPAA_COMPLIANT,
+                "true",
+                false,
+                "user",
+                Date.valueOf("2017-03-31"),
+                "testAgreement",
+                "joe@ge.com",
+                "2018-06-08",
+                "12",
+                Arrays.asList(new ContractUseCase[]{new ContractUseCase(ContractUseCase.DataUser.GE_GLOBAL, ContractUseCase.DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}),
+                Contract.UploadStatus.UPLOAD_COMPLETED,
+                Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}),
+                Contract.DataLocationAllowed.GLOBAL);
     }
 
 }
