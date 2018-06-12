@@ -109,10 +109,17 @@ public interface IDataCatalogDao {
 	 */
 	List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
 
-//	/**
-//     * compute for expired contract and fill isExpired attribute
-//     * @param contracts a {@code List} of {@Link Contract} beans
-//     * @return list of contracts with isExpired values
-//     */
-//    public List<Contract> computeForExpiredContract(List<Contract> contracts);
+	/**
+	 * Returns image set id list for given data collection id
+	 * @param dataCollectionId - data collection unique identifier
+	 * @return list of image set ids
+	 */
+	List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId);
+
+	/**
+	 * Returns list of contracts for given list of image set ids
+	 * @param imageSetIdList - list of image set unique identifiers
+	 * @return list of contract objects
+	 */
+	List<Contract> getContractsByImageSetIds(List<Long> imageSetIdList);
 }

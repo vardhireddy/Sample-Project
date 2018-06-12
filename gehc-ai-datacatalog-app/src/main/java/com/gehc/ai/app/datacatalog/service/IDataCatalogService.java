@@ -16,6 +16,7 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
 import java.util.List;
@@ -78,4 +79,12 @@ public interface IDataCatalogService {
      * @return
      */
     List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+
+    /**
+     * Returns a map of active and inactive contracts associated with a given data collection id
+     * @param dataCollectionId - data collection unique identifier
+     * @return Map<String,List<ContactsByDataSetId>>, where the keys will be "active" and "inactive". If "dataCollectionId" does not exist an empty map will be returned
+     */
+    Map<String,List<ContractByDataSetId>> getContractsByDataCollectionId(Long dataCollectionId);
 }

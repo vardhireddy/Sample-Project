@@ -17,20 +17,23 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Configuration
 @Component
 public class DataCatalogServiceImpl implements IDataCatalogService {
+
+	private static Logger logger = LoggerFactory.getLogger(DataCatalogServiceImpl.class);
 
 	@Autowired
 	private IDataCatalogDao dataCatalogDao;
@@ -90,5 +93,47 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	@Override
 	public List<Long> getImgSeriesIdsByFilters(Map<String, Object> params) {
 		return dataCatalogDao.getImgSeriesIdsByFilters(params);
+	}
+
+	@Override
+	public  Map<String,List<ContractByDataSetId>> getContractsByDataCollectionId(Long dataCollectionId){
+		List<Long> imageSetIdList;
+
+		try{
+			imageSetIdList = dataCatalogDao.getImageSetIdsByDataCollectionId(dataCollectionId);
+		}catch (Exception e){
+			logger.error("Error retrieving imageSet id list for given data set id : {}", e.getMessage());
+			throw e;
+		}
+
+		List<Contract> contractList;
+
+        Map<String,List<ContractByDataSetId>> mapOfContracts = new HashMap<>();
+        final String active = "active";
+        final String inactive = "inactive";
+        mapOfContracts.put(inactive, new ArrayList<>());
+        mapOfContracts.put(active, new ArrayList<>());
+
+		if (imageSetIdList == null)
+		{
+			return mapOfContracts;
+		}
+		try {
+			contractList =  dataCatalogDao.getContractsByImageSetIds(imageSetIdList);
+		}catch (Exception e1){
+			logger.error("Error retrieving contracts associated with the dataset : {}", e1.getMessage());
+			throw e1;
+		}
+
+		if(contractList.isEmpty()){
+		    return mapOfContracts;
+        }
+
+        Map<String,List<ContractByDataSetId>> result = ContractByDataSetId.fromDataSetEntities(contractList);
+		mapOfContracts.put(active,result.get("true"));
+		mapOfContracts.put(inactive,result.get("false"));
+
+        return mapOfContracts;
+
 	}
 }

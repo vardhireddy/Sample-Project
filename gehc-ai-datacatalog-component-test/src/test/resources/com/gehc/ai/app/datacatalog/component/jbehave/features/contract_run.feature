@@ -28,20 +28,6 @@ When any of the given parameters are not existing in the repository
 Then verify that the api response status code is 200
 Then verify the api response body contains "Contract does not exist"
 
-#@test
-#Scenario: Store contract data
-#Meta: @automated
-#Given Store contract data - DataSetUp Provided
-#When Store contract data
-#Then verify Store contract data
-
-#@test
-#Scenario: Retrieve contract data
-#Meta: @automated
-#Given Retrieve contract data - DataSetUp Provided
-#When Retrieve contract data
-#Then verify Retrieve contract data
-
 @test
 Scenario: Delete a contract in active state with given contract id
 Meta: @automated

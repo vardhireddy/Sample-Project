@@ -29,4 +29,9 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     int countByIdAndOrgId(Long contractId, String orgId);
 
     List<Contract> findAllByOrgIdOrderByActiveDescIdDesc(String orgId);
+
+    @Query(value = "select * from lfdb.contract where id in " +
+            "(select distinct contract_id from lfdb.upload where id in " +
+            "(select distinct upload_id from lfdb.image_set where id in :imageSetIdList))",nativeQuery = true)
+    List<Contract> getContractsByImageSetidList(@Param("imageSetIdList") List<Long> imageSetIdList);
 }

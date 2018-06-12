@@ -9,6 +9,7 @@ import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 import org.jbehave.core.annotations.BeforeScenario;
+
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HEAD;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -85,6 +87,28 @@ public class RetrieveContractsSteps {
         when(dataCatalogDao.getAllContractsDetails(anyString())).thenThrow(Exception.class);
     }
 
+    //given test cases for getContractsForDataCollection api
+    @Given("a data collection/set ID supported by LF")
+    public void givenDataSetIdSupportedByLF(){
+
+        List<Contract> contractByDataSetIdList = new ArrayList<>();
+        Contract contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        Contract contractByDataSetId2 = buildContractByDataSetId();
+        contractByDataSetId2.setActive("true");
+        contractByDataSetIdList.add(contractByDataSetId2);
+
+        List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(imageSetIdList);
+        when(dataCatalogDao.getContractsByImageSetIds(imageSetIdList)).thenReturn(contractByDataSetIdList);
+    }
+
+    @Given("a data collection/set ID not supported by LF")
+    public void givenDataSetIdNotSupportedByLF(){
+        when(dataCatalogDao.getImageSetIdsByDataCollectionId(anyLong())).thenReturn(new ArrayList<>());
+    }
+
     /////////////////////
     //
     // WHEN statements //
@@ -95,6 +119,19 @@ public class RetrieveContractsSteps {
     public void whenTheAPIWhichCreatesAContractIsInvoked() throws Exception {
         retrieveResult = mockMvc.perform(get("/api/v1/datacatalog/contract")
                 .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500"));
+    }
+
+    //when test cases for getContractsForDataCollection api
+    @When("the api that gets contracts associated with the image sets of that data collection")
+    public void whenApiReturnsDataForDatSetId() throws Exception{
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/contract/data-collection/1"));
+    }
+
+    @When("the api that gets contracts associated with the image sets of that data collection is hit")
+    public void whenApiReturnsDataForDatSetIdIsHit() throws Exception{
+        retrieveResult = mockMvc.perform(
+                get("/api/v1/datacatalog/contract/data-collection/12").contentType(MediaType.APPLICATION_JSON));
     }
 
     /////////////////////
@@ -129,6 +166,19 @@ public class RetrieveContractsSteps {
     @Then("the response's body should contain a message saying could not get the contracts details due to an internal error")
     public void thenResponseBodyShouldContainErrorMessageSayingCouldNotGetContractsDueToInternalError() throws Exception {
         retrieveResult.andExpect(content().string(containsString("Could not get the contracts due to an internal error")));
+    }
+
+    //then test cases for getContractsForDataCollection api
+    @Then("the api must return a map of active and inactive contracts associated with the data collection")
+    public void thenResultShouldBeMapOfContractLists() throws Exception{
+        retrieveResult.andExpect(status().isOk());
+        retrieveResult.andExpect(content().string(containsString("false")));
+    }
+
+    @Then("the api must return error message saying no contracts exist for the given dataSet ID")
+    public void thenResultShouldBeAnErrorMessage() throws Exception{
+        retrieveResult.andExpect(status().isBadRequest());
+        retrieveResult.andExpect(content().string(containsString("No contracts exist for the given dataSet ID.")));
     }
 
     /////////////

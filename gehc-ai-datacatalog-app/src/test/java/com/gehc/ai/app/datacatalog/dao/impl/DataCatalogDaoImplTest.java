@@ -8,8 +8,11 @@ import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImplTest;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +38,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -49,6 +51,8 @@ public class DataCatalogDaoImplTest {
     EntityManager entityManager;
     @Mock
     ContractRepository contractRepository;
+    @Mock
+    DataSetRepository dataSetRepository;
     @Mock
     Query query;
     @Mock
@@ -821,5 +825,55 @@ public class DataCatalogDaoImplTest {
         org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
         assertTrue(argument.getValue().toLowerCase().endsWith("limit 101"));
         assertTrue(argument.getValue().toUpperCase().contains("ORDER BY RAND()"));
+    }
+
+    //test cases for getImageSetIdsByDataCollectionId
+    @Test
+    public void itShouldReturnListOfImageSetIds() {
+        // ARRANGE
+        List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
+        DataSet dataSet = new DataSet();
+        dataSet.setImageSets(imageSetIdList);
+       when(dataSetRepository.findOne(anyLong())).thenReturn(dataSet);
+        // ACT
+       List<Long> result = dataCatalogDao.getImageSetIdsByDataCollectionId(1L);
+       assertEquals(imageSetIdList.size(),result.size());
+    }
+
+    @Test
+    public void itShouldReturnNullForGivenInputDataCollectionId() {
+        // ARRANGE
+        List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
+        DataSet dataSet = new DataSet();
+        dataSet.setImageSets(imageSetIdList);
+        when(dataSetRepository.findOne(anyLong())).thenReturn(null);
+        // ACT
+        List<Long> result = dataCatalogDao.getImageSetIdsByDataCollectionId(1L);
+
+        // ASSERT
+        assertEquals(null,result);
+    }
+
+    //test cases for getContractsByImageSetIds
+    @Test
+    public void itShouldReturnListOfContractForGivenListOfImageSetIds(){
+        // ARRANGE
+        List<Contract> contractList = new ArrayList<>();
+        Contract contract = buildContractEntity();
+        contractList.add(contract);
+        contractList.add(contract);
+
+        when(contractRepository.getContractsByImageSetidList(anyList())).thenReturn(contractList);
+        List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
+        // ACT
+        List<Contract> result = dataCatalogDao.getContractsByImageSetIds(imageSetIdList);
+
+        // ASSERT
+        assertEquals(contractList.size(),result.size());
+    }
+
+    private Contract buildContractEntity(){
+        DataCatalogServiceImplTest serviceImplTest = new DataCatalogServiceImplTest();
+        return serviceImplTest.buildContractEntity();
     }
 }
