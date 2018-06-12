@@ -11,7 +11,6 @@ import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.datacatalog.service.IRemoteService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.LabelAnnotationJson;
@@ -63,7 +62,6 @@ public class DataCollectionSteps {
     private final StudyRepository studyRepository;
     private final CommonSteps commonSteps;
     private final DataCatalogInterceptor dataCatalogInterceptor;
-    private final IRemoteService remoteServiceImpl;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -73,7 +71,7 @@ public class DataCollectionSteps {
     private DataCatalogDaoImpl dataCatalogDao;
 
     @Autowired
-    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository, CommonSteps commonSteps, DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao, IRemoteService remoteServiceImpl) {
+    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository, CommonSteps commonSteps, DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
@@ -82,7 +80,6 @@ public class DataCollectionSteps {
         this.commonSteps = commonSteps;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
         this.dataCatalogDao = dataCatalogDao;
-        this.remoteServiceImpl = remoteServiceImpl;
     }
 
     @BeforeScenario
@@ -332,7 +329,7 @@ public class DataCollectionSteps {
 
     @When("Post data collection by Org Id null")
     public void whenGetDataCollectionByOrgIdNull() throws Exception {
-        when(remoteServiceImpl.getOrgIdBasedOnSessionToken(anyString())).thenReturn(null);
+        when(dataCatalogInterceptor.getOrgIdBasedOnSessionToken(anyString())).thenReturn(null);
         DataSet dataSet = getSaveDataSet();
         retrieveResult = mockMvc.perform(
                 post("/api/v1/datacatalog/data-collection")
