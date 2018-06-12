@@ -1140,13 +1140,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
         return apiResponse;
     }
-    
+
 
     /**
-     * API to fetch all contract
+     * API to fetch all contract ordered by attribute - active and id in descending order
      *
      * @param
-     * @return
+     * @return ResponseEntity<List<Contract>>
      */
     @Override
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
@@ -1165,11 +1165,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         if (Objects.isNull(request.getAttribute("orgId"))) {
             return new ResponseEntity(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
         }
-//        if(contractId <= 0){
-//            return new ResponseEntity(Collections.singletonMap("response", "Invalid contract ID"), HttpStatus.BAD_REQUEST);
-//        }
 
-        //return details for all contracts in db ordered by attribute - active
         try {
             contracts = dataCatalogService.getAllContracts(orgId);
         } catch (Exception e) {
