@@ -4,16 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.*;
-import com.gehc.ai.app.datacatalog.entity.Properties;
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.LabelAnnotationJson;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
@@ -21,15 +12,11 @@ import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.jbehave.core.model.Meta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.times;
@@ -39,13 +26,9 @@ import static org.mockito.Mockito.when;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,29 +65,6 @@ public class RetrieveContractsSteps {
     //
     //////////////////////
 
-//    //given test cases for getContractsForDataCollection api
-//    @Given("a data collection/set ID supported by LF")
-//    public void givenDataSetIdSupportedByLF(){
-//
-//        List<Contract> contractByDataSetIdList = new ArrayList<>();
-//        Contract contractByDataSetId = buildContractByDataSetId();
-//        contractByDataSetIdList.add(contractByDataSetId);
-//
-//        Contract contractByDataSetId2 = buildContractByDataSetId();
-//        contractByDataSetId2.setActive("true");
-//        contractByDataSetIdList.add(contractByDataSetId2);
-//
-//        List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
-//        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenReturn(imageSetIdList);
-//        when(dataCatalogDao.getContractsByImageSetidList(imageSetIdList)).thenReturn(contractByDataSetIdList);
-//    }
-//
-//    @Given("a data collection/set ID not supported by LF")
-//    public void givenDataSetIdNotSupportedByLF(){
-//        when(dataCatalogDao.getImageSetIdListByDataSetId(anyLong())).thenReturn(new ArrayList<>());
-//    }
-
-
     @Given("there are one or more contracts in the database")
     public void thereAreOneOrMoreContractsInDb() throws Exception{
         contractLst = getAllContractMock();
@@ -131,19 +91,6 @@ public class RetrieveContractsSteps {
     //
     /////////////////////
 
-//    //when test cases for getContractsForDataCollection api
-//    @When("the api that gets contracts associated with the image sets of that data collection")
-//    public void whenApiReturnsDataForDatSetId() throws Exception{
-//        retrieveResult = mockMvc.perform(
-//                get("/api/v1/datacatalog/dataset/1"));
-//    }
-//
-//    @When("the api that gets contracts associated with the image sets of that data collection is hit")
-//    public void whenApiReturnsDataForDatSetIdIsHit() throws Exception{
-//        retrieveResult = mockMvc.perform(
-//                get("/api/v1/datacatalog/dataset/12").contentType(MediaType.APPLICATION_JSON));
-//    }
-
     @When("the API which retrieves the contracts is invoked with an org ID")
     public void whenTheAPIWhichCreatesAContractIsInvoked() throws Exception {
         retrieveResult = mockMvc.perform(get("/api/v1/datacatalog/contract")
@@ -155,20 +102,6 @@ public class RetrieveContractsSteps {
     // THEN statements //
     //
     /////////////////////
-
-//    //then test cases for getContractsForDataCollection api
-//    @Then("the api must return a map of active and inactive contracts associated with the data collection")
-//    public void thenResultShouldBeMapOfContractLists() throws Exception{
-//        retrieveResult.andExpect(status().isOk());
-//        retrieveResult.andExpect(content().string(containsString("false")));
-//    }
-//
-//    @Then("the api must return error message saying no contracts exist for the given dataSet ID")
-//    public void thenResultShouldBeAnErrorMessage() throws Exception{
-//        retrieveResult.andExpect(status().isBadRequest());
-//        retrieveResult.andExpect(content().string(containsString("No contracts exist for the given dataSet ID.")));
-//    }
-
 
     @Then("all the contracts should be retrieved from the database")
     public void thenAllActiveContractsShouldBeRetrievedFromTheDatabase() throws Exception {
@@ -257,16 +190,3 @@ public class RetrieveContractsSteps {
     }
 
 }
-
-//@test
-//Scenario: For a data collection/set ID not supported by LF get the contracts associated with the image sets of that data collection
-//        Meta: @automated
-//  Given a data collection/set ID not supported by LF
-//          When the api that gets contracts associated with the image sets of that data collection is hit
-//          Then the api must return error message saying no contracts exist for the given dataSet ID
-//          #@test
-//#Scenario: For a data collection/set ID supported by LF get the contracts associated with the image sets of that data collection
-//        #Meta: @automated
-//#Given a data collection/set ID supported by LF
-//        #When the api that gets contracts associated with the image sets of that data collection
-//        #Then the api must return a map of active and inactive contracts associated with the data collection
