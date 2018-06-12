@@ -851,7 +851,7 @@ public class DataCatalogDaoImplTest {
         List<Long> result = dataCatalogDao.getImageSetIdsByDataCollectionId(1L);
 
         // ASSERT
-        assertEquals(null,result);
+        assertEquals(0,result.size());
     }
 
     //test cases for getContractsByImageSetIds
