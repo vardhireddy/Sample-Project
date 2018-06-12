@@ -104,15 +104,15 @@ public interface IDataCatalogDao {
 
 	/**
 	 * Returns image set id list for given data collection id
-	 * @param datasetId
+	 * @param dataCollectionId - data collection unique identifier
 	 * @return list of image set ids
 	 */
-	List<Long> getImageSetIdsByDataCollectionId(Long datasetId);
+	List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId);
 
 	/**
 	 * Returns list of contracts for given list of image set ids
-	 * @param imagesetIdList
+	 * @param imageSetIdList - list of image set unique identifiers
 	 * @return list of contract objects
 	 */
-	List<Contract> getContractsByImageSetIds(List<Long> imagesetIdList);
+	List<Contract> getContractsByImageSetIds(List<Long> imageSetIdList);
 }

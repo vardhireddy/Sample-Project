@@ -804,16 +804,16 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     }
 
     @Override
-    public List<Long> getImageSetIdsByDataCollectionId(Long datasetId) {
+    public List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId) {
 
-        DataSet dataSet = dataSetRepository.findOne(datasetId);
+        DataSet dataSet = dataSetRepository.findOne(dataCollectionId);
         if (dataSet == null || dataSet.getImageSets() == null) return null;
         else return dataSet.getImageSets();
     }
 
     @Override
-    public List<Contract> getContractsByImageSetIds(List<Long> imagesetIdList) {
-        List<Contract> contractList = contractRepository.getContractsByImageSetidList(imagesetIdList);
+    public List<Contract> getContractsByImageSetIds(List<Long> imageSetIdList) {
+        List<Contract> contractList = contractRepository.getContractsByImageSetidList(imageSetIdList);
         if(contractList == null)
         {
             return new ArrayList<>();

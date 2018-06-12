@@ -15,7 +15,6 @@ package com.gehc.ai.app.datacatalog.repository;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

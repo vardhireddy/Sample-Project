@@ -76,7 +76,7 @@ public interface IDataCatalogService {
 
     /**
      * Returns a map of active and inactive contracts associated with a given data collection id
-     * @param dataCollectionId
+     * @param dataCollectionId - data collection unique identifier
      * @return Map<String,List<ContactsByDataSetId>>, where the keys will be "active" and "inactive". If "dataCollectionId" does not exist an empty map will be returned
      */
     Map<String,List<ContractByDataSetId>> getContractsByDataCollectionId(Long dataCollectionId);

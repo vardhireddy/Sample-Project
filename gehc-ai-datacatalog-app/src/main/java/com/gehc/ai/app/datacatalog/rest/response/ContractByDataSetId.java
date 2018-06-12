@@ -161,49 +161,21 @@ public class ContractByDataSetId {
         this.hasContractExpired = hasContractExpired;
     }
 
-    /*public static Map<String,List<ContractByDataSetId>> convertContractEntityToContractByDataSetId(List<Contract> contractEntityList, Map<String,List<ContractByDataSetId>> mapOfContracts){
-
-
-        for (Contract contract : contractEntityList) {
-
-            ContractByDataSetId contractByDataSetId = new ContractByDataSetId();
-            contractByDataSetId.setId(contract.getId());
-            contractByDataSetId.setActive(contract.getActive());
-            contractByDataSetId.setAgreementBeginDate(contract.getAgreementBeginDate());
-            contractByDataSetId.setAgreementName(contract.getAgreementName());
-            contractByDataSetId.setDataLocationAllowed(contract.getDataLocationAllowed());
-            contractByDataSetId.setDataOriginCountriesAndStates(contract.getDataOriginCountriesStates());
-            contractByDataSetId.setDeidStatus(contract.getDeidStatus());
-            contractByDataSetId.setPrimaryContactEmail(contract.getPrimaryContactEmail());
-            contractByDataSetId.setUploadBy(contract.getUploadBy());
-            contractByDataSetId.setUploadDate(contract.getUploadDate());
-            contractByDataSetId.setDataUsagePeriod(contract.getDataUsagePeriod());
-            contractByDataSetId.setUseCases(contract.getUseCases());
-
-            boolean isExpired;
-            //calculate if contract expired
-            isExpired = isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
-            contractByDataSetId.setHasContractExpired(isExpired);
-
-            if(contract.getActive().equalsIgnoreCase("false"))
-            {
-                mapOfContracts.get("inactive").add(contractByDataSetId);
-            }else
-            {
-                mapOfContracts.get("active").add(contractByDataSetId);
-            }
-        }
-
-        return mapOfContracts;
-
-    }*/
-
-
+    /**
+     * Creates a map of active and inactive ContractByDataSetIds from the given list of contract entities
+     * @param contractList - list of contract entities
+     * @return - map of active and inactive ContractByDataSetIds
+     */
     public static Map<String,List<ContractByDataSetId>> fromDataSetEntities(List<Contract> contractList) {
         return contractList.stream().map(ContractByDataSetId::fromContractEntity)
                 .collect(Collectors.groupingBy(ContractByDataSetId::getActive));
     }
 
+    /**
+     * Converts the contract Entity to ContractByDataSetId
+     * @param contract - contract Entity
+     * @return ContractByDataSetId
+     */
     public static ContractByDataSetId fromContractEntity(Contract contract){
 
         boolean contractExpired = isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
@@ -224,6 +196,12 @@ public class ContractByDataSetId {
                 contract.getDataLocationAllowed());
     }
 
+    /**
+     * Verifies if a Contract has expired
+     * @param agreementBeginDate - agreement begin date of the contract
+     * @param dataUsagePeriod - dataUsagePeriod of the contract
+     * @return true if contract expired.
+     */
     public static boolean isContractExpired(String agreementBeginDate, String dataUsagePeriod){
         //set the current system date
         java.util.Date currentDate = new java.util.Date();
