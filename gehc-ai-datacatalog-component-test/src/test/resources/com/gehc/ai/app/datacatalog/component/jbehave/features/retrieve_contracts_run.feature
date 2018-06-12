@@ -32,6 +32,7 @@ When the API which retrieves the contracts is invoked with an org ID
 Then the get contracts response status code should be 500
 And the get contracts response's content type should be JSON
 And the response's body should contain a message saying could not get the contracts details due to an internal error
+
 @test
 Scenario: For a data collection/set ID not supported by LF get the contracts associated with the image sets of that data collection
 Meta: @automated
