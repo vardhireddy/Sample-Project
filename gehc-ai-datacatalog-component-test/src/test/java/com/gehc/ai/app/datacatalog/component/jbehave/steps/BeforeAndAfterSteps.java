@@ -1,8 +1,16 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 
+<<<<<<< HEAD
 import static org.mockito.Mockito.reset;
 
+=======
+import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
+import com.gehc.ai.app.datacatalog.repository.*;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+>>>>>>> 0d1996310382e2816029fc6bfc1c2df950d0acb2
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.ScenarioType;
 import org.springframework.boot.test.mock.mockito.MockBean;

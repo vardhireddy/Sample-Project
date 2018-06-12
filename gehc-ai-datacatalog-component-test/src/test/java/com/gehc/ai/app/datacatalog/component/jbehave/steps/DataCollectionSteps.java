@@ -3,15 +3,16 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.entity.Properties;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.service.IRemoteService;
+import com.gehc.ai.app.datacatalog.rest.impl.DataCatalogRestImpl;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
+import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.LabelAnnotationJson;
@@ -21,7 +22,9 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -33,10 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
@@ -71,9 +71,12 @@ public class DataCollectionSteps {
     private RowMapper rm;
     private Throwable throwable = null;
     private DataCatalogDaoImpl dataCatalogDao;
+    private DataCatalogServiceImpl dataCatalogService;
 
     @Autowired
-    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository, CommonSteps commonSteps, DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao, IRemoteService remoteServiceImpl) {
+    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository,
+                               ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository, CommonSteps commonSteps,
+                               DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao, IRemoteService remoteServiceImpl, DataCatalogServiceImpl dataCatalogService) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
@@ -83,6 +86,7 @@ public class DataCollectionSteps {
         this.dataCatalogInterceptor = dataCatalogInterceptor;
         this.dataCatalogDao = dataCatalogDao;
         this.remoteServiceImpl = remoteServiceImpl;
+        this.dataCatalogService = dataCatalogService;
     }
 
     @BeforeScenario
@@ -867,6 +871,7 @@ public class DataCollectionSteps {
         }
         return countM;
     }
+
 }
 
 
