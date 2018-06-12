@@ -23,20 +23,20 @@ import com.gehc.ai.app.datacatalog.service.IRemoteService;
 
 @Configuration
 @Component
-public class RemoteServiceImpl implements IRemoteService{
-	
+public class RemoteServiceImpl implements IRemoteService {
+
 	private static Logger logger = LoggerFactory.getLogger(RemoteServiceImpl.class);
-	
+
 	@Value("${uom.user.me.url}")
-    private String uomMeUrl;
-	
+	private String uomMeUrl;
+
 	@Autowired
-    private RestTemplate restTemplate;
-	
+	private RestTemplate restTemplate;
+
 	@Override
-	public String getOrgIdBasedOnSessionToken(String authToken) throws Exception{
-        String orgId = null;
-        if (null != authToken) {
+	public String getOrgIdBasedOnSessionToken(String authToken) throws Exception {
+		String orgId = null;
+		if (null != authToken) {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(HttpHeaders.AUTHORIZATION, authToken);
 			headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
@@ -75,8 +75,8 @@ public class RemoteServiceImpl implements IRemoteService{
 				}
 			} else {
 				logger.info("!!! Response Entity User Object has no content");
-			} 
+			}
 		}
 		return orgId;
-    }
+	}
 }
