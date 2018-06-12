@@ -28,8 +28,12 @@ public class RemoteServiceImpl implements IRemoteService {
 	@Value("${uom.user.me.url}")
 	private String uomMeUrl;
 
+	private final RestTemplate restTemplate;
+	
 	@Autowired
-	private RestTemplate restTemplate;
+    public RemoteServiceImpl(RestTemplate restTemplate){
+		this.restTemplate = restTemplate;
+	}
 
 	@Override
 	public String getOrgIdBasedOnSessionToken(String authToken) throws Exception {
