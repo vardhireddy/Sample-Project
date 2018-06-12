@@ -20,6 +20,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -49,7 +50,8 @@ public final class Contract {
 			List<String> uri, DeidStatus deidStatus, @Size(min = 0, max = 255)
 			@Size(min = 0, max = 50) String active, @Size(min = 0, max = 255) String uploadBy, Date uploadDate,
 			@Size(min = 0, max = 255) String agreementName, @Size(min = 0, max = 50) String primaryContactEmail,
-			String agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod, List<ContractUseCase> useCases,List<ContractDataOriginCountriesStates> dataOriginCountriesStates, DataLocationAllowed dataLocationAllowed, UploadStatus uploadStatus) {
+			String agreementBeginDate, @Size(min = 0, max = 50) String dataUsagePeriod, List<ContractUseCase> useCases,
+					List<ContractDataOriginCountriesStates> dataOriginCountriesStates, DataLocationAllowed dataLocationAllowed, UploadStatus uploadStatus, Boolean isExpired) {
 		super();
 		this.id = id;
 		this.schemaVersion = schemaVersion;
@@ -67,6 +69,7 @@ public final class Contract {
 		this.dataOriginCountriesStates = dataOriginCountriesStates;
 		this.uploadStatus = uploadStatus;
 		this.dataLocationAllowed = dataLocationAllowed;
+		this.isExpired = isExpired;
 	}
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -93,7 +96,7 @@ public final class Contract {
 	private DeidStatus deidStatus;
 	
 	@Size(min=0, max=50)
-	private String active;	
+	private String active;
 
 	/**
 	 * An identifier for the one who uploaded the data. This allows to query for
@@ -150,6 +153,9 @@ public final class Contract {
 	@Column(name = "status")
 	@Convert(converter = StatusConverter.class)
 	private UploadStatus uploadStatus;
+
+	@Transient
+	private Boolean isExpired;
 
 	public List<ContractUseCase> getUseCases() {
 		return useCases;
@@ -281,6 +287,14 @@ public final class Contract {
 		this.dataLocationAllowed = dataLocationAllowed;
 	}
 
+	public Boolean getExpired() {
+		return isExpired;
+	}
+
+	public void setExpired(Boolean expired) {
+		isExpired = expired;
+	}
+
 	@Override
 	public String toString() {
 		return "Contract [id=" + id + ", schemaVersion=" + schemaVersion + ", orgId=" + orgId + ", uri=" + uri
@@ -288,7 +302,7 @@ public final class Contract {
 				+ ", uploadBy=" + uploadBy + ", uploadDate=" + uploadDate + ", agreementName=" + agreementName
 				+ ", primaryContactEmail=" + primaryContactEmail + ", agreementBeginDate=" + agreementBeginDate
 				+ ", dataUsagePeriod=" + dataUsagePeriod + ", useCases="
-				+ useCases + ", dataOriginCountriesStates=" + dataOriginCountriesStates + ", dataLocationAllowed=" + dataLocationAllowed + ", uploadStatus=" + uploadStatus + "]";
+				+ useCases + ", dataOriginCountriesStates=" + dataOriginCountriesStates + ", dataLocationAllowed=" + dataLocationAllowed + ", uploadStatus=" + uploadStatus + ", isExpired=" + isExpired + "]";
 	}
 
 	@Override

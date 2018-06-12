@@ -65,7 +65,14 @@ public interface IDataCatalogService {
 	Contract saveContract(Contract contract);
 
 	Contract getContract(Long contractId);
-	
+
+    /**
+     * given a org id, return all the contracts details
+     * @param orgId org id
+     * @return list of contracts and their details
+     */
+    List<Contract> getAllContracts(String orgId);
+
     /**
      * @param params
      * @return

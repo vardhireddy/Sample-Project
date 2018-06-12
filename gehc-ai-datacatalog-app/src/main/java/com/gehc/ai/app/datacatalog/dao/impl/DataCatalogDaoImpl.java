@@ -42,6 +42,8 @@ import javax.persistence.Query;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,6 +51,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import java.time.LocalDate;
 
 import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 
@@ -765,6 +769,83 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		return contractRepository.findOne(contractId);
 	}
 
+//	@Override
+//	public List<Contract> computeForExpiredContract(List<Contract> contractsLst) {
+//		logger.info("Computing for expired contracts");
+//
+//		if (null != contractsLst && !contractsLst.isEmpty()) {
+//			for (int i = 0; i < contractsLst.size(); i++) {
+//				//System.out.println("Contract : i = " + i + ":" + contractsLst.get(i));
+//
+//				String contractBeginDate = contractsLst.get(i).getAgreementBeginDate();
+//				//System.out.println("contractBeginDate = " + contractBeginDate);
+//
+//				String contractUsagePeriod = contractsLst.get(i).getDataUsagePeriod();
+//				//System.out.println("contractUsagePeriod = " + contractUsagePeriod);
+//
+//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//
+//				//convert String to LocalDate
+//				LocalDate beginDate = LocalDate.parse(contractBeginDate, formatter);
+//				//System.out.println("LocalDate beginDate = " + beginDate);
+//
+//				LocalDate currentDate = LocalDate.now(Clock.systemUTC()); // good
+//				//System.out.println("LocalDate currentDate = " + currentDate);
+//
+//				LocalDate contractExpiryDate = beginDate.plusMonths(Integer.parseInt(contractUsagePeriod));
+//				//System.out.println("contractExpiryDate = " + contractExpiryDate);
+//
+//				// set isExpired field value
+//				if (contractExpiryDate.isAfter(currentDate)) {
+//					contractsLst.get(i).setExpired(false);
+//				} else {
+//					contractsLst.get(i).setExpired(true);
+//				}
+//			}
+//		}
+//		return contractsLst;
+//	}
+
+	@Override
+	public List<Contract> getAllContractsDetails(String orgId) {
+		List<Contract> contractsLst = contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(orgId);
+		//List<Contract> res = computeForExpiredContract(lst);
+
+        logger.info("Computing for expired contracts");
+
+        if (null != contractsLst && !contractsLst.isEmpty()) {
+            for (int i = 0; i < contractsLst.size(); i++) {
+                //System.out.println("Contract : i = " + i + ":" + contractsLst.get(i));
+
+                String contractBeginDate = contractsLst.get(i).getAgreementBeginDate();
+                //System.out.println("contractBeginDate = " + contractBeginDate);
+
+                String contractUsagePeriod = contractsLst.get(i).getDataUsagePeriod();
+                //System.out.println("contractUsagePeriod = " + contractUsagePeriod);
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                //convert String to LocalDate
+                LocalDate beginDate = LocalDate.parse(contractBeginDate, formatter);
+                //System.out.println("LocalDate beginDate = " + beginDate);
+
+                LocalDate currentDate = LocalDate.now(Clock.systemUTC()); // good
+                //System.out.println("LocalDate currentDate = " + currentDate);
+
+                LocalDate contractExpiryDate = beginDate.plusMonths(Integer.parseInt(contractUsagePeriod));
+                //System.out.println("contractExpiryDate = " + contractExpiryDate);
+
+                // set isExpired field value
+                if (contractExpiryDate.isAfter(currentDate)) {
+                    contractsLst.get(i).setExpired(false);
+                } else {
+                    contractsLst.get(i).setExpired(true);
+                }
+            }
+        }
+        return contractsLst;
+	}
+
 	@Override
 	public List<Long> getImgSeriesIdsByFilters(Map<String, Object> params) {
 		logger.info("Getting image series ids based on filters");
@@ -793,6 +874,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao{
 		}
 		return imageSeriesIDsList;
 	}
+
 
 	public void setEntityManager(EntityManager entityManager) {
 		this.em = entityManager;

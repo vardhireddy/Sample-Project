@@ -93,6 +93,13 @@ public interface IDataCatalogDao {
 	 * @return contract details, stored in a Contract object
 	 */
 	Contract getContractDetails(Long contractId);
+
+	/**
+	 * given a org id, return all the contracts details
+	 * @param orgId org id
+	 * @return list of contracts and their details
+	 */
+	List<Contract> getAllContractsDetails(String orgId);
 	
 	/**
 	 * given a set of column filter criteria, return a list of image set id's satisfying the
@@ -101,4 +108,11 @@ public interface IDataCatalogDao {
 	 * @return list of image series ids satisfying the filter parameters
 	 */
 	List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+//	/**
+//     * compute for expired contract and fill isExpired attribute
+//     * @param contracts a {@code List} of {@Link Contract} beans
+//     * @return list of contracts with isExpired values
+//     */
+//    public List<Contract> computeForExpiredContract(List<Contract> contracts);
 }

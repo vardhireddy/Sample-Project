@@ -30,6 +30,7 @@ import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
@@ -1135,6 +1136,99 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return apiResponse;
     }
 
+
+//    /**
+//     * API to fetch all contract
+//     *
+//     * @param
+//     * @return
+//     */
+//    @Override
+//    @RequestMapping(value = {"/datacatalog/contract", "/datacatalog/contract/{contractId}"}, method = RequestMethod.GET)
+//    public ResponseEntity<List<Contract>> getContract(@PathVariable(value = "contractId", required = false) Long contractId, HttpServletRequest request) {
+//        List<Contract> contracts = new ArrayList<Contract>();
+//        Contract contract;
+//        String orgId = request.getAttribute("orgId").toString();
+//
+//        /* Toll gate checks */
+//
+//        // Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+//        if(Objects.isNull(request)){
+//            return new ResponseEntity(Collections.singletonMap("response", "HTTP request object was not found"), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//
+//        // Gate 2 - The org ID is required to be defined
+//        if (Objects.isNull(request.getAttribute("orgId"))) {
+//            return new ResponseEntity(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
+//        }
+////        if(contractId <= 0){
+////            return new ResponseEntity(Collections.singletonMap("response", "Invalid contract ID"), HttpStatus.BAD_REQUEST);
+////        }
+//
+//        //if no contractId is provided, then return details for all contracts in db
+//        if (Objects.isNull(contractId)) {
+//
+//            try {
+//                contracts= dataCatalogService.getAllContracts(orgId);
+//            } catch (Exception e) {
+//                logger.error("Exception retrieving the contracts ", e.getMessage());
+//                return new ResponseEntity(Collections.singletonMap("response", "Exception retrieving the contract"), HttpStatus.INTERNAL_SERVER_ERROR);
+//            }
+//            return new ResponseEntity(contracts, HttpStatus.OK);
+//        }
+//        //if a contractId is provided, then return details for given contractId
+//        else {
+//            try {
+//                contract = dataCatalogService.getContract(contractId);
+//            } catch (Exception e) {
+//                logger.error("Exception retrieving the contract ", e.getMessage());
+//                return new ResponseEntity(Collections.singletonMap("response", "Exception retrieving the contract"), HttpStatus.INTERNAL_SERVER_ERROR);
+//            }
+//            if (contract == null || contract.getActive() == null) {
+//                return new ResponseEntity(Collections.singletonMap("response", "No Contract Exists with the given Id."), HttpStatus.BAD_REQUEST);
+//            } else if (contract.getActive().equalsIgnoreCase("false")) {
+//                return new ResponseEntity(Collections.singletonMap("response", "Contract associated with given Id is inactive"), HttpStatus.OK);
+//            } else return new ResponseEntity(contracts.add(contract), HttpStatus.OK);
+//        }
+//    }
+
+    /**
+     * API to fetch all contract
+     *
+     * @param
+     * @return
+     */
+    @Override
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
+    public ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request) {
+        List<Contract> contracts = new ArrayList<Contract>();
+        String orgId = request.getAttribute("orgId").toString();
+
+        /* Toll gate checks */
+
+        // Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+        if (Objects.isNull(request)) {
+            return new ResponseEntity(Collections.singletonMap("response", "HTTP request object was not found"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // Gate 2 - The org ID is required to be defined
+        if (Objects.isNull(request.getAttribute("orgId"))) {
+            return new ResponseEntity(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
+        }
+//        if(contractId <= 0){
+//            return new ResponseEntity(Collections.singletonMap("response", "Invalid contract ID"), HttpStatus.BAD_REQUEST);
+//        }
+
+        //return details for all contracts in db ordered by attribute - active
+        try {
+            contracts = dataCatalogService.getAllContracts(orgId);
+        } catch (Exception e) {
+            logger.error("Could not get the contracts due to an internal error ", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Could not get the contracts due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity(contracts, HttpStatus.OK);
+    }
+
     /**
      * API to fetch contract
      *
@@ -1207,7 +1301,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         int countOfRecordsWithGivenFilters = 0;
         try {
-            countOfRecordsWithGivenFilters = contractRepository.validateContractIdAndOrgId(contractId, orgId);
+            countOfRecordsWithGivenFilters = contractRepository.countByIdAndOrgId(contractId, orgId);
         } catch (Exception e) {
             logger.error("Error validating given parameters : {}", e.getMessage());
             return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);

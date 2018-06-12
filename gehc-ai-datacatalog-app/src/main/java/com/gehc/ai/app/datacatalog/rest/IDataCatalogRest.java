@@ -360,6 +360,20 @@ public interface IDataCatalogRest {
     ResponseEntity<Contract> getContracts(Long contractId);
 
     /**
+     * Returns the contract details if given contract ID is valid and active
+     * @param request
+     * @return Contract
+     */
+    ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request);
+
+//    /**
+//     * Returns the contract details if given contract ID is valid and active
+//     * @param contractId,request
+//     * @return Contract
+//     */
+//    ResponseEntity<List<Contract>> getContract(Long contractId, HttpServletRequest request);
+
+    /**
      * Gives the ability to update the status and uri of the contract
      *
      * @param contractId
