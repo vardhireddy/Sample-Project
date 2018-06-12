@@ -25,7 +25,8 @@ Get Annotaition Ids by datacollectionId
 Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
 Delete Data Collection by id
 Export a data collection's annotations as CSV when the data collection contains at least one image set and each image set contains at least one annotation
-
+For a data collection/set ID supported by LF get the contracts associated with the image sets of that data collection
+For a data collection/set ID not supported by LF get the contracts associated with the image sets of that data collection
 @functional
 @crs_10733
 

@@ -7,8 +7,11 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.sql.Date;
 import java.util.*;
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -631,6 +635,62 @@ public class DataCatalogRestImplTest {
         assertEquals(500, result.getStatusCodeValue());
     }
 
+    //test cases for getContractsForDataCollection
+    @Test
+    public void testGetContractsForDataCollection()
+    {
+        //ARRANGE
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",contractByDataSetIdList);
+        data.put("inactive",contractByDataSetIdList);
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenReturn(data);
+
+        //ACT
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
+        assertEquals(200, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testGetContractsForDataCollectionForBadRequest()
+    {
+        //ARRANGE
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",new ArrayList<>());
+        data.put("inactive",new ArrayList<>());
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenReturn(data);
+        //ACT
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
+        assertEquals(400, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testGetContractsByDataCollectionIdForInternalException()
+    {//ARRANGE
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",new ArrayList<>());
+        data.put("inactive",new ArrayList<>());
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenThrow(new RuntimeException());
+
+        //ACT
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
+        assertEquals(500, result.getStatusCodeValue());
+    }
+
     private Contract buildContractEntity(){
         Contract contract = new Contract();
         contract.setId(1L);
@@ -640,6 +700,23 @@ public class DataCatalogRestImplTest {
         uriList.add("bla.pdf");
         contract.setUri(uriList);
         return contract;
+    }
+
+    private ContractByDataSetId buildContractByDataSetId(){
+        return new ContractByDataSetId(2L,
+                Contract.DeidStatus.HIPAA_COMPLIANT,
+                "true",
+                false,
+                "user",
+                Date.valueOf("2017-03-31"),
+                "testAgreement",
+                "joe@ge.com",
+                "2018-06-08",
+                "12",
+                Arrays.asList(new ContractUseCase[]{new ContractUseCase(ContractUseCase.DataUser.GE_GLOBAL, ContractUseCase.DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}),
+                Contract.UploadStatus.UPLOAD_COMPLETED,
+                Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}),
+                Contract.DataLocationAllowed.GLOBAL);
     }
 
 }

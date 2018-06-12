@@ -101,4 +101,18 @@ public interface IDataCatalogDao {
 	 * @return list of image series ids satisfying the filter parameters
 	 */
 	List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+	/**
+	 * Returns image set id list for given data collection id
+	 * @param dataCollectionId - data collection unique identifier
+	 * @return list of image set ids
+	 */
+	List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId);
+
+	/**
+	 * Returns list of contracts for given list of image set ids
+	 * @param imageSetIdList - list of image set unique identifiers
+	 * @return list of contract objects
+	 */
+	List<Contract> getContractsByImageSetIds(List<Long> imageSetIdList);
 }
