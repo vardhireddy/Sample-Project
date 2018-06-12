@@ -34,6 +34,8 @@ import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
 import com.gehc.ai.app.datacatalog.filters.StatusConverter;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * {@code Contract} represents data contract.
  *
@@ -115,6 +117,7 @@ public final class Contract {
 
 	@Size(min=0, max=255)
 	@Column(name = "agreement_name")
+	@ApiModelProperty(notes = "Name of the Agreement", name = "agreementName", required = false, value = "Agreement Name")
 	private String agreementName;
 
 	@Size(min=0, max=50)

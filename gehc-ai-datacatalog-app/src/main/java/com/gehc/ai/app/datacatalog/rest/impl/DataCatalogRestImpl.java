@@ -11,6 +11,56 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
+import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+
+import org.hibernate.service.spi.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,9 +69,9 @@ import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
 import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
@@ -48,59 +98,17 @@ import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.DataCatalogUtils;
 import com.gehc.ai.app.datacatalog.util.exportannotations.Shuffle;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import org.hibernate.service.spi.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponses;
 
 /**
  * @author 212071558
  */
 @RestController
+@Api(value = "DataCatalogRestController", description = "REST APIs related to DataCatalog Service")
 @Produces(MediaType.APPLICATION_JSON)
 @RequestMapping(value = "/api/v1")
 @PropertySource({"classpath:application.yml"})
@@ -162,10 +170,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         this.randomize = r;
     }
 
-    @Value("${coolidge.micro.inference.url}")
-    private String coolidgeMInferenceUrl;
-    @Value("${uom.user.me.url}")
-    private String uomMeUrl;
     @Autowired
     private PatientRepository patientRepository;
     @Autowired
@@ -1236,8 +1240,21 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      * @return
      */
     @Override
+    @ApiOperation(value = "Get Contract By Id ", httpMethod = "GET", response = Contract.class, tags = "Retrieve Contract")
+    @ApiResponses(value = {
+    		@io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Contract.class),
+    		@io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+    		@io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+    		@io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+    		@io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+    		@io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+    		@io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+    		@io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+    		@io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+    		@io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+    		@io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
-    public ResponseEntity<Contract> getContracts(@PathVariable(value = "contractId") Long contractId) {
+    public ResponseEntity<Contract> getContracts(@ApiParam(value = "Id of Contract") @PathVariable(value = "contractId") Long contractId) {
         Contract contract;
         try {
             RequestValidator.validateContractId(contractId);
@@ -1352,6 +1369,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Create Contract", httpMethod = "POST", response = Contract.class, tags = "Create Contract")
+    @ApiResponses(value = {
+    		@io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Contract.class),
+    		@io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+    		@io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+    		@io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+    		@io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+    		@io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+    		@io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+    		@io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+    		@io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+    		@io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
 	public ResponseEntity<?> saveContract(@RequestBody Contract contract, HttpServletRequest request) {
         logger.debug("Creating a new contract.");
