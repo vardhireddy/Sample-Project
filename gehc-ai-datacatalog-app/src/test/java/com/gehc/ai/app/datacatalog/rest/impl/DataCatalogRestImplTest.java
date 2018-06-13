@@ -441,54 +441,6 @@ public class DataCatalogRestImplTest {
         assertEquals(500, result.getStatusCodeValue());
     }
 
-//    //get contract unit test cases
-//    @Test
-//    public void testGetContractForValidActiveContractId(){
-//        Contract contract = buildContractEntity();
-//        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-//        ResponseEntity<List<Contract>> result = controller.getContract(1L, req);
-//        assertEquals(200, result.getStatusCodeValue());
-//        //assertEquals("true",result.getBody().contains(Contract).getActive());
-//        assertNotNull(result);
-//    }
-//
-//    @Test
-//    public void testGetContractForValidInActiveContractId(){
-//        Contract contract = buildContractEntity();
-//        contract.setActive("false");
-//        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-//        ResponseEntity<List<Contract>> result = controller.getContract(1L , req);
-//        assertEquals(200, result.getStatusCodeValue());
-//        assertEquals(Collections.singletonMap("response", "Contract associated with given Id is inactive"),result.getBody());
-//    }
-//
-//    @Test
-//    public void testGetContractForInValidContractId(){
-//        Contract contract = new Contract();
-//        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-//        ResponseEntity<List<Contract>> result = controller.getContract(1L, req);
-//        assertEquals(400, result.getStatusCodeValue());
-//        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id."),result.getBody());
-//    }
-//
-//    @Test
-//    public void testGetContractForExceptionRetriveingData(){
-//        when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException("internal error"));
-//        ResponseEntity<List<Contract>> result = controller.getContract(1L, req);
-//        assertEquals(500, result.getStatusCodeValue());
-//        assertEquals(Collections.singletonMap("response","Exception retrieving the contract"),result.getBody());
-//    }
-//
-//    @Test
-//    public void testGetContractForExceptionValidatingContractId(){
-//        ResponseEntity<List<Contract>> result = controller.getContract(null, req);
-//        assertEquals(200, result.getStatusCodeValue());
-//        assertNotNull(result);
-//        //assertEquals(Collections.singletonMap("response","Please pass a valid contract ID"),result.getBody());
-//    }
-
-
-
     //get contract unit test cases
     @Test
     public void testGetContractForValidActiveContractId(){
@@ -531,34 +483,6 @@ public class DataCatalogRestImplTest {
         ResponseEntity<Contract> result = controller.getContracts(null);
         assertEquals(400, result.getStatusCodeValue());
         assertEquals(Collections.singletonMap("response","Please pass a valid contract ID"),result.getBody());
-    }
-
-    // get all contracts unit test cases
-    @Test
-    public void testGetAllContractForContractsAvailableForGivenOrgIdInDB() throws Exception{
-        List<Contract> contractLst = buildContractList();
-        when(dataCatalogService.getAllContracts(anyString())).thenReturn(contractLst);
-        ResponseEntity<List<Contract>> result = controller.getAllContracts(req);
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(false,result.getBody().get(0).getExpired());
-    }
-
-    @Test
-    public void testGetAllContractForNoContractsAvailableForGivenOrgIdInDB() throws Exception{
-        List<Contract> contractLst = new ArrayList<>();
-        when(dataCatalogService.getAllContracts(anyString())).thenReturn(contractLst);
-        ResponseEntity<List<Contract>> result = controller.getAllContracts(req);
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(new ArrayList<>(),result.getBody());
-    }
-
-
-    @Test
-    public void testGetAllContractForInternalServerError(){
-        when(dataCatalogService.getAllContracts(anyString())).thenThrow(new RuntimeException("internal error"));
-        ResponseEntity<List<Contract>> result = controller.getAllContracts(req);
-        assertEquals(500, result.getStatusCodeValue());
-        assertEquals(Collections.singletonMap("response","Could not get the contracts due to an internal error"),result.getBody());
     }
 
     //update contract unit test cases

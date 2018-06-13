@@ -1141,13 +1141,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return apiResponse;
     }
 
-
-    /**
-     * API to fetch all contract ordered by attribute - active and id in descending order
-     *
-     * @param
-     * @return ResponseEntity<List<Contract>>
-     */
     @Override
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
     public ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request) {

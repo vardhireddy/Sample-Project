@@ -68,9 +68,10 @@ public interface IDataCatalogService {
 	Contract getContract(Long contractId);
 
     /**
-     * given a org id, return all the contracts details
-     * @param orgId org id
-     * @return list of contracts and their details
+     * given a org id, return all the contracts details.
+     * @param orgId the id of the organization whose contracts will be returned
+     * @return list of contracts and their details. If the given org id does not exists or if there are no contracts associated with the given org id,
+     * then an empty list will be returned
      */
     List<Contract> getAllContracts(String orgId);
 

@@ -145,10 +145,10 @@ public class RetrieveContractsSteps {
     //
     /////////////////////
 
-    @Then("all the contracts should be retrieved from the database")
-    public void thenAllActiveContractsShouldBeRetrievedFromTheDatabase() throws Exception {
+    @Then("a single request to the database should be made to retrieve all contracts for the target org ID")
+    public void thenASingleRequestToDatabaseShouldBeMadeToRetrieveAllContractsForOrgId() throws Exception {
         verify(dataCatalogDao, times(1)).getAllContractsDetails("12345678-abcd-42ca-a317-4d408b98c500");
-        retrieveResult.andExpect(content().string(containsString("expired")));
+        //retrieveResult.andExpect(content().string(containsString("expired")));
     }
 
     @Then("the get contracts response status code should be 200")

@@ -199,7 +199,7 @@ public class DataCatalogDaoImplTest {
     }
 
     @Test
-    public void testGetAllContractsByOrgIdForValidRecordsInDB() {
+    public void itShouldReturnAllContractsForOrgIdIfOrgIdHasContractsInDatabase() {
         // ARRANGE
 
         // Set up contracts to be returned from the DB
@@ -242,7 +242,7 @@ public class DataCatalogDaoImplTest {
     }
 
     @Test
-    public void testGetAllContractsByOrgIdForNoRecordsInDB() {
+    public void itShouldReturnZeroContractsForOrgIdIfOrgIdHasZeroContractsInDatabase() {
         // ARRANGE
 
         // Set up contracts to be returned from the DB

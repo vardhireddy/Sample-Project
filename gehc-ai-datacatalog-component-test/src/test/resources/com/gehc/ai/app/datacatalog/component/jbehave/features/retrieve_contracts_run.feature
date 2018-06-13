@@ -10,7 +10,7 @@ Meta: @automated
 Given there are one or more contracts in the database
 And no internal errors occur when retrieving the contracts
 When the API which retrieves the contracts is invoked with an org ID
-Then all the contracts should be retrieved from the database
+Then a single request to the database should be made to retrieve all contracts for the target org ID
 Then the get contracts response status code should be 200
 And the get contracts response's content type should be JSON
 

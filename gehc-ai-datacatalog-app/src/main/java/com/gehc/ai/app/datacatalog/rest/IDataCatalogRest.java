@@ -361,14 +361,12 @@ public interface IDataCatalogRest {
      * @param request
      * @return Contract
      */
+    /**
+     * API fetches all contracts and their details for given org Id which are sorted by attributes - active and contract id in descending order
+     * @param request  The intercepted HTTP request object whose headers will be validated and the user's org Id will be extracted for getting the contracts.
+     * @return  a {@link ResponseEntity} containing a JSON representation of the list of contract entities
+     */
     ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request);
-
-//    /**
-//     * Returns the contract details if given contract ID is valid and active
-//     * @param contractId,request
-//     * @return Contract
-//     */
-//    ResponseEntity<List<Contract>> getContract(Long contractId, HttpServletRequest request);
 
     /**
      * Gives the ability to update the status and uri of the contract
