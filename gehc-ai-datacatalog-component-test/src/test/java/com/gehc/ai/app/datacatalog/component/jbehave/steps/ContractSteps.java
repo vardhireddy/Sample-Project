@@ -46,7 +46,7 @@ public class ContractSteps {
 
     @Given("contract Id and Org Id")
     public void givenContractIdAndOrgId() throws Exception {
-        when(contractRepository.validateContractIdAndOrgId(anyLong(), anyString())).thenReturn(1);
+        when(contractRepository.countByIdAndOrgId(anyLong(), anyString())).thenReturn(1);
 
     }
 
@@ -67,7 +67,7 @@ public class ContractSteps {
 
     @Given("invalid contract Id or Org Id")
     public void givenInvalidContractIdAndOrgId() throws Exception {
-        when(contractRepository.validateContractIdAndOrgId(anyLong(), anyString())).thenReturn(0);
+        when(contractRepository.countByIdAndOrgId(anyLong(), anyString())).thenReturn(0);
     }
 
     @When("any of the given parameters are not existing in the repository")

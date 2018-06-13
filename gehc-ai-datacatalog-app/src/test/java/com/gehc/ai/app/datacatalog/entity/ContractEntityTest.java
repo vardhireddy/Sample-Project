@@ -1,12 +1,16 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Assert;
 import org.junit.Test;
 
+import javax.validation.constraints.AssertTrue;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class ContractEntityTest {
 
@@ -23,6 +27,7 @@ public class ContractEntityTest {
                 .withPrefabValues(Contract.class, contract, contract1)
                 .withPrefabValues(Date.class, date1, date2)
                 .withNonnullFields("schemaVersion", "orgId", "deidStatus", "agreementBeginDate", "active", "uploadBy", "agreementName", "primaryContactEmail", "dataUsagePeriod", "useCases", "dataOriginCountriesStates", "dataLocationAllowed", "uploadStatus")
+                .withIgnoredFields("isExpired")
                 .verify();
     }
 
@@ -46,6 +51,7 @@ public class ContractEntityTest {
         contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
         contract.setUploadBy("user");
         contract.setUploadDate(Date.valueOf("2017-03-31"));
+        contract.setExpired(true);
         return contract;
     }
 }

@@ -66,7 +66,15 @@ public interface IDataCatalogService {
 	Contract saveContract(Contract contract);
 
 	Contract getContract(Long contractId);
-	
+
+    /**
+     * Fetches all contracts and their details for the given org Id.
+     * @param orgId the id of the organization whose contracts will be returned
+     * @return list of contracts and their details. The list is sorted by attributes - {@code active} and {@code contractId} in descending order.
+     * If the given org id does not exists or if there are no contracts associated with the given org id, then an empty list will be returned.
+     */
+    List<Contract> getAllContracts(String orgId);
+
     /**
      * @param params
      * @return

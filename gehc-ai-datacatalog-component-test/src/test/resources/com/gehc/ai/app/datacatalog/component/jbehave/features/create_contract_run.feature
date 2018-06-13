@@ -144,7 +144,6 @@ Then the response's body should contain a message saying no contract exists with
 
 
 
-
 @test_1
 Scenario: User shall be able to update contract data for valid and active contract Id, valid request
 Meta: @automated

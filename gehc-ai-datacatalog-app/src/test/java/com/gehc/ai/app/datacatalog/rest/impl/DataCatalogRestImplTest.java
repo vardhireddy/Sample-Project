@@ -1,17 +1,23 @@
 package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +33,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
@@ -54,6 +63,8 @@ import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 @RunWith ( MockitoJUnitRunner.class )
@@ -103,6 +114,9 @@ public class DataCatalogRestImplTest {
         }
     }*/
 
+    @Autowired
+    private HttpServletRequest req;
+
     @Mock
     private IDataCatalogService dataCatalogService;
     @Mock
@@ -128,6 +142,14 @@ public class DataCatalogRestImplTest {
 
     @InjectMocks
     private DataCatalogRestImpl controller;
+
+    @Before
+    public void setUp() throws Exception {
+
+        req = new MockHttpServletRequest();
+        req.setAttribute("orgId", "1");
+
+    }
     /*
     @Value ( "${experiment.targetData.gtMaskLocation}" )
     private String gtMaskLocation;
@@ -397,7 +419,7 @@ public class DataCatalogRestImplTest {
 
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
-        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);
+        when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenReturn(1);
         ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"orgId");
         assertEquals("Contract exists", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
@@ -405,7 +427,7 @@ public class DataCatalogRestImplTest {
 
     @Test
     public void testValidateContractIdAndOrgIdForInvalidData(){
-        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(0);
+        when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenReturn(0);
         ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
         assertEquals("Contract does not exist", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
@@ -413,7 +435,7 @@ public class DataCatalogRestImplTest {
 
     @Test
     public void testValidateContractIdAndOrgIdForException(){
-        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
+        when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
         ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
         assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
@@ -699,7 +721,48 @@ public class DataCatalogRestImplTest {
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         contract.setUri(uriList);
+        contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
+        contract.setSchemaVersion("v1");
+        contract.setAgreementName("Test contract name");
+        contract.setPrimaryContactEmail("john.doe@ge.com");
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
+        contract.setAgreementBeginDate("2017-03-02");
+        contract.setDataUsagePeriod("12");
+        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
+        contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
+        contract.setUploadBy("user");
+
         return contract;
+    }
+
+    private List<Contract> buildContractList() throws Exception {
+
+        List<Contract> result = new ArrayList<Contract>();
+
+        Contract contract = new Contract();
+        contract.setId(1L);
+        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
+        contract.setActive("true");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        contract.setUri(uriList);
+        contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
+        contract.setSchemaVersion("v1");
+        contract.setAgreementName("Test contract name");
+        contract.setPrimaryContactEmail("john.doe@ge.com");
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
+        contract.setAgreementBeginDate("2018-03-02");
+        contract.setDataUsagePeriod("365");
+        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
+        contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
+        contract.setUploadBy("user");
+        contract.setExpired(false);
+
+        result.add(contract);
+
+        return result;
     }
 
     private ContractByDataSetId buildContractByDataSetId(){

@@ -80,6 +80,7 @@ import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
@@ -1140,6 +1141,33 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return apiResponse;
     }
 
+    @Override
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
+    public ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request) {
+        List<Contract> contracts = new ArrayList<Contract>();
+
+        /* Toll gate checks */
+
+        // Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+        if (Objects.isNull(request)) {
+            return new ResponseEntity(Collections.singletonMap("response", "HTTP request object was not found"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // Gate 2 - The org ID is required to be defined
+        if (Objects.isNull(request.getAttribute("orgId"))) {
+            return new ResponseEntity(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            String orgId = request.getAttribute("orgId").toString();
+            contracts = dataCatalogService.getAllContracts(orgId);
+        } catch (Exception e) {
+            logger.error("Could not get the contracts due to an internal error ", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Could not get the contracts due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity(contracts, HttpStatus.OK);
+    }
+
     /**
      * API to fetch contract
      *
@@ -1225,7 +1253,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         int countOfRecordsWithGivenFilters = 0;
         try {
-            countOfRecordsWithGivenFilters = contractRepository.validateContractIdAndOrgId(contractId, orgId);
+            countOfRecordsWithGivenFilters = contractRepository.countByIdAndOrgId(contractId, orgId);
         } catch (Exception e) {
             logger.error("Error validating given parameters : {}", e.getMessage());
             return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);

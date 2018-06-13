@@ -20,17 +20,15 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.util.List;
 
 /**
- * @author dipshah
+ * @author dipshah, umatabib(212691936)
  *
  */
 @RepositoryRestResource(collectionResourceRel = "contract", path = "contract")
 public interface ContractRepository extends JpaRepository<Contract, Long> {
 
-	@Override
-    <S extends Contract> S save(S entity);
+    int countByIdAndOrgId(Long contractId, String orgId);
 
-    @Query(value = "select count( id ) from contract where id=:contractId and org_id=:orgId", nativeQuery = true)
-    int validateContractIdAndOrgId(@Param("contractId") Long contractId, @Param("orgId") String orgId);
+    List<Contract> findAllByOrgIdOrderByActiveDescIdDesc(String orgId);
 
     @Query(value = "select * from lfdb.contract where id in " +
             "(select distinct contract_id from lfdb.upload where id in " +

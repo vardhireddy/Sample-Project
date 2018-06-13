@@ -93,6 +93,14 @@ public interface IDataCatalogDao {
 	 * @return contract details, stored in a Contract object
 	 */
 	Contract getContractDetails(Long contractId);
+
+	/**
+	 * Return all the contracts details for the given a org id
+	 * @param orgId the id of the organization whose contracts will be returned
+	 * @return list of contracts and their details. If the given org id does not exists or if there are no contracts associated with the given org id,
+	 * then an empty list will be returned
+	 */
+	List<Contract> getAllContractsDetails(String orgId);
 	
 	/**
 	 * given a set of column filter criteria, return a list of image set id's satisfying the

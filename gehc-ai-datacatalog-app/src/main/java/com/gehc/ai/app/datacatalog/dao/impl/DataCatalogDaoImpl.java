@@ -44,6 +44,8 @@ import javax.persistence.Query;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,6 +53,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import java.time.LocalDate;
 
 import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
 
@@ -123,6 +127,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 			+ " SELECT  10 AS idx UNION "
 			+ " SELECT  11) AS indices "
 			+ " WHERE JSON_EXTRACT(item, CONCAT('$.properties.ge_class[', idx, ']')) IS NOT NULL and im.id in (";*/
+
 
     private static final String GET_ANNOTATION_INFO_BY_IMG_SERIES = "SELECT p.patient_id, im.series_instance_uid, im.data_format, an.id, an.type, "
             + " CAST(JSON_EXTRACT(an.item, '$.object_name') as CHAR(500)), "
@@ -827,4 +832,36 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
             return contractList;
         }
     }
+
+	@Override
+	public List<Contract> getAllContractsDetails(String orgId) {
+		List<Contract> contractsLst = contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(orgId);
+
+		logger.info("Get all contracts");
+
+		if (null != contractsLst && !contractsLst.isEmpty()) {
+			for (int i = 0; i < contractsLst.size(); i++) {
+
+				String contractBeginDate = contractsLst.get(i).getAgreementBeginDate();
+
+				String contractUsagePeriod = contractsLst.get(i).getDataUsagePeriod();
+
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+				LocalDate beginDate = LocalDate.parse(contractBeginDate, formatter);
+
+				LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+
+				LocalDate contractExpiryDate = beginDate.plusMonths(Integer.parseInt(contractUsagePeriod));
+
+				// set isExpired field value
+				if (contractExpiryDate.isAfter(currentDate)) {
+					contractsLst.get(i).setExpired(false);
+				} else {
+					contractsLst.get(i).setExpired(true);
+				}
+			}
+		}
+		return contractsLst;
+	}
 }
