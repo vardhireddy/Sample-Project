@@ -33,6 +33,17 @@ Then the get contracts response status code should be 500
 And the get contracts response's content type should be JSON
 And the response's body should contain a message saying could not get the contracts details due to an internal error
 
+@test_getAllContracts4
+Scenario: User shall not be able to retrieve any contracts data if an org ID is not provided
+Meta: @automated
+Given there are one or more contracts in the database
+And no internal errors occur when retrieving the contracts
+When the API which retrieves the contracts is invoked without an org ID
+Then the get contracts response status code should be 400
+And the get contracts response's content type should be JSON
+And the response's body should contain a message saying an org ID must be provided
+
+
 @test
 Scenario: For a data collection/set ID not supported by LF get the contracts associated with the image sets of that data collection
 Meta: @automated

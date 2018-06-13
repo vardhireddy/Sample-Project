@@ -13,6 +13,7 @@ import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
+import org.jbehave.core.model.Meta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -121,11 +122,15 @@ public class RetrieveContractsSteps {
                 .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500"));
     }
 
+    @When("the API which retrieves the contracts is invoked without an org ID")
+    public void whenTheAPIWhichRetrievesContractsIsInvokedWithoutAnOrgId() throws Exception {
+        retrieveResult = mockMvc.perform(get("/api/v1/datacatalog/contract"));
+    }
+
     //when test cases for getContractsForDataCollection api
     @When("the api that gets contracts associated with the image sets of that data collection")
     public void whenApiReturnsDataForDatSetId() throws Exception{
-        retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/contract/data-collection/1"));
+        retrieveResult = mockMvc.perform(get("/api/v1/datacatalog/contract/data-collection/1"));
     }
 
     @When("the api that gets contracts associated with the image sets of that data collection is hit")
@@ -151,6 +156,11 @@ public class RetrieveContractsSteps {
         retrieveResult.andExpect(status().isOk());
     }
 
+    @Then("the get contracts response status code should be 400")
+    public void thenGetContractsResponseCodeShouldBe400() throws Exception {
+        retrieveResult.andExpect(status().isBadRequest());
+    }
+
     @Then("the get contracts response status code should be 500")
     public void thenGetContractsResponseCodeShouldBe500() throws Exception {
         retrieveResult.andExpect(status().isInternalServerError());
@@ -173,6 +183,11 @@ public class RetrieveContractsSteps {
     public void thenResultShouldBeMapOfContractLists() throws Exception{
         retrieveResult.andExpect(status().isOk());
         retrieveResult.andExpect(content().string(containsString("false")));
+    }
+
+    @Then("the response's body should contain a message saying an org ID must be provided")
+    public void thenResponseBodyShouldContainMessageSayingAnOrgIdMustBeProvided() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("An organization ID must be provided")));
     }
 
     @Then("the api must return error message saying no contracts exist for the given dataSet ID")
