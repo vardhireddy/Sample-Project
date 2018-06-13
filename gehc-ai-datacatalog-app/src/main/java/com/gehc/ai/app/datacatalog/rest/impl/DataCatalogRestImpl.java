@@ -1144,6 +1144,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
     public ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request) {
+
+        logger.debug("Get all contracts");
+
         List<Contract> contracts = new ArrayList<Contract>();
 
         /* Toll gate checks */
@@ -1160,6 +1163,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         try {
             String orgId = request.getAttribute("orgId").toString();
+
+            logger.debug("Get all contracts -  org Id = "+orgId);
+
             contracts = dataCatalogService.getAllContracts(orgId);
         } catch (Exception e) {
             logger.error("Could not get the contracts due to an internal error ", e.getMessage());

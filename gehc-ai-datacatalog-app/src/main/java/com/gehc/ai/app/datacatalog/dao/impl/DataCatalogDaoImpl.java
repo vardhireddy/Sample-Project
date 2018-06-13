@@ -833,35 +833,79 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         }
     }
 
-	@Override
-	public List<Contract> getAllContractsDetails(String orgId) {
-		List<Contract> contractsLst = contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(orgId);
+//	@Override
+//	public List<Contract> getAllContractsDetails(String orgId) {
+//		List<Contract> contractsLst = contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(orgId);
+//
+//		logger.info("Get all contracts");
+//
+//		if (null != contractsLst && !contractsLst.isEmpty()) {
+//			for (int i = 0; i < contractsLst.size(); i++) {
+//
+//				String contractUsagePeriod = contractsLst.get(i).getDataUsagePeriod();
+//
+//				if(contractUsagePeriod.equalsIgnoreCase("perpetuity"))
+//                {
+//                    contractsLst.get(i).setExpired(false);
+//                } else {
+//                    String contractBeginDate = contractsLst.get(i).getAgreementBeginDate();
+//
+//                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//
+//                    LocalDate beginDate = LocalDate.parse(contractBeginDate, formatter);
+//
+//                    LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+//
+//                    LocalDate contractExpiryDate = beginDate.plusMonths(Integer.parseInt(contractUsagePeriod));
+//
+//                    // set isExpired field value
+//                    if (contractExpiryDate.isAfter(currentDate)) {
+//                        contractsLst.get(i).setExpired(false);
+//                    } else {
+//                        contractsLst.get(i).setExpired(true);
+//                    }
+//                }
+//			}
+//		}
+//		return contractsLst;
+//	}
 
-		logger.info("Get all contracts");
 
-		if (null != contractsLst && !contractsLst.isEmpty()) {
-			for (int i = 0; i < contractsLst.size(); i++) {
+    @Override
+    public List<Contract> getAllContractsDetails(String orgId) {
+        List<Contract> contractsLst = contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(orgId);
 
-				String contractBeginDate = contractsLst.get(i).getAgreementBeginDate();
+        logger.info("Get all contracts");
 
-				String contractUsagePeriod = contractsLst.get(i).getDataUsagePeriod();
+        if (null != contractsLst && !contractsLst.isEmpty()) {
+            for (int i = 0; i < contractsLst.size(); i++) {
 
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                String contractUsagePeriod = contractsLst.get(i).getDataUsagePeriod();
 
-				LocalDate beginDate = LocalDate.parse(contractBeginDate, formatter);
+                if(contractUsagePeriod.equalsIgnoreCase("perpetuity"))
+                {
+                    contractsLst.get(i).setExpired(false);
 
-				LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+                } else {
+                    String contractBeginDate = contractsLst.get(i).getAgreementBeginDate();
 
-				LocalDate contractExpiryDate = beginDate.plusMonths(Integer.parseInt(contractUsagePeriod));
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-				// set isExpired field value
-				if (contractExpiryDate.isAfter(currentDate)) {
-					contractsLst.get(i).setExpired(false);
-				} else {
-					contractsLst.get(i).setExpired(true);
-				}
-			}
-		}
-		return contractsLst;
-	}
+                    LocalDate beginDate = LocalDate.parse(contractBeginDate, formatter);
+
+                    LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+
+                    LocalDate contractExpiryDate = beginDate.plusMonths(Integer.parseInt(contractUsagePeriod));
+
+                    // set isExpired field value
+                    if (contractExpiryDate.isAfter(currentDate)) {
+                        contractsLst.get(i).setExpired(false);
+                    } else {
+                        contractsLst.get(i).setExpired(true);
+                    }
+                }
+            }
+        }
+        return contractsLst;
+    }
 }
