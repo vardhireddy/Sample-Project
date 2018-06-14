@@ -203,35 +203,48 @@ public class DataCatalogDaoImplTest {
         // ARRANGE
 
         // Set up contracts to be returned from the DB
-        final int dataUsagePeriod = 11;
+        final int dataUsagePeriodIntParsable = 11;
+        String dataUsagePeriodNotIntParsable = "perpetuity";
         final LocalDate currentDate = LocalDate.now(Clock.systemUTC());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         final List<Contract> mockContracts = new ArrayList<>();
+
         Contract activeContract = buildContractResult();
-        String activeBeginDate = currentDate.minusMonths(dataUsagePeriod - 1).format(formatter);
+        String activeBeginDate = currentDate.minusMonths(dataUsagePeriodIntParsable - 1).format(formatter);
         activeContract.setAgreementBeginDate(activeBeginDate);
 
+        Contract activeContractForDataUsagePeriodAsPerpetuity = buildContractResult();
+        activeContractForDataUsagePeriodAsPerpetuity.setAgreementBeginDate(currentDate.format(formatter));
+        activeContractForDataUsagePeriodAsPerpetuity.setDataUsagePeriod(dataUsagePeriodNotIntParsable);
+
         Contract inactiveContract = buildContractResult();
-        String inactiveBeginDate = currentDate.minusMonths(dataUsagePeriod + 1).format(formatter);
+        String inactiveBeginDate = currentDate.minusMonths(dataUsagePeriodIntParsable + 1).format(formatter);
         inactiveContract.setAgreementBeginDate(inactiveBeginDate);
 
         mockContracts.add(activeContract);
+        mockContracts.add(activeContractForDataUsagePeriodAsPerpetuity);
         mockContracts.add(inactiveContract);
 
         when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContracts);
 
         // Set the expected contracts with their respective expiration values
         final List<Contract> expectedContracts = new ArrayList<>();
+
         Contract expectedActiveContract = buildContractResult();
-        expectedActiveContract.setAgreementBeginDate(currentDate.minusMonths(dataUsagePeriod - 1).toString());
+        expectedActiveContract.setAgreementBeginDate(currentDate.minusMonths(dataUsagePeriodIntParsable - 1).toString());
         expectedActiveContract.setExpired(false);
 
+        Contract expectedActiveContractForDataUsagePeriodAsPerpetuity = buildContractResult();
+        expectedActiveContractForDataUsagePeriodAsPerpetuity.setAgreementBeginDate(currentDate.format(formatter));
+        expectedActiveContractForDataUsagePeriodAsPerpetuity.setDataUsagePeriod(dataUsagePeriodNotIntParsable);
+        expectedActiveContractForDataUsagePeriodAsPerpetuity.setExpired(false);
+
         Contract expectedInactiveContract = buildContractResult();
-        expectedInactiveContract.setAgreementBeginDate(currentDate.minusMonths(dataUsagePeriod + 1).toString());
+        expectedInactiveContract.setAgreementBeginDate(currentDate.minusMonths(dataUsagePeriodIntParsable + 1).toString());
         expectedInactiveContract.setExpired(true);
 
         expectedContracts.add(expectedActiveContract);
+        expectedContracts.add(expectedActiveContractForDataUsagePeriodAsPerpetuity);
         expectedContracts.add(expectedInactiveContract);
 
         // ACT
