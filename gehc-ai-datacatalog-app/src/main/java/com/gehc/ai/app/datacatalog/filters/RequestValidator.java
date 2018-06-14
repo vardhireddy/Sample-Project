@@ -170,9 +170,9 @@ public class RequestValidator {
 	}
 
 	/**
-	 *
-	 * @param httpServletRequest
-	 * @return
+	 * Retrieves orgID from Auth token
+	 * @param httpServletRequest - httpServletRequest object
+	 * @return org ID
 	 */
 	public static String getOrgIdFromAuth(HttpServletRequest httpServletRequest) throws DataCatalogException{
 
