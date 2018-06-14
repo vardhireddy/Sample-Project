@@ -190,10 +190,10 @@ public class RetrieveContractsSteps {
         retrieveResult.andExpect(content().string(containsString("An organization ID must be provided")));
     }
 
-    @Then("the api must return error message saying no contracts exist for the given dataSet ID")
+    @Then("the api must return error message saying no contracts exist for the given data collection ID")
     public void thenResultShouldBeAnErrorMessage() throws Exception{
         retrieveResult.andExpect(status().isBadRequest());
-        retrieveResult.andExpect(content().string(containsString("No contracts exist for the given dataSet ID.")));
+        retrieveResult.andExpect(content().string(containsString("No contracts exist for the given data collection ID.")));
     }
 
     /////////////

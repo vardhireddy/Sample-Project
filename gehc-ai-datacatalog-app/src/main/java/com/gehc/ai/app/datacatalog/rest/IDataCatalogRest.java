@@ -376,7 +376,7 @@ public interface IDataCatalogRest {
      * @param contractId
      * @return
      */
-    ResponseEntity<Map<String,String>> deleteContract(Long contractId);
+    ResponseEntity<Map<String,String>> deleteContract(Long contractId, HttpServletRequest httpServletRequest);
 
     /**
      * Returns a map of active and inactive contracts associated with a given data collection id

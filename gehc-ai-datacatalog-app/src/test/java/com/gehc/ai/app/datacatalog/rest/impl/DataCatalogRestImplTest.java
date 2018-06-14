@@ -609,9 +609,13 @@ public class DataCatalogRestImplTest {
     @Test
     public void testDeleteContractWhereStateIsActive()
     {
+        //ARRANGE
         Contract contract = buildContractEntity();
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        req.setAttribute("orgId","12345678-abcd-42ca-a317-4d408b98c500");
+        //ACT
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        //ASSERT
         assertEquals("Contract is inactivated successfully", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
@@ -619,11 +623,15 @@ public class DataCatalogRestImplTest {
     @Test
     public void testDeleteContractWhereStateIsInactive()
     {
+        //ARRANGE
         Contract contract = buildContractEntity();
         contract.setActive("false");
 
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        req.setAttribute("orgId","12345678-abcd-42ca-a317-4d408b98c500");
+        //ACT
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        //ASSERT
         assertEquals("Contract with given id is already inactive", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
@@ -632,7 +640,7 @@ public class DataCatalogRestImplTest {
     public void testDeleteContractWhereContractDoesNotExist()
     {
         when(contractRepository.findOne(anyLong())).thenReturn(null);
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
         assertEquals("No contract exists with given id", result.getBody().get("response"));
         assertEquals(400, result.getStatusCodeValue());
     }
@@ -641,7 +649,7 @@ public class DataCatalogRestImplTest {
     public void testDeleteContractForExceptionInRetrievingContract()
     {
         when(contractRepository.findOne(anyLong())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
         assertEquals("Error retrieving contract to delete. Please contact the corresponding service assitant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
     }
@@ -649,10 +657,14 @@ public class DataCatalogRestImplTest {
     @Test
     public void testDeleteContractForExceptionInUpdatingContract()
     {
+        //ARRANGE
         Contract contract = buildContractEntity();
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
         when(contractRepository.save(any(Contract.class))).thenThrow(new IllegalArgumentException());
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        req.setAttribute("orgId","12345678-abcd-42ca-a317-4d408b98c500");
+        //ACT
+        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        //ASSERT
         assertEquals("Error deleting the contract. Please contact the corresponding service assitant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
     }
