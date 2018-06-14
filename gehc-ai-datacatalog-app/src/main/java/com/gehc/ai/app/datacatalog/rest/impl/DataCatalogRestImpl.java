@@ -44,6 +44,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +83,7 @@ import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
@@ -1144,6 +1146,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
     public ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request) {
+
+        logger.debug("Get all contracts");
+
         List<Contract> contracts = new ArrayList<Contract>();
 
         /* Toll gate checks */
@@ -1160,8 +1165,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         try {
             String orgId = request.getAttribute("orgId").toString();
+
+            logger.debug("Get all contracts -  org Id = "+orgId);
+
             contracts = dataCatalogService.getAllContracts(orgId);
-        } catch (Exception e) {
+        } catch (InvalidContractException ice) {
+            logger.error("Could not get the contracts due to an internal error ", ice.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Internal error occured : " + ice.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (Exception e) {
             logger.error("Could not get the contracts due to an internal error ", e.getMessage());
             return new ResponseEntity(Collections.singletonMap("response", "Could not get the contracts due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }

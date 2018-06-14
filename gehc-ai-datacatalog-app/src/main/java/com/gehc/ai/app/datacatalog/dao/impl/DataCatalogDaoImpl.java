@@ -26,6 +26,7 @@ import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
@@ -833,35 +834,50 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         }
     }
 
-	@Override
-	public List<Contract> getAllContractsDetails(String orgId) {
-		List<Contract> contractsLst = contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(orgId);
+    @Override
+    public List<Contract> getAllContractsDetails(String orgId) throws InvalidContractException {
+        List<Contract> contractsLst = contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(orgId);
 
-		logger.info("Get all contracts");
+        logger.info("Get all contracts");
 
-		if (null != contractsLst && !contractsLst.isEmpty()) {
-			for (int i = 0; i < contractsLst.size(); i++) {
+        if (null == contractsLst) {
+            return new ArrayList<>();
+        }
 
-				String contractBeginDate = contractsLst.get(i).getAgreementBeginDate();
+        for (Contract contract : contractsLst) {
+            String contractUsagePeriod = contract.getDataUsagePeriod();
+            String contractBeginDate = contract.getAgreementBeginDate();
+            contract.setExpired(isContractExpired(contractBeginDate, contractUsagePeriod));
+        }
 
-				String contractUsagePeriod = contractsLst.get(i).getDataUsagePeriod();
+        return contractsLst;
+    }
 
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static boolean isContractExpired(String contractBeginDate, String contractUsagePeriod) throws InvalidContractException {
+        int usagePeriod;
 
-				LocalDate beginDate = LocalDate.parse(contractBeginDate, formatter);
+        if ("perpetuity".equalsIgnoreCase(contractUsagePeriod)) {
+            return false;
+        }
 
-				LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+        try {
+            usagePeriod = Integer.parseInt(contractUsagePeriod);
+        } catch (Exception e) {
+            throw new InvalidContractException("Invalid data usage period : " + contractUsagePeriod + ". Value should be either an integer value or a string value as perpetiuty");
+        }
 
-				LocalDate contractExpiryDate = beginDate.plusMonths(Integer.parseInt(contractUsagePeriod));
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-				// set isExpired field value
-				if (contractExpiryDate.isAfter(currentDate)) {
-					contractsLst.get(i).setExpired(false);
-				} else {
-					contractsLst.get(i).setExpired(true);
-				}
-			}
-		}
-		return contractsLst;
-	}
+            LocalDate beginDate = LocalDate.parse(contractBeginDate, formatter);
+
+            LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+
+            LocalDate contractExpiryDate = beginDate.plusMonths(usagePeriod);
+
+            return currentDate.isAfter(contractExpiryDate);
+        } catch (Exception e) {
+            throw new InvalidContractException("Invalid agreement begin date : " + contractBeginDate + ". Date shpould be of format yyyy-MM-dd");
+        }
+    }
 }
