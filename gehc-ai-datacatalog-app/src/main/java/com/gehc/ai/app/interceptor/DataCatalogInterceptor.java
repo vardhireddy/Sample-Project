@@ -70,8 +70,15 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
 	                	   break;
 	                   }
 	           }
-	           if (null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().equalsIgnoreCase("/api/v1/annotation")){
-	        	   logger.debug( " +++ In preHandle method, save annotation is getting called so not looking for org id");
+	           if (null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().equalsIgnoreCase("/api/v1/annotation")) {
+                   logger.debug(" +++ In preHandle method, save annotation is getting called so not looking for org id");
+               }
+               if (req.getMethod() != null
+                       && (req.getMethod().equalsIgnoreCase("PUT")
+                            || req.getMethod().equalsIgnoreCase("GET"))
+                       && null != req.getServletPath()
+                       && req.getServletPath().startsWith("/api/v1/datacatalog/contract/")){
+                   logger.debug( " +++ In preHandle method, put/get contract by ID is getting called so not looking for org id");
 	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/patient")){
 	        	   logger.debug( " +++ In preHandle method, save patient is getting called so not looking for org id");
 	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/study")){

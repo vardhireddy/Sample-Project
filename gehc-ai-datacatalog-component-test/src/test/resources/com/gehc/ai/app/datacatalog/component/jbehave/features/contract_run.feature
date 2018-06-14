@@ -49,6 +49,6 @@ Scenario: Delete a contract in active state with given contract id
 Meta: @automated
 Given an invalid contract Id
 When the contract id does not exist in repository
-Then verify that the api response status code is 400
+Then verify that the api response status code is 404
 Then verify the api response body contains "No contract exists with given id"
 

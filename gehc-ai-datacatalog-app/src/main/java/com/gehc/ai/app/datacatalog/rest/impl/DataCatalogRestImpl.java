@@ -1471,9 +1471,23 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings("unchecked")
     @Override
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Map<String, String>> deleteContract(@PathVariable("contractId") Long contractId) {
+    public ResponseEntity<Map<String, String>> deleteContract(@PathVariable("contractId") Long contractId,
+                                                              HttpServletRequest httpServletRequest) {
 
         logger.info("Passing contract id to delete contract :", contractId);
+        String orgId = "";
+        // Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+        if(Objects.isNull(httpServletRequest)){
+            return new ResponseEntity(Collections.singletonMap("response", "Request cannot be validated for Authorization."), HttpStatus.UNAUTHORIZED);
+        }
+
+        // Gate 2 - The org ID is required to be defined
+        if (Objects.isNull(httpServletRequest.getAttribute("orgId"))) {
+            return new ResponseEntity(Collections.singletonMap("response", "Request cannot be validated for Authorization."), HttpStatus.UNAUTHORIZED);
+        }
+
+        orgId = httpServletRequest.getAttribute("orgId").toString();
+
         String status = "false";
 
         Contract contractToBeDeleted;
@@ -1486,7 +1500,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         if (contractToBeDeleted == null) {
             logger.info("No contract exists with given id :", contractId);
-            return new ResponseEntity<>(Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.NOT_FOUND);
+        }
+
+        if (!contractToBeDeleted.getOrgId().equals(orgId))
+        {
+            logger.info("User does not have access to delete the contract as token orgId does not match the contract orgId.", orgId);
+            return new ResponseEntity<>(Collections.singletonMap("response", "User does not have access to delete the contract."), HttpStatus.FORBIDDEN);
         }
 
         String contractStatus = contractToBeDeleted.getActive();
@@ -1517,14 +1537,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         try {
             resultListOfContracts = dataCatalogService.getContractsByDataCollectionId(dataCollectionId);
         }catch (Exception e){
-            logger.error("Error retrieving contracts associated with the dataset : {}", e.getMessage());
-            return new ResponseEntity(Collections.singletonMap("response", "Error retrieving contracts associated with the dataset." +
+            logger.error("Error retrieving contracts associated with the data collection : {}", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Error retrieving contracts associated with the data collection." +
                     " Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (resultListOfContracts.get("active").isEmpty() && resultListOfContracts.get("inactive").isEmpty())
         {
-            return new ResponseEntity(Collections.singletonMap("response", "No contracts exist for the given dataSet ID."), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(Collections.singletonMap("response", "No contracts exist for the given data collection ID."), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity(resultListOfContracts, HttpStatus.OK);

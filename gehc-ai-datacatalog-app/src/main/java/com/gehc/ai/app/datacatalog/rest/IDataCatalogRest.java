@@ -371,12 +371,17 @@ public interface IDataCatalogRest {
      */
     ResponseEntity<Contract> updateContract(Long contractId, UpdateContractRequest updateRequest);
 
-    /* * A soft delete of contract by given ID through inactivating it.
+    /**
+     * A soft delete of contract by given ID through inactivating it.
      *
-     * @param contractId
+     * @param contractId - contract object unique ID
      * @return
+     * if Contract is deleted -> (Status code : 200, message: Contract is inactivated successfully)
+     * if Contract is already deleted -> (Status code : 200, message: Contract with given id is already inactive)
+     * if Contract not found -> (Status code : 404, message: No contract exists with given id)
+     * if user is forbidden from deleting contract -> (Status code : 403, message : User does not have access to delete the contract.)
      */
-    ResponseEntity<Map<String,String>> deleteContract(Long contractId);
+    ResponseEntity<Map<String,String>> deleteContract(Long contractId, HttpServletRequest httpServletRequest);
 
     /**
      * Returns a map of active and inactive contracts associated with a given data collection id
