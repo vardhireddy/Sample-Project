@@ -12,11 +12,30 @@
 
 package com.gehc.ai.app.datacatalog.exceptions;
 
+import org.springframework.http.HttpStatus;
+
 /**
  * Created by sowjanyanaidu on 8/8/17.
  */
 public class DataCatalogException extends Exception{
+
+    private HttpStatus httpStatusCode;
+
     public DataCatalogException(String message) {
         super(message);
+    }
+
+    public DataCatalogException(String message, HttpStatus httpStatusCode) {
+
+        super(message);
+        this.httpStatusCode = httpStatusCode;
+    }
+
+    public HttpStatus getHttpStatusCode() {
+        return httpStatusCode;
+    }
+
+    public void setHttpStatusCode(HttpStatus httpStatusCode) {
+        this.httpStatusCode = httpStatusCode;
     }
 }

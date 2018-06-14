@@ -1488,17 +1488,13 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         logger.info("Passing contract id to delete contract :", contractId);
         String orgId = "";
-        // Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
-        if(Objects.isNull(httpServletRequest)){
-            return new ResponseEntity(Collections.singletonMap("response", "Request cannot be validated for Authorization."), HttpStatus.UNAUTHORIZED);
+        try {
+            orgId = RequestValidator.getOrgIdFromAuth(httpServletRequest);
+        }catch (DataCatalogException e)
+        {
+            logger.error("Error validating servlet request : {}",e.getMessage());
+            return new ResponseEntity<>(Collections.singletonMap("response", "Request cannot be validated because of malformed authorization token."),e.getHttpStatusCode());
         }
-
-        // Gate 2 - The org ID is required to be defined
-        if (Objects.isNull(httpServletRequest.getAttribute("orgId"))) {
-            return new ResponseEntity(Collections.singletonMap("response", "Request cannot be validated for Authorization."), HttpStatus.UNAUTHORIZED);
-        }
-
-        orgId = httpServletRequest.getAttribute("orgId").toString();
 
         String status = "false";
 

@@ -14,13 +14,13 @@ package com.gehc.ai.app.datacatalog.filters;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +29,8 @@ import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author dipshah
@@ -165,5 +167,25 @@ public class RequestValidator {
 			throw new DataCatalogException(ErrorCodes.INVALID_CONTRACT_ID.getErrorMessage());
 		}
 		
+	}
+
+	/**
+	 *
+	 * @param httpServletRequest
+	 * @return
+	 */
+	public static String getOrgIdFromAuth(HttpServletRequest httpServletRequest) throws DataCatalogException{
+
+		// Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+		if(Objects.isNull(httpServletRequest)){
+			throw new DataCatalogException("Http Request not found to validate for Authorization.",HttpStatus.BAD_REQUEST);
+		}
+
+		// Gate 2 - The org ID is required to be defined
+		if (Objects.isNull(httpServletRequest.getAttribute("orgId"))) {
+			throw new DataCatalogException("Request cannot be validated for Authorization by orgId.",HttpStatus.BAD_REQUEST);
+		}
+
+		return httpServletRequest.getAttribute("orgId").toString();
 	}
 }
