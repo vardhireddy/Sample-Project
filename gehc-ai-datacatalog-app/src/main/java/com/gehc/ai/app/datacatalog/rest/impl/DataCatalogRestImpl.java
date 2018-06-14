@@ -14,7 +14,6 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Date;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -61,13 +59,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
 import com.gehc.ai.app.datacatalog.entity.Contract;
@@ -80,7 +74,6 @@ import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
@@ -774,95 +767,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         logger.debug(" In REST getAllPatients, orgId = " + request.getAttribute("orgId"));
         return request.getAttribute("orgId") == null ? new ArrayList<Patient>()
                 : patientRepository.findByOrgId(request.getAttribute("orgId").toString());
-    }
-
-    /**
-     * returns a flat list of annotations for a collection and a given annotation type
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    @RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
-    public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
-        logger.info(" Entering method getRawTargetData --> id: " + id + " Type: " + annotationType);
-        // Note: works fine with new DC which has image sets as Array of Longs
-        nonNullCheckForInputParameters(id, annotationType);
-
-        ResponseBuilder responseBuilder;
-        List<AnnotationImgSetDataCol> annImgSetDCLst = null;
-        List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
-        if (null != dsLst && !dsLst.isEmpty()) {
-            logger.debug("***** Data set Lst.size() = " + dsLst.size());
-            if (null != dsLst.get(0).getImageSets()) {
-                List<String> types = new ArrayList<String>();
-                setAnnotationTypes(annotationType, types);
-                logger.debug("Number of Annotations : " + types.size());
-                List<Long> imgSerIdLst = dsLst.get(0).getImageSets();
-                List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdLst);
-                logger.debug("***** Got img series by id sucessfully");
-                if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
-                    logger.debug(" imgSeriesLst.size() = " + imgSeriesLst.size());
-                    Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
-                    for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
-                        ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                        imgSeriesMap.put(imageSeries.getId(), imageSeries);
-                    }
-
-                    // contains all the annotations belonging to image sets from the collection
-                    List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn(imgSerIdLst,
-                            types);
-                    logger.info("***** Got annotationLst by img series id and type");
-                    if (null != annotationLst && !annotationLst.isEmpty()) {
-                        logger.debug(" annotationLst.size() = " + annotationLst.size());
-                        annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
-                        for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext(); ) {
-                            AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
-                            Annotation annotation = (Annotation) annotationItr.next();
-                            annImgSetDataCol.setDcId(id);
-                            annImgSetDataCol.setAnnotationDate(annotation.getAnnotationDate().toString());
-                            annImgSetDataCol.setAnnotationId(annotation.getId().toString());
-                            annImgSetDataCol.setAnnotationType(annotation.getType());
-                            annImgSetDataCol.setAnnotatorId(annotation.getAnnotatorId());
-                            ObjectMapper mapper = new ObjectMapper();
-                            TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-                            };
-                            HashMap<String, Object> o = null;
-                            try {
-                                String jsonInString = mapper.writeValueAsString(annotation.getItem());
-                                o = mapper.readValue(jsonInString, typeRef);
-                            } catch (IOException e) { // NOSONAR
-                                e.printStackTrace();
-                                logger.error("Exception during getting raw target data ", e);
-                            }
-                            annImgSetDataCol.setAnnotationItem(o);
-                            annImgSetDataCol.setImId(annotation.getImageSet().getId().toString());
-                            ImageSeries imageSeries = imgSeriesMap.get(annotation.getImageSet().getId());
-                            try {
-                                logger.debug("imageSeries: " + mapper.writeValueAsString(imageSeries));
-                            } catch (JsonProcessingException jpe) {
-                                jpe.printStackTrace();
-                                logger.error(jpe.getMessage());
-                            }
-                            annImgSetDataCol.setPatientDbid(imageSeries.getPatientDbId().toString());
-                            annImgSetDataCol.setUri(imageSeries.getUri());
-                            annImgSetDataCol.setDataFormat(imageSeries.getDataFormat());
-                            Map props = (Map) imageSeries.getProperties();
-                            Object instances = props.get("instances");
-                            annImgSetDataCol.setInstances(instances);
-                            annImgSetDCLst.add(annImgSetDataCol);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (annImgSetDCLst != null) {
-            logger.debug(" annImgSetDCLst.size() = " + annImgSetDCLst.size());
-            responseBuilder = Response.ok(annImgSetDCLst);
-            return (List) responseBuilder.build().getEntity();
-        }
-
-        return (List) new ArrayList<AnnotationImgSetDataCol>();
-
     }
 
     /**
