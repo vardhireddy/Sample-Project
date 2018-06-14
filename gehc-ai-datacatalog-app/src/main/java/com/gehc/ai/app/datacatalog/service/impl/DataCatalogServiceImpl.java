@@ -17,6 +17,7 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
@@ -88,7 +89,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	}
 
 	@Override
-	public List<Contract> getAllContracts(String orgId) {
+	public List<Contract> getAllContracts(String orgId) throws InvalidContractException{
 
 		return dataCatalogDao.getAllContractsDetails(orgId);
 	}

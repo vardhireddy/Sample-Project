@@ -15,7 +15,9 @@ import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
 import java.util.List;
@@ -100,7 +102,7 @@ public interface IDataCatalogDao {
 	 * @return list of contracts and their details. If the given org id does not exists or if there are no contracts associated with the given org id,
 	 * then an empty list will be returned
 	 */
-	List<Contract> getAllContractsDetails(String orgId);
+	List<Contract> getAllContractsDetails (String orgId) throws InvalidContractException;
 	
 	/**
 	 * given a set of column filter criteria, return a list of image set id's satisfying the
