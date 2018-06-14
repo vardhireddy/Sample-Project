@@ -93,7 +93,7 @@ public class ContractSteps {
 
     @When("the contract id exists in repository and contract is active/ in true state")
     public void whenTheContractIsActive() throws Exception {
-        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1"));
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1").requestAttr("orgId","1"));
     }
 
     @Then("verify api response status code is 200")
@@ -115,7 +115,7 @@ public class ContractSteps {
 
     @When("the contract id exists in repository but the contract is inactive/ in false state")
     public void whenTheContractIsInActive() throws Exception {
-        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1"));
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1").requestAttr("orgId","1"));
     }
 
     @Then("verify api response status code is 200 - ok")
@@ -135,12 +135,12 @@ public class ContractSteps {
 
     @When("the contract id does not exist in repository")
     public void whenTheContractDoesNotExistInRepo() throws Exception {
-        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1"));
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/datacatalog/contract/1").requestAttr("orgId","1"));
     }
 
-    @Then("verify that the api response status code is 400")
-    public void verifyStatusCodeIs400() throws Exception {
-        retrieveResult.andExpect(status().isBadRequest());
+    @Then("verify that the api response status code is 404")
+    public void deleteResponseCodeIs404() throws Exception {
+        retrieveResult.andExpect(status().isNotFound());
     }
 
     @Then("verify the api response body contains \"No contract exists with given id\"")
@@ -153,7 +153,7 @@ public class ContractSteps {
         contract.setId(1L);
         contract.setActive("true");
         //contract.setDataOriginCountry("Data Origin Country");
-        contract.setOrgId("orgId");
+        contract.setOrgId("1");
 
         return contract;
     }

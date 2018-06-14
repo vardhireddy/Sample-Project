@@ -1500,7 +1500,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         if (contractToBeDeleted == null) {
             logger.info("No contract exists with given id :", contractId);
-            return new ResponseEntity<>(Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.NOT_FOUND);
         }
 
         if (!contractToBeDeleted.getOrgId().equals(orgId))

@@ -371,10 +371,11 @@ public interface IDataCatalogRest {
      */
     ResponseEntity<Contract> updateContract(Long contractId, UpdateContractRequest updateRequest);
 
-    /* * A soft delete of contract by given ID through inactivating it.
+    /**
+     * A soft delete of contract by given ID through inactivating it.
      *
-     * @param contractId
-     * @return
+     * @param contractId - contract object unique ID
+     * @return a message if the contract is inactivated
      */
     ResponseEntity<Map<String,String>> deleteContract(Long contractId, HttpServletRequest httpServletRequest);
 

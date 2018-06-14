@@ -639,17 +639,23 @@ public class DataCatalogRestImplTest {
     @Test
     public void testDeleteContractWhereContractDoesNotExist()
     {
+        //ARRANGE
         when(contractRepository.findOne(anyLong())).thenReturn(null);
+        //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        //ASSERT
         assertEquals("No contract exists with given id", result.getBody().get("response"));
-        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(404, result.getStatusCodeValue());
     }
 
     @Test
     public void testDeleteContractForExceptionInRetrievingContract()
     {
+        //ARRANGE
         when(contractRepository.findOne(anyLong())).thenThrow(new IllegalArgumentException());
+        //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        //ASSERT
         assertEquals("Error retrieving contract to delete. Please contact the corresponding service assitant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
     }
