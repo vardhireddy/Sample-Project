@@ -191,6 +191,9 @@ public class RequestValidator {
      * @param contractId - contract entity unique id from delete request
      * @param orgId - orgId to verify the access to delete contract
      * @throws DataCatalogException
+     * -> if contract is not found
+     * -> if user is not allowed to delete contract
+     * -> if contract is already deleted
      */
 	public static void validateContractToBeDeleted(Contract contractToBeDeleted, Long contractId, String orgId) throws DataCatalogException{
 	    String status = "false";
