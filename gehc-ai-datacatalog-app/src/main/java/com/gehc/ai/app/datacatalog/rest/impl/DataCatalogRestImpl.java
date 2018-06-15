@@ -1273,10 +1273,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         if (contract == null) {
             return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.NOT_FOUND);
         }
+            boolean isContractExpired = ContractByDataSetId.isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
 
-        if (contract.getActive().equalsIgnoreCase("false"))
+        if (contract.getActive().equalsIgnoreCase("false") || isContractExpired)
         {
-            return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactive/invalid"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactive/expired"), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
     }

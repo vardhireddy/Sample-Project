@@ -27,7 +27,7 @@ Given an inactive contract Id and an Org Id
 When the API to validate contract is invoked
 Then a single request to retrieve the contract should be made to the repository
 Then the status code for the contract validation should be 403
-Then verify the api response body contains "Contract is inactive/invalid"
+Then verify the api response body contains "Contract is inactive/expired"
 
  @test
 Scenario: Validate the existence of a contract Id and Org Id to allow uploading of data in COS - invalid data

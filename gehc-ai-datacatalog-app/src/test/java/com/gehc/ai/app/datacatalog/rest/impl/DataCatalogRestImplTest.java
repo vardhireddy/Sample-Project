@@ -431,7 +431,7 @@ public class DataCatalogRestImplTest {
         contract.setActive("false");
         when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenReturn(contract);
         ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
-        assertEquals("Contract is inactive/invalid", result.getBody().get("response"));
+        assertEquals("Contract is inactive/expired", result.getBody().get("response"));
         assertEquals(403, result.getStatusCodeValue());
     }
 
@@ -747,7 +747,7 @@ public class DataCatalogRestImplTest {
         contract.setPrimaryContactEmail("john.doe@ge.com");
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
         contract.setAgreementBeginDate("2017-03-02");
-        contract.setDataUsagePeriod("12");
+        contract.setDataUsagePeriod("perpetuity");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
         contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
@@ -758,7 +758,7 @@ public class DataCatalogRestImplTest {
 
     private List<Contract> buildContractList() throws Exception {
 
-        List<Contract> result = new ArrayList<Contract>();
+        List<Contract> result = new ArrayList<>();
 
         Contract contract = new Contract();
         contract.setId(1L);

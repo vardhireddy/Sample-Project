@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.ws.rs.core.MediaType;
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 import static org.hamcrest.core.StringContains.containsString;
@@ -90,9 +91,9 @@ public class ContractSteps {
         retrieveResult.andExpect(status().isForbidden());
     }
 
-    @Then("verify the api response body contains \"Contract is inactive/invalid\"")
+    @Then("verify the api response body contains \"Contract is inactive/expired\"")
     public void verifyResponseIsContractisInvalid() throws Exception {
-        retrieveResult.andExpect(content().string(containsString("Contract is inactive/invalid")));
+        retrieveResult.andExpect(content().string(containsString("Contract is inactive/expired")));
     }
 
     @Given("invalid contract Id or Org Id")
@@ -184,6 +185,8 @@ public class ContractSteps {
         contract.setActive("true");
         //contract.setDataOriginCountry("Data Origin Country");
         contract.setOrgId("1");
+        contract.setAgreementBeginDate("2018-06-08");
+        contract.setDataUsagePeriod("perpetuity");
 
         return contract;
     }
