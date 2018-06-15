@@ -1256,8 +1256,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    @RequestMapping(value = "/datacatalog/contract/{contractId}/orgId/{orgId}", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, String>> validateContractIdAndOrgId(@PathVariable("contractId") Long contractId, @PathVariable("orgId") String orgId) {
+    @RequestMapping(value = "/datacatalog/validation/contract/{contractId}", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, String>> validateContractByIdAndOrgId(@PathVariable("contractId") Long contractId,
+                                                                            @RequestParam("orgId") String orgId) {
 
         logger.info("Passing in contract Id and Org Id for validation.");
 

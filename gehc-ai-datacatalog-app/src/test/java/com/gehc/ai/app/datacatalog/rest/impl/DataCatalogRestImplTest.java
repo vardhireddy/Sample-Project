@@ -8,11 +8,9 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
@@ -420,7 +418,7 @@ public class DataCatalogRestImplTest {
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
         when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenReturn(1);
-        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"orgId");
+        ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"orgId");
         assertEquals("Contract exists", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
@@ -428,7 +426,7 @@ public class DataCatalogRestImplTest {
     @Test
     public void testValidateContractIdAndOrgIdForInvalidData(){
         when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenReturn(0);
-        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
+        ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
         assertEquals("Contract does not exist", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
@@ -436,7 +434,7 @@ public class DataCatalogRestImplTest {
     @Test
     public void testValidateContractIdAndOrgIdForException(){
         when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
+        ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
         assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
     }

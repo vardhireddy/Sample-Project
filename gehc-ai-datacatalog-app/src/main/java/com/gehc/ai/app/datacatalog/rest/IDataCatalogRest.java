@@ -322,7 +322,7 @@ public interface IDataCatalogRest {
      *
      * @return String
      */
-    ResponseEntity<Map<String,String>> validateContractIdAndOrgId(Long contractId, String orgId);
+    ResponseEntity<Map<String,String>> validateContractByIdAndOrgId(Long contractId, String orgId);
     /**
      * @param params
      * @return
