@@ -25,7 +25,7 @@ public class ContractByDataSetIdTest {
                 .forClass(ContractByDataSetId.class)
                 .withPrefabValues(ContractByDataSetId.class, contract, contract1)
                 .withPrefabValues(Date.class, date1, date2)
-                .withNonnullFields("id", "deidStatus", "hasContractExpired",
+                .withNonnullFields("id", "deidStatus", "contractExpired",
                         "agreementBeginDate", "active", "uploadBy",
                         "uploadDate", "agreementName", "primaryContactEmail",
                         "dataUsagePeriod", "useCases", "dataOriginCountriesAndStates",
