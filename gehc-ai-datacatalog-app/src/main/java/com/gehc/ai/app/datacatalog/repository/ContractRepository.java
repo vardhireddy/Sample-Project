@@ -28,6 +28,8 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     int countByIdAndOrgId(Long contractId, String orgId);
 
+    Contract findByIdAndOrgId(Long contractId, String orgId);
+
     List<Contract> findAllByOrgIdOrderByActiveDescIdDesc(String orgId);
 
     @Query(value = "select * from lfdb.contract where id in " +

@@ -222,6 +222,12 @@ public final class ContractByDataSetId {
      * @return true if contract expired.
      */
     public static boolean isContractExpired(String agreementBeginDate, String dataUsagePeriod){
+
+        if (dataUsagePeriod.equalsIgnoreCase("perpetuity"))
+        {
+            return  false;
+        }
+
         //set the current system date
         java.util.Date currentDate = new java.util.Date();
 

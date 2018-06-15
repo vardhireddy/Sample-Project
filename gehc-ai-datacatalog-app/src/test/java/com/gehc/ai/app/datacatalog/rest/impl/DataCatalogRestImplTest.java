@@ -417,7 +417,9 @@ public class DataCatalogRestImplTest {
 
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
-        when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenReturn(1);
+        Contract contract = buildContractEntity();
+        contract.setActive("true");
+        when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenReturn(contract);
         ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"orgId");
         assertEquals("Contract exists", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
@@ -425,15 +427,17 @@ public class DataCatalogRestImplTest {
 
     @Test
     public void testValidateContractIdAndOrgIdForInvalidData(){
-        when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenReturn(0);
+        Contract contract = buildContractEntity();
+        contract.setActive("false");
+        when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenReturn(contract);
         ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
-        assertEquals("Contract does not exist", result.getBody().get("response"));
-        assertEquals(404, result.getStatusCodeValue());
+        assertEquals("Contract is inactive/invalid", result.getBody().get("response"));
+        assertEquals(403, result.getStatusCodeValue());
     }
 
     @Test
     public void testValidateContractIdAndOrgIdForException(){
-        when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
+        when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
         ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
         assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());

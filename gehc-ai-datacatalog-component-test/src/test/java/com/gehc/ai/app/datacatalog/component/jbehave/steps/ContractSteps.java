@@ -46,7 +46,8 @@ public class ContractSteps {
 
     @Given("contract Id and Org Id")
     public void givenContractIdAndOrgId() throws Exception {
-        when(contractRepository.countByIdAndOrgId(anyLong(), anyString())).thenReturn(1);
+        Contract contract = getContract();
+        when(contractRepository.findByIdAndOrgId(anyLong(), anyString())).thenReturn(contract);
 
     }
 
@@ -63,6 +64,29 @@ public class ContractSteps {
     @Then("verify the api response body contains \"Contract exists\"")
     public void verifyResponseIsContractExists() throws Exception {
         retrieveResult.andExpect(content().string(containsString("Contract exists")));
+    }
+
+    @Given("inactive contract Id and a Org Id")
+    public void givenInActiveContractIdAndOrgId() throws Exception {
+        Contract contract = getContract();
+        contract.setActive("false");
+        when(contractRepository.findByIdAndOrgId(anyLong(), anyString())).thenReturn(contract);
+
+    }
+
+    @When("the given contract is inactive in the repository")
+    public void whenTheContractIsInactive() throws Exception {
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1/validate?orgId=orgId"));
+    }
+
+    @Then("verify the api response status code is 403")
+    public void verifyStatusCodeIs403() throws Exception {
+        retrieveResult.andExpect(status().isForbidden());
+    }
+
+    @Then("verify the api response body contains \"Contract is inactive/invalid\"")
+    public void verifyResponseIsContractisInvalid() throws Exception {
+        retrieveResult.andExpect(content().string(containsString("Contract is inactive/invalid")));
     }
 
     @Given("invalid contract Id or Org Id")

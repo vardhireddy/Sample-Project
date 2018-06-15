@@ -21,6 +21,14 @@ Then verify the api response status code is 200
 Then verify the api response body contains "Contract exists"
 
 @test
+Scenario: Validate the existence of a contract Id and Org Id to allow uploading of data in COS - inactive contract
+Meta: @automated
+Given inactive contract Id and a Org Id
+When the given contract is inactive in the repository
+Then verify the api response status code is 403
+Then verify the api response body contains "Contract is inactive/invalid"
+
+ @test
 Scenario: Validate the existence of a contract Id and Org Id to allow uploading of data in COS - invalid data
 Meta: @automated
 Given invalid contract Id or Org Id
@@ -37,7 +45,7 @@ Then verify that the api response status code is 200
 Then verify the api response body contains "Contract is inactivated successfully"
 
 @test
-Scenario: Delete a contract in active state with given contract id
+Scenario: Delete a contract in in-active state with given contract id
 Meta: @automated
 Given a valid contract Id - contract inactive
 When the contract id exists in repository but the contract is inactive/ in false state
@@ -51,4 +59,3 @@ Given an invalid contract Id
 When the contract id does not exist in repository
 Then verify that the api response status code is 404
 Then verify the api response body contains "No contract exists with given id"
-
