@@ -428,7 +428,7 @@ public class DataCatalogRestImplTest {
         when(contractRepository.countByIdAndOrgId(anyLong(),anyString())).thenReturn(0);
         ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
         assertEquals("Contract does not exist", result.getBody().get("response"));
-        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(404, result.getStatusCodeValue());
     }
 
     @Test

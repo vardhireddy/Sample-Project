@@ -25,7 +25,7 @@ Scenario: Validate the existence of a contract Id and Org Id to allow uploading 
 Meta: @automated
 Given invalid contract Id or Org Id
 When any of the given parameters are not existing in the repository
-Then verify that the api response status code is 200
+Then verify that the api response status code is 404
 Then verify the api response body contains "Contract does not exist"
 
 @test

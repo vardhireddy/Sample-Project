@@ -1256,7 +1256,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    @RequestMapping(value = "/datacatalog/validation/contract/{contractId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/datacatalog/contract/{contractId}/validate", method = RequestMethod.GET)
     public ResponseEntity<Map<String, String>> validateContractByIdAndOrgId(@PathVariable("contractId") Long contractId,
                                                                             @RequestParam("orgId") String orgId) {
 
@@ -1270,8 +1270,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (countOfRecordsWithGivenFilters <= 0)
-            return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.OK);
+        if (countOfRecordsWithGivenFilters <= 0) {
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.NOT_FOUND);
+        }
+
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
     }
 
