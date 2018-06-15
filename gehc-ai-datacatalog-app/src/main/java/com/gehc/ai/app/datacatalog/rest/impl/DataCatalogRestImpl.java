@@ -81,9 +81,7 @@ import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
@@ -1506,20 +1504,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (contractToBeDeleted == null) {
-            logger.info("No contract exists with given id :", contractId);
-            return new ResponseEntity<>(Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.NOT_FOUND);
-        }
-
-        if (!contractToBeDeleted.getOrgId().equals(orgId))
+        try {
+            RequestValidator.validateContractToBeDeleted(contractToBeDeleted,contractId,orgId);
+        }catch (DataCatalogException e)
         {
-            logger.info("User does not have access to delete the contract as token orgId does not match the contract orgId.", orgId);
-            return new ResponseEntity<>(Collections.singletonMap("response", "User does not have access to delete the contract."), HttpStatus.FORBIDDEN);
-        }
-
-        String contractStatus = contractToBeDeleted.getActive();
-        if (contractStatus.equalsIgnoreCase(status)) {
-            return new ResponseEntity<>(Collections.singletonMap("response", "Contract with given id is already inactive"), HttpStatus.OK);
+            logger.error("Error validating contract : {}",e.getMessage());
+            return new ResponseEntity<>(Collections.singletonMap("response", e.getMessage()),e.getHttpStatusCode());
         }
 
         try {
