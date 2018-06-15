@@ -12,17 +12,16 @@
 
 package com.gehc.ai.app.datacatalog.rest.response;
 
-import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,7 +32,7 @@ public final class ContractByDataSetId {
     private final Long id;
     private final Contract.DeidStatus deidStatus;
     private final String active;
-    private final boolean hasContractExpired;
+    private final boolean contractExpired;
     private final String uploadBy;
     private final Date uploadDate;
     private final String agreementName;
@@ -50,7 +49,7 @@ public final class ContractByDataSetId {
         this.id = id;
         this.deidStatus = deidStatus;
         this.active = active;
-        this.hasContractExpired = hasContractExpired;
+        this.contractExpired = hasContractExpired;
         this.uploadBy = uploadBy;
         this.uploadDate = uploadDate;
         this.agreementName = agreementName;
@@ -75,8 +74,8 @@ public final class ContractByDataSetId {
         return active;
     }
 
-    public boolean hasContractExpired() {
-        return hasContractExpired;
+    public boolean isContractExpired() {
+        return contractExpired;
     }
 
     public String getUploadBy() {
@@ -126,7 +125,7 @@ public final class ContractByDataSetId {
 
         ContractByDataSetId that = (ContractByDataSetId) o;
 
-        if (hasContractExpired() != that.hasContractExpired()) return false;
+        if (isContractExpired() != that.isContractExpired()) return false;
         if (!getId().equals(that.getId())) return false;
         if (getDeidStatus() != that.getDeidStatus()) return false;
         if (!getActive().equals(that.getActive())) return false;
@@ -147,7 +146,7 @@ public final class ContractByDataSetId {
         int result = getId().hashCode();
         result = 31 * result + getDeidStatus().hashCode();
         result = 31 * result + getActive().hashCode();
-        result = 31 * result + (hasContractExpired() ? 1 : 0);
+        result = 31 * result + (isContractExpired() ? 1 : 0);
         result = 31 * result + getUploadBy().hashCode();
         result = 31 * result + getUploadDate().hashCode();
         result = 31 * result + getAgreementName().hashCode();
@@ -167,7 +166,7 @@ public final class ContractByDataSetId {
                 "id=" + id +
                 ", deidStatus=" + deidStatus +
                 ", active='" + active + '\'' +
-                ", hasContractExpired=" + hasContractExpired +
+                ", contractExpired=" + contractExpired +
                 ", uploadBy='" + uploadBy + '\'' +
                 ", uploadDate=" + uploadDate +
                 ", agreementName='" + agreementName + '\'' +
