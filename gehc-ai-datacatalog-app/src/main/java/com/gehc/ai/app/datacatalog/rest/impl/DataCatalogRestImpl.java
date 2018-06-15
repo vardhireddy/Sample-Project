@@ -1270,7 +1270,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (contract == null || contract.getId() == null) {
+        if (contract == null) {
             return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.NOT_FOUND);
         }
 

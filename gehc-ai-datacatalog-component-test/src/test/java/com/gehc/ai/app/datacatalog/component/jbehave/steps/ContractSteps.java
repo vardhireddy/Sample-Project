@@ -8,6 +8,7 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,9 +19,9 @@ import javax.ws.rs.core.MediaType;
 import java.time.LocalDateTime;
 
 import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,7 +67,7 @@ public class ContractSteps {
         retrieveResult.andExpect(content().string(containsString("Contract exists")));
     }
 
-    @Given("inactive contract Id and a Org Id")
+    @Given("an inactive contract Id and an Org Id")
     public void givenInActiveContractIdAndOrgId() throws Exception {
         Contract contract = getContract();
         contract.setActive("false");
@@ -74,13 +75,18 @@ public class ContractSteps {
 
     }
 
-    @When("the given contract is inactive in the repository")
+    @When("the API to validate contract is invoked")
     public void whenTheContractIsInactive() throws Exception {
         retrieveResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1/validate?orgId=orgId"));
     }
 
-    @Then("verify the api response status code is 403")
-    public void verifyStatusCodeIs403() throws Exception {
+    @Then("a single request to retrieve the contract should be made to the repository")
+    public void thenASingleRequestToRetrieveAllDataCollectionForTheTargetOrgIdShouldBeMade() throws Exception {
+        verify(contractRepository, times(1)).findByIdAndOrgId(anyLong(), anyString());
+    }
+
+    @Then("the status code for the contract validation should be 403")
+    public void thenTheStatusCodeForTheContractValidationShouldBe403() throws Exception {
         retrieveResult.andExpect(status().isForbidden());
     }
 
