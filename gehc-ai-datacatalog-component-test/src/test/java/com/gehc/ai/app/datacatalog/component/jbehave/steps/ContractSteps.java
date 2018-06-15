@@ -91,9 +91,9 @@ public class ContractSteps {
         retrieveResult.andExpect(status().isForbidden());
     }
 
-    @Then("verify the api response body contains \"Contract is inactive/invalid\"")
+    @Then("verify the api response body contains \"Contract is inactive/expired\"")
     public void verifyResponseIsContractisInvalid() throws Exception {
-        retrieveResult.andExpect(content().string(containsString("Contract is inactive/invalid")));
+        retrieveResult.andExpect(content().string(containsString("Contract is inactive/expired")));
     }
 
     @Given("invalid contract Id or Org Id")

@@ -431,7 +431,7 @@ public class DataCatalogRestImplTest {
         contract.setActive("false");
         when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenReturn(contract);
         ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
-        assertEquals("Contract is inactive/invalid", result.getBody().get("response"));
+        assertEquals("Contract is inactive/expired", result.getBody().get("response"));
         assertEquals(403, result.getStatusCodeValue());
     }
 

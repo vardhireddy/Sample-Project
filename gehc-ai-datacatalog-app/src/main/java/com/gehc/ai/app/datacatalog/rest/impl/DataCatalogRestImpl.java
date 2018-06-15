@@ -1277,7 +1277,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         if (contract.getActive().equalsIgnoreCase("false") || isContractExpired)
         {
-            return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactive/invalid"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactive/expired"), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
     }
