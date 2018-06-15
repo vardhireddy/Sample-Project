@@ -185,7 +185,14 @@ public class RequestValidator {
 		return httpServletRequest.getAttribute("orgId").toString();
 	}
 
-	public static void deleteContractHelper(Contract contractToBeDeleted, Long contractId, String orgId) throws DataCatalogException{
+    /**
+     * Verifies if the contract can be deleted
+     * @param contractToBeDeleted - contract entity to be deleted
+     * @param contractId - contract entity unique id from delete request
+     * @param orgId - orgId to verify the access to delete contract
+     * @throws DataCatalogException
+     */
+	public static void validateContractToBeDeleted(Contract contractToBeDeleted, Long contractId, String orgId) throws DataCatalogException{
 	    String status = "false";
 
         if (contractToBeDeleted == null) {

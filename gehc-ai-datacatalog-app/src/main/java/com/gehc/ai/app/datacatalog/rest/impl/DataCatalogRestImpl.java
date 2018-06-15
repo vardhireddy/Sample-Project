@@ -81,9 +81,7 @@ import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
@@ -1507,7 +1505,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
 
         try {
-            RequestValidator.deleteContractHelper(contractToBeDeleted,contractId,orgId);
+            RequestValidator.validateContractToBeDeleted(contractToBeDeleted,contractId,orgId);
         }catch (DataCatalogException e)
         {
             logger.error("Error validating contract : {}",e.getMessage());
