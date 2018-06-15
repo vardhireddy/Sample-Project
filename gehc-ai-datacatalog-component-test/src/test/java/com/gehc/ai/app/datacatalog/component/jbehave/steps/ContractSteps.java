@@ -52,7 +52,7 @@ public class ContractSteps {
 
     @When("the given parameters are existing in the repository")
     public void whenTheParametersExistInRepo() throws Exception {
-        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1/orgId/orgId"));
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1/validate?orgId=orgId"));
     }
 
     @Then("verify the api response status code is 200")
@@ -72,7 +72,7 @@ public class ContractSteps {
 
     @When("any of the given parameters are not existing in the repository")
     public void whenTheParametersDoesNotExistInRepo() throws Exception {
-        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1/orgId/invalidOrgId"));
+        retrieveResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/datacatalog/contract/1/validate?orgId=invalidOrgId"));
     }
 
     @Then("verify that the api response status code is 200")
