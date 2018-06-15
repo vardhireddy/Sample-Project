@@ -1262,18 +1262,22 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         logger.info("Passing in contract Id and Org Id for validation.");
 
-        int countOfRecordsWithGivenFilters = 0;
+        Contract contract;
         try {
-            countOfRecordsWithGivenFilters = contractRepository.countByIdAndOrgId(contractId, orgId);
+            contract = contractRepository.findByIdAndOrgId(contractId, orgId);
         } catch (Exception e) {
             logger.error("Error validating given parameters : {}", e.getMessage());
             return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (countOfRecordsWithGivenFilters <= 0) {
+        if (contract == null) {
             return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.NOT_FOUND);
         }
 
+        if (contract.getActive().equalsIgnoreCase("false"))
+        {
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactive/invalid"), HttpStatus.FORBIDDEN);
+        }
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
     }
 
