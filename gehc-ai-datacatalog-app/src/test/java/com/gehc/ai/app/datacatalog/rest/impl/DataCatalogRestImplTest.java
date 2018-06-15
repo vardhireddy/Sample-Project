@@ -773,7 +773,7 @@ public class DataCatalogRestImplTest {
         contract.setPrimaryContactEmail("john.doe@ge.com");
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
         contract.setAgreementBeginDate("2018-03-02");
-        contract.setDataUsagePeriod("365");
+        contract.setDataUsagePeriod("perpetuity");
         contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
         contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);

@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.ws.rs.core.MediaType;
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 import static org.hamcrest.core.StringContains.containsString;
@@ -184,6 +185,8 @@ public class ContractSteps {
         contract.setActive("true");
         //contract.setDataOriginCountry("Data Origin Country");
         contract.setOrgId("1");
+        contract.setAgreementBeginDate("2018-06-08");
+        contract.setDataUsagePeriod("perpetuity");
 
         return contract;
     }
