@@ -14,21 +14,19 @@ package com.gehc.ai.app.datacatalog.filters;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.springframework.http.HttpStatus;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author dipshah
@@ -166,4 +164,55 @@ public class RequestValidator {
 		}
 		
 	}
+
+	/**
+	 * Retrieves orgID from Auth token
+	 * @param httpServletRequest - httpServletRequest object
+	 * @return org ID
+	 */
+	public static String getOrgIdFromAuth(HttpServletRequest httpServletRequest) throws DataCatalogException{
+
+		// Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+		if(Objects.isNull(httpServletRequest)){
+			throw new DataCatalogException("Http Request not found to validate for Authorization.",HttpStatus.BAD_REQUEST);
+		}
+
+		// Gate 2 - The org ID is required to be defined
+		if (Objects.isNull(httpServletRequest.getAttribute("orgId"))) {
+			throw new DataCatalogException("Request cannot be validated for Authorization by orgId.",HttpStatus.BAD_REQUEST);
+		}
+
+		return httpServletRequest.getAttribute("orgId").toString();
+	}
+
+    /**
+     * Verifies if the contract can be deleted
+     * @param contractToBeDeleted - contract entity to be deleted
+     * @param contractId - contract entity unique id from delete request
+     * @param orgId - orgId to verify the access to delete contract
+     * @throws DataCatalogException
+     * -> if contract is not found
+     * -> if user is not allowed to delete contract
+     * -> if contract is already deleted
+     */
+	public static void validateContractToBeDeleted(Contract contractToBeDeleted, Long contractId, String orgId) throws DataCatalogException{
+	    String status = "false";
+
+        if (contractToBeDeleted == null) {
+            logger.info("No contract exists with given id :", contractId);
+            throw new DataCatalogException("No contract exists with given id", HttpStatus.NOT_FOUND);
+        }
+
+        if (!contractToBeDeleted.getOrgId().equals(orgId))
+        {
+            logger.info("User does not have access to delete the contract as token orgId does not match the contract orgId.", orgId);
+            throw new DataCatalogException("User does not have access to delete the contract.", HttpStatus.FORBIDDEN);
+        }
+
+        String contractStatus = contractToBeDeleted.getActive();
+        if (contractStatus.equalsIgnoreCase(status)) {
+            throw new DataCatalogException("Contract with given id is already inactive", HttpStatus.OK);
+        }
+
+    }
 }

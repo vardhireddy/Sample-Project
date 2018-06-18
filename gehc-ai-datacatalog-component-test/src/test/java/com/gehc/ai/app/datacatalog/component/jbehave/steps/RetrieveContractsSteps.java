@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.*;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
@@ -79,12 +80,12 @@ public class RetrieveContractsSteps {
     }
 
     @Given("no internal errors occur when retrieving the contracts")
-    public void givenNoInternalErrorsOccurWhenRetrievingTheContracts(){
+    public void givenNoInternalErrorsOccurWhenRetrievingTheContracts () throws InvalidContractException{
         when(dataCatalogDao.getAllContractsDetails(anyString())).thenReturn(contractLst);
     }
 
     @Given("an internal error occurs when retrieving the contracts")
-    public void givenAnInternalErrorOccursWhenRetrievingTheContracts() {
+    public void givenAnInternalErrorOccursWhenRetrievingTheContracts() throws InvalidContractException {
         when(dataCatalogDao.getAllContractsDetails(anyString())).thenThrow(Exception.class);
     }
 
@@ -190,10 +191,10 @@ public class RetrieveContractsSteps {
         retrieveResult.andExpect(content().string(containsString("An organization ID must be provided")));
     }
 
-    @Then("the api must return error message saying no contracts exist for the given dataSet ID")
+    @Then("the api must return error message saying no contracts exist for the given data collection ID")
     public void thenResultShouldBeAnErrorMessage() throws Exception{
         retrieveResult.andExpect(status().isBadRequest());
-        retrieveResult.andExpect(content().string(containsString("No contracts exist for the given dataSet ID.")));
+        retrieveResult.andExpect(content().string(containsString("No contracts exist for the given data collection ID.")));
     }
 
     /////////////

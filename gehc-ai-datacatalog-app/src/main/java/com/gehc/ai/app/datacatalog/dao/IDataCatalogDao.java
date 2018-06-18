@@ -14,8 +14,10 @@ package com.gehc.ai.app.datacatalog.dao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
 import java.util.List;
@@ -97,10 +99,11 @@ public interface IDataCatalogDao {
 	/**
 	 * Return all the contracts details for the given a org id
 	 * @param orgId the id of the organization whose contracts will be returned
+	 * @throws InvalidContractException if the data usage period is invalid or the agreement begin date is invalid
 	 * @return list of contracts and their details. If the given org id does not exists or if there are no contracts associated with the given org id,
 	 * then an empty list will be returned
 	 */
-	List<Contract> getAllContractsDetails(String orgId);
+	List<Contract> getAllContractsDetails (String orgId) throws InvalidContractException;
 	
 	/**
 	 * given a set of column filter criteria, return a list of image set id's satisfying the
@@ -123,4 +126,11 @@ public interface IDataCatalogDao {
 	 * @return list of contract objects
 	 */
 	List<Contract> getContractsByImageSetIds(List<Long> imageSetIdList);
+
+	/**
+	 * Saves the given upload entity to the repository
+	 * @param uploadEntity - Upload entity object
+	 * @return - a copy of the upload entity saved to the database repository
+	 */
+	Upload saveUpload(Upload uploadEntity);
 }

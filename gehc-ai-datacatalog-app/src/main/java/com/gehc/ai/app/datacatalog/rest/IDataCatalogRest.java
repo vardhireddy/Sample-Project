@@ -12,16 +12,17 @@
 package com.gehc.ai.app.datacatalog.rest;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
@@ -314,7 +315,7 @@ public interface IDataCatalogRest {
      *
      * @return String
      */
-    ResponseEntity<Map<String,String>> validateContractIdAndOrgId(Long contractId, String orgId);
+    ResponseEntity<Map<String,String>> validateContractByIdAndOrgId(Long contractId, String orgId);
     /**
      * @param params
      * @return
@@ -363,12 +364,17 @@ public interface IDataCatalogRest {
      */
     ResponseEntity<Contract> updateContract(Long contractId, UpdateContractRequest updateRequest);
 
-    /* * A soft delete of contract by given ID through inactivating it.
+    /**
+     * A soft delete of contract by given ID through inactivating it.
      *
-     * @param contractId
+     * @param contractId - contract object unique ID
      * @return
+     * if Contract is deleted -> (Status code : 200, message: Contract is inactivated successfully)
+     * if Contract is already deleted -> (Status code : 200, message: Contract with given id is already inactive)
+     * if Contract not found -> (Status code : 404, message: No contract exists with given id)
+     * if user is forbidden from deleting contract -> (Status code : 403, message : User does not have access to delete the contract.)
      */
-    ResponseEntity<Map<String,String>> deleteContract(Long contractId);
+    ResponseEntity<Map<String,String>> deleteContract(Long contractId, HttpServletRequest httpServletRequest);
 
     /**
      * Returns a map of active and inactive contracts associated with a given data collection id
@@ -376,4 +382,22 @@ public interface IDataCatalogRest {
      * @return Map<String,List<ContactsByDataSetId>>, where the keys will be "active" and "inactive". If "dataCollectionId" does not exist an empty map will be returned
      */
     ResponseEntity<?> getContractsForDataCollection(Long dataCollectionId);
+
+
+
+    /**
+     * Saves the provided upload entity details to repository.
+     *
+     * @param uploadRequest The upload details to save.  The required details are the following:
+     *                 <ul>
+     *                 <li>The orgID value</li>
+     *                 <li>The data type of files being uploaded</li>
+     *                 <li>The contract ID associated with the upload</li>
+     *                 <li>The space ID for the upload</li>
+     *                 <li>The tags specified for upload in manifest file</li>
+     *                 <li>The uploader's name</li>
+     *                 </ul>
+     * @return a JSON representation of the upload entity that was saved
+     */
+    ResponseEntity<?> createUpload(Upload uploadRequest);
 }

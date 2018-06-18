@@ -10,8 +10,10 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.UploadRepository;
 import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImplTest;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import org.junit.Test;
@@ -53,6 +55,10 @@ public class DataCatalogDaoImplTest {
     ContractRepository contractRepository;
     @Mock
     DataSetRepository dataSetRepository;
+
+    @Mock
+    UploadRepository uploadRepository;
+
     @Mock
     Query query;
     @Mock
@@ -199,15 +205,50 @@ public class DataCatalogDaoImplTest {
     }
 
     @Test
-    public void itShouldReturnAllContractsForOrgIdIfOrgIdHasContractsInDatabase() {
+    public void itShouldReturnAllContractsForOrgIdIfOrgIdHasContractsInDatabaseAndDataUsagePeriodValueIsPerpetuity() throws InvalidContractException {
+        // ARRANGE
+
+        // Set up contracts to be returned from the DB
+        String dataUsagePeriod = "perpetuity";
+        final LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        final List<Contract> mockContractsLst = new ArrayList<>();
+
+        Contract mockContract = buildContractResult();
+        mockContract.setAgreementBeginDate(currentDate.format(formatter));
+        mockContract.setDataUsagePeriod(dataUsagePeriod);
+
+        mockContractsLst.add(mockContract);
+
+        when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContractsLst);
+
+        // Set the expected contracts with their respective expiration values
+        final List<Contract> expectedContractsLst = new ArrayList<>();
+
+        Contract expectedContract = buildContractResult();
+        expectedContract.setAgreementBeginDate(currentDate.format(formatter));
+        expectedContract.setDataUsagePeriod(dataUsagePeriod);
+        expectedContract.setExpired(false);
+
+        expectedContractsLst.add(expectedContract);
+
+        // ACT
+        List<Contract> actualContractsLst = dataCatalogDao.getAllContractsDetails("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+
+        // ASSERT
+        assertEquals(expectedContractsLst, actualContractsLst);
+    }
+
+    @Test
+    public void itShouldReturnAllContractsForOrgIdIfOrgIdHasContractsInDatabaseAndDataUsagePeriodIsIntParsable() throws InvalidContractException {
         // ARRANGE
 
         // Set up contracts to be returned from the DB
         final int dataUsagePeriod = 11;
         final LocalDate currentDate = LocalDate.now(Clock.systemUTC());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         final List<Contract> mockContracts = new ArrayList<>();
+
         Contract activeContract = buildContractResult();
         String activeBeginDate = currentDate.minusMonths(dataUsagePeriod - 1).format(formatter);
         activeContract.setAgreementBeginDate(activeBeginDate);
@@ -223,6 +264,7 @@ public class DataCatalogDaoImplTest {
 
         // Set the expected contracts with their respective expiration values
         final List<Contract> expectedContracts = new ArrayList<>();
+
         Contract expectedActiveContract = buildContractResult();
         expectedActiveContract.setAgreementBeginDate(currentDate.minusMonths(dataUsagePeriod - 1).toString());
         expectedActiveContract.setExpired(false);
@@ -241,8 +283,53 @@ public class DataCatalogDaoImplTest {
         assertEquals(expectedContracts, actualContracts);
     }
 
+    @Test(expected = InvalidContractException.class)
+    public void itShouldReturnAnExceptionIfDataUsagePeriodIsARandomStringValue() throws InvalidContractException {
+        // ARRANGE
+
+        // Set up contracts to be returned from the DB
+        String dataUsagePeriod = "abc";
+        final List<Contract> mockContracts = new ArrayList<>();
+
+        Contract contract = buildContractResult();
+        contract.setDataUsagePeriod(dataUsagePeriod);
+
+        mockContracts.add(contract);
+
+        when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContracts);
+
+        // ACT
+       List<Contract> actualContracts = dataCatalogDao.getAllContractsDetails("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+
+    }
+
+    @Test(expected = InvalidContractException.class)
+    public void itShouldReturnAnExceptionIfAgreementBeginDateHasInvalidFormat() throws InvalidContractException {
+        // ARRANGE
+
+        // Set up contracts to be returned from the DB
+        String dataUsagePeriod = "abc";
+        final List<Contract> mockContracts = new ArrayList<>();
+
+        Contract contract = buildContractResult();
+        contract.setDataUsagePeriod(dataUsagePeriod);
+        final LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+
+        String activeBeginDate = currentDate.format(formatter);
+        contract.setAgreementBeginDate(activeBeginDate);
+
+        mockContracts.add(contract);
+
+        when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContracts);
+
+        // ACT
+        List<Contract> actualContracts = dataCatalogDao.getAllContractsDetails("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+
+    }
+
     @Test
-    public void itShouldReturnZeroContractsForOrgIdIfOrgIdHasZeroContractsInDatabase() {
+    public void itShouldReturnZeroContractsForOrgIdIfOrgIdHasZeroContractsInDatabase() throws InvalidContractException{
         // ARRANGE
 
         // Set up contracts to be returned from the DB

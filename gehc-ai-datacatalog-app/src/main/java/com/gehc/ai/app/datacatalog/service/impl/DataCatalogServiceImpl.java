@@ -15,8 +15,11 @@ import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
@@ -24,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -88,7 +92,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	}
 
 	@Override
-	public List<Contract> getAllContracts(String orgId) {
+	public List<Contract> getAllContracts(String orgId) throws InvalidContractException{
 
 		return dataCatalogDao.getAllContractsDetails(orgId);
 	}
@@ -138,5 +142,55 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 
         return mapOfContracts;
 
+	}
+
+	@Override
+	public Upload validateUploadRequest(Upload uploadRequest) throws DataCatalogException {
+
+		//verify if all the fields have data
+		validateUploadRequestHelper(uploadRequest);
+
+		//verify if contract is valid and active
+		 validateContractForUploadData(uploadRequest.getContractId());
+
+		 uploadRequest.setSchemaVersion("v1");
+
+		return uploadRequest;
+	}
+
+	@Override
+	public Upload saveUpload(Upload uploadEntity){
+		return dataCatalogDao.saveUpload(uploadEntity);
+	}
+
+	private void validateUploadRequestHelper(Upload uploadData) throws DataCatalogException{
+
+		if ((uploadData.getOrgId() == null ||uploadData.getOrgId().isEmpty())
+		|| (uploadData.getDataType() == null || uploadData.getDataType().isEmpty())
+		|| (uploadData.getContractId() == null || uploadData.getContractId() < 1)
+		|| (uploadData.getSpaceId() == null || uploadData.getSpaceId().isEmpty())
+		|| (uploadData.getUploadBy() == null || uploadData.getUploadBy().isEmpty())
+		|| (uploadData.getTags() == null || uploadData.getTags().isEmpty()))
+		{
+			throw new DataCatalogException("Missing one/more required fields data.",HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	private void validateContractForUploadData(Long contractId) throws DataCatalogException
+	{
+		Contract contract;
+			try {
+				contract = dataCatalogDao.getContractDetails(contractId);
+			}catch (Exception e)
+			{
+				logger.error("Exception retrieving Contract : {}",e.getMessage());
+				throw e;
+			}
+
+			boolean isContractExpired = ContractByDataSetId.isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
+			if(contract.getActive().equalsIgnoreCase("false") || isContractExpired)
+			{
+				throw new DataCatalogException("Invalid/Expired contract ID provided.",HttpStatus.BAD_REQUEST);
+			}
 	}
 }

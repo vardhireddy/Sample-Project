@@ -14,6 +14,7 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Date;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +43,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,19 +74,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
@@ -1048,6 +1055,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
     public ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request) {
+
+        logger.debug("Get all contracts");
+
         List<Contract> contracts = new ArrayList<Contract>();
 
         /* Toll gate checks */
@@ -1064,8 +1074,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         try {
             String orgId = request.getAttribute("orgId").toString();
+
+            logger.debug("Get all contracts -  org Id = "+orgId);
+
             contracts = dataCatalogService.getAllContracts(orgId);
-        } catch (Exception e) {
+        } catch (InvalidContractException ice) {
+            logger.error("Could not get the contracts due to an internal error ", ice.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Internal error occured : " + ice.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (Exception e) {
             logger.error("Could not get the contracts due to an internal error ", e.getMessage());
             return new ResponseEntity(Collections.singletonMap("response", "Could not get the contracts due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -1150,21 +1167,29 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    @RequestMapping(value = "/datacatalog/contract/{contractId}/orgId/{orgId}", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, String>> validateContractIdAndOrgId(@PathVariable("contractId") Long contractId, @PathVariable("orgId") String orgId) {
+    @RequestMapping(value = "/datacatalog/contract/{contractId}/validate", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, String>> validateContractByIdAndOrgId(@PathVariable("contractId") Long contractId,
+                                                                            @RequestParam("orgId") String orgId) {
 
         logger.info("Passing in contract Id and Org Id for validation.");
 
-        int countOfRecordsWithGivenFilters = 0;
+        Contract contract;
         try {
-            countOfRecordsWithGivenFilters = contractRepository.countByIdAndOrgId(contractId, orgId);
+            contract = contractRepository.findByIdAndOrgId(contractId, orgId);
         } catch (Exception e) {
             logger.error("Error validating given parameters : {}", e.getMessage());
             return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (countOfRecordsWithGivenFilters <= 0)
-            return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.OK);
+        if (contract == null) {
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.NOT_FOUND);
+        }
+            boolean isContractExpired = ContractByDataSetId.isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
+
+        if (contract.getActive().equalsIgnoreCase("false") || isContractExpired)
+        {
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactive/expired"), HttpStatus.FORBIDDEN);
+        }
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
     }
 
@@ -1375,9 +1400,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @SuppressWarnings("unchecked")
     @Override
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Map<String, String>> deleteContract(@PathVariable("contractId") Long contractId) {
+    public ResponseEntity<Map<String, String>> deleteContract(@PathVariable("contractId") Long contractId,
+                                                              HttpServletRequest httpServletRequest) {
 
         logger.info("Passing contract id to delete contract :", contractId);
+        String orgId = "";
+        try {
+            orgId = RequestValidator.getOrgIdFromAuth(httpServletRequest);
+        }catch (DataCatalogException e)
+        {
+            logger.error("Error validating servlet request : {}",e.getMessage());
+            return new ResponseEntity<>(Collections.singletonMap("response", "Request cannot be validated because of malformed authorization token."),e.getHttpStatusCode());
+        }
+
         String status = "false";
 
         Contract contractToBeDeleted;
@@ -1388,14 +1423,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (contractToBeDeleted == null) {
-            logger.info("No contract exists with given id :", contractId);
-            return new ResponseEntity<>(Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.BAD_REQUEST);
-        }
-
-        String contractStatus = contractToBeDeleted.getActive();
-        if (contractStatus.equalsIgnoreCase(status)) {
-            return new ResponseEntity<>(Collections.singletonMap("response", "Contract with given id is already inactive"), HttpStatus.OK);
+        try {
+            RequestValidator.validateContractToBeDeleted(contractToBeDeleted,contractId,orgId);
+        }catch (DataCatalogException e)
+        {
+            logger.error("Error validating contract : {}",e.getMessage());
+            return new ResponseEntity<>(Collections.singletonMap("response", e.getMessage()),e.getHttpStatusCode());
         }
 
         try {
@@ -1421,17 +1454,55 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         try {
             resultListOfContracts = dataCatalogService.getContractsByDataCollectionId(dataCollectionId);
         }catch (Exception e){
-            logger.error("Error retrieving contracts associated with the dataset : {}", e.getMessage());
-            return new ResponseEntity(Collections.singletonMap("response", "Error retrieving contracts associated with the dataset." +
+            logger.error("Error retrieving contracts associated with the data collection : {}", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Error retrieving contracts associated with the data collection." +
                     " Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (resultListOfContracts.get("active").isEmpty() && resultListOfContracts.get("inactive").isEmpty())
         {
-            return new ResponseEntity(Collections.singletonMap("response", "No contracts exist for the given dataSet ID."), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(Collections.singletonMap("response", "No contracts exist for the given data collection ID."), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity(resultListOfContracts, HttpStatus.OK);
+    }
+
+    @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create Upload", httpMethod = "POST", response = Upload.class, tags = "Create Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
+    public ResponseEntity<?> createUpload(@RequestBody Upload uploadRequest){
+
+        logger.info("Passing upload request to create upload entity.");
+
+        Upload uploadResponse;
+        try {
+            uploadRequest = dataCatalogService.validateUploadRequest(uploadRequest);
+            uploadResponse = dataCatalogService.saveUpload(uploadRequest);
+        }catch (DataCatalogException e)
+        {
+            logger.error(e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", e.getMessage()),e.getHttpStatusCode());
+        }catch (Exception e)
+        {
+            logger.error("Exception saving the upload entity : {}", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Exception saving the upload entity." +
+                    " Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(uploadResponse,HttpStatus.CREATED);
     }
 
 }
