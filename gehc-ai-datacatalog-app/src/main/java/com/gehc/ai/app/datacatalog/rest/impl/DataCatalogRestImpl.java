@@ -43,7 +43,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -67,18 +79,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
@@ -1554,6 +1554,44 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
 
         return new ResponseEntity(resultListOfContracts, HttpStatus.OK);
+    }
+
+    @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create Upload", httpMethod = "POST", response = Upload.class, tags = "Create Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
+    public ResponseEntity<?> createUpload(@RequestBody Upload uploadRequest){
+
+        logger.info("Passing upload request to create upload entity.");
+
+        Upload uploadResponse;
+        try {
+            uploadRequest = dataCatalogService.validateUploadRequest(uploadRequest);
+            uploadResponse = dataCatalogService.saveUpload(uploadRequest);
+        }catch (DataCatalogException e)
+        {
+            logger.error(e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", e.getMessage()),e.getHttpStatusCode());
+        }catch (Exception e)
+        {
+            logger.error("Exception saving the upload entity : {}", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Exception saving the upload entity." +
+                    " Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(uploadResponse,HttpStatus.CREATED);
     }
 
 }

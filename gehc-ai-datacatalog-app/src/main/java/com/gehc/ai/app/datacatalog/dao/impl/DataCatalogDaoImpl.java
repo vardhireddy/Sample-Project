@@ -20,16 +20,18 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
+import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.repository.UploadRepository;
 import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationDetailsExporter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.JsonAnnotationDetailsExporter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
@@ -37,6 +39,7 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJs
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -196,6 +199,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
     @Autowired
     private DataSetRepository dataSetRepository;
+
+    @Autowired
+    private UploadRepository uploadRepository;
 
     private static String getColumnQueryString(String column, String values) {
         StringBuilder q = new StringBuilder();
@@ -879,5 +885,17 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         } catch (Exception e) {
             throw new InvalidContractException("Invalid agreement begin date : " + contractBeginDate + ". Date shpould be of format yyyy-MM-dd");
         }
+    }
+
+    @Override
+    public Upload saveUpload(Upload uploadEntity) {
+        try {
+            return uploadRepository.save(uploadEntity);
+        }catch (Exception e)
+        {
+            logger.error("Exception saving upload entity : {}",e.getMessage());
+            throw e;
+        }
+
     }
 }
