@@ -11,162 +11,74 @@
  */
 package com.gehc.ai.app.datacatalog.entity;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.datacatalog.filters.JsonDateSerializer;
+import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
 import com.gehc.ai.app.datacatalog.filters.LocalDateTimeAttributeConverter;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-public class Upload {
-	/**
-	 * 
-	 */
+@Entity
+public final class Upload {
+
 	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getSchemaVersion() {
-		return schemaVersion;
-	}
-
-	public void setSchemaVersion(String schemaVersion) {
-		this.schemaVersion = schemaVersion;
-	}
-
-	public String getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(String orgId) {
-		this.orgId = orgId;
-	}
-
-	public Object getDataType() {
-		return dataType;
-	}
-
-	public void setDataType(Object dataType) {
-		this.dataType = dataType;
-	}
-
-	public String getDataUsage() {
-		return dataUsage;
-	}
-
-	public void setDataUsage(String dataUsage) {
-		this.dataUsage = dataUsage;
-	}
-
-	public Long getContractId() {
-		return contractId;
-	}
-
-	public void setContractId(Long contractId) {
-		this.contractId = contractId;
-	}
-
-	public String getSpaceId() {
-		return spaceId;
-	}
-
-	public void setSpaceId(String spaceId) {
-		this.spaceId = spaceId;
-	}
-
-	public Object getSummary() {
-		return summary;
-	}
-
-	public void setSummary(Object summary) {
-		this.summary = summary;
-	}
-
-	public Object getTags() {
-		return tags;
-	}
-
-	public void setTags(Object tags) {
-		this.tags = tags;
-	}
-
-	public Object getStatus() {
-		return status;
-	}
-
-	public void setStatus(Object status) {
-		this.status = status;
-	}
-
-	public String getUploadBy() {
-		return uploadBy;
-	}
-
-	public void setUploadBy(String uploadBy) {
-		this.uploadBy = uploadBy;
-	}
-
-	public LocalDateTime getUploadDate() {
-		return uploadDate;
-	}
-
-	public void setUploadDate(LocalDateTime uploadDate) {
-		this.uploadDate = uploadDate;
-	}
 
 	@Column(name = "schema_version")
-	@Size(max=50)
+	@Size(min=2, max=50)
+    //@NotNull
 	private String schemaVersion;
+
 	/**
 	 * The organization who owns the data.
 	 */
 	@Column(name = "org_id")
-	@Size(min=0, max=255)
+	@Size(min=1, max=255)
+    //@NotNull
 	private String orgId;
-	
-	@Convert(converter = JsonConverter.class)
-	private Object dataType; // NOSONAR
-	
-	@Size(min=0, max=50)
-	@NotNull
-	private String dataUsage;
-	
+
+    //@NotNull
+    @Column(name = "data_type")
+    @Convert(converter = ListOfStringConverter.class)
+	private List<String> dataType;
+
+	//@NotNull
+    @Column(name = "contract_id")
 	private Long contractId;
 	
 	/**
 	 * Space uuid in S3.
 	 */
 	@Column(name = "space_id")
-	@Size(min=0, max=255)
+	@Size(min=1, max=255)
 	private String spaceId;
+
+    @Convert(converter = ListOfStringConverter.class)
+	private List<String> summary;
 	
 	@Convert(converter = JsonConverter.class)
-	private Object summary; // NOSONAR
+	private Map<String,String> tags;
 	
 	@Convert(converter = JsonConverter.class)
-	private Object tags; // NOSONAR
-	
-	@Convert(converter = JsonConverter.class)
-	private Object status; // NOSONAR
+	private Map<String,String> status;
 	
 	/**
 	 * An identifier for the one who uploaded the data. This allows to query for
@@ -175,18 +87,172 @@ public class Upload {
 	@Column(name = "upload_by")
 	@Size(min=0, max=255)
 	private String uploadBy;
-	
-	/**
-	 * Date data was uploaded into database. Should be left to database to
-	 * provide.
-	 */
-	@Column(name = "upload_date")
-	@JsonProperty(access = Access.READ_ONLY)
-	@JsonSerialize(using=JsonDateSerializer.class)
-	@Convert(converter = LocalDateTimeAttributeConverter.class)
-	private LocalDateTime uploadDate;
-	
 
-	
+    /**
+     * Date data was uploaded into database. Should be left to database to provide.
+     */
+    @Column(name="upload_date")
+    @CreationTimestamp
+	private Timestamp uploadDate;
 
+    /**
+     * Date data was uploaded into database. Should be left to database to provide.
+     */
+    @Column(name="last_modified")
+    @UpdateTimestamp
+    private Timestamp lastModified;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Upload upload = (Upload) o;
+
+        if (id != null ? !id.equals(upload.id) : upload.id != null) return false;
+        if (!schemaVersion.equals(upload.schemaVersion)) return false;
+        if (!orgId.equals(upload.orgId)) return false;
+        if (!dataType.equals(upload.dataType)) return false;
+        if (!contractId.equals(upload.contractId)) return false;
+        if (!spaceId.equals(upload.spaceId)) return false;
+        if (summary != null ? !summary.equals(upload.summary) : upload.summary != null) return false;
+        if (!tags.equals(upload.tags)) return false;
+        if (status != null ? !status.equals(upload.status) : upload.status != null) return false;
+ //       if (!uploadBy.equals(upload.uploadBy)) return false;
+//        if (!uploadDate.equals(upload.uploadDate)) return false;
+//        return lastModified.equals(upload.lastModified);
+        return   (uploadBy.equals(upload.uploadBy));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + schemaVersion.hashCode();
+        result = 31 * result + orgId.hashCode();
+        result = 31 * result + dataType.hashCode();
+        result = 31 * result + contractId.hashCode();
+        result = 31 * result + spaceId.hashCode();
+        result = 31 * result + (summary != null ? summary.hashCode() : 0);
+        result = 31 * result + tags.hashCode();
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + uploadBy.hashCode();
+//        result = 31 * result + uploadDate.hashCode();
+//        result = 31 * result + lastModified.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Upload{" +
+                "id=" + id +
+                ", schemaVersion='" + schemaVersion + '\'' +
+                ", orgId='" + orgId + '\'' +
+                ", dataType=" + dataType +
+                ", contractId=" + contractId +
+                ", spaceId='" + spaceId + '\'' +
+                ", summary=" + summary +
+                ", tags=" + tags +
+                ", status=" + status +
+                ", uploadBy='" + uploadBy + '\'' +
+                ", uploadDate=" + uploadDate +
+                ", lastModified=" + lastModified +
+                '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    public void setSchemaVersion(String schemaVersion) {
+        this.schemaVersion = schemaVersion;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    public List<String> getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(List<String> dataType) {
+        this.dataType = dataType;
+    }
+
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
+
+    public String getSpaceId() {
+        return spaceId;
+    }
+
+    public void setSpaceId(String spaceId) {
+        this.spaceId = spaceId;
+    }
+
+    public List<String> getSummary() {
+        return summary;
+    }
+
+    public void setSummary(List<String> summary) {
+        this.summary = summary;
+    }
+
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
+
+    public Map<String, String> getStatus() {
+        return status;
+    }
+
+    public void setStatus(Map<String, String> status) {
+        this.status = status;
+    }
+
+    public String getUploadBy() {
+        return uploadBy;
+    }
+
+    public void setUploadBy(String uploadBy) {
+        this.uploadBy = uploadBy;
+    }
+
+    public Timestamp getUploadDate() {
+        return uploadDate;
+    }
+
+    public void setUploadDate(Timestamp uploadDate) {
+        this.uploadDate = uploadDate;
+    }
+
+    public Timestamp getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Timestamp lastModified) {
+        this.lastModified = lastModified;
+    }
 }

@@ -3,20 +3,14 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
 import static org.mockito.Mockito.reset;
 
+import com.gehc.ai.app.datacatalog.repository.*;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.ScenarioType;
+import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.stereotype.Component;
 
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
-import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.ContractRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-import com.gehc.ai.app.datacatalog.repository.PatientRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.service.IRemoteService;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 
@@ -48,6 +42,9 @@ public class BeforeAndAfterSteps {
     COSNotificationRepository cosNotificationRepository;
 
     @MockBean
+    UploadRepository uploadRepository;
+
+    @MockBean
     DataCatalogInterceptor dataCatalogInterceptor;
 
     @MockBean
@@ -73,6 +70,7 @@ public class BeforeAndAfterSteps {
         reset(dataCatalogDao);
         reset(contractRepository);
         reset(remoteServiceImpl);
+        reset(uploadRepository);
     }
 
 }

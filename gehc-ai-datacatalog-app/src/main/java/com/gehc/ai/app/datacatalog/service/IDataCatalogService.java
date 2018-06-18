@@ -14,9 +14,8 @@ package com.gehc.ai.app.datacatalog.service;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.exceptions.*;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
@@ -91,4 +90,21 @@ public interface IDataCatalogService {
      * @return Map<String,List<ContactsByDataSetId>>, where the keys will be "active" and "inactive". If "dataCollectionId" does not exist an empty map will be returned
      */
     Map<String,List<ContractByDataSetId>> getContractsByDataCollectionId(Long dataCollectionId);
+
+    /**
+     * Method to verify if the upload request is valid
+     * @param uploadRequest - the upload request data
+     * @return
+     * if request data is vaild -> returns validated and updated upload entity to be saved in repository
+     * if request is invalid -> throws DataCatalog Exception specifying the error message and HTTP status code
+     */
+    Upload validateUploadRequest(Upload uploadRequest) throws DataCatalogException;
+
+
+    /**
+     * Saves the given upload entity to the repository
+     * @param uploadEntity - Upload entity object
+     * @return - a copy of the upload entity saved to the database repository
+     */
+    Upload saveUpload(Upload uploadEntity);
 }

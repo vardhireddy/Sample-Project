@@ -13,6 +13,7 @@ import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.UploadRepository;
 import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImplTest;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import org.junit.Test;
@@ -54,6 +55,10 @@ public class DataCatalogDaoImplTest {
     ContractRepository contractRepository;
     @Mock
     DataSetRepository dataSetRepository;
+
+    @Mock
+    UploadRepository uploadRepository;
+
     @Mock
     Query query;
     @Mock

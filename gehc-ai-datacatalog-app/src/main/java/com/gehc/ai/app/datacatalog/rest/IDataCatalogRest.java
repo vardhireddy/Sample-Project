@@ -12,16 +12,7 @@
 package com.gehc.ai.app.datacatalog.rest;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
@@ -389,4 +380,22 @@ public interface IDataCatalogRest {
      * @return Map<String,List<ContactsByDataSetId>>, where the keys will be "active" and "inactive". If "dataCollectionId" does not exist an empty map will be returned
      */
     ResponseEntity<?> getContractsForDataCollection(Long dataCollectionId);
+
+
+
+    /**
+     * Saves the provided upload entity details to repository.
+     *
+     * @param uploadRequest The upload details to save.  The required details are the following:
+     *                 <ul>
+     *                 <li>The orgID value</li>
+     *                 <li>The data type of files being uploaded</li>
+     *                 <li>The contract ID associated with the upload</li>
+     *                 <li>The space ID for the upload</li>
+     *                 <li>The tags specified for upload in manifest file</li>
+     *                 <li>The uploader's name</li>
+     *                 </ul>
+     * @return a JSON representation of the upload entity that was saved
+     */
+    ResponseEntity<?> createUpload(Upload uploadRequest);
 }
