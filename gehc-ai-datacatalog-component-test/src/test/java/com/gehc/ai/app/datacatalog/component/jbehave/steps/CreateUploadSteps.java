@@ -251,8 +251,8 @@ public class CreateUploadSteps {
         uploadRequest.setUploadBy("user");
         uploadRequest.setDataType(dataType);
         uploadRequest.setTags(tags);
-        uploadRequest.setUploadDate(new Timestamp(System.currentTimeMillis()));
-        uploadRequest.setLastModified(new Timestamp(System.currentTimeMillis()));
+        uploadRequest.setUploadDate(new Timestamp(1313045029));
+        uploadRequest.setLastModified(new Timestamp(1313045029));
 
         return uploadRequest;
    }

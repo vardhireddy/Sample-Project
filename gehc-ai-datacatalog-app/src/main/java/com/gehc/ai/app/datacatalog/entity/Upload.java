@@ -106,35 +106,36 @@ public final class Upload {
 
         Upload upload = (Upload) o;
 
-        if (id != null ? !id.equals(upload.id) : upload.id != null) return false;
-        if (!schemaVersion.equals(upload.schemaVersion)) return false;
-        if (!orgId.equals(upload.orgId)) return false;
-        if (!dataType.equals(upload.dataType)) return false;
-        if (!contractId.equals(upload.contractId)) return false;
-        if (!spaceId.equals(upload.spaceId)) return false;
-        if (summary != null ? !summary.equals(upload.summary) : upload.summary != null) return false;
-        if (!tags.equals(upload.tags)) return false;
-        if (status != null ? !status.equals(upload.status) : upload.status != null) return false;
- //       if (!uploadBy.equals(upload.uploadBy)) return false;
-//        if (!uploadDate.equals(upload.uploadDate)) return false;
-//        return lastModified.equals(upload.lastModified);
-        return   (uploadBy.equals(upload.uploadBy));
+        if (getId() != null ? !getId().equals(upload.getId()) : upload.getId() != null) return false;
+        if (!getSchemaVersion().equals(upload.getSchemaVersion())) return false;
+        if (!getOrgId().equals(upload.getOrgId())) return false;
+        if (!getDataType().equals(upload.getDataType())) return false;
+        if (!getContractId().equals(upload.getContractId())) return false;
+        if (!getSpaceId().equals(upload.getSpaceId())) return false;
+        if (getSummary() != null ? !getSummary().equals(upload.getSummary()) : upload.getSummary() != null)
+            return false;
+        if (!getTags().equals(upload.getTags())) return false;
+        if (getStatus() != null ? !getStatus().equals(upload.getStatus()) : upload.getStatus() != null) return false;
+        if (!getUploadBy().equals(upload.getUploadBy())) return false;
+        if (getUploadDate() != null ? !getUploadDate().equals(upload.getUploadDate()) : upload.getUploadDate() != null)
+            return false;
+        return getLastModified() != null ? getLastModified().equals(upload.getLastModified()) : upload.getLastModified() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + schemaVersion.hashCode();
-        result = 31 * result + orgId.hashCode();
-        result = 31 * result + dataType.hashCode();
-        result = 31 * result + contractId.hashCode();
-        result = 31 * result + spaceId.hashCode();
-        result = 31 * result + (summary != null ? summary.hashCode() : 0);
-        result = 31 * result + tags.hashCode();
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + uploadBy.hashCode();
-//        result = 31 * result + uploadDate.hashCode();
-//        result = 31 * result + lastModified.hashCode();
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + getSchemaVersion().hashCode();
+        result = 31 * result + getOrgId().hashCode();
+        result = 31 * result + getDataType().hashCode();
+        result = 31 * result + getContractId().hashCode();
+        result = 31 * result + getSpaceId().hashCode();
+        result = 31 * result + (getSummary() != null ? getSummary().hashCode() : 0);
+        result = 31 * result + getTags().hashCode();
+        result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
+        result = 31 * result + getUploadBy().hashCode();
+        result = 31 * result + (getUploadDate() != null ? getUploadDate().hashCode() : 0);
+        result = 31 * result + (getLastModified() != null ? getLastModified().hashCode() : 0);
         return result;
     }
 
