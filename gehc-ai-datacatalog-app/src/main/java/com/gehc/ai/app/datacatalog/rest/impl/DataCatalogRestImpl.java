@@ -1548,9 +1548,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Create Contract", httpMethod = "POST", response = Contract.class, tags = "Create Upload")
+    @ApiOperation(value = "Create Upload", httpMethod = "POST", response = Upload.class, tags = "Create Upload")
     @ApiResponses(value = {
-            @io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Contract.class),
+            @io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Upload.class),
             @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
             @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
             @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),

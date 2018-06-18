@@ -12,24 +12,20 @@
 package com.gehc.ai.app.datacatalog.entity;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.GenerationType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
-import com.gehc.ai.app.datacatalog.filters.JsonDateSerializer;
 import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
-import com.gehc.ai.app.datacatalog.filters.LocalDateTimeAttributeConverter;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -44,7 +40,7 @@ public final class Upload {
 
 	@Column(name = "schema_version")
 	@Size(min=2, max=50)
-    //@NotNull
+    @NotNull
 	private String schemaVersion;
 
 	/**
@@ -52,15 +48,15 @@ public final class Upload {
 	 */
 	@Column(name = "org_id")
 	@Size(min=1, max=255)
-    //@NotNull
+    @NotNull
 	private String orgId;
 
-    //@NotNull
+    @NotNull
     @Column(name = "data_type")
     @Convert(converter = ListOfStringConverter.class)
 	private List<String> dataType;
 
-	//@NotNull
+	@NotNull
     @Column(name = "contract_id")
 	private Long contractId;
 	
