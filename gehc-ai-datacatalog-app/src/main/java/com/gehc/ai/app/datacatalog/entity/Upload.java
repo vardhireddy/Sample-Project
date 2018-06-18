@@ -106,20 +106,20 @@ public final class Upload {
 
         Upload upload = (Upload) o;
 
-        if (getId() != null ? !getId().equals(upload.getId()) : upload.getId() != null) return false;
+        if (getId() != null ? !getId().equals(upload.getId()) : (upload.getId() != null)) return false;
         if (!getSchemaVersion().equals(upload.getSchemaVersion())) return false;
         if (!getOrgId().equals(upload.getOrgId())) return false;
         if (!getDataType().equals(upload.getDataType())) return false;
         if (!getContractId().equals(upload.getContractId())) return false;
         if (!getSpaceId().equals(upload.getSpaceId())) return false;
-        if (getSummary() != null ? !getSummary().equals(upload.getSummary()) : upload.getSummary() != null)
+        if (getSummary() != null ? !getSummary().equals(upload.getSummary()) : (upload.getSummary() != null))
             return false;
         if (!getTags().equals(upload.getTags())) return false;
-        if (getStatus() != null ? !getStatus().equals(upload.getStatus()) : upload.getStatus() != null) return false;
+        if (getStatus() != null ? !getStatus().equals(upload.getStatus()) : (upload.getStatus() != null)) return false;
         if (!getUploadBy().equals(upload.getUploadBy())) return false;
-        if (getUploadDate() != null ? !getUploadDate().equals(upload.getUploadDate()) : upload.getUploadDate() != null)
+        if (getUploadDate() != null ? !getUploadDate().equals(upload.getUploadDate()) : (upload.getUploadDate() != null))
             return false;
-        return getLastModified() != null ? getLastModified().equals(upload.getLastModified()) : upload.getLastModified() == null;
+        return getLastModified() != null ? getLastModified().equals(upload.getLastModified()) : (upload.getLastModified() == null);
     }
 
     @Override
