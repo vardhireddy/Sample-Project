@@ -43,8 +43,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-
-import com.gehc.ai.app.datacatalog.entity.*;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -1565,17 +1576,14 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         logger.info("Passing upload request to create upload entity.");
 
+        Upload uploadResponse;
         try {
             uploadRequest = dataCatalogService.validateUploadRequest(uploadRequest);
+            uploadResponse = dataCatalogService.saveUpload(uploadRequest);
         }catch (DataCatalogException e)
         {
             logger.error(e.getMessage());
             return new ResponseEntity(Collections.singletonMap("response", e.getMessage()),e.getHttpStatusCode());
-        }
-
-        Upload uploadResponse;
-        try {
-            uploadResponse = dataCatalogService.saveUpload(uploadRequest);
         }catch (Exception e)
         {
             logger.error("Exception saving the upload entity : {}", e.getMessage());
