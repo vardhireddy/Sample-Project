@@ -145,24 +145,29 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	}
 
 	@Override
-	public Upload validateUploadRequest(Upload uploadRequest) throws DataCatalogException {
+    public Upload createUpload(Upload uploadRequest) throws DataCatalogException{
+            //verify if all the fields have data
+            validateUploadRequestHelper(uploadRequest);
 
-		//verify if all the fields have data
-		validateUploadRequestHelper(uploadRequest);
+            //verify if contract is valid and active
+            validateContractForUploadData(uploadRequest.getContractId());
 
-		//verify if contract is valid and active
-		 validateContractForUploadData(uploadRequest.getContractId());
+            uploadRequest.setSchemaVersion("v1");
 
-		 uploadRequest.setSchemaVersion("v1");
-
-		return uploadRequest;
-	}
+            return saveUpload(uploadRequest);
+    }
 
 	@Override
 	public Upload saveUpload(Upload uploadEntity){
 		return dataCatalogDao.saveUpload(uploadEntity);
 	}
 
+    /**
+     * Method to verify if the upload request is valid
+     * @param uploadData - the upload request data
+     *
+     * if request is invalid -> throws DataCatalog Exception specifying the error message and HTTP status code
+     */
 	private void validateUploadRequestHelper(Upload uploadData) throws DataCatalogException{
 
 		if ((uploadData.getOrgId() == null ||uploadData.getOrgId().isEmpty())
@@ -176,6 +181,11 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		}
 	}
 
+	/**
+     * Verifies if the contract ID given for the upload is valid
+     * @param contractId - contract unique id
+     * @throws DataCatalogException - if the contract is invalid/expired or does not exist
+     */
 	private void validateContractForUploadData(Long contractId) throws DataCatalogException
 	{
 		Contract contract;
@@ -186,6 +196,11 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 				logger.error("Exception retrieving Contract : {}",e.getMessage());
 				throw e;
 			}
+
+			if (contract == null)
+            {
+                    throw new DataCatalogException("No contract exists with provided contract ID.",HttpStatus.BAD_REQUEST);
+            }
 
 			boolean isContractExpired = ContractByDataSetId.isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
 			if(contract.getActive().equalsIgnoreCase("false") || isContractExpired)
