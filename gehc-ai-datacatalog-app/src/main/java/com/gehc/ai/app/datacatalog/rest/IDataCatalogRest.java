@@ -241,14 +241,6 @@ public interface IDataCatalogRest {
     List<Patient> getAllPatients(HttpServletRequest request);
 
     /**
-     * @param id
-     * @param annotationType
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    List getRawTargetData(String id, String annotationType);
-
-    /**
      * @return String Success
      */
     String healthcheck();
