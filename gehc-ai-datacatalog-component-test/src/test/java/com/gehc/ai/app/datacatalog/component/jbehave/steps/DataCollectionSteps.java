@@ -231,81 +231,6 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
-
-    @Given("DataCatalog Raw Target Data - DataSetUp Provided")
-    public void givenDataCatalogRawTargetDataDataSetUpProvided() {
-        List<DataSet> dataSets = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
-        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
-
-
-        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
-        Annotation ann = commonSteps.getAnnotation();
-        HashMap item = new HashMap();
-        item.put("test", "test");
-        ann.setItem(item);
-        List<Annotation> annotations = new ArrayList<Annotation>();
-        annotations.add(ann);
-        when(annotationRepository
-                .findByImageSetIdInAndTypeIn(anyListOf(Long.class), anyListOf(String.class))).thenReturn(annotations);
-
-    }
-
-    @When("get DataCatalog Raw Target Data")
-    public void whenGetDataCatalogRawTargetData() throws Exception {
-        retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=point")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-        );
-    }
-
-    @Then("verify DataCatalog Raw Target Data")
-    public void thenVerifyDataCatalogRawTargetData() throws Exception {
-        retrieveResult.andExpect(status().isOk());
-
-        retrieveResult.andDo(MockMvcResultHandlers.print());
-        retrieveResult.andExpect(content().string(containsString("[{\"dcId\":\"1\",\"imId\":\"1\",\"annotationId\":\"1\",\"patientDbid\":\"1\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"annotationType\":\"point\",\"annotationItem\":{\"test\":\"test\"},\"annotatorId\":\"87654321-abcd-42ca-a317-4d408b98c500\",\"annotationDate\":\"2017-03-31\",\"dataFormat\":\"dataFormat\",\"instances\":null")));
-    }
-
-    @Given("DataCatalog Raw Target Data with invalid Id")
-    public void givenDataCatalogRawTargetDataWithInvalidId() {
-        List<DataSet> dataSets = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
-        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
-
-
-        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
-        Annotation ann = commonSteps.getAnnotation();
-        HashMap item = new HashMap();
-        item.put("test", "test");
-        ann.setItem(item);
-        List<Annotation> annotations = new ArrayList<Annotation>();
-        annotations.add(ann);
-        when(annotationRepository
-                .findByImageSetIdInAndTypeIn(anyListOf(Long.class), anyListOf(String.class))).thenReturn(annotations);
-    }
-
-
-    @When("get DataCatalog Raw Target Data with invalid Id")
-    public void whenGetDataCatalogRawTargetDataWithInvalidId() throws Exception {
-        try {
-            retrieveResult = mockMvc.perform(
-                    get("/api/v1/datacatalog/raw-target-data?id=test&annotationType=point")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-            );
-        } catch (Exception e) {
-            throwable = e;
-        }
-    }
-
-
-    @Then("verify DataCatalog Raw Target Data with invalid Id- throws Exception")
-    public void thenVerifyDataCatalogRawTargetDataWithInvalidIdThrowsException() throws Exception {
-        assert (throwable.toString().contains("Datacollection id or annotation type is not valid"));
-    }
-
     @Given("Retrieve Image Set with ID DataSetUp Provided")
     public void givenRetrieveImageSetWithIDDataSetUpProvided() {
         dataCollectionSetUpForImageSetwithPatientData();
@@ -360,49 +285,6 @@ public class DataCollectionSteps {
     @Then("verify success for with lowercase")
     public void thenVerifySuccessForWithLowercase() throws Exception {
         retrieveResult.andExpect(status().isOk());
-    }
-
-    @Given("DataCatalog Raw Target Data with id null - DataSetUp Provided")
-    public void givenDataCatalogRawTargetDataWithIdNullDataSetUpProvided() {
-        dataCollectionSetUpForImageSetwithData();
-    }
-
-    @When("get DataCatalog Raw Target Data with id null")
-    public void whenGetDataCatalogRawTargetDataWithIdNull() {
-        try {
-            retrieveResult = mockMvc.perform(
-                    get("/api/v1/datacatalog/raw-target-data?annotationType=test&id=")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-            );
-        } catch (Exception e) {
-            throwable = e;
-        }
-    }
-
-    @Then("verify DataCatalog Raw Target Data with id null")
-    public void thenVerifyDataCatalogRawTargetDataWithIdNull() throws Exception {
-        assert (throwable.toString().contains("Request processing failed"));
-    }
-
-    @Given("DataCatalog Raw Target Data for empty DataSet - DataSetUp Provided")
-    public void givenDataCatalogRawTargetDataForEmptyDataSetDataSetUpProvided() {
-        when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
-    }
-
-    @When("get DataCatalog Raw Target Data for empty DataSet")
-    public void whenGetDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
-        retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=point")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-        );
-    }
-
-    @Then("verify DataCatalog Raw Target Data for empty DataSet")
-    public void thenVerifyDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
-        //retrieveResult.andExpect(status().isNotFound());
-        retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
     @Given("Retrieve DataSet for Filters by OrgId DataSetUp Provided")
