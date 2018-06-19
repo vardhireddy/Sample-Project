@@ -1523,10 +1523,12 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         logger.info("Passing http request for validation.");
 
+        String orgId = "";
+
         List<Upload> listOfUploadEntities;
         try {
-
-            listOfUploadEntities = dataCatalogService.getAllUploads(httpServletRequest);
+            orgId = RequestValidator.getOrgIdFromAuth( httpServletRequest);
+            listOfUploadEntities = dataCatalogService.getAllUploads(orgId);
 
         } catch ( DataCatalogException e )
         {
@@ -1535,6 +1537,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         } catch ( Exception e ) {
                 logger.error( "Error retrieving upload entities : {}", e.getMessage() );
+                e.printStackTrace();
                 return new ResponseEntity<>( Collections.singletonMap( "response", "Error retrieving upload entities." + " Please contact the corresponding service assistant." ),
                                              HttpStatus.INTERNAL_SERVER_ERROR );
         }

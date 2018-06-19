@@ -112,12 +112,11 @@ public interface IDataCatalogService {
 
     /**
      * Fetches all uploads entities for the organisation
-     * @param httpServletRequest - http servlet request from the get Uploads API request
+     * @param orgId - organisation ID
      *
      * @return list of upload entity details.
-     * If the user is not authorised -> throws Exception and error message
      * if there are no uploads associated with the given organisation, then an empty list will be returned.
      */
-    List<Upload> getAllUploads( HttpServletRequest httpServletRequest ) throws DataCatalogException;
+    List<Upload> getAllUploads( String orgId );
 
 }

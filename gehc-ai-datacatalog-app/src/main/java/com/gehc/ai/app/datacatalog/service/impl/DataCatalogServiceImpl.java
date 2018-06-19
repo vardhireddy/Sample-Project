@@ -210,23 +210,12 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	}
 
     @Override
-    public  List<Upload> getAllUploads( HttpServletRequest httpServletRequest ) throws DataCatalogException{
+    public  List<Upload> getAllUploads( String orgId){
 
-		String orgId = RequestValidator.getOrgIdFromAuth( httpServletRequest);
+       if(orgId.isEmpty()){
+            return Collections.emptyList();
+        }
 
-		if (orgId.isEmpty())
-		{
-			return new ArrayList<>();
-		}
-
-		List<Upload> uploadList = new ArrayList<>(  );
-		try {
-			uploadList = dataCatalogDao.getAllUploads(orgId);
-		}catch ( Exception e )
-		{
-			e.printStackTrace();
-			throw e;
-		}
-		return uploadList;
+		return dataCatalogDao.getAllUploads(orgId);
     }
 }
