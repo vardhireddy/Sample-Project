@@ -79,7 +79,12 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
                        && null != req.getServletPath()
                        && req.getServletPath().startsWith("/api/v1/datacatalog/contract/")){
                    logger.debug( " +++ In preHandle method, put/get contract by ID is getting called so not looking for org id");
-	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/patient")){
+	           } if (req.getMethod() != null
+                     && (req.getMethod().equalsIgnoreCase("POST"))
+                     && null != req.getServletPath()
+                     && req.getServletPath().startsWith("/api/v1/datacatalog/upload")){
+                           logger.debug( " +++ In preHandle method, post upload is getting called so not looking for org id");
+                   } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/patient")){
 	        	   logger.debug( " +++ In preHandle method, save patient is getting called so not looking for org id");
 	           } else if(null != req.getMethod() && req.getMethod().equalsIgnoreCase("POST") && null != req.getServletPath() && req.getServletPath().endsWith("/study")){
 	        	   logger.debug( " +++ In preHandle method, save study is getting called so not looking for org id");

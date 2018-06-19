@@ -133,4 +133,11 @@ public interface IDataCatalogDao {
 	 * @return - a copy of the upload entity saved to the database repository
 	 */
 	Upload saveUpload(Upload uploadEntity);
+
+    /**
+     * Returns list of upload entities for given orgId
+     * @param orgId - organization Id
+     * @return list of upload entities
+     */
+    List<Upload> getAllUploads(String orgId);
 }

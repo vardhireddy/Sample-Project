@@ -108,4 +108,14 @@ public interface IDataCatalogService {
          * if invalid - returns an error message with the reason specifying why the Upload could not be created
          */
     Upload createUpload(Upload uploadRequest) throws DataCatalogException;
+
+    /**
+     * Fetches all uploads entities for the organisation
+     * @param orgId - organisation ID
+     *
+     * @return list of upload entity details.
+     * if there are no uploads associated with the given organisation, then an empty list will be returned.
+     */
+    List<Upload> getAllUploads( String orgId );
+
 }

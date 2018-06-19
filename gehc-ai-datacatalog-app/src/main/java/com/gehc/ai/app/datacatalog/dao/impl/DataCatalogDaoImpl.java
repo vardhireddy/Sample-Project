@@ -898,4 +898,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
         }
 
     }
+
+
+    @Override
+    public List<Upload> getAllUploads(String orgId) {
+
+       return uploadRepository.findByOrgId(orgId);
+
+    }
 }

@@ -400,4 +400,15 @@ public interface IDataCatalogRest {
      * @return a JSON representation of the upload entity that was saved
      */
     ResponseEntity<?> createUpload(Upload uploadRequest);
+
+
+    /**
+     * Returns list of upload entities for authorized user
+     * @param httpServletRequest - http servlet request to parse orgId from Authentication token
+     * @return List<Upload>
+     *     if user is Authorized -> returns list of upload entities
+     *     if user is unauthorized -> returns 401 status code and error message
+     *     if user is forbidden -> returns 403 status code and error message
+     */
+    ResponseEntity<?> getAllUploads(HttpServletRequest httpServletRequest);
 }

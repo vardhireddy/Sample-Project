@@ -15,10 +15,14 @@ import com.gehc.ai.app.datacatalog.entity.Upload;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
+
 /**
  * @author arunasindhugorantla
  */
 @RepositoryRestResource(collectionResourceRel = "upload", path = "upload")
 public interface UploadRepository extends JpaRepository<Upload, Long> {
+
+    List<Upload> findByOrgId(String orgId);
 
 }

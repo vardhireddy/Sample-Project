@@ -30,11 +30,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 @Configuration
 @Component
@@ -208,4 +208,14 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 				throw new DataCatalogException("Invalid/Expired contract ID provided.",HttpStatus.BAD_REQUEST);
 			}
 	}
+
+    @Override
+    public  List<Upload> getAllUploads( String orgId){
+
+       if(orgId.isEmpty()){
+            return Collections.emptyList();
+        }
+
+		return dataCatalogDao.getAllUploads(orgId);
+    }
 }
