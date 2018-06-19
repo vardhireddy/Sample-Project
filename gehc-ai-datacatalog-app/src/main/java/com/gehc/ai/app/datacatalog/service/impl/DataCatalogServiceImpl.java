@@ -20,6 +20,7 @@ import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
@@ -28,13 +29,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 @Configuration
 @Component
@@ -208,4 +208,25 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 				throw new DataCatalogException("Invalid/Expired contract ID provided.",HttpStatus.BAD_REQUEST);
 			}
 	}
+
+    @Override
+    public  List<Upload> getAllUploads( HttpServletRequest httpServletRequest ) throws DataCatalogException{
+
+		String orgId = RequestValidator.getOrgIdFromAuth( httpServletRequest);
+
+		if (orgId.isEmpty())
+		{
+			return new ArrayList<>();
+		}
+
+		List<Upload> uploadList = new ArrayList<>(  );
+		try {
+			uploadList = dataCatalogDao.getAllUploads(orgId);
+		}catch ( Exception e )
+		{
+			e.printStackTrace();
+			throw e;
+		}
+		return uploadList;
+    }
 }

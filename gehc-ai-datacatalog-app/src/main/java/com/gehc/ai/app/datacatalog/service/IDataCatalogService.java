@@ -22,6 +22,7 @@ import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -108,4 +109,15 @@ public interface IDataCatalogService {
          * if invalid - returns an error message with the reason specifying why the Upload could not be created
          */
     Upload createUpload(Upload uploadRequest) throws DataCatalogException;
+
+    /**
+     * Fetches all uploads entities for the organisation
+     * @param httpServletRequest - http servlet request from the get Uploads API request
+     *
+     * @return list of upload entity details.
+     * If the user is not authorised -> throws Exception and error message
+     * if there are no uploads associated with the given organisation, then an empty list will be returned.
+     */
+    List<Upload> getAllUploads( HttpServletRequest httpServletRequest ) throws DataCatalogException;
+
 }

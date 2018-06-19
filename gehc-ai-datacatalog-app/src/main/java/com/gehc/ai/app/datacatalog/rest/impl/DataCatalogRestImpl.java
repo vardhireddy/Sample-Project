@@ -1146,7 +1146,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             resultSet = annotationRepository.getCountOfImagesAnnotated(orgId);
         } catch (Exception e) {
             logger.error("Exception retrieving data in getCountOfImagesAnnotated : {}", e.getMessage());
-            return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.",
+            return new ResponseEntity("Internal Server error. Please contact the corresponding service assistant.",
                     HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
@@ -1178,7 +1178,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             contract = contractRepository.findByIdAndOrgId(contractId, orgId);
         } catch (Exception e) {
             logger.error("Error validating given parameters : {}", e.getMessage());
-            return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity("Internal Server error. Please contact the corresponding service assistant.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (contract == null) {
@@ -1420,7 +1420,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             contractToBeDeleted = contractRepository.findOne(contractId);
         } catch (Exception e) {
             logger.error("Error retrieving contract to delete: {}", e.getMessage());
-            return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         try {
@@ -1436,7 +1436,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             contractRepository.save(contractToBeDeleted);
         } catch (Exception e) {
             logger.error("Error deleting the contract : {}", e.getMessage());
-            return new ResponseEntity<>(Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactivated successfully"), HttpStatus.OK);
 
@@ -1456,7 +1456,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }catch (Exception e){
             logger.error("Error retrieving contracts associated with the data collection : {}", e.getMessage());
             return new ResponseEntity(Collections.singletonMap("response", "Error retrieving contracts associated with the data collection." +
-                    " Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+                    " Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (resultListOfContracts.get("active").isEmpty() && resultListOfContracts.get("inactive").isEmpty())
@@ -1498,10 +1498,48 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         {
             logger.error("Exception saving the upload entity : {}", e.getMessage());
             return new ResponseEntity(Collections.singletonMap("response", "Exception saving the upload entity." +
-                    " Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+                    " Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(uploadResponse,HttpStatus.CREATED);
+    }
+
+    @ApiOperation(value = "Get all upload entities", httpMethod = "GET", response = List.class, tags = "Retrieve Upload entities")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = List.class),
+            @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.GET)
+    @Override
+    public ResponseEntity<?> getAllUploads(HttpServletRequest httpServletRequest){
+
+        logger.info("Passing http request for validation.");
+
+        List<Upload> listOfUploadEntities;
+        try {
+
+            listOfUploadEntities = dataCatalogService.getAllUploads(httpServletRequest);
+
+        } catch ( DataCatalogException e )
+        {
+                logger.error( "Error validating servlet request : {}", e.getMessage() );
+                return new ResponseEntity<>( Collections.singletonMap( "response", "Request cannot be validated because of malformed authorization token." ), HttpStatus.FORBIDDEN );
+
+        } catch ( Exception e ) {
+                logger.error( "Error retrieving upload entities : {}", e.getMessage() );
+                return new ResponseEntity<>( Collections.singletonMap( "response", "Error retrieving upload entities." + " Please contact the corresponding service assistant." ),
+                                             HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+
+        return new ResponseEntity<>(listOfUploadEntities,HttpStatus.OK);
     }
 
 }

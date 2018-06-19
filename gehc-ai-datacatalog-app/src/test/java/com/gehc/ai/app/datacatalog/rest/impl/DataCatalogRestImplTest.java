@@ -439,7 +439,7 @@ public class DataCatalogRestImplTest {
     public void testValidateContractIdAndOrgIdForException(){
         when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
         ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
-        assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
+        assertEquals("Internal Server error. Please contact the corresponding service assistant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
     }
 
@@ -658,7 +658,7 @@ public class DataCatalogRestImplTest {
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
         //ASSERT
-        assertEquals("Error retrieving contract to delete. Please contact the corresponding service assitant.", result.getBody().get("response"));
+        assertEquals("Error retrieving contract to delete. Please contact the corresponding service assistant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
     }
 
@@ -673,7 +673,7 @@ public class DataCatalogRestImplTest {
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
         //ASSERT
-        assertEquals("Error deleting the contract. Please contact the corresponding service assitant.", result.getBody().get("response"));
+        assertEquals("Error deleting the contract. Please contact the corresponding service assistant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
     }
 
