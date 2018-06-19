@@ -94,19 +94,18 @@ public interface IDataCatalogService {
     Map<String,List<ContractByDataSetId>> getContractsByDataCollectionId(Long dataCollectionId);
 
     /**
-     * Method to verify if the upload request is valid
-     * @param uploadRequest - the upload request data
-     * @return
-     * if request data is vaild -> returns validated and updated upload entity to be saved in repository
-     * if request is invalid -> throws DataCatalog Exception specifying the error message and HTTP status code
-     */
-    Upload validateUploadRequest(Upload uploadRequest) throws DataCatalogException;
-
-
-    /**
      * Saves the given upload entity to the repository
      * @param uploadEntity - Upload entity object
      * @return - a copy of the upload entity saved to the database repository
      */
     Upload saveUpload(Upload uploadEntity);
+
+        /**
+         *  validates the request parameters and creates a upload entity in the repository
+         * @param uploadRequest - Request body parameters from the POST Upload API
+         * @return
+         * if valid request - returns a copy of upload entity created in the repository
+         * if invalid - returns an error message with the reason specifying why the Upload could not be created
+         */
+    Upload createUpload(Upload uploadRequest) throws DataCatalogException;
 }

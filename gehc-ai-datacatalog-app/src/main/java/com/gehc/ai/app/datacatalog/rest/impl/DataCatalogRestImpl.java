@@ -1578,8 +1578,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         Upload uploadResponse;
         try {
-            uploadRequest = dataCatalogService.validateUploadRequest(uploadRequest);
-            uploadResponse = dataCatalogService.saveUpload(uploadRequest);
+            uploadResponse = dataCatalogService.createUpload(uploadRequest);
         }catch (DataCatalogException e)
         {
             logger.error(e.getMessage());
