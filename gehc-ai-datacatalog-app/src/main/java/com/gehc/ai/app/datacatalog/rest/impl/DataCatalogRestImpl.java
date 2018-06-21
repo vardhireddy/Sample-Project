@@ -1569,7 +1569,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         Upload upload;
         try {
             orgId = RequestValidator.getOrgIdFromAuth( httpServletRequest );
-            RequestValidator.validateContractId( uploadId );
+            RequestValidator.validateUploadId( uploadId );
             upload = dataCatalogService.getUploadById( uploadId );
         } catch ( DataCatalogException exception ) {
             logger.error( "Exception validating the request authorisation.", exception.getMessage() );
