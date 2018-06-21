@@ -1,7 +1,6 @@
 package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -10,19 +9,23 @@ import static org.mockito.Mockito.when;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.*;
-
-import com.gehc.ai.app.datacatalog.entity.*;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.filters.RequestValidator;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
+import java.util.Collections;
 
 import org.junit.Before;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
@@ -39,17 +42,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
-
-/*import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
-import Annotation;
-import DataCollection;
-import ImageSet;
-import AnnotationRepository;
-import COSNotificationRepository;
-import PatientRepository;
-import StudyRepository;
-import IDataCatalogRest;
-import IDataCatalogService;*/
 
 
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
