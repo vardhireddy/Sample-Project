@@ -32,8 +32,9 @@ public enum ErrorCodes {
 	UNSUPPORTED_CONTRACT_METADATA_FILE_TYPE("Only .json file is supported for metadata"),
 	INVALID_CONTRACT_METADATA_FILE("Unable to parse Contract Metadata File"),
 	MISSING_CONTRACT_ID("Contract Id is required for fetching contract details"),
-	INVALID_CONTRACT_ID("Contract Id should be in Number format")
-    ;
+	INVALID_CONTRACT_ID("Contract Id should be in Number format"),
+	MISSING_UPLOAD_ID("Upload Id is required for fetching upload details"),
+	INVALID_UPLOAD_ID("Upload Id should be in Number format");
 
     private final String errorMessage;
 

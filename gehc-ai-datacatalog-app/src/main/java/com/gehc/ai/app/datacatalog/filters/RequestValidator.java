@@ -166,6 +166,25 @@ public class RequestValidator {
 	}
 
 	/**
+	 * Validates the upload Id required for fetching upload details
+	 *
+	 * @param uploadId
+	 * @return
+	 * @throws DataCatalogException
+	 */
+	public static void validateUploadId(Long uploadId) throws DataCatalogException {
+
+		if(uploadId == null){
+			throw new DataCatalogException(ErrorCodes.MISSING_UPLOAD_ID.getErrorMessage());
+		}
+
+		if(uploadId <= 0){
+			throw new DataCatalogException(ErrorCodes.INVALID_UPLOAD_ID.getErrorMessage());
+		}
+
+	}
+
+	/**
 	 * Retrieves orgID from Auth token
 	 * @param httpServletRequest - httpServletRequest object
 	 * @return org ID

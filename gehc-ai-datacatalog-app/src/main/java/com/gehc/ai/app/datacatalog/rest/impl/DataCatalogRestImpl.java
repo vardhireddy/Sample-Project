@@ -14,7 +14,6 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
 import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Date;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,7 +53,6 @@ import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -74,9 +71,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
@@ -1543,6 +1537,62 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
 
         return new ResponseEntity<>(listOfUploadEntities,HttpStatus.OK);
+    }
+
+    /**
+     * API to fetch contract
+     *
+     * @param
+     * @return
+     */
+    @Override
+    @ApiOperation(value = "Get Upload By Id ", httpMethod = "GET", response = Contract.class, tags = "Retrieve Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUploadById(@ApiParam(value = "Id of Upload") @PathVariable(value = "id") Long uploadId,
+                                                HttpServletRequest httpServletRequest) {
+
+        logger.info( "Passing upload ID to retrieve upload details." );
+
+        String orgId = "";
+        Upload upload;
+        try {
+            orgId = RequestValidator.getOrgIdFromAuth( httpServletRequest );
+            RequestValidator.validateContractId( uploadId );
+            upload = dataCatalogService.getUploadById( uploadId );
+        } catch ( DataCatalogException exception ) {
+            logger.error( "Exception validating the request authorisation.", exception.getMessage() );
+            return new ResponseEntity( Collections.singletonMap( "response",
+                                                                 "Request cannot be validated because of malformed authorization token."), exception.getHttpStatusCode() );
+        }catch ( Exception e ) {
+            logger.error( "Exception retrieving the contract ", e.getMessage() );
+            e.printStackTrace();
+            return new ResponseEntity( Collections.singletonMap( "response", "Exception retrieving the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+
+
+        if (upload == null || upload.getId() == null){
+            return new ResponseEntity(Collections.singletonMap("response","No Upload Exists with the given Id."), HttpStatus.NOT_FOUND);
+        }else if (!upload.getOrgId().equals(orgId))
+        {
+            return new ResponseEntity( Collections.singletonMap( "response", "User does not have access to the requested upload data."), HttpStatus.FORBIDDEN );
+        }
+        else
+        {
+            return new ResponseEntity<>(upload, HttpStatus.OK);
+        }
+
     }
 
 }

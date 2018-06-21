@@ -118,4 +118,13 @@ public interface IDataCatalogService {
      */
     List<Upload> getAllUploads( String orgId );
 
+    /**
+     * Fetches the upload associated with given Id
+     * @param uploadId - unique ID for upload entities
+     * @return
+     * if upload exists with given ID -> returns Upload entity
+     * if upload does not exist with given ID -> returns null
+     */
+    Upload getUploadById( Long uploadId);
+
 }

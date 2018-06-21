@@ -89,6 +89,24 @@ public class RetrieveUploadsSteps {
 
     }
 
+    @Given( "a request to retrieve a specific upload" )
+    public void aRequestToRetrieveSpecificUpload(){
+        Upload upload = buildUploadEntity();
+        when(dataCatalogDao.getUploadById(anyLong())).thenReturn(upload);
+    }
+
+    @Given( "the target upload belongs to the organization specified in the request" )
+    public void theTargetUploadBelongsToOrganizationSpecifiedInRequest(){
+
+    }
+
+    @Given( "the target upload does not belong to the organization specified in the request" )
+    public void theTargetUploadDoesNotBelongToOrganizationSpecifiedInRequest(){
+        Upload upload = buildUploadEntity();
+        upload.setOrgId( "87e2tyws39t7efu1wsij091e" );
+        when(dataCatalogDao.getUploadById(anyLong())).thenReturn(upload);
+    }
+
     /////////////////////
     //
     // WHEN statements //
@@ -103,6 +121,12 @@ public class RetrieveUploadsSteps {
     @When("the API which retrieves uploads is invoked - unauthorized")
     public void theAPIWhichRetrievesUploadsIsInvokedWithoutValidAuthenticationToken() throws Exception{
         result = mockMvc.perform(get("/api/v1/datacatalog/upload"));
+    }
+
+    @When("the API which retrieves a specific upload is invoked")
+    public void theAPIWhichRetrievesSpecificUploadsIsInvoked() throws Exception{
+        result = mockMvc.perform(get("/api/v1/datacatalog/upload/1")
+                                         .requestAttr("orgId", "f1341a2c-7a54-4d68-9f40-a8b2d14d3806"));
     }
 
     /////////////////////
@@ -135,6 +159,16 @@ public class RetrieveUploadsSteps {
     @Then("the retrieve uploads API response body should contain an error message saying he is not authorized to access a specific organization’s uploads")
     public void theGetAllUploadResponseMessageShouldBeRequestCannotBeValidatedBecauseOfMalformedAuthorizationToken() throws Exception{
         result.andExpect(content().string(containsString("Request cannot be validated because of malformed authorization token.")));
+    }
+
+    @Then("a single call to get the target upload should be made to the database")
+    public void aSingleCallToGetTargetUploadsToTheDatabase() throws Exception{
+        verify(dataCatalogDao, times(1)).getUploadById(anyLong());
+    }
+
+    @Then("the response body should contain an error message saying the user is unauthorized to access the target upload")
+    public void theGetUploadByIdResponseMessageShouldBeRequestCannotBeValidatedBecauseOfMalformedAuthorizationToken() throws Exception{
+        result.andExpect(content().string(containsString("User does not have access to the requested upload data.")));
     }
 
     /////////////

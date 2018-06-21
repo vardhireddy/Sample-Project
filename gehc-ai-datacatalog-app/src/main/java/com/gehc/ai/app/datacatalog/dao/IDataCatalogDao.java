@@ -140,4 +140,11 @@ public interface IDataCatalogDao {
      * @return list of upload entities
      */
     List<Upload> getAllUploads(String orgId);
+
+	/**
+	 * given a upload id, return the upload entity details
+	 * @param uploadId - unique Id of upload entity
+	 * @return upload details, stored in a upload object
+	 */
+	 Upload getUploadById( Long uploadId);
 }
