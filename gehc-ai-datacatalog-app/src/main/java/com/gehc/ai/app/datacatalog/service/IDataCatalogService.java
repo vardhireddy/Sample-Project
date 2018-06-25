@@ -127,4 +127,17 @@ public interface IDataCatalogService {
      */
     Upload getUploadById( Long uploadId);
 
+
+    /**
+     * Returns the upload entity details for given query parameters
+     * @param spaceId - space ID of upload on COS
+     * @param orgId - organisation ID
+     * @param contractId - contract ID
+     * @return
+     * if upload exists -> returns the upload entity details
+     * if contract is invalid -> throws DataCatalog exception with status code 400 and error message
+     * if upload does not exist -> returns null
+     */
+   Upload getUploadByQueryParameters(String spaceId, String orgId, Long contractId) throws DataCatalogException;
+
 }

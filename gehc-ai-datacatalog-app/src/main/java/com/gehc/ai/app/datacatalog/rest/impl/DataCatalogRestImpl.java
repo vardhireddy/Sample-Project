@@ -1539,14 +1539,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return new ResponseEntity<>(listOfUploadEntities,HttpStatus.OK);
     }
 
-    /**
-     * API to fetch contract
-     *
-     * @param
-     * @return
-     */
     @Override
-    @ApiOperation(value = "Get Upload By Id ", httpMethod = "GET", response = Contract.class, tags = "Retrieve Upload")
+    @ApiOperation(value = "Get Upload By Id ", httpMethod = "GET", response = Upload.class, tags = "Retrieve Upload")
     @ApiResponses(value = {
             @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Upload.class),
             @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
@@ -1576,7 +1570,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity( Collections.singletonMap( "response",
                                                                  "Request cannot be validated because of malformed authorization token."), exception.getHttpStatusCode() );
         }catch ( Exception e ) {
-            logger.error( "Exception retrieving the contract ", e.getMessage() );
+            logger.error( "Exception retrieving the upload entity ", e.getMessage() );
             e.printStackTrace();
             return new ResponseEntity( Collections.singletonMap( "response", "Exception retrieving the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
         }
@@ -1594,5 +1588,44 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
 
     }
+
+    @Override
+    @ApiOperation(value = "Get Upload By Id ", httpMethod = "GET", response = Upload.class, tags = "Retrieve Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload/validate", method = RequestMethod.GET)
+    public ResponseEntity<?> getUploadByQueryParameters(@RequestParam("spaceId") String spaceId,
+                                                        @RequestParam("orgId") String orgId,
+                                                        @RequestParam("contractId") Long contractId){
+
+            logger.info( "Passing query parameters to retrieve upload details." );
+
+            Upload upload;
+            try {
+                    upload = dataCatalogService.getUploadByQueryParameters(spaceId, orgId, contractId);
+            } catch ( DataCatalogException e ) {
+                    logger.error( "Exception validating the request.", e.getMessage() );
+                    return new ResponseEntity( Collections.singletonMap( "response", e.getMessage()), e.getHttpStatusCode() );
+            }catch ( Exception e ) {
+                    logger.error( "Exception retrieving the upload entity ", e.getMessage() );
+                    e.printStackTrace();
+                    return new ResponseEntity( Collections.singletonMap( "response", "Exception retrieving the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
+            }
+
+            if (upload == null || upload.getId() == null){
+                    return new ResponseEntity(Collections.singletonMap("response","No Upload Exists with the given query parameters."), HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(upload, HttpStatus.OK);
+        }
 
 }

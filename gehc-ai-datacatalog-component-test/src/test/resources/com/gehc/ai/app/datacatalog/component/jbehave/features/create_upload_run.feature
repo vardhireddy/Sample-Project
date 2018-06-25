@@ -65,3 +65,12 @@ When the API which creates a upload is invoked without tags
 Then the create upload response's status code should be 400
 And the create upload response's content type should be JSON
 And the response's body should contain an error message saying the request is Missing one/more required fields data.
+
+@test
+Scenario: User shall not be able to create a upload if upload is not unique based on spaceId, orgId, contractId
+Meta: @automated
+Given spaceId, orgId, contractId is already associated with an existing upload entity
+When the API which creates a upload is invoked with duplicate data in spaceId, orgId, contractId
+Then the create upload response's status code should be 409
+And the create upload response's content type should be JSON
+And the response's body should contain an error message saying the an upload entity already exists with given spaceId, orgId and contractId.
