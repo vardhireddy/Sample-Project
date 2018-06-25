@@ -874,6 +874,48 @@ public class DataCatalogRestImplTest {
 
     }
 
+    // validate if upload exists API test cases
+    @Test
+    public void  getUploadByQueryParameters() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( upload );
+        Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
+        //ACT
+        ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
+        //ASSERT
+        assertEquals( 200,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getUploadByQueryParametersFor404NotFoundException() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( null );
+        Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
+        //ACT
+        ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
+        //ASSERT
+        assertEquals( 404,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getUploadByQueryParametersFor500Exception() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenThrow( new RuntimeException( "" ) );
+        Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
+        //ACT
+        ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
+        //ASSERT
+        assertEquals( 500,  response.getStatusCodeValue());
+    }
+
     /////////////////////
     //    HELPERS     //
     ////////////////////
