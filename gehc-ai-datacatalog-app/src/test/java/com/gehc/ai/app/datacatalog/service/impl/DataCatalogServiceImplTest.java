@@ -7,6 +7,7 @@ import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
+import org.hibernate.DuplicateMappingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,7 +20,6 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.when;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -241,6 +241,28 @@ public class DataCatalogServiceImplTest {
         Upload result = service.getUploadById( null );
         //ASSERT
         assertEquals( null,  result);
+
+    }
+
+    @Test
+    public void  getAllUploadByIdWhenNoUploadExistsForGivenId(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        upload.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        when( dataCatalogDao.getUploadById( anyLong() ) ).thenReturn( null );
+        //ACT
+        Upload result = service.getUploadById( 1L );
+        //ASSERT
+        assertEquals( null,  result);
+
+    }
+
+    @Test(expected = DuplicateMappingException.class)
+    public void  getAllUploadByIdWhenMultipleUploadsExistOnOneId(){
+        //ARRANGE
+        when( dataCatalogDao.getUploadById( anyLong() ) ).thenThrow( new DuplicateMappingException(DuplicateMappingException.Type.ENTITY,"") );
+        //ACT && ASSERT
+         service.getUploadById( 1L );
 
     }
 
