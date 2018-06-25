@@ -166,6 +166,19 @@ public class DataCatalogServiceImplTest {
         //ARRANGE
         Upload upload = buildUploadEntity();
         Contract contract = buildContractEntity();
+        when( dataCatalogDao.getUploadByQueryParameters( anyString(), anyString(), anyLong() ) ).thenReturn( upload );
+        when( dataCatalogDao.saveUpload( upload ) ).thenReturn( upload );
+        when( dataCatalogDao.getContractDetails( anyLong() ) ).thenReturn( contract );
+        //ACT & ASSERT
+        service.createUpload( upload );
+
+    }
+
+    @Test(expected = DataCatalogException.class )
+    public void  createUploadForDuplicateDataInRequest() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        Contract contract = buildContractEntity();
         contract.setActive( "false" );
         when( dataCatalogDao.saveUpload( upload ) ).thenReturn( upload );
         when( dataCatalogDao.getContractDetails( anyLong() ) ).thenReturn( contract );

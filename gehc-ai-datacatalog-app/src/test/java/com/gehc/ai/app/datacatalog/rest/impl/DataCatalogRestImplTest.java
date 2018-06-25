@@ -790,6 +790,19 @@ public class DataCatalogRestImplTest {
 
     }
 
+    @Test
+    public void  createUploadFor409OnDuplicateDatEntry() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new DataCatalogException("An Upload entity already exists with given spaceId, orgId and contractId.",HttpStatus.CONFLICT) );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 409,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","An Upload entity already exists with given spaceId, orgId and contractId."),response.getBody() );
+
+    }
+
     //test get all uploads
     @Test
     public void  getAllUploadsSuccessfully(){
