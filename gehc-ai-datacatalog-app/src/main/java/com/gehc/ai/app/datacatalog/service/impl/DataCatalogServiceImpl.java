@@ -212,10 +212,17 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
     @Override
     public  List<Upload> getAllUploads( String orgId){
 
-       if(orgId.isEmpty()){
+       if(orgId == null || orgId.isEmpty()){
             return Collections.emptyList();
         }
 
 		return dataCatalogDao.getAllUploads(orgId);
     }
+
+    @Override
+	public Upload getUploadById( Long uploadId){
+		if (uploadId == null) return null;
+
+		return dataCatalogDao.getUploadById(uploadId);
+	}
 }

@@ -906,4 +906,10 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
        return uploadRepository.findByOrgId(orgId);
 
     }
+
+    @Override
+    public Upload getUploadById( Long uploadId){
+
+        return uploadRepository.findOne( uploadId );
+    }
 }

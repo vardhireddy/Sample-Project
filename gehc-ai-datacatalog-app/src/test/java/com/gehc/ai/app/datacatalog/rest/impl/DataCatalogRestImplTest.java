@@ -1,7 +1,6 @@
 package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -9,19 +8,24 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.sql.Date;
-import java.util.*;
-
+import java.sql.Timestamp;
+import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
+import java.util.Collections;
 
 import org.junit.Before;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
@@ -32,24 +36,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
-
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-
-/*import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
-import Annotation;
-import DataCollection;
-import ImageSet;
-import AnnotationRepository;
-import COSNotificationRepository;
-import PatientRepository;
-import StudyRepository;
-import IDataCatalogRest;
-import IDataCatalogService;*/
 
 
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
@@ -113,7 +105,7 @@ public class DataCatalogRestImplTest {
     }*/
 
     @Autowired
-    private HttpServletRequest req;
+    private HttpServletRequest httpServletRequest;
 
     @Mock
     private IDataCatalogService dataCatalogService;
@@ -144,8 +136,8 @@ public class DataCatalogRestImplTest {
     @Before
     public void setUp() throws Exception {
 
-        req = new MockHttpServletRequest();
-        req.setAttribute("orgId", "1");
+        httpServletRequest = new MockHttpServletRequest();
+        httpServletRequest.setAttribute( "orgId", "1");
 
     }
     /*
@@ -614,9 +606,9 @@ public class DataCatalogRestImplTest {
         //ARRANGE
         Contract contract = buildContractEntity();
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
-        req.setAttribute("orgId","12345678-abcd-42ca-a317-4d408b98c500");
+        httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
         assertEquals("Contract is inactivated successfully", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
@@ -630,9 +622,9 @@ public class DataCatalogRestImplTest {
         contract.setActive("false");
 
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
-        req.setAttribute("orgId","12345678-abcd-42ca-a317-4d408b98c500");
+        httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
         assertEquals("Contract with given id is already inactive", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
@@ -644,7 +636,7 @@ public class DataCatalogRestImplTest {
         //ARRANGE
         when(contractRepository.findOne(anyLong())).thenReturn(null);
         //ACT
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
         assertEquals("No contract exists with given id", result.getBody().get("response"));
         assertEquals(404, result.getStatusCodeValue());
@@ -656,7 +648,7 @@ public class DataCatalogRestImplTest {
         //ARRANGE
         when(contractRepository.findOne(anyLong())).thenThrow(new IllegalArgumentException());
         //ACT
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
         assertEquals("Error retrieving contract to delete. Please contact the corresponding service assistant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
@@ -669,9 +661,9 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
         when(contractRepository.save(any(Contract.class))).thenThrow(new IllegalArgumentException());
-        req.setAttribute("orgId","12345678-abcd-42ca-a317-4d408b98c500");
+        httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L,req);
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
         assertEquals("Error deleting the contract. Please contact the corresponding service assistant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
@@ -732,6 +724,159 @@ public class DataCatalogRestImplTest {
         //ASSERT
         assertEquals(500, result.getStatusCodeValue());
     }
+
+    //test cases for create Upload
+    @Test
+    public void  createUploadSuccessfully() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenReturn( upload );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 201,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  createUploadFor400BadRequestData() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new DataCatalogException( "Missing one/more required fields data.", HttpStatus.BAD_REQUEST) );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 400,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","Missing one/more required fields data."),response.getBody() );
+
+    }
+
+    @Test
+    public void  createUploadFor400OnInvalidOrExpiredContractId() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new DataCatalogException("Invalid/Expired contract ID provided.",HttpStatus.BAD_REQUEST) );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 400,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","Invalid/Expired contract ID provided."),response.getBody() );
+
+    }
+
+    @Test
+    public void  createUploadFor400OnContractIdDoesNotExist() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new DataCatalogException("No contract exists with provided contract ID.",HttpStatus.BAD_REQUEST) );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 400,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","No contract exists with provided contract ID."),response.getBody() );
+
+    }
+
+    @Test
+    public void  createUploadFor500Exception() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new RuntimeException("No contract exists with provided contract ID.") );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 500,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","Exception saving the upload entity. Please contact the corresponding service assistant."),response.getBody() );
+
+    }
+
+    //test get all uploads
+    @Test
+    public void  getAllUploadsSuccessfully(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        List<Upload> uploadList = new ArrayList<>(  );
+        uploadList.add( upload );
+        uploadList.add( upload );
+        when( dataCatalogService.getAllUploads( anyString() ) ).thenReturn( uploadList );
+        //ACT
+        ResponseEntity response = controller.getAllUploads( httpServletRequest );
+        //ASSERT
+        assertEquals( 200,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getAllUploadsFor500Exception(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        List<Upload> uploadList = new ArrayList<>(  );
+        uploadList.add( upload );
+        uploadList.add( upload );
+        when( dataCatalogService.getAllUploads( anyString() ) ).thenThrow( new RuntimeException("Exceptions")  );
+        //ACT
+        ResponseEntity response = controller.getAllUploads( httpServletRequest );
+        //ASSERT
+        assertEquals( 500,  response.getStatusCodeValue());
+
+    }
+
+    //test get upload by Id
+    @Test
+    public void  getAllUploadByIdSuccessfully(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadById( anyLong() ) ).thenReturn( upload );
+        httpServletRequest.setAttribute( "orgId", "f1341a2c-7a54-4d68-9f40-a8b2d14d3806" );
+        //ACT
+        ResponseEntity response = controller.getUploadById( 1L , httpServletRequest);
+        //ASSERT
+        assertEquals( 200,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getAllUploadByIdFor500Exception(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadById( anyLong() ) ).thenThrow( new RuntimeException("Exception") );
+        httpServletRequest.setAttribute( "orgId", "f1341a2c-7a54-4d68-9f40-a8b2d14d3806" );
+        //ACT
+        ResponseEntity response = controller.getUploadById( 1L , httpServletRequest);
+        //ASSERT
+        assertEquals( 500,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getAllUploadByIdFor404UploadNotFoundException(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadById( anyLong() ) ).thenReturn( new Upload() );
+        httpServletRequest.setAttribute( "orgId", "f1341a2c-7a54-4d68-9f40-a8b2d14d3806" );
+        //ACT
+        ResponseEntity response = controller.getUploadById( 1L , httpServletRequest);
+        //ASSERT
+        assertEquals( 404,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getAllUploadByIdFor403ForbiddenException(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadById( anyLong() ) ).thenReturn( upload );
+        httpServletRequest.setAttribute( "orgId", "e687970ytklgtr6869o" );
+        //ACT
+        ResponseEntity response = controller.getUploadById( 1L , httpServletRequest);
+        //ASSERT
+        assertEquals( 403,  response.getStatusCodeValue());
+
+    }
+
+    /////////////////////
+    //    HELPERS     //
+    ////////////////////
 
     private Contract buildContractEntity(){
         Contract contract = new Contract();
@@ -800,6 +945,28 @@ public class DataCatalogRestImplTest {
                 Contract.UploadStatus.UPLOAD_COMPLETED,
                 Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}),
                 Contract.DataLocationAllowed.GLOBAL);
+    }
+
+    private Upload buildUploadEntity(){
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        Upload uploadRequest = new Upload();
+        uploadRequest.setId(3L);
+        uploadRequest.setSchemaVersion("v1");
+        uploadRequest.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        uploadRequest.setContractId(100L);
+        uploadRequest.setSpaceId("space123");
+        uploadRequest.setUploadBy("user");
+        uploadRequest.setDataType(dataType);
+        uploadRequest.setTags(tags);
+        uploadRequest.setUploadDate(new Timestamp( 1313045029));
+        uploadRequest.setLastModified(new Timestamp(1313045029));
+
+        return uploadRequest;
     }
 
 }

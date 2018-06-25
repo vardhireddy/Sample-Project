@@ -4,23 +4,28 @@ import com.gehc.ai.app.datacatalog.dao.IDataCatalogDao;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
+import org.hibernate.DuplicateMappingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.when;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.sql.Timestamp;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DataCatalogServiceImplTest {
@@ -116,6 +121,155 @@ public class DataCatalogServiceImplTest {
         service.getContractsByDataCollectionId(1L);
     }
 
+    //test cases for create Upload
+    @Test
+    public void  createUploadSuccessfully() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        Contract contract = buildContractEntity();
+        when( dataCatalogDao.saveUpload( upload ) ).thenReturn( upload );
+        when( dataCatalogDao.getContractDetails( anyLong() ) ).thenReturn( contract );
+        //ACT
+        Upload response = service.createUpload( upload );
+        //ASSERT
+        assertEquals( "f1341a2c-7a54-4d68-9f40-a8b2d14d3806",  response.getOrgId());
+
+    }
+
+    @Test(expected = DataCatalogException.class )
+    public void  createUploadForInvalidRequest() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        upload.setSpaceId(""  );
+        Contract contract = buildContractEntity();
+        when( dataCatalogDao.saveUpload( upload ) ).thenReturn( upload );
+        when( dataCatalogDao.getContractDetails( anyLong() ) ).thenReturn( contract );
+        //ACT & ASSERT
+         service.createUpload( upload );
+
+    }
+
+    @Test(expected = DataCatalogException.class )
+    public void  createUploadForInvalidContractIdInRequest() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        Contract contract = buildContractEntity();
+        when( dataCatalogDao.saveUpload( upload ) ).thenReturn( upload );
+        when( dataCatalogDao.getContractDetails( anyLong() ) ).thenReturn( null );
+        //ACT & ASSERT
+        service.createUpload( upload );
+
+    }
+
+    @Test(expected = DataCatalogException.class )
+    public void  createUploadForExpiredContractIdInRequest() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        Contract contract = buildContractEntity();
+        contract.setActive( "false" );
+        when( dataCatalogDao.saveUpload( upload ) ).thenReturn( upload );
+        when( dataCatalogDao.getContractDetails( anyLong() ) ).thenReturn( contract );
+        //ACT & ASSERT
+        service.createUpload( upload );
+
+    }
+
+    @Test(expected = RuntimeException.class )
+    public void  createUploadForExceptionRetrievingContract() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        Contract contract = buildContractEntity();
+        contract.setActive( "false" );
+        when( dataCatalogDao.saveUpload( upload ) ).thenReturn( upload );
+        when( dataCatalogDao.getContractDetails( anyLong() ) ).thenThrow( new RuntimeException( "" ) );
+        //ACT & ASSERT
+        service.createUpload( upload );
+
+    }
+
+    //test get upload by Id
+    @Test
+    public void  getAllUploadsSuccessfully(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        List<Upload> uploadList = new ArrayList<>(  );
+        uploadList.add( upload );
+        when( dataCatalogDao.getAllUploads( anyString() ) ).thenReturn( uploadList );
+        //ACT
+        List<Upload> result = service.getAllUploads( "orgId" );
+        //ASSERT
+        assertEquals( 1,  result.size());
+
+    }
+
+    @Test
+    public void  getAllUploadForEmptyOrgId(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        List<Upload> uploadList = new ArrayList<>(  );
+        uploadList.add( upload );
+        when( dataCatalogDao.getAllUploads( anyString() ) ).thenReturn( uploadList );
+        //ACT
+        List<Upload> result = service.getAllUploads( "" );
+        //ASSERT
+        assertEquals( 0,  result.size());
+
+    }
+
+
+    //test get upload by Id
+    @Test
+    public void  getAllUploadByIdSuccessfully(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        upload.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        when( dataCatalogDao.getUploadById( anyLong() ) ).thenReturn( upload );
+        //ACT
+       Upload result = service.getUploadById( 1L );
+        //ASSERT
+        assertEquals( "f1341a2c-7a54-4d68-9f40-a8b2d14d3806",  result.getOrgId());
+
+    }
+
+    @Test
+    public void  getAllUploadByIdForNUllID(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        upload.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        when( dataCatalogDao.getUploadById( anyLong() ) ).thenReturn( upload );
+        //ACT
+        Upload result = service.getUploadById( null );
+        //ASSERT
+        assertEquals( null,  result);
+
+    }
+
+    @Test
+    public void  getAllUploadByIdWhenNoUploadExistsForGivenId(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        upload.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        when( dataCatalogDao.getUploadById( anyLong() ) ).thenReturn( null );
+        //ACT
+        Upload result = service.getUploadById( 1L );
+        //ASSERT
+        assertEquals( null,  result);
+
+    }
+
+    @Test(expected = DuplicateMappingException.class)
+    public void  getAllUploadByIdWhenMultipleUploadsExistOnOneId(){
+        //ARRANGE
+        when( dataCatalogDao.getUploadById( anyLong() ) ).thenThrow( new DuplicateMappingException(DuplicateMappingException.Type.ENTITY,"") );
+        //ACT && ASSERT
+         service.getUploadById( 1L );
+
+    }
+
+
+    ////////////////////
+    //   Helpers      //
+    ///////////////////
 
     public Contract buildContractEntity() {
         Contract contract = new Contract();
@@ -135,6 +289,28 @@ public class DataCatalogServiceImplTest {
         contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
 
         return contract;
+    }
+
+    private Upload buildUploadEntity(){
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        Upload uploadRequest = new Upload();
+        uploadRequest.setId(4L);
+        uploadRequest.setSchemaVersion("v1");
+        uploadRequest.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        uploadRequest.setContractId(100L);
+        uploadRequest.setSpaceId("space123");
+        uploadRequest.setUploadBy("user");
+        uploadRequest.setDataType(dataType);
+        uploadRequest.setTags(tags);
+        uploadRequest.setUploadDate(new Timestamp( 1313045029));
+        uploadRequest.setLastModified(new Timestamp(1313045029));
+
+        return uploadRequest;
     }
 
 

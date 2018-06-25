@@ -82,6 +82,7 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/contract");
         registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/contract/{contractId}");
         registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/upload");
+        registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/upload/{id}");
   }
     
     /** The dataSource */

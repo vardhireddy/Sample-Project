@@ -411,4 +411,14 @@ public interface IDataCatalogRest {
      *     if user is forbidden -> returns 403 status code and error message
      */
     ResponseEntity<?> getAllUploads(HttpServletRequest httpServletRequest);
+
+    /**
+     * Returns the upload entity details if given upload ID exists
+     * @param uploadId
+     * @return
+     * if user is authorized and upload exists -> returns status code 200 and the upload entity details
+     * if user is authorized and upload doe not exist -> returns status code 404 and error message
+     * if user is not authorized -> returns 403 status code and error message
+     */
+    ResponseEntity<?> getUploadById(Long uploadId, HttpServletRequest httpServletRequest);
 }
