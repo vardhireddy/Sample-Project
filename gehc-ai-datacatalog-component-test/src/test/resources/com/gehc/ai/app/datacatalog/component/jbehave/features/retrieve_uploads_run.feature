@@ -43,3 +43,24 @@ When the API which retrieves a specific upload is invoked
 Then the retrieve uploads API response status code should be 403
 And the retrieve uploads API response content type should be JSON
 And the response body should contain an error message saying the user is unauthorized to access the target upload
+
+
+@test
+Scenario: User shall be able to retrieve a specific upload for given query parameters
+Meta: @automated
+Given a request to retrieve a specific upload for given query parameters
+And the target upload exists for specified query parameters in the request
+When the API which retrieves a specific upload for specified query parameters is invoked
+Then a single call to get the target upload for specified query parameters should be made to the database
+And the retrieve uploads API response status code should be 200
+And the retrieve uploads API response content type should be JSON
+
+@test
+Scenario: User shall not be able to retrieve a specific upload for given query parameters
+Meta: @automated
+Given a request to retrieve a specific upload for given query parameters
+And the target upload does not exist for specified query parameters in the request
+When the API which retrieves a specific upload for specified query parameters is invoked
+Then a single call to get the target upload for specified query parameters should be made to the database
+And the retrieve uploads API response status code should be 404
+And the retrieve uploads API response content type should be JSON
