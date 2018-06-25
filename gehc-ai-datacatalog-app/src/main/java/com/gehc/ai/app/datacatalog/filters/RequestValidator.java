@@ -175,11 +175,11 @@ public class RequestValidator {
 	public static void validateUploadId(Long uploadId) throws DataCatalogException {
 
 		if(uploadId == null){
-			throw new DataCatalogException(ErrorCodes.MISSING_UPLOAD_ID.getErrorMessage());
+			throw new DataCatalogException(ErrorCodes.MISSING_UPLOAD_ID.getErrorMessage(),HttpStatus.BAD_REQUEST);
 		}
 
 		if(uploadId <= 0){
-			throw new DataCatalogException(ErrorCodes.INVALID_UPLOAD_ID.getErrorMessage());
+			throw new DataCatalogException(ErrorCodes.INVALID_UPLOAD_ID.getErrorMessage(),HttpStatus.BAD_REQUEST);
 		}
 
 	}
