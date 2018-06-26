@@ -147,4 +147,16 @@ public interface IDataCatalogDao {
 	 * @return upload details, stored in a upload object
 	 */
 	 Upload getUploadById( Long uploadId);
+
+	/**
+	 * Returns the upload entity details for given query parameters
+	 * @param spaceId - space ID of upload on COS
+	 * @param orgId - organisation ID
+	 * @param contractId - contract ID
+	 * @return
+	 * if upload exists -> returns the upload entity details
+	 * if upload does not exist -> returns null
+	 */
+	Upload getUploadByQueryParameters(String spaceId, String orgId, Long contractId);
+
 }

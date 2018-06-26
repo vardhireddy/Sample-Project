@@ -912,4 +912,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
         return uploadRepository.findOne( uploadId );
     }
+
+    @Override
+    public Upload getUploadByQueryParameters(String spaceId, String orgId, Long contractId){
+        return uploadRepository.findBySpaceIdAndOrgIdAndContractId( spaceId, orgId, contractId );
+    }
 }

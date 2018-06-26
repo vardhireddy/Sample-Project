@@ -136,6 +136,16 @@ public class CreateUploadSteps {
         when(dataCatalogDao.saveUpload(any(Upload.class))).thenReturn(upload);
     }
 
+    @Given("spaceId, orgId, contractId is already associated with an existing upload entity")
+    public void DuplicateDataInTheUploadRequest() throws Exception{
+        Contract contract = buildContractEntity();
+        Upload upload = buildUploadEntity();
+        Upload uploadEntity = buildUploadEntity();
+        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
+        when(dataCatalogDao.getUploadByQueryParameters(anyString(),anyString(),anyLong())).thenReturn(uploadEntity);
+        when(dataCatalogDao.saveUpload(any(Upload.class))).thenReturn(upload);
+    }
+
     /////////////////////
     //
     // WHEN statements //
@@ -189,6 +199,28 @@ public class CreateUploadSteps {
                 .content(requestToJSON(this.uploadRequest)));
     }
 
+    @When("the API which creates a upload is invoked with duplicate data in spaceId, orgId, contractId")
+    public void theAPIWhichCreatesUploadIsInvokedWithDuplicateDataInTheUploadRequest() throws Exception{
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        uploadRequest.setId(1L);
+        uploadRequest.setSchemaVersion("v1");
+        uploadRequest.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        uploadRequest.setContractId(100L);
+        uploadRequest.setSpaceId("space123");
+        uploadRequest.setUploadBy("user");
+        uploadRequest.setDataType(dataType);
+        uploadRequest.setTags(tags);
+        uploadRequest.setUploadDate(new Timestamp(1313045029));
+        uploadRequest.setLastModified(new Timestamp(1313045029));
+        result = mockMvc.perform(post("/api/v1/datacatalog/upload").contentType(MediaType.APPLICATION_JSON)
+                                                                   .content(requestToJSON(this.uploadRequest)));
+    }
+
     /////////////////////
     //
     // THEN statements //
@@ -218,9 +250,19 @@ public class CreateUploadSteps {
         result.andExpect(status().isBadRequest());
     }
 
+    @Then("the create upload response's status code should be 409")
+    public void theCreateUploadResponseStatusCodeShouldBe409() throws Exception{
+        result.andExpect(status().isConflict());
+    }
+
     @Then("the response's body should contain an error message saying the request is Missing one/more required fields data.")
     public void theCreateUploadResponseMessageShouldBeMissingRequiredFieldsData() throws Exception{
         result.andExpect(content().string(containsString("Missing one/more required fields data.")));
+    }
+
+    @Then("the response's body should contain an error message saying the an upload entity already exists with given spaceId, orgId and contractId.")
+    public void theCreateUploadResponseMessageShouldBeDuplicationErrorMessage() throws Exception{
+        result.andExpect(content().string(containsString("An Upload entity already exists with given spaceId, orgId and contractId.")));
     }
 
     /////////////

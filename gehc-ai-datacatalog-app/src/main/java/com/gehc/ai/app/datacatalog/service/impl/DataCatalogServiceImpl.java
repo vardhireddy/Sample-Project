@@ -152,6 +152,8 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
             //verify if contract is valid and active
             validateContractForUploadData(uploadRequest.getContractId());
 
+            validateUniquenessOfUpload(uploadRequest.getSpaceId(), uploadRequest.getOrgId(), uploadRequest.getContractId());
+
             uploadRequest.setSchemaVersion("v1");
 
             return saveUpload(uploadRequest);
@@ -178,6 +180,20 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		|| (uploadData.getTags() == null || uploadData.getTags().isEmpty()))
 		{
 			throw new DataCatalogException("Missing one/more required fields data.",HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	/**
+	 * verifies for upload entity uniqueness on spaceId, orgId and contractId.
+	 * @param spaceId - space ID of upload on COS
+	 * @param orgId - organisation ID
+	 * @param contractId - contract ID
+	 * @throws DataCatalogException - if an upload already exists on given parameters
+	 */
+	private void validateUniquenessOfUpload(String spaceId, String orgId, Long contractId) throws DataCatalogException{
+		Upload upload = dataCatalogDao.getUploadByQueryParameters( spaceId, orgId, contractId );
+		if(upload != null && upload.getId() !=null){
+			throw new DataCatalogException("An Upload entity already exists with given spaceId, orgId and contractId.",HttpStatus.CONFLICT);
 		}
 	}
 
@@ -224,5 +240,13 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		if (uploadId == null) return null;
 
 		return dataCatalogDao.getUploadById(uploadId);
+	}
+
+	@Override
+	public Upload getUploadByQueryParameters(String spaceId, String orgId, Long contractId) throws DataCatalogException{
+
+		validateContractForUploadData(contractId);
+
+		return dataCatalogDao.getUploadByQueryParameters(spaceId, orgId, contractId);
 	}
 }

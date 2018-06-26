@@ -398,6 +398,9 @@ public interface IDataCatalogRest {
      *                 <li>The uploader's name</li>
      *                 </ul>
      * @return a JSON representation of the upload entity that was saved
+     * if required data is not provided -> throws exception with status code 400 and error message
+     * if contract is invalid -> throws exception with status code 400 and error message
+     * if upload is not unique on certain parameters -> throws exception with status code 409 and error message
      */
     ResponseEntity<?> createUpload(Upload uploadRequest);
 
@@ -421,4 +424,16 @@ public interface IDataCatalogRest {
      * if user is not authorized -> returns 403 status code and error message
      */
     ResponseEntity<?> getUploadById(Long uploadId, HttpServletRequest httpServletRequest);
+
+    /**
+     * Returns the upload entity details for given query parameters
+     * @param spaceId - space ID of upload on COS
+     * @param orgId - organisation ID
+     * @param contractId - contract ID
+     * @return
+     * if upload exists -> returns status code 200 and the upload entity details
+     * if contract is invalid -> throws DataCatalog exception with status code 400 and error message
+     * if upload does not exist -> returns status code 404 and response message
+     */
+    ResponseEntity<?> getUploadByQueryParameters(String spaceId, String orgId, Long contractId);
 }
