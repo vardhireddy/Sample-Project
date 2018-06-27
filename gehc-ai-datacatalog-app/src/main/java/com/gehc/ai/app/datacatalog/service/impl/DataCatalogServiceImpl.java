@@ -18,8 +18,9 @@ import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
@@ -285,7 +286,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 
 		if (updateRequest.getId() == null || updateRequest.getId() < 1){
 			logger.error("Id provided in update upload request is invalid : {}", updateRequest);
-			throw new DataCatalogException(ErrorCodes.INVALID_UPLOAD_ID_UPDATE_REQUEST.getErrorMessage(),HttpStatus.BAD_REQUEST);
+			throw new DataCatalogException( ErrorCodes.INVALID_UPLOAD_ID_UPDATE_REQUEST.getErrorMessage(), HttpStatus.BAD_REQUEST);
 		}
 
 		if ((updateRequest.getStatus() == null || updateRequest.getStatus().isEmpty())
