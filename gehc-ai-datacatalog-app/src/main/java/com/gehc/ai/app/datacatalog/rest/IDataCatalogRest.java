@@ -27,6 +27,7 @@ import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.data.domain.Pageable;
@@ -436,4 +437,23 @@ public interface IDataCatalogRest {
      * if upload does not exist -> returns status code 404 and response message
      */
     ResponseEntity<?> getUploadByQueryParameters(String spaceId, String orgId, Long contractId);
+
+    /**
+     * Updates the upload entity and saves to the database
+     * @param updateRequest The upload details to save.  The required details are the following:
+     *                      <ul>
+     *                       <li>The orgID value</li>
+     *                       <li>The data type of files being uploaded</li>
+     *                       <li>The contract ID associated with the upload</li>
+     *                       <li>The space ID for the upload</li>
+     *                       <li>The tags specified for upload in manifest file</li>
+     *                       <li>The uploader's name</li>
+     *                       <li>The summary -> uri list  from COS</li>
+     *                       <li>The status of no.of DICOM and NON_DICOM uploads success ratio</li>
+     *                       </ul>
+     * @return a JSON representation of the upload entity that was updated with status code 200
+     *       if required data is not provided/ invalid -> throws exception with status code 400 and error message
+     *       if updateRequest lastModified date does not match with the entity in DB -> throws exception with status code 409 and error message
+     */
+    ResponseEntity<?> updateUpload(UpdateUploadRequest updateRequest);
 }

@@ -17,6 +17,7 @@ import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Collections;
 
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import org.junit.Before;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.junit.Test;
@@ -929,6 +931,53 @@ public class DataCatalogRestImplTest {
         assertEquals( 500,  response.getStatusCodeValue());
     }
 
+    //updateUpload method test cases
+    @Test
+    public void updateUploadSuccessfully() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) ).thenReturn( upload );
+        //ACT
+        ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
+        //ASSERT
+        assertEquals( 200, responseEntity.getStatusCodeValue() );
+    }
+
+    @Test
+    public void updateUploadForInvalidIdException() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest = new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+                                                        null,1L,"space123",null,null,
+                                                null,"user1",
+                                                        new Timestamp( 1313045029),new Timestamp( 1313045029));
+
+        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) ).thenThrow( new DataCatalogException( "",HttpStatus.BAD_REQUEST ) );
+        //ACT
+        ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
+        //ASSERT
+        assertEquals( 400, responseEntity.getStatusCodeValue() );
+    }
+
+    @Test
+    public void updateUploadFor500Exception() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest = new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+                                                                          null,1L,"space123",null,null,
+                                                                          null,"user1",
+                                                                          new Timestamp( 1313045029),new Timestamp( 1313045029));
+
+        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) )
+                .thenThrow( new RuntimeException("" ) );
+        //ACT
+        ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
+        //ASSERT
+        assertEquals( 500, responseEntity.getStatusCodeValue() );
+    }
+
     /////////////////////
     //    HELPERS     //
     ////////////////////
@@ -954,35 +1003,6 @@ public class DataCatalogRestImplTest {
         contract.setUploadBy("user");
 
         return contract;
-    }
-
-    private List<Contract> buildContractList() throws Exception {
-
-        List<Contract> result = new ArrayList<>();
-
-        Contract contract = new Contract();
-        contract.setId(1L);
-        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
-        contract.setActive("true");
-        List<String> uriList = new ArrayList<>();
-        uriList.add("bla.pdf");
-        contract.setUri(uriList);
-        contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
-        contract.setSchemaVersion("v1");
-        contract.setAgreementName("Test contract name");
-        contract.setPrimaryContactEmail("john.doe@ge.com");
-        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
-        contract.setAgreementBeginDate("2018-03-02");
-        contract.setDataUsagePeriod("365");
-        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
-        contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
-        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
-        contract.setUploadBy("user");
-        contract.setExpired(false);
-
-        result.add(contract);
-
-        return result;
     }
 
     private ContractByDataSetId buildContractByDataSetId(){
@@ -1022,6 +1042,27 @@ public class DataCatalogRestImplTest {
         uploadRequest.setLastModified(new Timestamp(1313045029));
 
         return uploadRequest;
+    }
+
+    private UpdateUploadRequest buildUpdateUploadRequest(){
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        List<String> summary = new ArrayList<>();
+        summary.add("uri1");
+        summary.add("uri2");
+        Map<String,String> status = new HashMap<>();
+        status.put("DICOM","99/100");
+        status.put("NON-DICOM","1/1");
+
+       return  new UpdateUploadRequest(3L,"v1","orgId217wtysgs",
+                                    dataType,1L,"space123",summary,tags,
+                                    status,"user1",
+                                    new Timestamp( 1313045029),new Timestamp( 1313045029));
+
     }
 
 }
