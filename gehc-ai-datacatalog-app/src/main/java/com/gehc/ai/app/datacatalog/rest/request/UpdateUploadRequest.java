@@ -1,50 +1,37 @@
 package com.gehc.ai.app.datacatalog.rest.request;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import lombok.Getter;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-
+@Getter
 public final class UpdateUploadRequest {
 
         private static final long serialVersionUID = 1L;
 
-        @NotNull
         private Long id;
 
-        @Size (min=2, max=50)
         private String schemaVersion;
 
-
-        @Size(min=1, max=255)
         private String orgId;
 
-        @Size(min=1, max=255)
         private List<String> dataType;
 
-        @NotNull
         private Long contractId;
 
-        @Size(min=1, max=255)
         private String spaceId;
 
-        @Size(min=1, max=255)
         private List<String> summary;
 
-        @Size(min=1, max=255)
         private Map<String,String> tags;
 
-        @Size(min=1, max=255)
         private Map<String,String> status;
 
-        @Size(min=1, max=255)
         private String uploadBy;
 
-        @NotNull
         private Timestamp uploadDate;
 
-        @NotNull
         private Timestamp lastModified;
 
         @Override public String toString() {
@@ -54,10 +41,10 @@ public final class UpdateUploadRequest {
         public UpdateUploadRequest() {
         }
 
-        public UpdateUploadRequest( @NotNull Long id, @Size ( min = 2, max = 50 ) String schemaVersion, @Size ( min = 1, max = 255 ) String orgId, @Size ( min = 1, max = 255 ) List<String> dataType,
-                                    @NotNull Long contractId, @Size ( min = 1, max = 255 ) String spaceId, @Size ( min = 1, max = 255 ) List<String> summary,
-                                    @Size ( min = 1, max = 255 ) Map<String, String> tags, @Size ( min = 1, max = 255 ) Map<String, String> status, @Size ( min = 1, max = 255 ) String uploadBy,
-                                    @NotNull Timestamp uploadDate, @NotNull Timestamp lastModified ) {
+        public UpdateUploadRequest(Long id, String schemaVersion, String orgId, List<String> dataType,
+                                    Long contractId, String spaceId, List<String> summary,
+                                    Map<String, String> tags, Map<String, String> status, String uploadBy,
+                                    Timestamp uploadDate, Timestamp lastModified ) {
                 this.id = id;
                 this.schemaVersion = schemaVersion;
                 this.orgId = orgId;
@@ -80,93 +67,44 @@ public final class UpdateUploadRequest {
 
                 UpdateUploadRequest that = (UpdateUploadRequest)o;
 
-                if ( !getId().equals( that.getId() ) )
+                if ( !id.equals( that.id ) )
                         return false;
-                if ( !getSchemaVersion().equals( that.getSchemaVersion() ) )
+                if ( !schemaVersion.equals( that.schemaVersion ) )
                         return false;
-                if ( !getOrgId().equals( that.getOrgId() ) )
+                if ( !orgId.equals( that.orgId ) )
                         return false;
-                if ( !getDataType().equals( that.getDataType() ) )
+                if ( !dataType.equals( that.dataType ) )
                         return false;
-                if ( !getContractId().equals( that.getContractId() ) )
+                if ( !contractId.equals( that.contractId ) )
                         return false;
-                if ( !getSpaceId().equals( that.getSpaceId() ) )
+                if ( !spaceId.equals( that.spaceId ) )
                         return false;
-                if ( !getSummary().equals( that.getSummary() ) )
+                if ( !summary.equals( that.summary ) )
                         return false;
-                if ( !getTags().equals( that.getTags() ) )
+                if ( !tags.equals( that.tags ) )
                         return false;
-                if ( !getStatus().equals( that.getStatus() ) )
+                if ( !status.equals( that.status ) )
                         return false;
-                if ( !getUploadBy().equals( that.getUploadBy() ) )
+                if ( !uploadBy.equals( that.uploadBy ) )
                         return false;
-                if ( !getUploadDate().equals( that.getUploadDate() ) )
+                if ( !uploadDate.equals( that.uploadDate ) )
                         return false;
-                return getLastModified().equals( that.getLastModified() );
+                return lastModified.equals( that.lastModified );
         }
 
         @Override public int hashCode() {
-                int result = getId().hashCode();
-                result = 31 * result + getSchemaVersion().hashCode();
-                result = 31 * result + getOrgId().hashCode();
-                result = 31 * result + getDataType().hashCode();
-                result = 31 * result + getContractId().hashCode();
-                result = 31 * result + getSpaceId().hashCode();
-                result = 31 * result + getSummary().hashCode();
-                result = 31 * result + getTags().hashCode();
-                result = 31 * result + getStatus().hashCode();
-                result = 31 * result + getUploadBy().hashCode();
-                result = 31 * result + getUploadDate().hashCode();
-                result = 31 * result + getLastModified().hashCode();
+                int result = id.hashCode();
+                result = 31 * result + schemaVersion.hashCode();
+                result = 31 * result + orgId.hashCode();
+                result = 31 * result + dataType.hashCode();
+                result = 31 * result + contractId.hashCode();
+                result = 31 * result + spaceId.hashCode();
+                result = 31 * result + summary.hashCode();
+                result = 31 * result + tags.hashCode();
+                result = 31 * result + status.hashCode();
+                result = 31 * result + uploadBy.hashCode();
+                result = 31 * result + uploadDate.hashCode();
+                result = 31 * result + lastModified.hashCode();
                 return result;
         }
-
-        public Long getId() {
-                return id;
-        }
-
-        public String getSchemaVersion() {
-                return schemaVersion;
-        }
-
-        public String getOrgId() {
-                return orgId;
-        }
-
-        public List<String> getDataType() {
-                return dataType;
-        }
-
-        public Long getContractId() {
-                return contractId;
-        }
-
-        public String getSpaceId() {
-                return spaceId;
-        }
-
-        public List<String> getSummary() {
-                return summary;
-        }
-
-        public Map<String, String> getTags() {
-                return tags;
-        }
-
-        public Map<String, String> getStatus() {
-                return status;
-        }
-
-        public String getUploadBy() {
-                return uploadBy;
-        }
-
-        public Timestamp getUploadDate() {
-                return uploadDate;
-        }
-
-        public Timestamp getLastModified() {
-                return lastModified;
-        }
-
 }
