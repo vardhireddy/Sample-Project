@@ -326,8 +326,8 @@ public class DataCatalogServiceImplTest {
         summary.add("uri1");
         summary.add("uri2");
         Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
+        status.put("failures","9");
+        status.put("total","100");
         UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
@@ -353,8 +353,8 @@ public class DataCatalogServiceImplTest {
         summary.add("uri1");
         summary.add("uri2");
         Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
+        status.put("failures","9");
+        status.put("total","100");
         UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(11L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
@@ -453,8 +453,8 @@ public class DataCatalogServiceImplTest {
         summary.add("uri1");
         summary.add("uri2");
         Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
+        status.put("failures","9");
+        status.put("total","100");
 
         return  new UpdateUploadRequest(2L,"v1","orgId217wtysgs",
                                         dataType,1L,"space123",summary,tags,
