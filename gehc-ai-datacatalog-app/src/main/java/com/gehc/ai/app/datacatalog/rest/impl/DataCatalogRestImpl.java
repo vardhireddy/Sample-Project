@@ -54,6 +54,7 @@ import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1568,7 +1569,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         } catch ( DataCatalogException exception ) {
             logger.error( "Exception validating the request authorisation.", exception.getMessage() );
             return new ResponseEntity( Collections.singletonMap( "response",
-                                                                 "Request cannot be validated because of malformed authorization token."), exception.getHttpStatusCode() );
+                                                                 exception.getMessage()), exception.getHttpStatusCode() );
         }catch ( Exception e ) {
             logger.error( "Exception retrieving the upload entity ", e.getMessage() );
             e.printStackTrace();
@@ -1627,5 +1628,41 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             }
             return new ResponseEntity<>(upload, HttpStatus.OK);
         }
+
+
+    @Override
+    @ApiOperation(value = "Update Upload Entity ", httpMethod = "PUT", response = Upload.class, tags = "Update Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 409, message = "Conflict"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateUpload(@RequestBody UpdateUploadRequest updateRequest){
+
+        logger.info( "Passing update upload request parameters." );
+
+        Upload upload;
+        try {
+            upload = dataCatalogService.updateUploadEntity(updateRequest);
+        } catch ( DataCatalogException e ) {
+            logger.error( "Exception validating the update upload request.", e.getMessage() );
+            return new ResponseEntity( Collections.singletonMap( "response", e.getMessage()), e.getHttpStatusCode() );
+        }catch ( Exception e ) {
+            logger.error( "Exception updating the upload entity ", e.getMessage() );
+            e.printStackTrace();
+            return new ResponseEntity( Collections.singletonMap( "response", "Exception updating the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+
+        return new ResponseEntity<>(upload, HttpStatus.OK);
+    }
 
 }

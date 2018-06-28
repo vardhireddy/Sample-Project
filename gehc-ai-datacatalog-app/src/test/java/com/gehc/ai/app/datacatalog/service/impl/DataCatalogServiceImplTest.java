@@ -6,6 +6,7 @@ import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.hibernate.DuplicateMappingException;
 import org.junit.Test;
@@ -14,9 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -280,6 +282,120 @@ public class DataCatalogServiceImplTest {
     }
 
 
+    //updateUpload method test cases
+    @Test
+    public void updateUploadSuccessfully() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
+        Upload upload = buildUploadEntity();
+        when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
+        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( upload );
+        //ACT
+        Upload updateUpload = service.updateUploadEntity( updateUploadRequest );
+        //ASSERT
+        assertEquals( "f1341a2c-7a54-4d68-9f40-a8b2d14d3806", updateUpload.getOrgId() );
+    }
+
+    @Test(expected = DataCatalogException.class)
+    public void updateUploadForInvalidIdException() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+                                                                                                                     null,1L,"space123",null,null,
+                                                                                                                     null,"user1",
+                                                                                                                     new Timestamp( 1313045029),new Timestamp( 1313045029));
+        Upload upload = buildUploadEntity();
+        when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
+        //ACT //ASSERT
+        service.updateUploadEntity( updateUploadRequest );
+
+    }
+
+    @Test(expected = DataCatalogException.class)
+    public void updateUploadForUnSupportedIdException() throws Exception{
+
+        //ARRANGE
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        List<String> summary = new ArrayList<>();
+        summary.add("uri1");
+        summary.add("uri2");
+        Map<String,String> status = new HashMap<>();
+        status.put("DICOM","99/100");
+        status.put("NON-DICOM","1/1");
+        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+                                                                           null,1L,"space123",summary,null,
+                                                                           status,"user1",
+                                                                           new Timestamp( 1313045029),new Timestamp( 1313045029));
+        Upload upload = buildUploadEntity();
+        when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( new Upload() );
+        //ACT //ASSERT
+        service.updateUploadEntity( updateUploadRequest );
+
+    }
+
+    @Test(expected = DataCatalogException.class)
+    public void updateUploadForUnMatchedLastModifiedDatesException() throws Exception{
+
+        //ARRANGE
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        List<String> summary = new ArrayList<>();
+        summary.add("uri1");
+        summary.add("uri2");
+        Map<String,String> status = new HashMap<>();
+        status.put("DICOM","99/100");
+        status.put("NON-DICOM","1/1");
+        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(11L,"v1","orgId217wtysgs",
+                                                                           null,1L,"space123",summary,null,
+                                                                           status,"user1",
+                                                                           new Timestamp( 1313045029),new Timestamp( 1313045030));
+        Upload upload = buildUploadEntity();
+        when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload);
+        //ACT //ASSERT
+        service.updateUploadEntity( updateUploadRequest );
+
+    }
+
+    @Test(expected = DataCatalogException.class)
+    public void updateUploadForLastModifiedDateInvalidInRequestException() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(1L,"v1","orgId217wtysgs",
+                                                                           null,1L,"space123",null,null,
+                                                                           null,"user1",
+                                                                           new Timestamp( 1313045029),null);
+        Upload upload = buildUploadEntity();
+        when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
+        //ACT //ASSERT
+        service.updateUploadEntity( updateUploadRequest );
+
+    }
+
+    @Test(expected = DataCatalogException.class)
+    public void updateUploadForInvalidDataInRequestException() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(1L,"v1","orgId217wtysgs",
+                                                                           null,1L,"space123",null,null,
+                                                                           null,"user1",
+                                                                           new Timestamp( 1313045029),new Timestamp( 1313045029));
+        Upload upload = buildUploadEntity();
+        when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
+        //ACT //ASSERT
+        service.updateUploadEntity( updateUploadRequest );
+
+    }
+
     ////////////////////
     //   Helpers      //
     ///////////////////
@@ -324,6 +440,27 @@ public class DataCatalogServiceImplTest {
         uploadRequest.setLastModified(new Timestamp(1313045029));
 
         return uploadRequest;
+    }
+
+    private UpdateUploadRequest buildUpdateUploadRequest(){
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        List<String> summary = new ArrayList<>();
+        summary.add("uri1");
+        summary.add("uri2");
+        Map<String,String> status = new HashMap<>();
+        status.put("DICOM","99/100");
+        status.put("NON-DICOM","1/1");
+
+        return  new UpdateUploadRequest(2L,"v1","orgId217wtysgs",
+                                        dataType,1L,"space123",summary,tags,
+                                        status,"user1",
+                                        new Timestamp( 1313045029),new Timestamp( 1313045029));
+
     }
 
 

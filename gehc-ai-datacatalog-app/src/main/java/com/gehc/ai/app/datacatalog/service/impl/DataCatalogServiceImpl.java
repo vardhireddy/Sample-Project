@@ -16,10 +16,12 @@ import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Upload;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
@@ -248,5 +250,49 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		validateContractForUploadData(contractId);
 
 		return dataCatalogDao.getUploadByQueryParameters(spaceId, orgId, contractId);
+	}
+
+	@Override
+	public Upload updateUploadEntity(UpdateUploadRequest updateRequest) throws DataCatalogException {
+
+		validateUploadUpdateRequest( updateRequest );
+
+		Upload uploadData = dataCatalogDao.getUploadById( updateRequest.getId() );
+
+		if(uploadData == null || uploadData.getId() == null)
+		{
+			throw new DataCatalogException("No upload exists with provided Id in request.",HttpStatus.BAD_REQUEST);
+		}
+
+		if (!uploadData.getLastModified().equals(updateRequest.getLastModified())) {
+
+			logger.error("last modified date given in request : {} and in db : {}", updateRequest.getLastModified()
+				, uploadData.getLastModified());
+			throw new DataCatalogException(ErrorCodes.OUTDATED_UPLOAD_UPDATE_REQUEST.getErrorMessage(),HttpStatus.CONFLICT);
+		}
+
+		uploadData.setStatus( updateRequest.getStatus() );
+		uploadData.setSummary( updateRequest.getSummary() );
+
+		return dataCatalogDao.saveUpload( uploadData );
+	}
+
+	private void validateUploadUpdateRequest( UpdateUploadRequest updateRequest) throws DataCatalogException{
+
+		if(updateRequest.getLastModified() == null
+		   || updateRequest.getLastModified().toString().isEmpty() ){
+			throw new DataCatalogException( ErrorCodes.UPLOAD_LAST_MODIFIED_DATE_MISSING.getErrorMessage(), HttpStatus.BAD_REQUEST);
+		}
+
+		if (updateRequest.getId() == null || updateRequest.getId() < 1){
+			logger.error("Id provided in update upload request is invalid : {}", updateRequest);
+			throw new DataCatalogException( ErrorCodes.INVALID_UPLOAD_ID_UPDATE_REQUEST.getErrorMessage(), HttpStatus.BAD_REQUEST);
+		}
+
+		if ((updateRequest.getStatus() == null || updateRequest.getStatus().isEmpty())
+			&& (updateRequest.getSummary() == null || updateRequest.getSummary().isEmpty())) {
+			logger.error("No data for status and summary in update upload request : {}", updateRequest);
+			throw new DataCatalogException(ErrorCodes.INVALID_UPLOAD_UPDATE_REQUEST.getErrorMessage(),HttpStatus.BAD_REQUEST);
+		}
 	}
 }
