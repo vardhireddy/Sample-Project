@@ -1048,6 +1048,19 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all Contracts", httpMethod = "GET", response = List.class, tags = "Get all Contracts")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = List.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
     public ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request) {
 
@@ -1162,6 +1175,20 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Verify if contract is valid", httpMethod = "GET", response = Contract.class, tags = "Verify if contract is valid")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = Contract.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/{contractId}/validate", method = RequestMethod.GET)
     public ResponseEntity<Map<String, String>> validateContractByIdAndOrgId(@PathVariable("contractId") Long contractId,
                                                                             @RequestParam("orgId") String orgId) {
@@ -1323,6 +1350,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Update Contract", httpMethod = "PUT", response = Contract.class, tags = "Update Contract")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = Contract.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.PUT)
     public ResponseEntity<Contract> updateContract(@PathVariable Long contractId,
                                                    @RequestBody UpdateContractRequest updateRequest) {
@@ -1394,6 +1433,20 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Delete Contract by Id", httpMethod = "DELETE", response = Contract.class, tags = "Delete Contract by Id")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = Contract.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.DELETE)
     public ResponseEntity<Map<String, String>> deleteContract(@PathVariable("contractId") Long contractId,
                                                               HttpServletRequest httpServletRequest) {
@@ -1439,6 +1492,20 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get Contracts for given data-collection Id", httpMethod = "GET", response = HashMap.class, tags = "Get Contracts for given data-collection Id")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = HashMap.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/data-collection/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getContractsForDataCollection(@PathVariable("id") Long dataCollectionId) {
 
