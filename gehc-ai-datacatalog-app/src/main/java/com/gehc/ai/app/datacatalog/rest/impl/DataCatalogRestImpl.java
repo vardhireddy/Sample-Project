@@ -1690,9 +1690,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     return new ResponseEntity( Collections.singletonMap( "response", "Exception retrieving the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
             }
 
-            if (upload == null || upload.getId() == null){
-                    return new ResponseEntity(Collections.singletonMap("response","No Upload Exists with the given query parameters."), HttpStatus.NOT_FOUND);
-            }
             return new ResponseEntity<>(upload, HttpStatus.OK);
         }
 
