@@ -914,7 +914,7 @@ public class DataCatalogRestImplTest {
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
-        assertEquals( 404,  response.getStatusCodeValue());
+        assertEquals( 200,  response.getStatusCodeValue());
 
     }
 
