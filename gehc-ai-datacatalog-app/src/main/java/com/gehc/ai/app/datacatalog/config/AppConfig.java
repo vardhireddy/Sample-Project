@@ -67,7 +67,7 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	//TODO:We need to find the way how to protect the APIs which have been removed from interceptor as either SNS-mamaner or C2M or Coolidge are using them
     	//Added for new APIs after refactoring
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/study/{studyId}/image-set");
-    	//Removed from in terceptor as being used by coolidge
+    	//Removed from interceptor as being used by coolidge
     	//registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/image-set/{id}");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection");   
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection/{id}");    
@@ -79,10 +79,10 @@ public class AppConfig extends WebMvcConfigurerAdapter{
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-summary");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/ge-class-data-summary");
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/data-collection/{ids}");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/upload");
+    	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/upload/{id}").excludePathPatterns( "/datacatalog/upload/validate" );
     	registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/contract");
         registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/contract/{contractId}").excludePathPatterns( "/datacatalog/contract/{contractId}/validate" );
-        registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/upload").excludePathPatterns( "/api/v1/datacatalog/upload/validate" );
-        registry.addInterceptor(dataCatalogInterceptor()).addPathPatterns("/api/v1/datacatalog/upload/{id}");
   }
     
     /** The dataSource */
