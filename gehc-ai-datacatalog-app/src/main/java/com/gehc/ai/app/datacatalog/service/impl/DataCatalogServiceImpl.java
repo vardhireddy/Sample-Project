@@ -175,7 +175,6 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	private void validateUploadRequestHelper(Upload uploadData) throws DataCatalogException{
 
 		if ((uploadData.getOrgId() == null ||uploadData.getOrgId().isEmpty())
-		|| (uploadData.getDataType() == null || uploadData.getDataType().isEmpty())
 		|| (uploadData.getContractId() == null || uploadData.getContractId() < 1)
 		|| (uploadData.getSpaceId() == null || uploadData.getSpaceId().isEmpty())
 		|| (uploadData.getUploadBy() == null || uploadData.getUploadBy().isEmpty())
@@ -273,6 +272,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 
 		uploadData.setStatus( updateRequest.getStatus() );
 		uploadData.setSummary( updateRequest.getSummary() );
+		uploadData.setDataType( updateRequest.getDataType() );
 
 		return dataCatalogDao.saveUpload( uploadData );
 	}

@@ -49,15 +49,6 @@ And the create upload response's content type should be JSON
 And the response's body should contain an error message saying the request is Missing one/more required fields data.
 
 @test
-Scenario: User shall not be able to create a upload if dataType is not provided
-Meta: @automated
-Given dataType is not provided in the upload request
-When the API which creates a upload is invoked without dataType
-Then the create upload response's status code should be 400
-And the create upload response's content type should be JSON
-And the response's body should contain an error message saying the request is Missing one/more required fields data.
-
-@test
 Scenario: User shall not be able to create a upload if tags is not provided
 Meta: @automated
 Given tags is not provided in the upload request
