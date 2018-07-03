@@ -86,8 +86,8 @@ public class DataCatalogInterceptor implements HandlerInterceptor{
                        && req.getServletPath().startsWith("/api/v1/datacatalog/upload/validate")){
                            logger.debug( " +++ In preHandle method, get on validate upload is getting called so not looking for org id");
 	           } else if (req.getMethod() != null
-                     && (req.getMethod().equalsIgnoreCase("POST"))
-                     && (req.getMethod().equalsIgnoreCase("PUT"))
+                     && ((req.getMethod().equalsIgnoreCase("POST"))
+                     || (req.getMethod().equalsIgnoreCase("PUT")))
                      && null != req.getServletPath()
                      && req.getServletPath().startsWith("/api/v1/datacatalog/upload")){
                            logger.debug( " +++ In preHandle method, POST/ PUT upload is getting called so not looking for org id");
