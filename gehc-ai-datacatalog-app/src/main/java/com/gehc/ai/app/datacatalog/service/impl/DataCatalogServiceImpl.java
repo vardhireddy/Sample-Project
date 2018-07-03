@@ -157,6 +157,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
             validateUniquenessOfUpload(uploadRequest.getSpaceId(), uploadRequest.getOrgId(), uploadRequest.getContractId());
 
             uploadRequest.setSchemaVersion("v1");
+            uploadRequest.setDataType( new ArrayList<>(  ) );
 
             return saveUpload(uploadRequest);
     }

@@ -51,7 +51,6 @@ public final class Upload {
     @NotNull
 	private String orgId;
 
-    @NotNull
     @Column(name = "data_type")
     @Convert(converter = ListOfStringConverter.class)
 	private List<String> dataType;
