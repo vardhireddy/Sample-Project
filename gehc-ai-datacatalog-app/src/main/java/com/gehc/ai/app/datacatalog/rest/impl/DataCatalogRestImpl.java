@@ -1658,7 +1658,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    @ApiOperation(value = "Get Upload By Id ", httpMethod = "GET", response = Upload.class, tags = "Retrieve Upload")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Validate if Upload exists", httpMethod = "GET", response = Upload.class, tags = "Retrieve Upload")
     @ApiResponses(value = {
             @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Upload.class),
             @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
