@@ -4,16 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
 import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.UploadRepository;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
-import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -22,19 +15,20 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -120,14 +114,6 @@ public class CreateUploadSteps {
         when(dataCatalogDao.saveUpload(any(Upload.class))).thenReturn(upload);
     }
 
-    @Given("dataType is not provided in the upload request")
-    public void dataTypeIsNotProvidedInTheUploadRequest() throws Exception{
-        Contract contract = buildContractEntity();
-        Upload upload = buildUploadEntity();
-        when(dataCatalogDao.getContractDetails(anyLong())).thenReturn(contract);
-        when(dataCatalogDao.saveUpload(any(Upload.class))).thenReturn(upload);
-    }
-
     @Given("tags is not provided in the upload request")
     public void tagsIsNotProvidedInTheUploadRequest() throws Exception{
         Contract contract = buildContractEntity();
@@ -185,13 +171,6 @@ public class CreateUploadSteps {
                 .content(requestToJSON(this.uploadRequest)));
     }
 
-    @When("the API which creates a upload is invoked without dataType")
-    public void theAPIWhichCreatesUploadIsInvokedWithoutDataType() throws Exception{
-        this.uploadRequest.setDataType(null);
-        result = mockMvc.perform(post("/api/v1/datacatalog/upload").contentType(MediaType.APPLICATION_JSON)
-                .content(requestToJSON(this.uploadRequest)));
-    }
-
     @When("the API which creates a upload is invoked without tags")
     public void theAPIWhichCreatesUploadIsInvokedWithoutTags() throws Exception{
         this.uploadRequest.setTags(null);
@@ -201,9 +180,6 @@ public class CreateUploadSteps {
 
     @When("the API which creates a upload is invoked with duplicate data in spaceId, orgId, contractId")
     public void theAPIWhichCreatesUploadIsInvokedWithDuplicateDataInTheUploadRequest() throws Exception{
-        List<String> dataType = new ArrayList<>();
-        dataType.add("DICOM");
-        dataType.add("JPEG");
         Map<String,String> tags = new HashMap<>();
         tags.put("tag1","sample");
 
@@ -213,7 +189,6 @@ public class CreateUploadSteps {
         uploadRequest.setContractId(100L);
         uploadRequest.setSpaceId("space123");
         uploadRequest.setUploadBy("user");
-        uploadRequest.setDataType(dataType);
         uploadRequest.setTags(tags);
         uploadRequest.setUploadDate(new Timestamp(1313045029));
         uploadRequest.setLastModified(new Timestamp(1313045029));
@@ -278,9 +253,6 @@ public class CreateUploadSteps {
     }
 
     private Upload buildUploadEntity(){
-        List<String> dataType = new ArrayList<>();
-        dataType.add("DICOM");
-        dataType.add("JPEG");
         Map<String,String> tags = new HashMap<>();
         tags.put("tag1","sample");
 
@@ -291,10 +263,10 @@ public class CreateUploadSteps {
         uploadRequest.setContractId(100L);
         uploadRequest.setSpaceId("space123");
         uploadRequest.setUploadBy("user");
-        uploadRequest.setDataType(dataType);
         uploadRequest.setTags(tags);
         uploadRequest.setUploadDate(new Timestamp(1313045029));
         uploadRequest.setLastModified(new Timestamp(1313045029));
+        uploadRequest.setDataType(new ArrayList<>());
 
         return uploadRequest;
    }
