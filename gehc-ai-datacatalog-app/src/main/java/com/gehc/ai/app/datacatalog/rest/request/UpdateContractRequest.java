@@ -11,18 +11,28 @@
  */
 package com.gehc.ai.app.datacatalog.rest.request;
 
-import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.filters.StatusConverter;
+
+import javax.persistence.Convert;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UpdateContractRequest {
 
-    private String status;
+    @JsonProperty("status")
+    @Convert(converter = StatusConverter.class)
+    private Contract.UploadStatus status;
+
+    @JsonProperty("uri")
     private List<String> uri;
 
     public UpdateContractRequest() {
     }
 
-    public UpdateContractRequest(String status, List<String> uri) {
+    public UpdateContractRequest(Contract.UploadStatus status, List<String> uri) {
         this.status = status;
         this.uri = uri;
     }
@@ -35,7 +45,7 @@ public class UpdateContractRequest {
                 '}';
     }
 
-    public String getStatus() {
+    public Contract.UploadStatus getUploadStatus() {
         return status;
     }
 

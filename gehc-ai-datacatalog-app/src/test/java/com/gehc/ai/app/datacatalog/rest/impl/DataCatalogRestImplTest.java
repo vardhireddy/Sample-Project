@@ -7,40 +7,43 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.sql.Date;
+import java.sql.Timestamp;
+import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
+import java.util.Collections;
 
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
+import org.junit.Before;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
-
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-
-/*import com.gehc.ai.app.common.responsegenerator.ResponseGenerator;
-import Annotation;
-import DataCollection;
-import ImageSet;
-import AnnotationRepository;
-import COSNotificationRepository;
-import PatientRepository;
-import StudyRepository;
-import IDataCatalogRest;
-import IDataCatalogService;*/
 
 
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
@@ -52,6 +55,8 @@ import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 @RunWith ( MockitoJUnitRunner.class )
@@ -101,6 +106,9 @@ public class DataCatalogRestImplTest {
         }
     }*/
 
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
     @Mock
     private IDataCatalogService dataCatalogService;
     @Mock
@@ -126,6 +134,14 @@ public class DataCatalogRestImplTest {
 
     @InjectMocks
     private DataCatalogRestImpl controller;
+
+    @Before
+    public void setUp() throws Exception {
+
+        httpServletRequest = new MockHttpServletRequest();
+        httpServletRequest.setAttribute( "orgId", "1");
+
+    }
     /*
     @Value ( "${experiment.targetData.gtMaskLocation}" )
     private String gtMaskLocation;
@@ -213,7 +229,7 @@ public class DataCatalogRestImplTest {
     public void testSaveAnnotationStatusSuccess() {
         Annotation annotation = new Annotation();
         when( annotationRepository.save(annotation)).thenReturn( annotationList.get( 0 ) );
-        assertEquals( "SUCCESS", dataCatalogRest.saveAnnotation( annotation ).getStatus() );
+        assertEquals( "SUCCESS", dataCatalogRest.saveAnnotation( annotation ).getUploadStatus() );
     }*/
 
 /*    @Test
@@ -395,25 +411,29 @@ public class DataCatalogRestImplTest {
 
     @Test
     public void testValidateContractIdAndOrgIdForValidData(){
-        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(1);
-        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"orgId");
+        Contract contract = buildContractEntity();
+        contract.setActive("true");
+        when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenReturn(contract);
+        ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"orgId");
         assertEquals("Contract exists", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
 
     @Test
     public void testValidateContractIdAndOrgIdForInvalidData(){
-        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenReturn(0);
-        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
-        assertEquals("Contract does not exist", result.getBody().get("response"));
-        assertEquals(200, result.getStatusCodeValue());
+        Contract contract = buildContractEntity();
+        contract.setActive("false");
+        when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenReturn(contract);
+        ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
+        assertEquals("Contract is inactive/expired", result.getBody().get("response"));
+        assertEquals(403, result.getStatusCodeValue());
     }
 
     @Test
     public void testValidateContractIdAndOrgIdForException(){
-        when(contractRepository.validateContractIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<Map<String,String>> result = controller.validateContractIdAndOrgId(1L,"InvalidOrgId");
-        assertEquals("Internal Server error. Please contact the corresponding service assitant.", result.getBody());
+        when(contractRepository.findByIdAndOrgId(anyLong(),anyString())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<Map<String,String>> result = controller.validateContractByIdAndOrgId(1L,"InvalidOrgId");
+        assertEquals("Internal Server error. Please contact the corresponding service assistant.", result.getBody());
         assertEquals(500, result.getStatusCodeValue());
     }
 
@@ -470,11 +490,11 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("blapu.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("updateNow",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
-        assertEquals("updateNow", result.getBody().getStatus());
+        assertEquals(Contract.UploadStatus.UPLOAD_IN_PROGRESS, result.getBody().getUploadStatus());
     }
 
     @Test
@@ -483,11 +503,11 @@ public class DataCatalogRestImplTest {
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
         when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
 
-        UpdateContractRequest updateRequest = new UpdateContractRequest("updateCurrent",null);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,null);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
-        assertEquals("updateCurrent", result.getBody().getStatus());
+        assertEquals(Contract.UploadStatus.UPLOAD_IN_PROGRESS, result.getBody().getUploadStatus());
     }
 
     @Test
@@ -498,11 +518,11 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("blabla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(200, result.getStatusCodeValue());
-        assertEquals("updated", result.getBody().getStatus());
+        assertEquals(Contract.UploadStatus.UPLOAD_IN_PROGRESS, result.getBody().getUploadStatus());
     }
 
     @Test
@@ -528,11 +548,11 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(Collections.singletonMap("response","Contract associated with given Id is inactive. Contract shall not be updated."), result.getBody());
+        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(Collections.singletonMap("response","Given contract ID does not exist or is inactive."), result.getBody());
     }
 
     @Test
@@ -544,11 +564,11 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(400, result.getStatusCodeValue());
-        assertEquals(Collections.singletonMap("response","No Contract Exists with the given Id."), result.getBody());
+        assertEquals(Collections.singletonMap("response","Given contract ID does not exist or is inactive."), result.getBody());
     }
 
     @Test
@@ -560,7 +580,7 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(500, result.getStatusCodeValue());
@@ -575,7 +595,7 @@ public class DataCatalogRestImplTest {
 
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
-        UpdateContractRequest updateRequest = new UpdateContractRequest("",uriList);
+        UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
 
         assertEquals(500, result.getStatusCodeValue());
@@ -585,9 +605,13 @@ public class DataCatalogRestImplTest {
     @Test
     public void testDeleteContractWhereStateIsActive()
     {
+        //ARRANGE
         Contract contract = buildContractEntity();
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
+        //ACT
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
+        //ASSERT
         assertEquals("Contract is inactivated successfully", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
@@ -595,11 +619,15 @@ public class DataCatalogRestImplTest {
     @Test
     public void testDeleteContractWhereStateIsInactive()
     {
+        //ARRANGE
         Contract contract = buildContractEntity();
         contract.setActive("false");
 
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
+        //ACT
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
+        //ASSERT
         assertEquals("Contract with given id is already inactive", result.getBody().get("response"));
         assertEquals(200, result.getStatusCodeValue());
     }
@@ -607,41 +635,434 @@ public class DataCatalogRestImplTest {
     @Test
     public void testDeleteContractWhereContractDoesNotExist()
     {
+        //ARRANGE
         when(contractRepository.findOne(anyLong())).thenReturn(null);
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
+        //ACT
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
+        //ASSERT
         assertEquals("No contract exists with given id", result.getBody().get("response"));
-        assertEquals(400, result.getStatusCodeValue());
+        assertEquals(404, result.getStatusCodeValue());
     }
 
     @Test
     public void testDeleteContractForExceptionInRetrievingContract()
     {
+        //ARRANGE
         when(contractRepository.findOne(anyLong())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
-        assertEquals("Error retrieving contract to delete. Please contact the corresponding service assitant.", result.getBody().get("response"));
+        //ACT
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
+        //ASSERT
+        assertEquals("Error retrieving contract to delete. Please contact the corresponding service assistant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
     }
 
     @Test
     public void testDeleteContractForExceptionInUpdatingContract()
     {
+        //ARRANGE
         Contract contract = buildContractEntity();
         when(contractRepository.findOne(anyLong())).thenReturn(contract);
         when(contractRepository.save(any(Contract.class))).thenThrow(new IllegalArgumentException());
-        ResponseEntity<Map<String,String>> result = controller.deleteContract(1L);
-        assertEquals("Error deleting the contract. Please contact the corresponding service assitant.", result.getBody().get("response"));
+        httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
+        //ACT
+        ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
+        //ASSERT
+        assertEquals("Error deleting the contract. Please contact the corresponding service assistant.", result.getBody().get("response"));
         assertEquals(500, result.getStatusCodeValue());
     }
+
+    //test cases for getContractsForDataCollection
+    @Test
+    public void testGetContractsForDataCollection()
+    {
+        //ARRANGE
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",contractByDataSetIdList);
+        data.put("inactive",contractByDataSetIdList);
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenReturn(data);
+
+        //ACT
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
+        assertEquals(200, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testGetContractsForDataCollectionForBadRequest()
+    {
+        //ARRANGE
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",new ArrayList<>());
+        data.put("inactive",new ArrayList<>());
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenReturn(data);
+        //ACT
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
+        assertEquals(400, result.getStatusCodeValue());
+    }
+
+    @Test
+    public void testGetContractsByDataCollectionIdForInternalException()
+    {//ARRANGE
+        Map<String, List<ContractByDataSetId>> data = new HashMap<>();
+        List<ContractByDataSetId> contractByDataSetIdList = new ArrayList<>();
+        ContractByDataSetId contractByDataSetId = buildContractByDataSetId();
+        contractByDataSetIdList.add(contractByDataSetId);
+
+        data.put("active",new ArrayList<>());
+        data.put("inactive",new ArrayList<>());
+        when(dataCatalogService.getContractsByDataCollectionId(anyLong())).thenThrow(new RuntimeException());
+
+        //ACT
+        ResponseEntity<?> result = controller.getContractsForDataCollection(1L);
+        //ASSERT
+        assertEquals(500, result.getStatusCodeValue());
+    }
+
+    //test cases for create Upload
+    @Test
+    public void  createUploadSuccessfully() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenReturn( upload );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 201,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  createUploadFor400BadRequestData() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new DataCatalogException( "Missing one/more required fields data.", HttpStatus.BAD_REQUEST) );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 400,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","Missing one/more required fields data."),response.getBody() );
+
+    }
+
+    @Test
+    public void  createUploadFor400OnInvalidOrExpiredContractId() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new DataCatalogException("Invalid/Expired contract ID provided.",HttpStatus.BAD_REQUEST) );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 400,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","Invalid/Expired contract ID provided."),response.getBody() );
+
+    }
+
+    @Test
+    public void  createUploadFor400OnContractIdDoesNotExist() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new DataCatalogException("No contract exists with provided contract ID.",HttpStatus.BAD_REQUEST) );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 400,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","No contract exists with provided contract ID."),response.getBody() );
+
+    }
+
+    @Test
+    public void  createUploadFor500Exception() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new RuntimeException("No contract exists with provided contract ID.") );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 500,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","Exception saving the upload entity. Please contact the corresponding service assistant."),response.getBody() );
+
+    }
+
+    @Test
+    public void  createUploadFor409OnDuplicateDatEntry() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.createUpload( upload ) ).thenThrow( new DataCatalogException("An Upload entity already exists with given spaceId, orgId and contractId.",HttpStatus.CONFLICT) );
+        //ACT
+        ResponseEntity response = controller.createUpload( upload );
+        //ASSERT
+        assertEquals( 409,  response.getStatusCodeValue());
+        assertEquals( Collections.singletonMap("response","An Upload entity already exists with given spaceId, orgId and contractId."),response.getBody() );
+
+    }
+
+    //test get all uploads
+    @Test
+    public void  getAllUploadsSuccessfully(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        List<Upload> uploadList = new ArrayList<>(  );
+        uploadList.add( upload );
+        uploadList.add( upload );
+        when( dataCatalogService.getAllUploads( anyString() ) ).thenReturn( uploadList );
+        //ACT
+        ResponseEntity response = controller.getAllUploads( httpServletRequest );
+        //ASSERT
+        assertEquals( 200,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getAllUploadsFor500Exception(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        List<Upload> uploadList = new ArrayList<>(  );
+        uploadList.add( upload );
+        uploadList.add( upload );
+        when( dataCatalogService.getAllUploads( anyString() ) ).thenThrow( new RuntimeException("Exceptions")  );
+        //ACT
+        ResponseEntity response = controller.getAllUploads( httpServletRequest );
+        //ASSERT
+        assertEquals( 500,  response.getStatusCodeValue());
+
+    }
+
+    //test get upload by Id
+    @Test
+    public void  getAllUploadByIdSuccessfully(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadById( anyLong() ) ).thenReturn( upload );
+        httpServletRequest.setAttribute( "orgId", "f1341a2c-7a54-4d68-9f40-a8b2d14d3806" );
+        //ACT
+        ResponseEntity response = controller.getUploadById( 1L , httpServletRequest);
+        //ASSERT
+        assertEquals( 200,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getAllUploadByIdFor500Exception(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadById( anyLong() ) ).thenThrow( new RuntimeException("Exception") );
+        httpServletRequest.setAttribute( "orgId", "f1341a2c-7a54-4d68-9f40-a8b2d14d3806" );
+        //ACT
+        ResponseEntity response = controller.getUploadById( 1L , httpServletRequest);
+        //ASSERT
+        assertEquals( 500,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getAllUploadByIdFor404UploadNotFoundException(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadById( anyLong() ) ).thenReturn( new Upload() );
+        httpServletRequest.setAttribute( "orgId", "f1341a2c-7a54-4d68-9f40-a8b2d14d3806" );
+        //ACT
+        ResponseEntity response = controller.getUploadById( 1L , httpServletRequest);
+        //ASSERT
+        assertEquals( 404,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getAllUploadByIdFor403ForbiddenException(){
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadById( anyLong() ) ).thenReturn( upload );
+        httpServletRequest.setAttribute( "orgId", "e687970ytklgtr6869o" );
+        //ACT
+        ResponseEntity response = controller.getUploadById( 1L , httpServletRequest);
+        //ASSERT
+        assertEquals( 403,  response.getStatusCodeValue());
+
+    }
+
+    // validate if upload exists API test cases
+    @Test
+    public void  getUploadByQueryParameters() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( upload );
+        Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
+        //ACT
+        ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
+        //ASSERT
+        assertEquals( 200,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getUploadByQueryParametersFor404NotFoundException() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( null );
+        Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
+        //ACT
+        ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
+        //ASSERT
+        assertEquals( 200,  response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void  getUploadByQueryParametersFor500Exception() throws Exception{
+        //ARRANGE
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenThrow( new RuntimeException( "" ) );
+        Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
+        //ACT
+        ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
+        //ASSERT
+        assertEquals( 500,  response.getStatusCodeValue());
+    }
+
+    //updateUpload method test cases
+    @Test
+    public void updateUploadSuccessfully() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
+        Upload upload = buildUploadEntity();
+        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) ).thenReturn( upload );
+        //ACT
+        ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
+        //ASSERT
+        assertEquals( 200, responseEntity.getStatusCodeValue() );
+    }
+
+    @Test
+    public void updateUploadForInvalidIdException() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest = new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+                                                        null,1L,"space123",null,null,
+                                                null,"user1",
+                                                        new Timestamp( 1313045029),new Timestamp( 1313045029));
+
+        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) ).thenThrow( new DataCatalogException( "",HttpStatus.BAD_REQUEST ) );
+        //ACT
+        ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
+        //ASSERT
+        assertEquals( 400, responseEntity.getStatusCodeValue() );
+    }
+
+    @Test
+    public void updateUploadFor500Exception() throws Exception{
+
+        //ARRANGE
+        UpdateUploadRequest updateUploadRequest = new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+                                                                          null,1L,"space123",null,null,
+                                                                          null,"user1",
+                                                                          new Timestamp( 1313045029),new Timestamp( 1313045029));
+
+        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) )
+                .thenThrow( new RuntimeException("" ) );
+        //ACT
+        ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
+        //ASSERT
+        assertEquals( 500, responseEntity.getStatusCodeValue() );
+    }
+
+    /////////////////////
+    //    HELPERS     //
+    ////////////////////
 
     private Contract buildContractEntity(){
         Contract contract = new Contract();
         contract.setId(1L);
         contract.setActive("true");
-        contract.setStatus("updated");
+        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         contract.setUri(uriList);
+        contract.setOrgId("12345678-abcd-42ca-a317-4d408b98c500");
+        contract.setSchemaVersion("v1");
+        contract.setAgreementName("Test contract name");
+        contract.setPrimaryContactEmail("john.doe@ge.com");
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
+        contract.setAgreementBeginDate("2017-03-02");
+        contract.setDataUsagePeriod("perpetuity");
+        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
+        contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
+        contract.setUploadBy("user");
+
         return contract;
+    }
+
+    private ContractByDataSetId buildContractByDataSetId(){
+        return new ContractByDataSetId(2L,
+                Contract.DeidStatus.HIPAA_COMPLIANT,
+                "true",
+                false,
+                "user",
+                Date.valueOf("2017-03-31"),
+                "testAgreement",
+                "joe@ge.com",
+                "2018-06-08",
+                "12",
+                Arrays.asList(new ContractUseCase[]{new ContractUseCase(ContractUseCase.DataUser.GE_GLOBAL, ContractUseCase.DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}),
+                Contract.UploadStatus.UPLOAD_COMPLETED,
+                Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}),
+                Contract.DataLocationAllowed.GLOBAL);
+    }
+
+    private Upload buildUploadEntity(){
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        Upload uploadRequest = new Upload();
+        uploadRequest.setId(3L);
+        uploadRequest.setSchemaVersion("v1");
+        uploadRequest.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        uploadRequest.setContractId(100L);
+        uploadRequest.setSpaceId("space123");
+        uploadRequest.setUploadBy("user");
+        uploadRequest.setDataType(dataType);
+        uploadRequest.setTags(tags);
+        uploadRequest.setUploadDate(new Timestamp( 1313045029));
+        uploadRequest.setLastModified(new Timestamp(1313045029));
+
+        return uploadRequest;
+    }
+
+    private UpdateUploadRequest buildUpdateUploadRequest(){
+        List<String> dataType = new ArrayList<>();
+        dataType.add("DICOM");
+        dataType.add("JPEG");
+        Map<String,String> tags = new HashMap<>();
+        tags.put("tag1","sample");
+
+        List<String> summary = new ArrayList<>();
+        summary.add("uri1");
+        summary.add("uri2");
+        Map<String,String> status = new HashMap<>();
+        status.put("failures","9");
+        status.put("total","100");
+
+       return  new UpdateUploadRequest(3L,"v1","orgId217wtysgs",
+                                    dataType,1L,"space123",summary,tags,
+                                    status,"user1",
+                                    new Timestamp( 1313045029),new Timestamp( 1313045029));
+
     }
 
 }

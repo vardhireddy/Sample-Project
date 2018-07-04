@@ -3,10 +3,18 @@ package com.gehc.ai.app.datacatalog.dao.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.UploadRepository;
+import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImplTest;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +27,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,8 +40,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -43,6 +53,12 @@ public class DataCatalogDaoImplTest {
     EntityManager entityManager;
     @Mock
     ContractRepository contractRepository;
+    @Mock
+    DataSetRepository dataSetRepository;
+
+    @Mock
+    UploadRepository uploadRepository;
+
     @Mock
     Query query;
     @Mock
@@ -139,7 +155,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}", Timestamp.valueOf("2018-03-08 10:51:30"), "AP" };
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "{\"name\": \"PTX\"}", Timestamp.valueOf("2018-03-08 10:51:30"), "AP"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
     }
@@ -160,22 +176,191 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("fromDate", "LABEL"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input,false,1);
+        List result = dataCatalogDao.getImgSeriesByFilters(input, false, 1);
     }
+
+    private Contract buildContractResult() {
+
+        Contract contract = new Contract();
+
+        contract.setId(77L);
+        contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
+        contract.setActive("true");
+        List<String> uriList = new ArrayList<>();
+        uriList.add("bla.pdf");
+        contract.setUri(uriList);
+        contract.setOrgId("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+        contract.setSchemaVersion("v1");
+        contract.setAgreementName("POC 7");
+        contract.setPrimaryContactEmail("m.j@ge.com");
+        contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
+        contract.setAgreementBeginDate("2016-07-26");
+        contract.setDataUsagePeriod("12");
+        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_ONSHORE, ContractUseCase.DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "Test2")}));
+        contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
+        contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
+        contract.setUploadBy("user");
+
+        return contract;
+    }
+
+    @Test
+    public void itShouldReturnAllContractsForOrgIdIfOrgIdHasContractsInDatabaseAndDataUsagePeriodValueIsPerpetuity() throws InvalidContractException {
+        // ARRANGE
+
+        // Set up contracts to be returned from the DB
+        String dataUsagePeriod = "perpetuity";
+        final LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        final List<Contract> mockContractsLst = new ArrayList<>();
+
+        Contract mockContract = buildContractResult();
+        mockContract.setAgreementBeginDate(currentDate.format(formatter));
+        mockContract.setDataUsagePeriod(dataUsagePeriod);
+
+        mockContractsLst.add(mockContract);
+
+        when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContractsLst);
+
+        // Set the expected contracts with their respective expiration values
+        final List<Contract> expectedContractsLst = new ArrayList<>();
+
+        Contract expectedContract = buildContractResult();
+        expectedContract.setAgreementBeginDate(currentDate.format(formatter));
+        expectedContract.setDataUsagePeriod(dataUsagePeriod);
+        expectedContract.setExpired(false);
+
+        expectedContractsLst.add(expectedContract);
+
+        // ACT
+        List<Contract> actualContractsLst = dataCatalogDao.getAllContractsDetails("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+
+        // ASSERT
+        assertEquals(expectedContractsLst, actualContractsLst);
+    }
+
+    @Test
+    public void itShouldReturnAllContractsForOrgIdIfOrgIdHasContractsInDatabaseAndDataUsagePeriodIsIntParsable() throws InvalidContractException {
+        // ARRANGE
+
+        // Set up contracts to be returned from the DB
+        final int dataUsagePeriod = 11;
+        final LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        final List<Contract> mockContracts = new ArrayList<>();
+
+        Contract activeContract = buildContractResult();
+        String activeBeginDate = currentDate.minusMonths(dataUsagePeriod - 1).format(formatter);
+        activeContract.setAgreementBeginDate(activeBeginDate);
+
+        Contract inactiveContract = buildContractResult();
+        String inactiveBeginDate = currentDate.minusMonths(dataUsagePeriod + 1).format(formatter);
+        inactiveContract.setAgreementBeginDate(inactiveBeginDate);
+
+        mockContracts.add(activeContract);
+        mockContracts.add(inactiveContract);
+
+        when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContracts);
+
+        // Set the expected contracts with their respective expiration values
+        final List<Contract> expectedContracts = new ArrayList<>();
+
+        Contract expectedActiveContract = buildContractResult();
+        expectedActiveContract.setAgreementBeginDate(currentDate.minusMonths(dataUsagePeriod - 1).toString());
+        expectedActiveContract.setExpired(false);
+
+        Contract expectedInactiveContract = buildContractResult();
+        expectedInactiveContract.setAgreementBeginDate(currentDate.minusMonths(dataUsagePeriod + 1).toString());
+        expectedInactiveContract.setExpired(true);
+
+        expectedContracts.add(expectedActiveContract);
+        expectedContracts.add(expectedInactiveContract);
+
+        // ACT
+        List<Contract> actualContracts = dataCatalogDao.getAllContractsDetails("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+
+        // ASSERT
+        assertEquals(expectedContracts, actualContracts);
+    }
+
+    @Test(expected = InvalidContractException.class)
+    public void itShouldReturnAnExceptionIfDataUsagePeriodIsARandomStringValue() throws InvalidContractException {
+        // ARRANGE
+
+        // Set up contracts to be returned from the DB
+        String dataUsagePeriod = "abc";
+        final List<Contract> mockContracts = new ArrayList<>();
+
+        Contract contract = buildContractResult();
+        contract.setDataUsagePeriod(dataUsagePeriod);
+
+        mockContracts.add(contract);
+
+        when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContracts);
+
+        // ACT
+       List<Contract> actualContracts = dataCatalogDao.getAllContractsDetails("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+
+    }
+
+    @Test(expected = InvalidContractException.class)
+    public void itShouldReturnAnExceptionIfAgreementBeginDateHasInvalidFormat() throws InvalidContractException {
+        // ARRANGE
+
+        // Set up contracts to be returned from the DB
+        String dataUsagePeriod = "abc";
+        final List<Contract> mockContracts = new ArrayList<>();
+
+        Contract contract = buildContractResult();
+        contract.setDataUsagePeriod(dataUsagePeriod);
+        final LocalDate currentDate = LocalDate.now(Clock.systemUTC());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+
+        String activeBeginDate = currentDate.format(formatter);
+        contract.setAgreementBeginDate(activeBeginDate);
+
+        mockContracts.add(contract);
+
+        when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContracts);
+
+        // ACT
+        List<Contract> actualContracts = dataCatalogDao.getAllContractsDetails("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+
+    }
+
+    @Test
+    public void itShouldReturnZeroContractsForOrgIdIfOrgIdHasZeroContractsInDatabase() throws InvalidContractException{
+        // ARRANGE
+
+        // Set up contracts to be returned from the DB
+        final List<Contract> mockContracts = new ArrayList<>();
+
+        when(contractRepository.findAllByOrgIdOrderByActiveDescIdDesc(anyString())).thenReturn(mockContracts);
+
+        // Set the expected contracts with their respective expiration values
+        final List<Contract> expectedContracts = new ArrayList<>();
+
+        // ACT
+        List<Contract> actualContracts = dataCatalogDao.getAllContractsDetails("f1341a2c-7a54-4d68-9f40-a8b2d14d3806");
+
+        // ASSERT
+        assertEquals(expectedContracts, actualContracts);
+    }
+
 
     @Test
     public void testgetImageSeriesByFiltersWithNullProperties() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30"), "AP" };
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30"), "AP"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
 
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "LABEL"));
         input.putAll(constructQueryParam("ge_class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\",\"upload_date\":\"2017-03-31 00:00:00\"},{\"name\":\"Calcification\",\"upload_date\":\"2017-03-31 00:00:00\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input,false,1);
+        List result = dataCatalogDao.getImgSeriesByFilters(input, false, 1);
         assertEquals(getImageSeriesWithFiltersAndNullProperties().toString(), result.toString());
     }
 
@@ -185,7 +370,7 @@ public class DataCatalogDaoImplTest {
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         input.putAll(constructQueryParam("annotations", "absent"));
         input.putAll(constructQueryParam("ge-class", "[{\"name\":\"Foreign Bodies\",\"value\":\"Absent\",\"patient_outcome\":\"5.1\"},{\"name\":\"Calcification\",\"patient_outcome\":\"undefined.undefined\"}]"));
-        List result = dataCatalogDao.getImgSeriesByFilters(input,false,1);
+        List result = dataCatalogDao.getImgSeriesByFilters(input, false, 1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
@@ -193,7 +378,7 @@ public class DataCatalogDaoImplTest {
     public void testgetImageSeriesByFiltersWithOutAnnoations() {
         dataSetUp();
         Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
-        List result = dataCatalogDao.getImgSeriesByFilters(input,false,1);
+        List result = dataCatalogDao.getImgSeriesByFilters(input, false, 1);
         assertEquals(getImageSeriesWithFilters().toString(), result.toString());
     }
 
@@ -643,7 +828,7 @@ public class DataCatalogDaoImplTest {
         imageSeriesList.add(imgSeries);
         return imageSeriesList;
     }
-    
+
     @Test
     public void testgetImageSeriesIdsByFilters() {
         dataSetUp();
@@ -668,7 +853,7 @@ public class DataCatalogDaoImplTest {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter(anyString(), anyObject())).thenReturn(null);
         List expectedList = new ArrayList();
-        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30"), "AP" };
+        Object[] newObj = new Object[]{BigInteger.valueOf(1), "4fac7976-e58b-472a-960b-42d7e3689f20", "DX", "CHEST", "PNG", "12345", "UCSF", 1, "GE XRAY", "test", "", Timestamp.valueOf("2018-03-08 10:51:30"), "AP"};
         expectedList.add(newObj);
         when(query.getResultList()).thenReturn(expectedList);
 
@@ -696,13 +881,13 @@ public class DataCatalogDaoImplTest {
         List result = dataCatalogDao.getImgSeriesIdsByFilters(input);
         assertEquals(getImageSeriesIdsWithFilters().toString(), result.toString());
     }
-    
+
     private List<Long> getImageSeriesIdsWithFilters() {
         List<Long> imageSeriesIdsList = new ArrayList<Long>();
         imageSeriesIdsList.add(1L);
         return imageSeriesIdsList;
     }
-    
+
     /**
      * this tests calls from the image set series retrieval using filter criteria
      */
@@ -716,10 +901,10 @@ public class DataCatalogDaoImplTest {
         org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
         assertTrue(argument.getValue().toLowerCase().endsWith("limit 101"));
     }
-    
+
     @Test
     public void testGetImageSeriesByFilterWithLimitsAndRandmoization() {
-    	Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
+        Map<String, Object> input = constructQueryParam("org_id", "4fac7976-e58b-472a-960b-42d7e3689f20");
         ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         dataCatalogDao.getImgSeriesByFilters(input, true, 101);
@@ -727,5 +912,55 @@ public class DataCatalogDaoImplTest {
         org.mockito.Mockito.verify(entityManager).createNativeQuery(argument.capture());
         assertTrue(argument.getValue().toLowerCase().endsWith("limit 101"));
         assertTrue(argument.getValue().toUpperCase().contains("ORDER BY RAND()"));
+    }
+
+    //test cases for getImageSetIdsByDataCollectionId
+    @Test
+    public void itShouldReturnListOfImageSetIds() {
+        // ARRANGE
+        List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
+        DataSet dataSet = new DataSet();
+        dataSet.setImageSets(imageSetIdList);
+       when(dataSetRepository.findOne(anyLong())).thenReturn(dataSet);
+        // ACT
+       List<Long> result = dataCatalogDao.getImageSetIdsByDataCollectionId(1L);
+       assertEquals(imageSetIdList.size(),result.size());
+    }
+
+    @Test
+    public void itShouldReturnNullForGivenInputDataCollectionId() {
+        // ARRANGE
+        List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
+        DataSet dataSet = new DataSet();
+        dataSet.setImageSets(imageSetIdList);
+        when(dataSetRepository.findOne(anyLong())).thenReturn(null);
+        // ACT
+        List<Long> result = dataCatalogDao.getImageSetIdsByDataCollectionId(1L);
+
+        // ASSERT
+        assertEquals(0,result.size());
+    }
+
+    //test cases for getContractsByImageSetIds
+    @Test
+    public void itShouldReturnListOfContractForGivenListOfImageSetIds(){
+        // ARRANGE
+        List<Contract> contractList = new ArrayList<>();
+        Contract contract = buildContractEntity();
+        contractList.add(contract);
+        contractList.add(contract);
+
+        when(contractRepository.getContractsByImageSetidList(anyList())).thenReturn(contractList);
+        List<Long> imageSetIdList = Arrays.asList(1293000012905L, 1293000012895L, 1293000012901L, 1293000012904L);
+        // ACT
+        List<Contract> result = dataCatalogDao.getContractsByImageSetIds(imageSetIdList);
+
+        // ASSERT
+        assertEquals(contractList.size(),result.size());
+    }
+
+    private Contract buildContractEntity(){
+        DataCatalogServiceImplTest serviceImplTest = new DataCatalogServiceImplTest();
+        return serviceImplTest.buildContractEntity();
     }
 }

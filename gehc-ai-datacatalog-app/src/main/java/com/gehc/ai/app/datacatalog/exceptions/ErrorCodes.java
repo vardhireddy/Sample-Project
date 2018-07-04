@@ -32,8 +32,13 @@ public enum ErrorCodes {
 	UNSUPPORTED_CONTRACT_METADATA_FILE_TYPE("Only .json file is supported for metadata"),
 	INVALID_CONTRACT_METADATA_FILE("Unable to parse Contract Metadata File"),
 	MISSING_CONTRACT_ID("Contract Id is required for fetching contract details"),
-	INVALID_CONTRACT_ID("Contract Id should be in Number format")
-    ;
+	INVALID_CONTRACT_ID("Contract Id should be in Number format"),
+	MISSING_UPLOAD_ID("Upload Id is required for fetching upload details"),
+	INVALID_UPLOAD_ID("Upload Id provided is invalid."),
+	UPLOAD_LAST_MODIFIED_DATE_MISSING("Update Upload Request lastModifiedTime is missing"),
+	INVALID_UPLOAD_ID_UPDATE_REQUEST("Id provided in update upload request is invalid."),
+	INVALID_UPLOAD_UPDATE_REQUEST("Either status or summary must be provided in update upload request"),
+	OUTDATED_UPLOAD_UPDATE_REQUEST("Upload update request last modified time does not match with the upload entity in db. Please pull the latest instance and make an update");
 
     private final String errorMessage;
 

@@ -14,8 +14,13 @@ package com.gehc.ai.app.datacatalog.service;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
 import java.util.List;
@@ -65,10 +70,84 @@ public interface IDataCatalogService {
 	Contract saveContract(Contract contract);
 
 	Contract getContract(Long contractId);
-	
+
+    /**
+     * Fetches all contracts and their details for the given org Id.
+     * @param orgId the id of the organization whose contracts will be returned
+     * @throws InvalidContractException if the data usage period is invalid or the agreement begin date is invalid
+     * @return list of contracts and their details. The list is sorted by attributes - {@code active} and {@code contractId} in descending order.
+     * If the given org id does not exists or if there are no contracts associated with the given org id, then an empty list will be returned.
+     */
+    List<Contract> getAllContracts(String orgId) throws InvalidContractException;
+
     /**
      * @param params
      * @return
      */
     List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+
+    /**
+     * Returns a map of active and inactive contracts associated with a given data collection id
+     * @param dataCollectionId - data collection unique identifier
+     * @return Map<String,List<ContactsByDataSetId>>, where the keys will be "active" and "inactive". If "dataCollectionId" does not exist an empty map will be returned
+     */
+    Map<String,List<ContractByDataSetId>> getContractsByDataCollectionId(Long dataCollectionId);
+
+    /**
+     * Saves the given upload entity to the repository
+     * @param uploadEntity - Upload entity object
+     * @return - a copy of the upload entity saved to the database repository
+     */
+    Upload saveUpload(Upload uploadEntity);
+
+        /**
+         *  validates the request parameters and creates a upload entity in the repository
+         * @param uploadRequest - Request body parameters from the POST Upload API
+         * @return
+         * if valid request - returns a copy of upload entity created in the repository
+         * if invalid - returns an error message with the reason specifying why the Upload could not be created
+         */
+    Upload createUpload(Upload uploadRequest) throws DataCatalogException;
+
+    /**
+     * Fetches all uploads entities for the organisation
+     * @param orgId - organisation ID
+     *
+     * @return list of upload entity details.
+     * if there are no uploads associated with the given organisation, then an empty list will be returned.
+     */
+    List<Upload> getAllUploads( String orgId );
+
+    /**
+     * Fetches the upload associated with given Id
+     * @param uploadId - unique ID for upload entities
+     * @return
+     * if upload exists with given ID -> returns Upload entity
+     * if upload does not exist with given ID -> returns null
+     */
+    Upload getUploadById( Long uploadId);
+
+
+    /**
+     * Returns the upload entity details for given query parameters
+     * @param spaceId - space ID of upload on COS
+     * @param orgId - organisation ID
+     * @param contractId - contract ID
+     * @return
+     * if upload exists -> returns the upload entity details
+     * if contract is invalid -> throws DataCatalog exception with status code 400 and error message
+     * if upload does not exist -> returns null
+     */
+   Upload getUploadByQueryParameters(String spaceId, String orgId, Long contractId) throws DataCatalogException;
+
+    /**
+     * Updates the upload entity and saves to the database
+     *
+     * @param updateRequest
+     * @return upload entity that was updated
+     * @throws DataCatalogException if the validation fails
+     */
+   Upload updateUploadEntity(UpdateUploadRequest updateRequest) throws DataCatalogException;
+
 }

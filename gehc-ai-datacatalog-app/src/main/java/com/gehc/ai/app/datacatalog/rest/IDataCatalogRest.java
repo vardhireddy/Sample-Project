@@ -12,30 +12,29 @@
 package com.gehc.ai.app.datacatalog.rest;
 
 import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.entity.Patient;
 import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.Study;
 import com.gehc.ai.app.datacatalog.entity.CosNotification;
 import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
-import com.gehc.ai.app.datacatalog.entity.Patient;
-import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Response;
 import java.util.List;
 import java.util.Map;
 
@@ -243,14 +242,6 @@ public interface IDataCatalogRest {
     List<Patient> getAllPatients(HttpServletRequest request);
 
     /**
-     * @param id
-     * @param annotationType
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    List getRawTargetData(String id, String annotationType);
-
-    /**
      * @return String Success
      */
     String healthcheck();
@@ -325,7 +316,7 @@ public interface IDataCatalogRest {
      *
      * @return String
      */
-    ResponseEntity<Map<String,String>> validateContractIdAndOrgId(Long contractId, String orgId);
+    ResponseEntity<Map<String,String>> validateContractByIdAndOrgId(Long contractId, String orgId);
     /**
      * @param params
      * @return
@@ -360,6 +351,13 @@ public interface IDataCatalogRest {
     ResponseEntity<Contract> getContracts(Long contractId);
 
     /**
+     * Fetches all contracts and their details for the given org Id.
+     * @param request  The intercepted HTTP request object whose headers will be validated and the user's org Id will be extracted for getting the contracts.
+     * @return  a {@link ResponseEntity} containing a JSON representation of the list of contract entities. The list is sorted by attributes - {@code active} and {@code contractId} in descending order
+     */
+    ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request);
+
+    /**
      * Gives the ability to update the status and uri of the contract
      *
      * @param contractId
@@ -367,12 +365,95 @@ public interface IDataCatalogRest {
      */
     ResponseEntity<Contract> updateContract(Long contractId, UpdateContractRequest updateRequest);
 
-    /* * A soft delete of contract by given ID through inactivating it.
+    /**
+     * A soft delete of contract by given ID through inactivating it.
      *
-     * @param contractId
+     * @param contractId - contract object unique ID
      * @return
+     * if Contract is deleted -> (Status code : 200, message: Contract is inactivated successfully)
+     * if Contract is already deleted -> (Status code : 200, message: Contract with given id is already inactive)
+     * if Contract not found -> (Status code : 404, message: No contract exists with given id)
+     * if user is forbidden from deleting contract -> (Status code : 403, message : User does not have access to delete the contract.)
      */
-    ResponseEntity<Map<String,String>> deleteContract(Long contractId);
+    ResponseEntity<Map<String,String>> deleteContract(Long contractId, HttpServletRequest httpServletRequest);
+
+    /**
+     * Returns a map of active and inactive contracts associated with a given data collection id
+     * @param dataCollectionId - data collection unique identifier
+     * @return Map<String,List<ContactsByDataSetId>>, where the keys will be "active" and "inactive". If "dataCollectionId" does not exist an empty map will be returned
+     */
+    ResponseEntity<?> getContractsForDataCollection(Long dataCollectionId);
+
+
+
+    /**
+     * Saves the provided upload entity details to repository.
+     *
+     * @param uploadRequest The upload details to save.  The required details are the following:
+     *                 <ul>
+     *                 <li>The orgID value</li>
+     *                 <li>The data type of files being uploaded</li>
+     *                 <li>The contract ID associated with the upload</li>
+     *                 <li>The space ID for the upload</li>
+     *                 <li>The tags specified for upload in manifest file</li>
+     *                 <li>The uploader's name</li>
+     *                 </ul>
+     * @return a JSON representation of the upload entity that was saved
+     * if required data is not provided -> throws exception with status code 400 and error message
+     * if contract is invalid -> throws exception with status code 400 and error message
+     * if upload is not unique on certain parameters -> throws exception with status code 409 and error message
+     */
+    ResponseEntity<?> createUpload(Upload uploadRequest);
+
+
+    /**
+     * Returns list of upload entities for authorized user
+     * @param httpServletRequest - http servlet request to parse orgId from Authentication token
+     * @return List<Upload>
+     *     if user is Authorized -> returns list of upload entities
+     *     if user is unauthorized -> returns 401 status code and error message
+     *     if user is forbidden -> returns 403 status code and error message
+     */
+    ResponseEntity<?> getAllUploads(HttpServletRequest httpServletRequest);
+
+    /**
+     * Returns the upload entity details if given upload ID exists
+     * @param uploadId
+     * @return
+     * if user is authorized and upload exists -> returns status code 200 and the upload entity details
+     * if user is authorized and upload doe not exist -> returns status code 404 and error message
+     * if user is not authorized -> returns 403 status code and error message
+     */
+    ResponseEntity<?> getUploadById(Long uploadId, HttpServletRequest httpServletRequest);
+
+    /**
+     * Returns the upload entity details for given query parameters
+     * @param spaceId - space ID of upload on COS
+     * @param orgId - organisation ID
+     * @param contractId - contract ID
+     * @return
+     * if upload exists -> returns status code 200 and the upload entity details
+     * if contract is invalid -> throws DataCatalog exception with status code 400 and error message
+     * if upload does not exist -> returns status code 404 and response message
+     */
+    ResponseEntity<?> getUploadByQueryParameters(String spaceId, String orgId, Long contractId);
+
+    /**
+     * Updates the upload entity and saves to the database
+     * @param updateRequest The upload details to save.  The required details are the following:
+     *                      <ul>
+     *                       <li>The orgID value</li>
+     *                       <li>The data type of files being uploaded</li>
+     *                       <li>The contract ID associated with the upload</li>
+     *                       <li>The space ID for the upload</li>
+     *                       <li>The tags specified for upload in manifest file</li>
+     *                       <li>The uploader's name</li>
+     *                       <li>The summary -> uri list  from COS</li>
+     *                       <li>The status of no.of DICOM and NON_DICOM uploads success ratio</li>
+     *                       </ul>
+     * @return a JSON representation of the upload entity that was updated with status code 200
+     *       if required data is not provided/ invalid -> throws exception with status code 400 and error message
+     *       if updateRequest lastModified date does not match with the entity in DB -> throws exception with status code 409 and error message
+     */
+    ResponseEntity<?> updateUpload(UpdateUploadRequest updateRequest);
 }
-
-

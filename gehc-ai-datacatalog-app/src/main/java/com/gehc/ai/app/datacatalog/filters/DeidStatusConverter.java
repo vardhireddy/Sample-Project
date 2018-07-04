@@ -1,7 +1,7 @@
 /*
  * DeidStatusConverter.java
  *
- * Copyright (c) 2016 by General Electric Company. All rights reserved.
+ * Copyright (c) 2018 by General Electric Company. All rights reserved.
  *
  * The copyright to the computer software herein is the property of
  * General Electric Company. The software may be used and/or copied only
@@ -14,23 +14,41 @@ package com.gehc.ai.app.datacatalog.filters;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gehc.ai.app.datacatalog.entity.Contract.DeidStatus;
 
-/**
- * @author dipshah
- *
- */
-//
-//@Converter(autoApply = true)
-@Converter(autoApply = false)
-public class DeidStatusConverter implements AttributeConverter<DeidStatus, String>{
-	@Override
-	public String convertToDatabaseColumn(DeidStatus deidStatus) {
-		 return deidStatus.getDisplayName();
-	}
+import java.io.IOException;
 
-	@Override
-	public DeidStatus convertToEntityAttribute(String dbData) {
-		return DeidStatus.fromDisplayName(dbData);
-	}
+@Converter(autoApply = false)
+public class DeidStatusConverter implements AttributeConverter<DeidStatus, String> {
+
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public String convertToDatabaseColumn(DeidStatus deidStatus) {
+        try {
+            if (null != deidStatus) {
+                return objectMapper.writeValueAsString(deidStatus);
+            } else {
+                return null;
+            }
+        } catch (JsonProcessingException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public DeidStatus convertToEntityAttribute(String dbData) {
+        try {
+            if (null != dbData) {
+                return objectMapper.readValue(dbData, DeidStatus.class);
+            } else {
+                return null;
+            }
+        } catch (IOException ex) {
+            return null;
+        }
+    }
 }

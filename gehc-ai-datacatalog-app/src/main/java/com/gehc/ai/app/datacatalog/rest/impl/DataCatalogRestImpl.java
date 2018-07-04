@@ -11,43 +11,50 @@
  */
 package com.gehc.ai.app.datacatalog.rest.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.common.constants.ApplicationConstants;
-import com.gehc.ai.app.common.responsegenerator.ApiResponse;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.AnnotationImgSetDataCol;
-import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.CosNotification;
-import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
-import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
+import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.Study;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.filters.RequestValidator;
-import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.ContractRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
-import com.gehc.ai.app.datacatalog.repository.PatientRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
-import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
-import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
-import com.gehc.ai.app.datacatalog.rest.response.DataCatalogResponse;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
-import com.gehc.ai.app.datacatalog.util.DataCatalogUtils;
-import com.gehc.ai.app.datacatalog.util.exportannotations.Shuffle;
-import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataCollectionsCreateRequest;
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,42 +72,39 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import com.gehc.ai.app.common.constants.ApplicationConstants;
+import com.gehc.ai.app.common.responsegenerator.ApiResponse;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.filters.RequestValidator;
+import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
+import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
+import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
+import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
+import com.gehc.ai.app.datacatalog.repository.PatientRepository;
+import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
+import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
+import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
+import com.gehc.ai.app.datacatalog.util.DataCatalogUtils;
+import com.gehc.ai.app.datacatalog.util.exportannotations.Shuffle;
+import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
-import static com.gehc.ai.app.common.constants.ValidationConstants.DATA_SET_TYPE;
-import static com.gehc.ai.app.common.constants.ValidationConstants.UUID;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponses;
 
 /**
  * @author 212071558
  */
 @RestController
+@Api(value = "DataCatalogRestController", description = "REST APIs related to DataCatalog Service")
 @Produces(MediaType.APPLICATION_JSON)
 @RequestMapping(value = "/api/v1")
 @PropertySource({"classpath:application.yml"})
@@ -162,10 +166,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         this.randomize = r;
     }
 
-    @Value("${coolidge.micro.inference.url}")
-    private String coolidgeMInferenceUrl;
-    @Value("${uom.user.me.url}")
-    private String uomMeUrl;
     @Autowired
     private PatientRepository patientRepository;
     @Autowired
@@ -772,95 +772,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     /**
-     * returns a flat list of annotations for a collection and a given annotation type
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    @RequestMapping(value = "/datacatalog/raw-target-data", method = RequestMethod.GET)
-    public List getRawTargetData(@QueryParam("id") String id, @QueryParam("annotationType") String annotationType) {
-        logger.info(" Entering method getRawTargetData --> id: " + id + " Type: " + annotationType);
-        // Note: works fine with new DC which has image sets as Array of Longs
-        nonNullCheckForInputParameters(id, annotationType);
-
-        ResponseBuilder responseBuilder;
-        List<AnnotationImgSetDataCol> annImgSetDCLst = null;
-        List<DataSet> dsLst = dataSetRepository.findById(Long.valueOf(id));
-        if (null != dsLst && !dsLst.isEmpty()) {
-            logger.debug("***** Data set Lst.size() = " + dsLst.size());
-            if (null != dsLst.get(0).getImageSets()) {
-                List<String> types = new ArrayList<String>();
-                setAnnotationTypes(annotationType, types);
-                logger.debug("Number of Annotations : " + types.size());
-                List<Long> imgSerIdLst = dsLst.get(0).getImageSets();
-                List<ImageSeries> imgSeriesLst = imageSeriesRepository.findByIdIn(imgSerIdLst);
-                logger.debug("***** Got img series by id sucessfully");
-                if (null != imgSeriesLst && !imgSeriesLst.isEmpty()) {
-                    logger.debug(" imgSeriesLst.size() = " + imgSeriesLst.size());
-                    Map<Long, ImageSeries> imgSeriesMap = new HashMap<Long, ImageSeries>();
-                    for (Iterator<ImageSeries> imgSeriesItr = imgSeriesLst.iterator(); imgSeriesItr.hasNext(); ) {
-                        ImageSeries imageSeries = (ImageSeries) imgSeriesItr.next();
-                        imgSeriesMap.put(imageSeries.getId(), imageSeries);
-                    }
-
-                    // contains all the annotations belonging to image sets from the collection
-                    List<Annotation> annotationLst = annotationRepository.findByImageSetIdInAndTypeIn(imgSerIdLst,
-                            types);
-                    logger.info("***** Got annotationLst by img series id and type");
-                    if (null != annotationLst && !annotationLst.isEmpty()) {
-                        logger.debug(" annotationLst.size() = " + annotationLst.size());
-                        annImgSetDCLst = new ArrayList<AnnotationImgSetDataCol>();
-                        for (Iterator<Annotation> annotationItr = annotationLst.iterator(); annotationItr.hasNext(); ) {
-                            AnnotationImgSetDataCol annImgSetDataCol = new AnnotationImgSetDataCol();
-                            Annotation annotation = (Annotation) annotationItr.next();
-                            annImgSetDataCol.setDcId(id);
-                            annImgSetDataCol.setAnnotationDate(annotation.getAnnotationDate().toString());
-                            annImgSetDataCol.setAnnotationId(annotation.getId().toString());
-                            annImgSetDataCol.setAnnotationType(annotation.getType());
-                            annImgSetDataCol.setAnnotatorId(annotation.getAnnotatorId());
-                            ObjectMapper mapper = new ObjectMapper();
-                            TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-                            };
-                            HashMap<String, Object> o = null;
-                            try {
-                                String jsonInString = mapper.writeValueAsString(annotation.getItem());
-                                o = mapper.readValue(jsonInString, typeRef);
-                            } catch (IOException e) { // NOSONAR
-                                e.printStackTrace();
-                                logger.error("Exception during getting raw target data ", e);
-                            }
-                            annImgSetDataCol.setAnnotationItem(o);
-                            annImgSetDataCol.setImId(annotation.getImageSet().getId().toString());
-                            ImageSeries imageSeries = imgSeriesMap.get(annotation.getImageSet().getId());
-                            try {
-                                logger.debug("imageSeries: " + mapper.writeValueAsString(imageSeries));
-                            } catch (JsonProcessingException jpe) {
-                                jpe.printStackTrace();
-                                logger.error(jpe.getMessage());
-                            }
-                            annImgSetDataCol.setPatientDbid(imageSeries.getPatientDbId().toString());
-                            annImgSetDataCol.setUri(imageSeries.getUri());
-                            annImgSetDataCol.setDataFormat(imageSeries.getDataFormat());
-                            Map props = (Map) imageSeries.getProperties();
-                            Object instances = props.get("instances");
-                            annImgSetDataCol.setInstances(instances);
-                            annImgSetDCLst.add(annImgSetDataCol);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (annImgSetDCLst != null) {
-            logger.debug(" annImgSetDCLst.size() = " + annImgSetDCLst.size());
-            responseBuilder = Response.ok(annImgSetDCLst);
-            return (List) responseBuilder.build().getEntity();
-        }
-
-        return (List) new ArrayList<AnnotationImgSetDataCol>();
-
-    }
-
-    /**
      * @param id
      * @param annotationType
      * @throws WebApplicationException
@@ -1136,6 +1047,56 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         return apiResponse;
     }
 
+    @Override
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all Contracts", httpMethod = "GET", response = List.class, tags = "Get all Contracts")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = List.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.GET)
+    public ResponseEntity<List<Contract>> getAllContracts(HttpServletRequest request) {
+
+        logger.debug("Get all contracts");
+
+        List<Contract> contracts = new ArrayList<Contract>();
+
+        /* Toll gate checks */
+
+        // Gate 1 - The HttpServletRequest object must be accessible.  Otherwise, we can't extract the org ID
+        if (Objects.isNull(request)) {
+            return new ResponseEntity(Collections.singletonMap("response", "HTTP request object was not found"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // Gate 2 - The org ID is required to be defined
+        if (Objects.isNull(request.getAttribute("orgId"))) {
+            return new ResponseEntity(Collections.singletonMap("response", "An organization ID must be provided"), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            String orgId = request.getAttribute("orgId").toString();
+
+            logger.debug("Get all contracts -  org Id = "+orgId);
+
+            contracts = dataCatalogService.getAllContracts(orgId);
+        } catch (InvalidContractException ice) {
+            logger.error("Could not get the contracts due to an internal error ", ice.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Internal error occured : " + ice.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (Exception e) {
+            logger.error("Could not get the contracts due to an internal error ", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Could not get the contracts due to an internal error"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity(contracts, HttpStatus.OK);
+    }
+
     /**
      * API to fetch contract
      *
@@ -1143,8 +1104,21 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
      * @return
      */
     @Override
+    @ApiOperation(value = "Get Contract By Id ", httpMethod = "GET", response = Contract.class, tags = "Retrieve Contract")
+    @ApiResponses(value = {
+    		@io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Contract.class),
+    		@io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+    		@io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+    		@io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+    		@io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+    		@io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+    		@io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+    		@io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+    		@io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+    		@io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+    		@io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.GET)
-    public ResponseEntity<Contract> getContracts(@PathVariable(value = "contractId") Long contractId) {
+    public ResponseEntity<Contract> getContracts(@ApiParam(value = "Id of Contract") @PathVariable(value = "contractId") Long contractId) {
         Contract contract;
         try {
             RequestValidator.validateContractId(contractId);
@@ -1180,7 +1154,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             resultSet = annotationRepository.getCountOfImagesAnnotated(orgId);
         } catch (Exception e) {
             logger.error("Exception retrieving data in getCountOfImagesAnnotated : {}", e.getMessage());
-            return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.",
+            return new ResponseEntity("Internal Server error. Please contact the corresponding service assistant.",
                     HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
@@ -1201,21 +1175,43 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    @RequestMapping(value = "/datacatalog/contract/{contractId}/orgId/{orgId}", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, String>> validateContractIdAndOrgId(@PathVariable("contractId") Long contractId, @PathVariable("orgId") String orgId) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Verify if contract is valid", httpMethod = "GET", response = Contract.class, tags = "Verify if contract is valid")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = Contract.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/contract/{contractId}/validate", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, String>> validateContractByIdAndOrgId(@PathVariable("contractId") Long contractId,
+                                                                            @RequestParam("orgId") String orgId) {
 
         logger.info("Passing in contract Id and Org Id for validation.");
 
-        int countOfRecordsWithGivenFilters = 0;
+        Contract contract;
         try {
-            countOfRecordsWithGivenFilters = contractRepository.validateContractIdAndOrgId(contractId, orgId);
+            contract = contractRepository.findByIdAndOrgId(contractId, orgId);
         } catch (Exception e) {
             logger.error("Error validating given parameters : {}", e.getMessage());
-            return new ResponseEntity("Internal Server error. Please contact the corresponding service assitant.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity("Internal Server error. Please contact the corresponding service assistant.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (countOfRecordsWithGivenFilters <= 0)
-            return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.OK);
+        if (contract == null) {
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract does not exist"), HttpStatus.NOT_FOUND);
+        }
+            boolean isContractExpired = ContractByDataSetId.isContractExpired(contract.getAgreementBeginDate(),contract.getDataUsagePeriod());
+
+        if (contract.getActive().equalsIgnoreCase("false") || isContractExpired)
+        {
+            return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactive/expired"), HttpStatus.FORBIDDEN);
+        }
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract exists"), HttpStatus.OK);
     }
 
@@ -1259,6 +1255,18 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	@Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Create Contract", httpMethod = "POST", response = Contract.class, tags = "Create Contract")
+    @ApiResponses(value = {
+    		@io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Contract.class),
+    		@io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+    		@io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+    		@io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+    		@io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+    		@io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+    		@io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+    		@io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+    		@io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+    		@io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
 	public ResponseEntity<?> saveContract(@RequestBody Contract contract, HttpServletRequest request) {
         logger.debug("Creating a new contract.");
@@ -1284,17 +1292,17 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	        if (Objects.isNull(contract.getAgreementName()) || contract.getAgreementName().isEmpty()) {
 	        	return new ResponseEntity<Object>(Collections.singletonMap("response", "An agreement name must be provided"), HttpStatus.BAD_REQUEST);
 	        }
-	        
+
 	        // Gate 5 - The primary contact email must be provided
 	        if (Objects.isNull(contract.getPrimaryContactEmail()) || contract.getPrimaryContactEmail().isEmpty()) {
 	            return new ResponseEntity<Object>(Collections.singletonMap("response", "A primary contact email must be provided"), HttpStatus.BAD_REQUEST);
 	        }
 
 	        // Gate 6 - The de-identified status must be provided
-	        if (Objects.isNull(contract.getDeidStatus()) || contract.getDeidStatus().isEmpty()) {
+	        if (Objects.isNull(contract.getDeidStatus())) {
 	            return new ResponseEntity<Object>(Collections.singletonMap("response", "The de-identified status must be provided"), HttpStatus.BAD_REQUEST);
 	        }
-	        
+
 	        // Gate 7 - An agreement begin date must be provided
 	        if (Objects.isNull(contract.getAgreementBeginDate()) || contract.getAgreementBeginDate().isEmpty()) {
 	            return new ResponseEntity<Object>(Collections.singletonMap("response", "An agreement begin date must be provided"), HttpStatus.BAD_REQUEST);
@@ -1316,7 +1324,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	        }
 
             // Gate 11 - The data allowed location must be provided
-            if (Objects.isNull(contract.getDataLocationAllowed()) || contract.getDataLocationAllowed().isEmpty()) {
+            if (Objects.isNull(contract.getDataLocationAllowed())) {
                 return new ResponseEntity<Object>(Collections.singletonMap("response", "The data allowed location must be provided"), HttpStatus.BAD_REQUEST);
             }
 
@@ -1326,6 +1334,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 			try {
 			    contract.setOrgId(request.getAttribute("orgId").toString());
 			    contract.setActive("true");
+			    contract.setUploadStatus(Contract.UploadStatus.UPLOAD_IN_PROGRESS);
 				contractObj = contractRepository.save(contract);
 			} catch (Exception e1) {
 				logger.error(e1.getMessage());
@@ -1338,64 +1347,120 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity<Contract>(contractObj, HttpStatus.CREATED);
 	}
 
-	@Override
+    @Override
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Update Contract", httpMethod = "PUT", response = Contract.class, tags = "Update Contract")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = Contract.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.PUT)
     public ResponseEntity<Contract> updateContract(@PathVariable Long contractId,
-                                                    @Valid @RequestBody UpdateContractRequest updateRequest){
+                                                   @RequestBody UpdateContractRequest updateRequest) {
 
         logger.info("Validating contract update request body.");
 
-        if (updateRequest == null ||
-                (updateRequest.getStatus() == null && updateRequest.getUri() == null)
-                || (updateRequest.getStatus().isEmpty() && updateRequest.getUri().isEmpty()))
-        {
-            return new ResponseEntity(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), HttpStatus.BAD_REQUEST);
-
+        if (validateUpdateRequest(updateRequest) == false) {
+            return new ResponseEntity(Collections.singletonMap("response", "Update request cannot be empty. Either status or uri must be provided."), HttpStatus.BAD_REQUEST);
         }
 
         Contract contractToBeUpdated;
-
-        try{
+        try {
             contractToBeUpdated = dataCatalogService.getContract(contractId);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Exception retrieving the contract ", e.getMessage());
-            return new ResponseEntity(Collections.singletonMap("response","Exception retrieving the contract."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(Collections.singletonMap("response", "Exception retrieving the contract."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (contractToBeUpdated == null || contractToBeUpdated.getActive() == null){
-            return new ResponseEntity(Collections.singletonMap("response","No Contract Exists with the given Id."), HttpStatus.BAD_REQUEST);
-        }else if (contractToBeUpdated.getActive().equalsIgnoreCase("false")) {
-            return new ResponseEntity(Collections.singletonMap("response", "Contract associated with given Id is inactive. Contract shall not be updated."), HttpStatus.OK);
-        }else {
+        if (validateContractTobeUpdated(contractToBeUpdated) == false) {
+            logger.error("Invalid/Inactive contract ID passed in request : {}", contractId);
+            return new ResponseEntity(Collections.singletonMap("response", "Given contract ID does not exist or is inactive."), HttpStatus.BAD_REQUEST);
+        } else
 
-            contractToBeUpdated.setStatus(updateRequest.getStatus().isEmpty()
-                    ?contractToBeUpdated.getStatus()
-                    :updateRequest.getStatus());
-            contractToBeUpdated.setUri((updateRequest.getUri() == null
-                    || updateRequest.getUri().isEmpty())
-                    ?contractToBeUpdated.getUri()
-                    :updateRequest.getUri());
-
-            try {
-                contractToBeUpdated = dataCatalogService.saveContract(contractToBeUpdated);
-            }catch (Exception e1){
-                logger.error("Exception saving the contract object", e1.getMessage());
-                return new ResponseEntity(Collections.singletonMap("response","Exception saving the updated contract."), HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            return new ResponseEntity<>(contractToBeUpdated, HttpStatus.OK);
+        {
+            contractToBeUpdated = updateContractHelper(contractToBeUpdated, updateRequest);
         }
 
+        try {
+            contractToBeUpdated = dataCatalogService.saveContract(contractToBeUpdated);
+        } catch (Exception e1) {
+            logger.error("Exception saving the contract object", e1.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Exception saving the updated contract."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(contractToBeUpdated, HttpStatus.OK);
     }
+
+    private boolean validateUpdateRequest(UpdateContractRequest updateRequest) {
+        if (updateRequest == null
+                || ((updateRequest.getUploadStatus() == null)
+                        && (updateRequest.getUri() == null || updateRequest.getUri().isEmpty()))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateContractTobeUpdated(Contract contractToBeUpdated) {
+
+        if (contractToBeUpdated == null
+                || contractToBeUpdated.getActive() == null
+                || (contractToBeUpdated.getActive().equalsIgnoreCase("false"))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private Contract updateContractHelper(Contract contractToBeUpdated, UpdateContractRequest updateRequest) {
+
+        contractToBeUpdated.setUploadStatus((updateRequest.getUploadStatus() == null
+                ? contractToBeUpdated.getUploadStatus()
+                : updateRequest.getUploadStatus()));
+        contractToBeUpdated.setUri((updateRequest.getUri() == null || updateRequest.getUri().isEmpty())
+                ? contractToBeUpdated.getUri()
+                : updateRequest.getUri());
+
+        return contractToBeUpdated;
+    }
+
 
     @SuppressWarnings("unchecked")
     @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Delete Contract by Id", httpMethod = "DELETE", response = Contract.class, tags = "Delete Contract by Id")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = Contract.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/contract/{contractId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Map<String, String>> deleteContract(@PathVariable("contractId") Long contractId) {
+    public ResponseEntity<Map<String, String>> deleteContract(@PathVariable("contractId") Long contractId,
+                                                              HttpServletRequest httpServletRequest) {
 
         logger.info("Passing contract id to delete contract :", contractId);
+        String orgId = "";
+        try {
+            orgId = RequestValidator.getOrgIdFromAuth(httpServletRequest);
+        }catch (DataCatalogException e)
+        {
+            logger.error("Error validating servlet request : {}",e.getMessage());
+            return new ResponseEntity<>(Collections.singletonMap("response", "Request cannot be validated because of malformed authorization token."),e.getHttpStatusCode());
+        }
+
         String status = "false";
 
         Contract contractToBeDeleted;
@@ -1403,17 +1468,15 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             contractToBeDeleted = contractRepository.findOne(contractId);
         } catch (Exception e) {
             logger.error("Error retrieving contract to delete: {}", e.getMessage());
-            return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (contractToBeDeleted == null) {
-            logger.info("No contract exists with given id :", contractId);
-            return new ResponseEntity<>(Collections.singletonMap("response", "No contract exists with given id"), HttpStatus.BAD_REQUEST);
-        }
-
-        String contractStatus = contractToBeDeleted.getActive();
-        if (contractStatus.equalsIgnoreCase(status)) {
-            return new ResponseEntity<>(Collections.singletonMap("response", "Contract with given id is already inactive"), HttpStatus.OK);
+        try {
+            RequestValidator.validateContractToBeDeleted(contractToBeDeleted,contractId,orgId);
+        }catch (DataCatalogException e)
+        {
+            logger.error("Error validating contract : {}",e.getMessage());
+            return new ResponseEntity<>(Collections.singletonMap("response", e.getMessage()),e.getHttpStatusCode());
         }
 
         try {
@@ -1421,9 +1484,249 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             contractRepository.save(contractToBeDeleted);
         } catch (Exception e) {
             logger.error("Error deleting the contract : {}", e.getMessage());
-            return new ResponseEntity<>(Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assitant."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(Collections.singletonMap("response", "Contract is inactivated successfully"), HttpStatus.OK);
 
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get Contracts for given data-collection Id", httpMethod = "GET", response = HashMap.class, tags = "Get Contracts for given data-collection Id")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success", response = HashMap.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/contract/data-collection/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getContractsForDataCollection(@PathVariable("id") Long dataCollectionId) {
+
+        logger.info("Data collection/set ID to get contracts id :{}", dataCollectionId);
+
+        Map<String,List<ContractByDataSetId>> resultListOfContracts;
+
+        try {
+            resultListOfContracts = dataCatalogService.getContractsByDataCollectionId(dataCollectionId);
+        }catch (Exception e){
+            logger.error("Error retrieving contracts associated with the data collection : {}", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Error retrieving contracts associated with the data collection." +
+                    " Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (resultListOfContracts.get("active").isEmpty() && resultListOfContracts.get("inactive").isEmpty())
+        {
+            return new ResponseEntity(Collections.singletonMap("response", "No contracts exist for the given data collection ID."), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(resultListOfContracts, HttpStatus.OK);
+    }
+
+    @Override
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create Upload", httpMethod = "POST", response = Upload.class, tags = "Create Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
+    public ResponseEntity<?> createUpload(@RequestBody Upload uploadRequest){
+
+        logger.info("Passing upload request to create upload entity.");
+
+        Upload uploadResponse;
+        try {
+            uploadResponse = dataCatalogService.createUpload(uploadRequest);
+        }catch (DataCatalogException e)
+        {
+            logger.error(e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", e.getMessage()),e.getHttpStatusCode());
+        }catch (Exception e)
+        {
+            logger.error("Exception saving the upload entity : {}", e.getMessage());
+            return new ResponseEntity(Collections.singletonMap("response", "Exception saving the upload entity." +
+                    " Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(uploadResponse,HttpStatus.CREATED);
+    }
+
+    @ApiOperation(value = "Get all upload entities", httpMethod = "GET", response = List.class, tags = "Retrieve Upload entities")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = List.class),
+            @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.GET)
+    @Override
+    public ResponseEntity<?> getAllUploads(HttpServletRequest httpServletRequest){
+
+        logger.info("Passing http request for validation.");
+
+        String orgId = "";
+
+        List<Upload> listOfUploadEntities;
+        try {
+            orgId = RequestValidator.getOrgIdFromAuth( httpServletRequest);
+            listOfUploadEntities = dataCatalogService.getAllUploads(orgId);
+
+        } catch ( DataCatalogException e )
+        {
+                logger.error( "Error validating servlet request : {}", e.getMessage() );
+                return new ResponseEntity<>( Collections.singletonMap( "response", "Request cannot be validated because of malformed authorization token." ), HttpStatus.FORBIDDEN );
+
+        } catch ( Exception e ) {
+                logger.error( "Error retrieving upload entities : {}", e.getMessage() );
+                e.printStackTrace();
+                return new ResponseEntity<>( Collections.singletonMap( "response", "Error retrieving upload entities." + " Please contact the corresponding service assistant." ),
+                                             HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+
+        return new ResponseEntity<>(listOfUploadEntities,HttpStatus.OK);
+    }
+
+    @Override
+    @ApiOperation(value = "Get Upload By Id ", httpMethod = "GET", response = Upload.class, tags = "Retrieve Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUploadById(@ApiParam(value = "Id of Upload") @PathVariable(value = "id") Long uploadId,
+                                                HttpServletRequest httpServletRequest) {
+
+        logger.info( "Passing upload ID to retrieve upload details." );
+
+        String orgId = "";
+        Upload upload;
+        try {
+            orgId = RequestValidator.getOrgIdFromAuth( httpServletRequest );
+            RequestValidator.validateUploadId( uploadId );
+            upload = dataCatalogService.getUploadById( uploadId );
+        } catch ( DataCatalogException exception ) {
+            logger.error( "Exception validating the request authorisation.", exception.getMessage() );
+            return new ResponseEntity( Collections.singletonMap( "response",
+                                                                 exception.getMessage()), exception.getHttpStatusCode() );
+        }catch ( Exception e ) {
+            logger.error( "Exception retrieving the upload entity ", e.getMessage() );
+            e.printStackTrace();
+            return new ResponseEntity( Collections.singletonMap( "response", "Exception retrieving the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+
+
+        if (upload == null || upload.getId() == null){
+            return new ResponseEntity(Collections.singletonMap("response","No Upload Exists with the given Id."), HttpStatus.NOT_FOUND);
+        }else if (!upload.getOrgId().equals(orgId))
+        {
+            return new ResponseEntity( Collections.singletonMap( "response", "User does not have access to the requested upload data."), HttpStatus.FORBIDDEN );
+        }
+        else
+        {
+            return new ResponseEntity<>(upload, HttpStatus.OK);
+        }
+
+    }
+
+    @Override
+    @ApiOperation(value = "Validate if Upload exists", httpMethod = "GET", response = Upload.class, tags = "Retrieve Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload/validate", method = RequestMethod.GET)
+    public ResponseEntity<?> getUploadByQueryParameters(@RequestParam("spaceId") String spaceId,
+                                                        @RequestParam("orgId") String orgId,
+                                                        @RequestParam("contractId") Long contractId){
+
+            logger.info( "Passing query parameters to retrieve upload details." );
+
+            Upload upload;
+            try {
+                    upload = dataCatalogService.getUploadByQueryParameters(spaceId, orgId, contractId);
+            } catch ( DataCatalogException e ) {
+                    logger.error( "Exception validating the request.", e.getMessage() );
+                    return new ResponseEntity( Collections.singletonMap( "response", e.getMessage()), e.getHttpStatusCode() );
+            }catch ( Exception e ) {
+                    logger.error( "Exception retrieving the upload entity ", e.getMessage() );
+                    e.printStackTrace();
+                    return new ResponseEntity( Collections.singletonMap( "response", "Exception retrieving the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
+            }
+
+            return new ResponseEntity<>(upload, HttpStatus.OK);
+        }
+
+
+    @Override
+    @ApiOperation(value = "Update Upload Entity ", httpMethod = "PUT", response = Upload.class, tags = "Update Upload")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Success|OK", response = Upload.class),
+            @io.swagger.annotations.ApiResponse(code = 204, message = "No Content"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "UnAuthorized"),
+            @io.swagger.annotations.ApiResponse(code = 403, message = "Forbidden"),
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not Found"),
+            @io.swagger.annotations.ApiResponse(code = 405, message = "Method Not Allowed"),
+            @io.swagger.annotations.ApiResponse(code = 406, message = "Not Acceptable"),
+            @io.swagger.annotations.ApiResponse(code = 409, message = "Conflict"),
+            @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
+            @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateUpload(@RequestBody UpdateUploadRequest updateRequest){
+
+        logger.info( "Passing update upload request parameters." );
+
+        Upload upload;
+        try {
+            upload = dataCatalogService.updateUploadEntity(updateRequest);
+        } catch ( DataCatalogException e ) {
+            logger.error( "Exception validating the update upload request.", e.getMessage() );
+            return new ResponseEntity( Collections.singletonMap( "response", e.getMessage()), e.getHttpStatusCode() );
+        }catch ( Exception e ) {
+            logger.error( "Exception updating the upload entity ", e.getMessage() );
+            e.printStackTrace();
+            return new ResponseEntity( Collections.singletonMap( "response", "Exception updating the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+
+        return new ResponseEntity<>(upload, HttpStatus.OK);
+    }
+
 }

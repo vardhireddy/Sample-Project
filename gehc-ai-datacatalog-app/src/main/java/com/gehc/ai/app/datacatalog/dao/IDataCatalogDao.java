@@ -14,8 +14,10 @@ package com.gehc.ai.app.datacatalog.dao;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
+import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
 import java.util.List;
@@ -93,6 +95,15 @@ public interface IDataCatalogDao {
 	 * @return contract details, stored in a Contract object
 	 */
 	Contract getContractDetails(Long contractId);
+
+	/**
+	 * Return all the contracts details for the given a org id
+	 * @param orgId the id of the organization whose contracts will be returned
+	 * @throws InvalidContractException if the data usage period is invalid or the agreement begin date is invalid
+	 * @return list of contracts and their details. If the given org id does not exists or if there are no contracts associated with the given org id,
+	 * then an empty list will be returned
+	 */
+	List<Contract> getAllContractsDetails (String orgId) throws InvalidContractException;
 	
 	/**
 	 * given a set of column filter criteria, return a list of image set id's satisfying the
@@ -101,4 +112,51 @@ public interface IDataCatalogDao {
 	 * @return list of image series ids satisfying the filter parameters
 	 */
 	List<Long> getImgSeriesIdsByFilters(Map<String, Object> params);
+
+	/**
+	 * Returns image set id list for given data collection id
+	 * @param dataCollectionId - data collection unique identifier
+	 * @return list of image set ids
+	 */
+	List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId);
+
+	/**
+	 * Returns list of contracts for given list of image set ids
+	 * @param imageSetIdList - list of image set unique identifiers
+	 * @return list of contract objects
+	 */
+	List<Contract> getContractsByImageSetIds(List<Long> imageSetIdList);
+
+	/**
+	 * Saves the given upload entity to the repository
+	 * @param uploadEntity - Upload entity object
+	 * @return - a copy of the upload entity saved to the database repository
+	 */
+	Upload saveUpload(Upload uploadEntity);
+
+    /**
+     * Returns list of upload entities for given orgId
+     * @param orgId - organization Id
+     * @return list of upload entities
+     */
+    List<Upload> getAllUploads(String orgId);
+
+	/**
+	 * given a upload id, return the upload entity details
+	 * @param uploadId - unique Id of upload entity
+	 * @return upload details, stored in a upload object
+	 */
+	 Upload getUploadById( Long uploadId);
+
+	/**
+	 * Returns the upload entity details for given query parameters
+	 * @param spaceId - space ID of upload on COS
+	 * @param orgId - organisation ID
+	 * @param contractId - contract ID
+	 * @return
+	 * if upload exists -> returns the upload entity details
+	 * if upload does not exist -> returns null
+	 */
+	Upload getUploadByQueryParameters(String spaceId, String orgId, Long contractId);
+
 }

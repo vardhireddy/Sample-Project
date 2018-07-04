@@ -7,11 +7,8 @@ Retrieve DataSet by Org ID
 Retrieve DataSet by Type
 Save DataSet
 Retrieve Image Set with ID when no imageset
-Get DataCatalog Raw Target Data
 Retrieve Image Set with ID
 Post DataSet by Org ID null
-Get DataCatalog Raw Target Data with id null
-Get DataCatalog Raw Target Data for empty DataSet
 Retrieve DataSet for Filters by OrgId
 Retrieve DataSet for Filters by OrgId when Annotation Absent
 Retrieve DataSet for Filters by OrgId when Annotation count is empty
@@ -25,7 +22,8 @@ Get Annotaition Ids by datacollectionId
 Get Annotaition Ids by datacollectionId When ImageSeriesNotFound
 Delete Data Collection by id
 Export a data collection's annotations as CSV when the data collection contains at least one image set and each image set contains at least one annotation
-
+For a data collection/set ID supported by LF get the contracts associated with the image sets of that data collection
+For a data collection/set ID not supported by LF get the contracts associated with the image sets of that data collection
 @functional
 @crs_10733
 
@@ -76,13 +74,6 @@ Given Retrieve Image Set with ID DataSetUp Provided when no imageset
 When Get data collection image-set details by its id when no imageset
 Then verify data collection image-set details by its id when no imageset
 
-@test_53610
-Scenario: Get DataCatalog Raw Target Data
-Meta: @automated
-Given DataCatalog Raw Target Data - DataSetUp Provided
-When get DataCatalog Raw Target Data
-Then verify DataCatalog Raw Target Data
-
 @test_53611
 Scenario: Retrieve Image Set with ID
 Meta: @automated
@@ -96,20 +87,6 @@ Meta: @automated
 Given Post DataCatalog with Org ID null DataSetUp Provided
 When Post data collection by Org Id null
 Then verify data collection by Org Id null
-
-@test_53613
-Scenario: Get DataCatalog Raw Target Data with id null
-Meta: @automated
-Given DataCatalog Raw Target Data with id null - DataSetUp Provided
-When get DataCatalog Raw Target Data with id null
-Then verify DataCatalog Raw Target Data with id null
-
-@test_53614
-Scenario: Get DataCatalog Raw Target Data for empty DataSet
-Meta: @automated
-Given DataCatalog Raw Target Data for empty DataSet - DataSetUp Provided
-When get DataCatalog Raw Target Data for empty DataSet
-Then verify DataCatalog Raw Target Data for empty DataSet
 
 @test_53615
 Scenario: Retrieve DataSet for Filters by OrgId

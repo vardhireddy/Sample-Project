@@ -3,14 +3,16 @@ package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
-import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
+import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.entity.Properties;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
+import com.gehc.ai.app.datacatalog.service.IRemoteService;
+import com.gehc.ai.app.datacatalog.rest.impl.DataCatalogRestImpl;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
+import com.gehc.ai.app.datacatalog.service.impl.DataCatalogServiceImpl;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.LabelAnnotationJson;
@@ -20,7 +22,9 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -32,10 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
@@ -62,6 +63,7 @@ public class DataCollectionSteps {
     private final StudyRepository studyRepository;
     private final CommonSteps commonSteps;
     private final DataCatalogInterceptor dataCatalogInterceptor;
+    private final IRemoteService remoteServiceImpl;
     private MockMvc mockMvc;
     private ResultActions retrieveResult;
     private AnnotationRepository annotationRepository;
@@ -69,9 +71,12 @@ public class DataCollectionSteps {
     private RowMapper rm;
     private Throwable throwable = null;
     private DataCatalogDaoImpl dataCatalogDao;
+    private DataCatalogServiceImpl dataCatalogService;
 
     @Autowired
-    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository, ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository, CommonSteps commonSteps, DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
+    public DataCollectionSteps(MockMvc mockMvc, AnnotationRepository annotationRepository, DataSetRepository dataSetRepository,
+                               ImageSeriesRepository imageSeriesRepository, StudyRepository studyRepository, CommonSteps commonSteps,
+                               DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao, IRemoteService remoteServiceImpl, DataCatalogServiceImpl dataCatalogService) {
         this.mockMvc = mockMvc;
         this.annotationRepository = annotationRepository;
         this.dataSetRepository = dataSetRepository;
@@ -80,6 +85,8 @@ public class DataCollectionSteps {
         this.commonSteps = commonSteps;
         this.dataCatalogInterceptor = dataCatalogInterceptor;
         this.dataCatalogDao = dataCatalogDao;
+        this.remoteServiceImpl = remoteServiceImpl;
+        this.dataCatalogService = dataCatalogService;
     }
 
     @BeforeScenario
@@ -224,81 +231,6 @@ public class DataCollectionSteps {
         retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
-
-    @Given("DataCatalog Raw Target Data - DataSetUp Provided")
-    public void givenDataCatalogRawTargetDataDataSetUpProvided() {
-        List<DataSet> dataSets = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
-        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
-
-
-        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
-        Annotation ann = commonSteps.getAnnotation();
-        HashMap item = new HashMap();
-        item.put("test", "test");
-        ann.setItem(item);
-        List<Annotation> annotations = new ArrayList<Annotation>();
-        annotations.add(ann);
-        when(annotationRepository
-                .findByImageSetIdInAndTypeIn(anyListOf(Long.class), anyListOf(String.class))).thenReturn(annotations);
-
-    }
-
-    @When("get DataCatalog Raw Target Data")
-    public void whenGetDataCatalogRawTargetData() throws Exception {
-        retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=point")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-        );
-    }
-
-    @Then("verify DataCatalog Raw Target Data")
-    public void thenVerifyDataCatalogRawTargetData() throws Exception {
-        retrieveResult.andExpect(status().isOk());
-
-        retrieveResult.andDo(MockMvcResultHandlers.print());
-        retrieveResult.andExpect(content().string(containsString("[{\"dcId\":\"1\",\"imId\":\"1\",\"annotationId\":\"1\",\"patientDbid\":\"1\",\"uri\":\"tests3://gehc-data-repo-main/imaging/ct/lungData/LungCT_LIDC_LS/set10\",\"annotationType\":\"point\",\"annotationItem\":{\"test\":\"test\"},\"annotatorId\":\"87654321-abcd-42ca-a317-4d408b98c500\",\"annotationDate\":\"2017-03-31\",\"dataFormat\":\"dataFormat\",\"instances\":null")));
-    }
-
-    @Given("DataCatalog Raw Target Data with invalid Id")
-    public void givenDataCatalogRawTargetDataWithInvalidId() {
-        List<DataSet> dataSets = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
-        //List<ImageSeries> imageSeriesList =  new ArrayList<ImageSeries>();
-
-
-        when(imageSeriesRepository.findByIdIn(anyListOf(Long.class))).thenReturn(commonSteps.getImageSeries());
-        Annotation ann = commonSteps.getAnnotation();
-        HashMap item = new HashMap();
-        item.put("test", "test");
-        ann.setItem(item);
-        List<Annotation> annotations = new ArrayList<Annotation>();
-        annotations.add(ann);
-        when(annotationRepository
-                .findByImageSetIdInAndTypeIn(anyListOf(Long.class), anyListOf(String.class))).thenReturn(annotations);
-    }
-
-
-    @When("get DataCatalog Raw Target Data with invalid Id")
-    public void whenGetDataCatalogRawTargetDataWithInvalidId() throws Exception {
-        try {
-            retrieveResult = mockMvc.perform(
-                    get("/api/v1/datacatalog/raw-target-data?id=test&annotationType=point")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-            );
-        } catch (Exception e) {
-            throwable = e;
-        }
-    }
-
-
-    @Then("verify DataCatalog Raw Target Data with invalid Id- throws Exception")
-    public void thenVerifyDataCatalogRawTargetDataWithInvalidIdThrowsException() throws Exception {
-        assert (throwable.toString().contains("Datacollection id or annotation type is not valid"));
-    }
-
     @Given("Retrieve Image Set with ID DataSetUp Provided")
     public void givenRetrieveImageSetWithIDDataSetUpProvided() {
         dataCollectionSetUpForImageSetwithPatientData();
@@ -329,7 +261,7 @@ public class DataCollectionSteps {
 
     @When("Post data collection by Org Id null")
     public void whenGetDataCollectionByOrgIdNull() throws Exception {
-        when(dataCatalogInterceptor.getOrgIdBasedOnSessionToken(anyString())).thenReturn(null);
+        when(remoteServiceImpl.getOrgIdBasedOnSessionToken(anyString())).thenReturn(null);
         DataSet dataSet = getSaveDataSet();
         retrieveResult = mockMvc.perform(
                 post("/api/v1/datacatalog/data-collection")
@@ -353,49 +285,6 @@ public class DataCollectionSteps {
     @Then("verify success for with lowercase")
     public void thenVerifySuccessForWithLowercase() throws Exception {
         retrieveResult.andExpect(status().isOk());
-    }
-
-    @Given("DataCatalog Raw Target Data with id null - DataSetUp Provided")
-    public void givenDataCatalogRawTargetDataWithIdNullDataSetUpProvided() {
-        dataCollectionSetUpForImageSetwithData();
-    }
-
-    @When("get DataCatalog Raw Target Data with id null")
-    public void whenGetDataCatalogRawTargetDataWithIdNull() {
-        try {
-            retrieveResult = mockMvc.perform(
-                    get("/api/v1/datacatalog/raw-target-data?annotationType=test&id=")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-            );
-        } catch (Exception e) {
-            throwable = e;
-        }
-    }
-
-    @Then("verify DataCatalog Raw Target Data with id null")
-    public void thenVerifyDataCatalogRawTargetDataWithIdNull() throws Exception {
-        assert (throwable.toString().contains("Request processing failed"));
-    }
-
-    @Given("DataCatalog Raw Target Data for empty DataSet - DataSetUp Provided")
-    public void givenDataCatalogRawTargetDataForEmptyDataSetDataSetUpProvided() {
-        when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
-    }
-
-    @When("get DataCatalog Raw Target Data for empty DataSet")
-    public void whenGetDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
-        retrieveResult = mockMvc.perform(
-                get("/api/v1/datacatalog/raw-target-data?id=1&annotationType=point")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
-        );
-    }
-
-    @Then("verify DataCatalog Raw Target Data for empty DataSet")
-    public void thenVerifyDataCatalogRawTargetDataForEmptyDataSet() throws Exception {
-        //retrieveResult.andExpect(status().isNotFound());
-        retrieveResult.andExpect(content().string(containsString("[]")));
     }
 
     @Given("Retrieve DataSet for Filters by OrgId DataSetUp Provided")
@@ -864,6 +753,7 @@ public class DataCollectionSteps {
         }
         return countM;
     }
+
 }
 
 
