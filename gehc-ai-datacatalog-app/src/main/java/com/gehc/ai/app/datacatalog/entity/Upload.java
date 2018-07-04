@@ -11,23 +11,22 @@
  */
 package com.gehc.ai.app.datacatalog.entity;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Map;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.GenerationType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 public final class Upload {
@@ -97,7 +96,6 @@ public final class Upload {
     @UpdateTimestamp
     private Timestamp lastModified;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -105,20 +103,20 @@ public final class Upload {
 
         Upload upload = (Upload) o;
 
-        if (getId() != null ? !getId().equals(upload.getId()) : (upload.getId() != null)) return false;
+        if (getId() != null ? !getId().equals(upload.getId()) : upload.getId() != null) return false;
         if (!getSchemaVersion().equals(upload.getSchemaVersion())) return false;
         if (!getOrgId().equals(upload.getOrgId())) return false;
-        if (!getDataType().equals(upload.getDataType())) return false;
+        if (getDataType() != null ? !getDataType().equals(upload.getDataType()) : upload.getDataType() != null)
+            return false;
         if (!getContractId().equals(upload.getContractId())) return false;
         if (!getSpaceId().equals(upload.getSpaceId())) return false;
-        if (getSummary() != null ? !getSummary().equals(upload.getSummary()) : (upload.getSummary() != null))
+        if (getSummary() != null ? !getSummary().equals(upload.getSummary()) : upload.getSummary() != null)
             return false;
         if (!getTags().equals(upload.getTags())) return false;
-        if (getStatus() != null ? !getStatus().equals(upload.getStatus()) : (upload.getStatus() != null)) return false;
+        if (getStatus() != null ? !getStatus().equals(upload.getStatus()) : upload.getStatus() != null) return false;
         if (!getUploadBy().equals(upload.getUploadBy())) return false;
-        if (getUploadDate() != null ? !getUploadDate().equals(upload.getUploadDate()) : (upload.getUploadDate() != null))
-            return false;
-        return getLastModified() != null ? getLastModified().equals(upload.getLastModified()) : (upload.getLastModified() == null);
+        if (!getUploadDate().equals(upload.getUploadDate())) return false;
+        return getLastModified().equals(upload.getLastModified());
     }
 
     @Override
@@ -126,15 +124,15 @@ public final class Upload {
         int result = getId() != null ? getId().hashCode() : 0;
         result = 31 * result + getSchemaVersion().hashCode();
         result = 31 * result + getOrgId().hashCode();
-        result = 31 * result + getDataType().hashCode();
+        result = 31 * result + (getDataType() != null ? getDataType().hashCode() : 0);
         result = 31 * result + getContractId().hashCode();
         result = 31 * result + getSpaceId().hashCode();
         result = 31 * result + (getSummary() != null ? getSummary().hashCode() : 0);
         result = 31 * result + getTags().hashCode();
         result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
         result = 31 * result + getUploadBy().hashCode();
-        result = 31 * result + (getUploadDate() != null ? getUploadDate().hashCode() : 0);
-        result = 31 * result + (getLastModified() != null ? getLastModified().hashCode() : 0);
+        result = 31 * result + getUploadDate().hashCode();
+        result = 31 * result + getLastModified().hashCode();
         return result;
     }
 

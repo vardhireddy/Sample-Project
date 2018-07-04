@@ -1,12 +1,13 @@
 package com.gehc.ai.app.datacatalog.entity;
 
-import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class UploadEntityTest {
 
@@ -26,7 +27,7 @@ public class UploadEntityTest {
                 .withPrefabValues(Upload.class, upload, upload1)
                 .withPrefabValues(Timestamp.class, date1, date2)
                 .withNonnullFields( "schemaVersion", "uploadBy",
-                        "orgId","contractId","spaceId","dataType","tags")
+                        "orgId","contractId","spaceId","tags", "uploadDate" ,"lastModified")
                 .verify();
     }
 
