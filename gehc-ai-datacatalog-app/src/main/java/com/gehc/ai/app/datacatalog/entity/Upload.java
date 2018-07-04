@@ -13,7 +13,6 @@ package com.gehc.ai.app.datacatalog.entity;
 
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
