@@ -27,7 +27,7 @@ public class UploadEntityTest {
                 .withPrefabValues(Upload.class, upload, upload1)
                 .withPrefabValues(Timestamp.class, date1, date2)
                 .withNonnullFields( "schemaVersion", "uploadBy",
-                        "orgId","contractId","spaceId","tags", "uploadDate" ,"lastModified")
+                        "orgId","contractId","spaceId","dataType","tags", "uploadDate" ,"lastModified")
                 .verify();
     }
 
