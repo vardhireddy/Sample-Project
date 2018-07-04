@@ -205,7 +205,7 @@ public class CreateUploadSteps {
     @Then("a single upload should be saved to the database")
     public void aSingleUploadShouldBeSavedToTheDatabase() throws Exception{
         Upload upload = buildUploadEntity();
-        verify(dataCatalogDao, times(1)).saveUpload(any(Upload.class));
+        verify(dataCatalogDao, times(1)).saveUpload(upload);
     }
 
     @Then("the create upload response's status code should be 201")

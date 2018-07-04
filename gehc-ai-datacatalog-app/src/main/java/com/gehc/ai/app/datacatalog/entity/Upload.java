@@ -96,48 +96,6 @@ public final class Upload {
     @UpdateTimestamp
     private Timestamp lastModified;
 
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//
-//        Upload upload = (Upload) o;
-//
-//        if (getId() != null ? !getId().equals(upload.getId()) : (upload.getId() != null)) return false;
-//        if (!getSchemaVersion().equals(upload.getSchemaVersion())) return false;
-//        if (!getOrgId().equals(upload.getOrgId())) return false;
-//        if (!getDataType().equals(upload.getDataType())) return false;
-//        if (!getContractId().equals(upload.getContractId())) return false;
-//        if (!getSpaceId().equals(upload.getSpaceId())) return false;
-//        if (getSummary() != null ? !getSummary().equals(upload.getSummary()) : (upload.getSummary() != null))
-//            return false;
-//        if (!getTags().equals(upload.getTags())) return false;
-//        if (getStatus() != null ? !getStatus().equals(upload.getStatus()) : (upload.getStatus() != null)) return false;
-//        if (!getUploadBy().equals(upload.getUploadBy())) return false;
-//        if (getUploadDate() != null ? !getUploadDate().equals(upload.getUploadDate()) : (upload.getUploadDate() != null))
-//            return false;
-//        return getLastModified() != null ? getLastModified().equals(upload.getLastModified()) : (upload.getLastModified() == null);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        int result = getId() != null ? getId().hashCode() : 0;
-//        result = 31 * result + getSchemaVersion().hashCode();
-//        result = 31 * result + getOrgId().hashCode();
-//        result = 31 * result + getDataType().hashCode();
-//        result = 31 * result + getContractId().hashCode();
-//        result = 31 * result + getSpaceId().hashCode();
-//        result = 31 * result + (getSummary() != null ? getSummary().hashCode() : 0);
-//        result = 31 * result + getTags().hashCode();
-//        result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
-//        result = 31 * result + getUploadBy().hashCode();
-//        result = 31 * result + (getUploadDate() != null ? getUploadDate().hashCode() : 0);
-//        result = 31 * result + (getLastModified() != null ? getLastModified().hashCode() : 0);
-//        return result;
-//    }
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
