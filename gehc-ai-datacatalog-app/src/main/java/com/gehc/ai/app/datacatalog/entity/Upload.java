@@ -14,7 +14,11 @@ package com.gehc.ai.app.datacatalog.entity;
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
 import jdk.nashorn.internal.ir.annotations.Immutable;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
