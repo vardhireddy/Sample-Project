@@ -1579,6 +1579,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.GET)
     @Override
     public ResponseEntity<?> getAllUploads(HttpServletRequest httpServletRequest){
@@ -1621,6 +1623,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/upload/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getUploadById(@ApiParam(value = "Id of Upload") @PathVariable(value = "id") Long uploadId,
                                                 HttpServletRequest httpServletRequest) {
@@ -1671,6 +1675,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/upload/validate", method = RequestMethod.GET)
     public ResponseEntity<?> getUploadByQueryParameters(@RequestParam("spaceId") String spaceId,
                                                         @RequestParam("orgId") String orgId,
@@ -1709,6 +1715,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.PUT)
     public ResponseEntity<?> updateUpload(@RequestBody UpdateUploadRequest updateRequest){
 
