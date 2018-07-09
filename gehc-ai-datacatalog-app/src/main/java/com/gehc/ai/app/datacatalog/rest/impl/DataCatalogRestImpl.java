@@ -1542,7 +1542,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
-    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON}, consumes = {MediaType.APPLICATION_JSON})
     public ResponseEntity<?> createUpload(@RequestBody Upload uploadRequest){
 
         logger.info("Passing upload request to create upload entity.");
@@ -1707,7 +1707,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
-    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON})
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON}, consumes = {MediaType.APPLICATION_JSON})
     public ResponseEntity<?> updateUpload(@RequestBody UpdateUploadRequest updateRequest){
 
         logger.info( "Passing update upload request parameters." );
