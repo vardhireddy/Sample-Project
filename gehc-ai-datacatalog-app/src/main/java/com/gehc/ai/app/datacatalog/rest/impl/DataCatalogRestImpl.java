@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -643,12 +644,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
         // Note: Coolidge is using this as well
         logger.debug(">>>>>>>>>>>In REST , Get img series for DC id " + id);
-        List<DataSet> dsLst = null;
         if (null != id) {
-            dsLst = dataSetRepository.findById(id);
-            if (null != dsLst && !dsLst.isEmpty()) {
+        	Optional<DataSet> dsLst = dataSetRepository.findById(id);
+            if (dsLst.isPresent()) {
                 @SuppressWarnings("unchecked")
-                List<Long> imgSeries = ((DataSet) (dsLst.get(0))).getImageSets();
+                List<Long> imgSeries = ((DataSet) (dsLst.get())).getImageSets();
 
 
                 if (null != imgSeries && !imgSeries.isEmpty()) {
@@ -743,7 +743,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesById(@PathVariable Long id) {
         logger.debug("*** In REST get image series by id " + id);
-        return imageSeriesRepository.findById(id);
+        return Arrays.asList(imageSeriesRepository.findById(id).get());
     }
 
     @Override
@@ -973,11 +973,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     private List<Long> getImgSeriesIdsByDSId(@PathVariable Long id) {
         // Note: Coolidge is using this as well
         logger.debug("In REST , Get img series for DC id " + id);
-        List<DataSet> dsLst = new ArrayList<DataSet>();
         if (null != id) {
-            dsLst = dataSetRepository.findById(id);
-            if (null != dsLst && !dsLst.isEmpty()) {
-                return dsLst.get(0).getImageSets();
+            Optional<DataSet> dsLst = dataSetRepository.findById(id);
+            if (dsLst.isPresent()) {
+                return dsLst.get().getImageSets();
             }
         }
         return new ArrayList<Long>();
@@ -1028,10 +1027,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 for (int i = 0; i < idStrings.length; i++) {
                     imgSeries.setId(Long.valueOf(idStrings[i]));
                     logger.debug("[-----Delete image series " + Long.valueOf(idStrings[i]) + "]");
-                    List<ImageSeries> imgSeriesLst = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
-                    if (!imgSeriesLst.isEmpty()) {
-                        logger.debug(" image series size " + imgSeriesLst.size());
-                        imageSeriesRepository.delete(imgSeriesLst.get(0));
+                    Optional<ImageSeries> imgSeriesLst = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
+                    if (imgSeriesLst.isPresent()) {
+                        imageSeriesRepository.delete(imgSeriesLst.get());
                     } else {
                         imageSeriesRepository.delete(imgSeries);
                     }
@@ -1463,9 +1461,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         String status = "false";
 
-        Contract contractToBeDeleted;
+        Optional<Contract> contractToBeDeleted;
         try {
-            contractToBeDeleted = contractRepository.findOne(contractId);
+            contractToBeDeleted = contractRepository.findById(contractId);
         } catch (Exception e) {
             logger.error("Error retrieving contract to delete: {}", e.getMessage());
             return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1480,8 +1478,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
 
         try {
-            contractToBeDeleted.setActive(status);
-            contractRepository.save(contractToBeDeleted);
+            contractToBeDeleted.get().setActive(status);
+            contractRepository.save(contractToBeDeleted.get());
         } catch (Exception e) {
             logger.error("Error deleting the contract : {}", e.getMessage());
             return new ResponseEntity<>(Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);

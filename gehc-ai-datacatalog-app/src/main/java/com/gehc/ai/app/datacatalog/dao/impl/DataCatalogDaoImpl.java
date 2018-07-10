@@ -57,7 +57,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 import java.time.LocalDate;
 
 import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
@@ -779,7 +779,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
     @Override
     public Contract getContractDetails(Long contractId) {
-        return contractRepository.findOne(contractId);
+        return contractRepository.findById(contractId).get();
     }
 
     @Override
@@ -822,9 +822,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     @Override
     public List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId) {
 
-        DataSet dataSet = dataSetRepository.findOne(dataCollectionId);
-        if (dataSet == null || dataSet.getImageSets() == null) return new ArrayList<>();
-        else return dataSet.getImageSets();
+        Optional<DataSet> dataSet = dataSetRepository.findById(dataCollectionId);
+        if (dataSet == null || dataSet.get().getImageSets() == null) return new ArrayList<>();
+        else return dataSet.get().getImageSets();
     }
 
     @Override
@@ -909,8 +909,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
     @Override
     public Upload getUploadById( Long uploadId){
-
-        return uploadRepository.findOne( uploadId );
+        return uploadRepository.findById( uploadId ).get();
     }
 
     @Override
