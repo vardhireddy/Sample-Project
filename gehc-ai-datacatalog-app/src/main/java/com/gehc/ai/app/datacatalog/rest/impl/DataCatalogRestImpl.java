@@ -1025,11 +1025,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 for (int i = 0; i < idStrings.length; i++) {
                     imgSeries.setId(Long.valueOf(idStrings[i]));
                     logger.debug("[-----Delete image series " + Long.valueOf(idStrings[i]) + "]");
-                    Optional<ImageSeries> imgSeries = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
-                    if (imgSeries.isPresent()) {
-                        imageSeriesRepository.delete(imgSeries.get());
+                    Optional<ImageSeries> imgSeriesOpt = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
+                    if (imgSeriesOpt.isPresent()) {
+                        imageSeriesRepository.delete(imgSeriesOpt.get());
                     } else {
-                        imageSeriesRepository.delete(imgSeries.get());
+                        imageSeriesRepository.delete(imgSeriesOpt.get());
                     }
                     apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
                             ApplicationConstants.SUCCESS, id);
