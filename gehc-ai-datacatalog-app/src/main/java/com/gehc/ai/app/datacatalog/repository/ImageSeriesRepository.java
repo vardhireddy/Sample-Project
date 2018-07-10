@@ -13,19 +13,17 @@
 package com.gehc.ai.app.datacatalog.repository;
 
 import java.util.List;
+import java.util.Optional;
 
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ImageSeries;
-
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 
 @RepositoryRestResource(collectionResourceRel = "image_set", path = "image_set")
 public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> {
@@ -38,7 +36,7 @@ public interface ImageSeriesRepository extends JpaRepository<ImageSeries, Long> 
     <S extends ImageSeries> S save(S entity);
     List<ImageSeries> findByOrgId(@Param("orgId") String orgId);  
     List<ImageSeries> findByPatientDbIdAndOrgId(@Param("patientDbId") Long patientDbId, @Param("orgId") String orgId);
-    List<ImageSeries> findById(@Param("id") Long id);
+    Optional<ImageSeries> findById(@Param("id") Long id);
     List<ImageSeries> findByOrgIdInAndModalityIn(List<String> orgId, List<String> modality);
     List<ImageSeries> findByOrgIdIn(List<String> orgId);
     List<ImageSeries> findByOrgIdInAndAnatomyIn(List<String> orgId, List<String> anatomy);

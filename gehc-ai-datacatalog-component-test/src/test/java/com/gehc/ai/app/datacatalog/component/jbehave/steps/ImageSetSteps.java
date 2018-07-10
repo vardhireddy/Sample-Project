@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.*;
@@ -1062,12 +1063,10 @@ public class ImageSetSteps {
     @Given("imageset by id")
     public void givenImagesetById() {
         ImageSeries imgSeries = new ImageSeries();
-        List<ImageSeries> imgSeriesLst = new ArrayList<ImageSeries>();
         ImageSeries imgSeries1 = commonSteps.getOneimageSeries();
         imgSeries1.setId(1L);
-        imgSeriesLst.add(imgSeries1);
-        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSeriesLst);
-        doNothing().when(imageSeriesRepository).delete(imgSeriesLst.get(0));
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(Optional.of(imgSeries1));
+        doNothing().when(imageSeriesRepository).delete(imgSeries1);
     }
 
     @When("Delete imageset by id")
@@ -1087,9 +1086,7 @@ public class ImageSetSteps {
     @Given("imageseries by id when not a imageSeriesList")
     public void givenImageseriesByIdWhenNotAImageSeriesList() {
         ImageSeries imgSeries = new ImageSeries();
-        List<ImageSeries> imgSeriesLst = new ArrayList<ImageSeries>();
-
-        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSeriesLst);
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(Optional.of(imgSeries));
         doNothing().when(imageSeriesRepository).delete(imgSeries);
     }
 
@@ -1224,7 +1221,8 @@ public class ImageSetSteps {
 
     private void dataSetUpImageSeriesById() {
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
-        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSerLst);
+        ImageSeries imgSeries1 = imgSerLst.get(0);
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(Optional.of(imgSeries1));
     }
 
     private void dataSetUpImageSeriesBySeriesInstanceId() {
