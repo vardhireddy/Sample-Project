@@ -883,7 +883,6 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( upload );
         Contract contract = buildContractEntity();
-        //when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
