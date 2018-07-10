@@ -645,12 +645,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         // Note: Coolidge is using this as well
         logger.debug(">>>>>>>>>>>In REST , Get img series for DC id " + id);
         if (null != id) {
-        	Optional<DataSet> dsLst = dataSetRepository.findById(id);
-            if (dsLst.isPresent()) {
+        	Optional<DataSet> dataSet = dataSetRepository.findById(id);
+            if (dataSet.isPresent()) {
                 @SuppressWarnings("unchecked")
-                List<Long> imgSeries = ((DataSet) (dsLst.get())).getImageSets();
-
-
+                List<Long> imgSeries = ((DataSet) (dataSet.get())).getImageSets();
                 if (null != imgSeries && !imgSeries.isEmpty()) {
                     List<Long> imgSerIdLst = getImageSeriesIdList(imgSeries);
                     return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
@@ -974,9 +972,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         // Note: Coolidge is using this as well
         logger.debug("In REST , Get img series for DC id " + id);
         if (null != id) {
-            Optional<DataSet> dsLst = dataSetRepository.findById(id);
-            if (dsLst.isPresent()) {
-                return dsLst.get().getImageSets();
+            Optional<DataSet> dataSet = dataSetRepository.findById(id);
+            if (dataSet.isPresent()) {
+                return dataSet.get().getImageSets();
             }
         }
         return new ArrayList<Long>();
@@ -1027,11 +1025,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 for (int i = 0; i < idStrings.length; i++) {
                     imgSeries.setId(Long.valueOf(idStrings[i]));
                     logger.debug("[-----Delete image series " + Long.valueOf(idStrings[i]) + "]");
-                    Optional<ImageSeries> imgSeriesLst = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
-                    if (imgSeriesLst.isPresent()) {
-                        imageSeriesRepository.delete(imgSeriesLst.get());
+                    Optional<ImageSeries> imgSeries = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
+                    if (imgSeries.isPresent()) {
+                        imageSeriesRepository.delete(imgSeries.get());
                     } else {
-                        imageSeriesRepository.delete(imgSeries);
+                        imageSeriesRepository.delete(imgSeries.get());
                     }
                     apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
                             ApplicationConstants.SUCCESS, id);
