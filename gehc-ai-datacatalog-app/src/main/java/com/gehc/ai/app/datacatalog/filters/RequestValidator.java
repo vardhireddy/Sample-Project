@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,7 +214,7 @@ public class RequestValidator {
      * -> if user is not allowed to delete contract
      * -> if contract is already deleted
      */
-	public static void validateContractToBeDeleted(Optional<Contract> contractToBeDeleted, Long contractId, String orgId) throws DataCatalogException{
+	public static void validateContractToBeDeleted(Contract contractToBeDeleted, Long contractId, String orgId) throws DataCatalogException{
 	    String status = "false";
 
         if (contractToBeDeleted == null) {
@@ -223,13 +222,13 @@ public class RequestValidator {
             throw new DataCatalogException("No contract exists with given id", HttpStatus.NOT_FOUND);
         }
 
-        if (!contractToBeDeleted.get().getOrgId().equals(orgId))
+        if (!contractToBeDeleted.getOrgId().equals(orgId))
         {
             logger.info("User does not have access to delete the contract as token orgId does not match the contract orgId.", orgId);
             throw new DataCatalogException("User does not have access to delete the contract.", HttpStatus.FORBIDDEN);
         }
 
-        String contractStatus = contractToBeDeleted.get().getActive();
+        String contractStatus = contractToBeDeleted.getActive();
         if (contractStatus.equalsIgnoreCase(status)) {
             throw new DataCatalogException("Contract with given id is already inactive", HttpStatus.OK);
         }

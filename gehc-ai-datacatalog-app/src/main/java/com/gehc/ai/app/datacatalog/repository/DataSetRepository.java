@@ -19,7 +19,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
-import java.util.Optional;
 
 @RepositoryRestResource(collectionResourceRel = "data_set", path = "data-set")
 public interface DataSetRepository extends JpaRepository<DataSet, Long> {
@@ -34,10 +33,12 @@ public interface DataSetRepository extends JpaRepository<DataSet, Long> {
 
     List<DataSet> findByIdAndTypeAndOrgId(@Param("id") Long id, @Param("type") String type, @Param("orgId") String orgId);
 
-    Optional<DataSet> findById(@Param("id") Long id);
+    List<DataSet> findById(@Param("id") Long id);
 
+    @Override
     <S extends DataSet> S save(S entity);
 
+    @Override
     <S extends DataSet> List<S> save(Iterable<S> entity);
 
     void delete(DataSet deleted);
