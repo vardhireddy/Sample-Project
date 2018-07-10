@@ -21,6 +21,7 @@ spring.jpa.properties.hibernate.format_sql: true
 spring.data.rest.base-path: /api/v1/dataCatalog
 spring.data.imageSeries.limit: 1000
 spring.data.imageSeries.randomize: true
+spring.flyway.enabled: false
 #spring.jpa.properties.hibernate.show_sql: false
 #spring.jpa.properties.hibernate.use_sql_comments: true
 #spring.jpa.properties.hibernate.format_sql: false
