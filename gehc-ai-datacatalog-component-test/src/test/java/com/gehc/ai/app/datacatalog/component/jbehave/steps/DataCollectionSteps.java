@@ -656,7 +656,6 @@ public class DataCollectionSteps {
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
         List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
-        //dataSet.setImageSets(imageSeriesList);
         List<Long> testList = new ArrayList<Long>();
         testList.add(1L);
         dataSet.setImageSets(testList);

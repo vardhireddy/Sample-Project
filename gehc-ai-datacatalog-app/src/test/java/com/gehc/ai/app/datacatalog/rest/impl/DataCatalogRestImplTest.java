@@ -525,12 +525,8 @@ public class DataCatalogRestImplTest {
     @Test
     public void testUpdateContractWithNullRequest(){
         Contract contract = buildContractEntity();
-        //when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        //when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
-
         UpdateContractRequest updateRequest = new UpdateContractRequest();
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
-
         assertEquals(400, result.getStatusCodeValue());
         assertEquals(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), result.getBody());
     }
@@ -541,8 +537,6 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        //when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
-
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -557,8 +551,6 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenReturn(null);
-        //when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
-
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -573,8 +565,6 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException(""));
-        //when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
-
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -907,7 +897,6 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( null );
         Contract contract = buildContractEntity();
-        //when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
@@ -921,7 +910,6 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenThrow( new RuntimeException( "" ) );
         Contract contract = buildContractEntity();
-        //when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT

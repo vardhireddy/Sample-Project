@@ -86,14 +86,11 @@ public class DataFilterSteps {
 
     @Given("data collection id")
     public void givenImageSetsFromDataCollectionId() throws Exception {
-    	//List<DataSet> l = new ArrayList<DataSet>();
     	DataSet ds = new DataSet();
     	List<Long> imageSets = new ArrayList<Long>();
     	for (int k = 0; k < 10000; k++) {
     		imageSets.add((long) (Math.random() * 1000000));
     	}
-    	//l.add(ds);
-    	//ds.setImageSets(imageSets);
     	when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(ds));
     	controller.setMaxImageSeriesRows(limit);
     }
