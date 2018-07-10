@@ -292,6 +292,7 @@ public class PatientSteps {
     public void givenSaveExistingPatient() throws Exception {
         List<Patient> patLst = getPatients();
         when(patientRepository.findByPatientIdAndOrgId(anyString(),anyString())).thenReturn(null);
+        when(patientRepository.save(patLst)).thenReturn(patLst);
     }
 
     @When("save  Existing Patient")
@@ -416,6 +417,7 @@ public class PatientSteps {
 
     public void getSavePatient() {
         List<Patient> patLst = getPatients();
+        when(patientRepository.save(patLst)).thenReturn(patLst);
     }
 
     private void setMultiplePatients() {

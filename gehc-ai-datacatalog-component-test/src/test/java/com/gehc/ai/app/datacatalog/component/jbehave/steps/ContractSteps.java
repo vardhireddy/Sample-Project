@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import javax.ws.rs.core.MediaType;
 import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.*;
@@ -120,7 +119,7 @@ public class ContractSteps {
     @Given("a valid contract Id")
     public void givenValidAndActiveContractId() throws Exception {
         Contract contract = getContract();
-        when(contractRepository.findById(anyLong())).thenReturn(Optional.of(contract));
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
     }
 
     @When("the contract id exists in repository and contract is active/ in true state")
@@ -142,7 +141,7 @@ public class ContractSteps {
     public void givenValidAndInActiveContractId() throws Exception {
         Contract contract = getContract();
         contract.setActive("false");
-        when(contractRepository.findById(anyLong())).thenReturn(Optional.of(contract));
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
     }
 
     @When("the contract id exists in repository but the contract is inactive/ in false state")
@@ -162,7 +161,7 @@ public class ContractSteps {
 
     @Given("an invalid contract Id")
     public void givenInValidContractId() throws Exception {
-        when(contractRepository.findById(anyLong())).thenReturn(null);
+        when(contractRepository.findOne(anyLong())).thenReturn(null);
     }
 
     @When("the contract id does not exist in repository")

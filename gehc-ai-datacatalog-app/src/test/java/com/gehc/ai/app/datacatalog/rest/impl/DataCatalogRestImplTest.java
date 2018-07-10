@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Collections;
@@ -365,13 +364,15 @@ public class DataCatalogRestImplTest {
     
     @Test
     public void testGetImgSeriesByDSId() {
+    	List<DataSet> l = new ArrayList<DataSet>();
     	DataSet ds = new DataSet();
     	List<Long> imageSets = new ArrayList<Long>();
     	for (int k = 0; k < 10000; k++) {
     		imageSets.add((long) (Math.random() * 1000000));
     	}
+    	l.add(ds);
     	ds.setImageSets(imageSets);
-    	when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(ds));
+    	when(dataSetRepository.findById(anyLong())).thenReturn(l);
     	ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
     	final int limit = 1000;
 
@@ -389,13 +390,15 @@ public class DataCatalogRestImplTest {
 
     @Test
     public void testGetImgSeriesByDSIdWithoutRandomization() {
+    	List<DataSet> l = new ArrayList<DataSet>();
     	DataSet ds = new DataSet();
     	List<Long> imageSets = new ArrayList<Long>();
     	for (int k = 0; k < 10000; k++) {
     		imageSets.add((long) (Math.random() * 1000000));
     	}
+    	l.add(ds);
     	ds.setImageSets(imageSets);
-    	when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(ds));
+    	when(dataSetRepository.findById(anyLong())).thenReturn(l);
     	ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
     	final int limit = 1000;
 
@@ -525,8 +528,12 @@ public class DataCatalogRestImplTest {
     @Test
     public void testUpdateContractWithNullRequest(){
         Contract contract = buildContractEntity();
+        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
         UpdateContractRequest updateRequest = new UpdateContractRequest();
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
+
         assertEquals(400, result.getStatusCodeValue());
         assertEquals(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), result.getBody());
     }
@@ -537,6 +544,8 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -551,6 +560,8 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenReturn(null);
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -565,6 +576,8 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException(""));
+        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
+
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -594,7 +607,7 @@ public class DataCatalogRestImplTest {
     {
         //ARRANGE
         Contract contract = buildContractEntity();
-        when(contractRepository.findById(anyLong())).thenReturn(Optional.of(contract));
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
         httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
@@ -610,7 +623,7 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
 
-        when(contractRepository.findById(anyLong())).thenReturn(Optional.of(contract));
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
         httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
@@ -623,7 +636,7 @@ public class DataCatalogRestImplTest {
     public void testDeleteContractWhereContractDoesNotExist()
     {
         //ARRANGE
-        when(contractRepository.findById(anyLong())).thenReturn(null);
+        when(contractRepository.findOne(anyLong())).thenReturn(null);
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
@@ -635,7 +648,7 @@ public class DataCatalogRestImplTest {
     public void testDeleteContractForExceptionInRetrievingContract()
     {
         //ARRANGE
-        when(contractRepository.findById(anyLong())).thenThrow(new IllegalArgumentException());
+        when(contractRepository.findOne(anyLong())).thenThrow(new IllegalArgumentException());
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
@@ -648,7 +661,7 @@ public class DataCatalogRestImplTest {
     {
         //ARRANGE
         Contract contract = buildContractEntity();
-        when(contractRepository.findById(anyLong())).thenReturn(Optional.of(contract));
+        when(contractRepository.findOne(anyLong())).thenReturn(contract);
         when(contractRepository.save(any(Contract.class))).thenThrow(new IllegalArgumentException());
         httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
@@ -883,6 +896,7 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( upload );
         Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
@@ -896,6 +910,7 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( null );
         Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
@@ -909,6 +924,7 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenThrow( new RuntimeException( "" ) );
         Contract contract = buildContractEntity();
+        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
