@@ -823,7 +823,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     public List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId) {
 
         Optional<DataSet> dataSet = dataSetRepository.findById(dataCollectionId);
-        if (!dataSet.isPresent() || dataSet.get().getImageSets() == null) return new ArrayList<>();
+        if (dataSet == null || dataSet.get().getImageSets() == null) return new ArrayList<>();
         else return dataSet.get().getImageSets();
     }
 
