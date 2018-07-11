@@ -8,12 +8,14 @@ import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.hibernate.DuplicateMappingException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -21,11 +23,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+
+import java.util.*;
 import java.sql.Timestamp;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -289,11 +288,11 @@ public class DataCatalogServiceImplTest {
         Upload updateUploadRequest = buildUpdateUploadRequest();
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
-        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( upload );
+        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( updateUploadRequest );
         //ACT
         Upload updateUpload = service.updateUploadEntity( updateUploadRequest );
         //ASSERT
-        assertEquals( "f1341a2c-7a54-4d68-9f40-a8b2d14d3806", updateUpload.getOrgId() );
+        Assert.assertTrue(areUploadsEqual( updateUpload, updateUploadRequest) );
     }
 
     @Test(expected = DataCatalogException.class)
@@ -459,6 +458,25 @@ public class DataCatalogServiceImplTest {
                                         dataType,1L,"space123",summary,tags,
                                         status,"user1",
                                         new Timestamp( 1313045029),new Timestamp( 1313045029));
+
+    }
+
+    private boolean areUploadsEqual(Upload entity, Upload request){
+
+        if (!entity.getId().equals( request.getId() )
+            || !entity.getContractId().equals( request.getContractId() )
+            || !entity.getLastModified().equals( request.getLastModified() )
+            || !entity.getUploadDate().equals( request.getUploadDate() )
+            || !entity.getUploadBy().equals( request.getUploadBy() )
+            || !entity.getTags().equals( request.getTags() )
+            || !entity.getSpaceId().equals( request.getSpaceId() )
+            || !entity.getOrgId().equals( request.getOrgId() )
+            || !entity.getSchemaVersion().equals( request.getSchemaVersion() )
+            || !entity.getDataType().equals( request.getDataType() ))
+        {
+            return false;
+        }
+        return true;
 
     }
 
