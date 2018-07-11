@@ -379,7 +379,7 @@ public class DataCollectionSteps {
 
     @Given("Retrieve DataSet  group by ANNOTATIONS_ABSENT DataSetUp Provided")
     public void givenRetrieveDataSetgroupbyANNOTATIONS_ABSENTDataSetUpProvided() {
-        List noAnn = new ArrayList<Long>();
+        List<Long> noAnn = new ArrayList<Long>();
         noAnn.add(0, 1L);
         when(imageSeriesRepository.countImgWithNoAnn(anyString())).thenReturn(noAnn);
     }
@@ -388,7 +388,7 @@ public class DataCollectionSteps {
     public void whenGetDataSetgroupbyANNOTATIONS_ABSENT() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-summary?groupby=annotation-absent")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
 
@@ -662,7 +662,7 @@ public class DataCollectionSteps {
         testList.add(1L);
         dataSet.setImageSets(testList);
         when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(dataSet));
-        when(imageSeriesRepository.findByIdIn(testList)).thenReturn(imageSeriesList);
+        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(imageSeriesList);
     }
 
     private void dataCollectionSetUpForImageSetwithData() {
@@ -673,7 +673,7 @@ public class DataCollectionSteps {
         testList.add(1L);
         dataSet.setImageSets(testList);
         when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(dataSet));
-        when(imageSeriesRepository.findByIdIn(testList)).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
+        when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
     }
 
 
@@ -685,7 +685,7 @@ public class DataCollectionSteps {
         testList.add(1L);
         dataSet.setImageSets(testList);
         when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(dataSet));
-        when(dataCatalogDao.getImgSeriesWithPatientByIds(testList)).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
+        when(dataCatalogDao.getImgSeriesWithPatientByIds(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
     }
 
     private DataSet getSaveDataSet() {

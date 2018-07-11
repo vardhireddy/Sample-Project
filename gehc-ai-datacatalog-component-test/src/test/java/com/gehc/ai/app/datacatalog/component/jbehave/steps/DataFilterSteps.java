@@ -92,6 +92,7 @@ public class DataFilterSteps {
     	for (int k = 0; k < 10000; k++) {
     		imageSets.add((long) (Math.random() * 1000000));
     	}
+    	ds.setImageSets(imageSets);
     	when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(ds));
     	controller.setMaxImageSeriesRows(limit);
     }
@@ -106,7 +107,7 @@ public class DataFilterSteps {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-collection/1/image-set")
         );
-        verify(dataCatalogDao).getImgSeriesWithPatientByIds(argument.capture());
+        org.mockito.Mockito.verify(dataCatalogDao).getImgSeriesWithPatientByIds(argument.capture());
     }
 
     ArgumentCaptor<Integer> queryArgument = ArgumentCaptor.forClass(Integer.class);

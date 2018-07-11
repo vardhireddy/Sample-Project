@@ -804,7 +804,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         Map<String, Object> filters = new HashMap<String, Object>();
         if (null != groupby && !groupby.isEmpty() && groupby.equalsIgnoreCase(ANNOTATIONS_ABSENT)) {
             logger.debug("Started for ANNOTATIONS_ABSENT" + new Timestamp(System.currentTimeMillis()));
-            filters.put(ANNOTATIONS_ABSENT, imageSeriesRepository.countImgWithNoAnn(orgId).get(0));
+            List<Long> imgCount = imageSeriesRepository.countImgWithNoAnn(orgId);
+            filters.put(ANNOTATIONS_ABSENT, imgCount.get(0));
             logger.debug("END ANNOTATIONS_ABSENT" + new Timestamp(System.currentTimeMillis()));
         } else {
             filters.putAll(getModalityAndAnatomyCount(orgId, filters));
