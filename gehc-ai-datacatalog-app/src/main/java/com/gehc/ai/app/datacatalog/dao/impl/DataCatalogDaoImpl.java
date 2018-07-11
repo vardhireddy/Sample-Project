@@ -889,7 +889,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     @Override
     public Upload saveUpload(Upload uploadEntity) {
         try {
-            return uploadRepository.save(uploadEntity);
+            Upload upload =  uploadRepository.save(uploadEntity);
+            logger.debug( "updated upload entity : {}", upload.toString() );
+            return upload;
         }catch (Exception e)
         {
             e.printStackTrace();

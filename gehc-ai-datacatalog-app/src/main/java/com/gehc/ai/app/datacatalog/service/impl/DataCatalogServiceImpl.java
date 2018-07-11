@@ -258,6 +258,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	@Override
 	public Upload updateUploadEntity(Upload updateRequest) throws DataCatalogException {
 
+		logger.info( "Validating update upload request in Service Impl." );
 		validateUploadUpdateRequest( updateRequest );
 
 		Upload uploadData = dataCatalogDao.getUploadById( updateRequest.getId() );
