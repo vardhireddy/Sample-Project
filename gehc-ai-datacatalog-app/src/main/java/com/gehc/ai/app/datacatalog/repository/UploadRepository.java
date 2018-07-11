@@ -27,6 +27,4 @@ public interface UploadRepository extends JpaRepository<Upload, Long> {
 
     Upload findBySpaceIdAndOrgIdAndContractId(String spaceId, String orgId, Long contractId);
 
-    Upload findBySpaceIdAndOrgId(String spaceId, String orgId);
-
 }

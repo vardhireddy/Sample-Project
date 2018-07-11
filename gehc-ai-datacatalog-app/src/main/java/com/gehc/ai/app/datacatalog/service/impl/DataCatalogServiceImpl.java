@@ -195,9 +195,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	 * @throws DataCatalogException - if an upload already exists on given parameters
 	 */
 	private void validateUniquenessOfUpload(String spaceId, String orgId, Long contractId) throws DataCatalogException{
-		Upload upload;
-
-		upload = dataCatalogDao.getUploadByQueryParameters( spaceId, orgId, contractId );
+		Upload upload = dataCatalogDao.getUploadByQueryParameters( spaceId, orgId, contractId );
 
 		if(upload != null && upload.getId() !=null){
 			throw new DataCatalogException("An Upload entity already exists with given spaceId, orgId and contractId.",HttpStatus.CONFLICT);
