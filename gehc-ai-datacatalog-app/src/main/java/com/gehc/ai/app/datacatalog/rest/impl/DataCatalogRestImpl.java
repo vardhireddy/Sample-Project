@@ -1671,8 +1671,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/upload/validate", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON})
     public ResponseEntity<?> getUploadByQueryParameters(@RequestParam("spaceId") String spaceId,
-                                                        @RequestParam("orgId") String orgId,
-                                                        @RequestParam("contractId") Long contractId){
+                                                        @RequestParam("orgId" ) String orgId,
+                                                        @RequestParam(value = "contractId", required = false) Long contractId ){
 
             logger.info( "Passing query parameters to retrieve upload details." );
 

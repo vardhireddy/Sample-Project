@@ -148,8 +148,8 @@ public class AnnotationPropertiesSteps {
         List<AnnotationProperties> annoPropList =  new ArrayList<AnnotationProperties>();
         annoPropList.add(annotationProperties);
         when(annotationPropRepository.findByOrgId(anyString())).thenReturn(annoPropList);
-        //when(annotationPropRepository.findByOrgId(null)).thenReturn(null);
-        //doThrow(new Exception()).when(annotationPropRepository).findByOrgId(anyString());
+        //when(annotationPropRepository.findByOrgIdOrderByUploadDateDesc(null)).thenReturn(null);
+        //doThrow(new Exception()).when(annotationPropRepository).findByOrgIdOrderByUploadDateDesc(anyString());
     }
 
     @When("Get Annotation Properties set data")

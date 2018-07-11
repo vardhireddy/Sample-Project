@@ -64,7 +64,6 @@ public final class Upload {
     @Convert(converter = ListOfStringConverter.class)
 	private List<String> dataType;
 
-	@NotNull
     @Column(name = "contract_id")
 	private Long contractId;
 	
@@ -79,10 +78,10 @@ public final class Upload {
 	private List<String> summary;
 	
 	@Convert(converter = JsonConverter.class)
-	private Map<String,String> tags;
+	private Map<String,Object> tags;
 	
 	@Convert(converter = JsonConverter.class)
-	private Map<String,String> status;
+	private Map<String,Integer> status;
 	
 	/**
 	 * An identifier for the one who uploaded the data. This allows to query for

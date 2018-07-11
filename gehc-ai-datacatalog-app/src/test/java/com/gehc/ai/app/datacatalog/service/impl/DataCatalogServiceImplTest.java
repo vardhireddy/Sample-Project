@@ -319,15 +319,15 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
         UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
@@ -346,15 +346,15 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
         UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(11L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
@@ -424,7 +424,7 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -446,15 +446,15 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
 
         return  new UpdateUploadRequest(2L,"v1","orgId217wtysgs",
                                         dataType,1L,"space123",summary,tags,

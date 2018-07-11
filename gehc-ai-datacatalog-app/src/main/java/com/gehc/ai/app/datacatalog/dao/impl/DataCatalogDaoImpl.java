@@ -39,7 +39,6 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJs
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -893,6 +892,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
             return uploadRepository.save(uploadEntity);
         }catch (Exception e)
         {
+            e.printStackTrace();
             logger.error("Exception saving upload entity : {}",e.getMessage());
             throw e;
         }
@@ -903,7 +903,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     @Override
     public List<Upload> getAllUploads(String orgId) {
 
-       return uploadRepository.findByOrgId(orgId);
+       return uploadRepository.findByOrgIdOrderByUploadDateDesc( orgId);
 
     }
 
