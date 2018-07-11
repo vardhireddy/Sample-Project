@@ -276,7 +276,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		}
 
 
-		return dataCatalogDao.saveUpload( uploadData );
+		return dataCatalogDao.saveUpload( updateRequest );
 	}
 
 	private void validateUploadUpdateRequest( Upload updateRequest) throws DataCatalogException{
