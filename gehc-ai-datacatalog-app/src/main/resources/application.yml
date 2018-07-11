@@ -49,9 +49,9 @@ spring:
   application.name: Datacatalog
   profiles: local
   datasource:
-    url: jdbc:mysql://localhost:3388/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
-    username: mysql_user
-    password: password
+    url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
+    username: root
+    password: root
   flyway:
     enabled: ${flyway_enabled:true}
     table: schema_version
