@@ -17,7 +17,6 @@ import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +28,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Collections;
 
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import org.junit.Before;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.junit.Test;
@@ -920,9 +918,9 @@ public class DataCatalogRestImplTest {
     public void updateUploadSuccessfully() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
+        Upload updateUploadRequest = buildUpdateUploadRequest();
         Upload upload = buildUploadEntity();
-        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) ).thenReturn( upload );
+        when( dataCatalogService.updateUploadEntity( any(Upload.class) ) ).thenReturn( upload );
         //ACT
         ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
         //ASSERT
@@ -933,12 +931,12 @@ public class DataCatalogRestImplTest {
     public void updateUploadForInvalidIdException() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest = new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+        Upload updateUploadRequest = new Upload(null,"v1","orgId217wtysgs",
                                                         null,1L,"space123",null,null,
                                                 null,"user1",
                                                         new Timestamp( 1313045029),new Timestamp( 1313045029));
 
-        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) ).thenThrow( new DataCatalogException( "",HttpStatus.BAD_REQUEST ) );
+        when( dataCatalogService.updateUploadEntity( any(Upload.class) ) ).thenThrow( new DataCatalogException( "",HttpStatus.BAD_REQUEST ) );
         //ACT
         ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
         //ASSERT
@@ -949,12 +947,12 @@ public class DataCatalogRestImplTest {
     public void updateUploadFor500Exception() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest = new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+        Upload updateUploadRequest = new Upload(null,"v1","orgId217wtysgs",
                                                                           null,1L,"space123",null,null,
                                                                           null,"user1",
                                                                           new Timestamp( 1313045029),new Timestamp( 1313045029));
 
-        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) )
+        when( dataCatalogService.updateUploadEntity( any(Upload.class) ) )
                 .thenThrow( new RuntimeException("" ) );
         //ACT
         ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
@@ -1010,7 +1008,7 @@ public class DataCatalogRestImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -1028,21 +1026,21 @@ public class DataCatalogRestImplTest {
         return uploadRequest;
     }
 
-    private UpdateUploadRequest buildUpdateUploadRequest(){
+    private Upload buildUpdateUploadRequest(){
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
 
-       return  new UpdateUploadRequest(3L,"v1","orgId217wtysgs",
+       return  new Upload(3L,"v1","orgId217wtysgs",
                                     dataType,1L,"space123",summary,tags,
                                     status,"user1",
                                     new Timestamp( 1313045029),new Timestamp( 1313045029));

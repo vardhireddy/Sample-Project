@@ -180,7 +180,7 @@ public class CreateUploadSteps {
 
     @When("the API which creates a upload is invoked with duplicate data in spaceId, orgId, contractId")
     public void theAPIWhichCreatesUploadIsInvokedWithDuplicateDataInTheUploadRequest() throws Exception{
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         uploadRequest.setId(1L);
@@ -253,7 +253,7 @@ public class CreateUploadSteps {
     }
 
     private Upload buildUploadEntity(){
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();

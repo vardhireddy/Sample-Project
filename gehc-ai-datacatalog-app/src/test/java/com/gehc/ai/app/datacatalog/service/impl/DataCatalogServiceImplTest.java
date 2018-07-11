@@ -6,7 +6,6 @@ import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.hibernate.DuplicateMappingException;
 import org.junit.Test;
@@ -287,7 +286,7 @@ public class DataCatalogServiceImplTest {
     public void updateUploadSuccessfully() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
+        Upload updateUploadRequest = buildUpdateUploadRequest();
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
         when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( upload );
@@ -301,7 +300,7 @@ public class DataCatalogServiceImplTest {
     public void updateUploadForInvalidIdException() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+        Upload updateUploadRequest =  new Upload(null,"v1","orgId217wtysgs",
                                                                                                                      null,1L,"space123",null,null,
                                                                                                                      null,"user1",
                                                                                                                      new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -319,16 +318,16 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
+        Upload updateUploadRequest =  new Upload(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -346,16 +345,16 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(11L,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
+        Upload updateUploadRequest =  new Upload(11L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045030));
@@ -370,7 +369,7 @@ public class DataCatalogServiceImplTest {
     public void updateUploadForLastModifiedDateInvalidInRequestException() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(1L,"v1","orgId217wtysgs",
+        Upload updateUploadRequest =  new Upload(1L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",null,null,
                                                                            null,"user1",
                                                                            new Timestamp( 1313045029),null);
@@ -385,7 +384,7 @@ public class DataCatalogServiceImplTest {
     public void updateUploadForInvalidDataInRequestException() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(1L,"v1","orgId217wtysgs",
+        Upload updateUploadRequest =  new Upload(1L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",null,null,
                                                                            null,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -424,7 +423,7 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -442,21 +441,21 @@ public class DataCatalogServiceImplTest {
         return uploadRequest;
     }
 
-    private UpdateUploadRequest buildUpdateUploadRequest(){
+    private Upload buildUpdateUploadRequest(){
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
 
-        return  new UpdateUploadRequest(2L,"v1","orgId217wtysgs",
+        return  new Upload(2L,"v1","orgId217wtysgs",
                                         dataType,1L,"space123",summary,tags,
                                         status,"user1",
                                         new Timestamp( 1313045029),new Timestamp( 1313045029));

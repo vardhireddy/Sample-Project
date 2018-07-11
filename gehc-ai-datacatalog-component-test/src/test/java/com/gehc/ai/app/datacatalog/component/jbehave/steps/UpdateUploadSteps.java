@@ -7,11 +7,9 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.UploadRepository;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -52,7 +50,7 @@ public class UpdateUploadSteps {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    private UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
+    private Upload updateUploadRequest = buildUpdateUploadRequest();
 
     /////////////////////////
     //
@@ -132,16 +130,16 @@ public class UpdateUploadSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
+        Upload updateUploadRequest =  new Upload(null,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -163,7 +161,7 @@ public class UpdateUploadSteps {
         Map<String,String> status = new HashMap<>();
         status.put("DICOM","99/100");
         status.put("NON-DICOM","1/1");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+        Upload updateUploadRequest =  new Upload(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",null,null,
                                                                            null,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -182,10 +180,10 @@ public class UpdateUploadSteps {
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
+        Upload updateUploadRequest =  new Upload(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),null);
@@ -204,10 +202,10 @@ public class UpdateUploadSteps {
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
+        Upload updateUploadRequest =  new Upload(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045030));
@@ -279,7 +277,7 @@ public class UpdateUploadSteps {
     //
     /////////////
 
-    private String requestToJSON(UpdateUploadRequest uploadRequest) throws JsonProcessingException{
+    private String requestToJSON(Upload uploadRequest) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         String str = mapper.writeValueAsString(uploadRequest);
         return str;
@@ -289,7 +287,7 @@ public class UpdateUploadSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -318,21 +316,21 @@ public class UpdateUploadSteps {
         return contract;
     }
 
-    private UpdateUploadRequest buildUpdateUploadRequest(){
+    private Upload buildUpdateUploadRequest(){
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
 
-        return  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+        return  new Upload(10L,"v1","orgId217wtysgs",
                                         dataType,1L,"space123",summary,tags,
                                         status,"user1",
                                         new Timestamp( 1313045029),new Timestamp( 1313045029));

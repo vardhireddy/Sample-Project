@@ -27,7 +27,6 @@ import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 import org.springframework.data.domain.Pageable;
@@ -455,5 +454,5 @@ public interface IDataCatalogRest {
      *       if required data is not provided/ invalid -> throws exception with status code 400 and error message
      *       if updateRequest lastModified date does not match with the entity in DB -> throws exception with status code 409 and error message
      */
-    ResponseEntity<?> updateUpload(UpdateUploadRequest updateRequest);
+    ResponseEntity<?> updateUpload(Upload updateRequest);
 }

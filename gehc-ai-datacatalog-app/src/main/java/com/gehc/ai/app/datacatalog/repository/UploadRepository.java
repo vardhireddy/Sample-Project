@@ -23,7 +23,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "upload", path = "upload")
 public interface UploadRepository extends JpaRepository<Upload, Long> {
 
-    List<Upload> findByOrgId(String orgId);
+    List<Upload> findByOrgIdOrderByUploadDateDesc( String orgId);
 
     Upload findBySpaceIdAndOrgIdAndContractId(String spaceId, String orgId, Long contractId);
 

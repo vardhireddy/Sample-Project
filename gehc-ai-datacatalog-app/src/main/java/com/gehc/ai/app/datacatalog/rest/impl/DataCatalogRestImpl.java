@@ -55,7 +55,6 @@ import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1668,8 +1667,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/upload/validate", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON})
     public ResponseEntity<?> getUploadByQueryParameters(@RequestParam("spaceId") String spaceId,
-                                                        @RequestParam("orgId") String orgId,
-                                                        @RequestParam("contractId") Long contractId){
+                                                        @RequestParam("orgId" ) String orgId,
+                                                        @RequestParam(value = "contractId", required = false) Long contractId ){
 
             logger.info( "Passing query parameters to retrieve upload details." );
 
@@ -1705,7 +1704,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
     @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON}, consumes = {MediaType.APPLICATION_JSON})
-    public ResponseEntity<?> updateUpload(@RequestBody UpdateUploadRequest updateRequest){
+    public ResponseEntity<?> updateUpload(@RequestBody Upload updateRequest){
 
         logger.info( "Passing update upload request parameters." );
 
