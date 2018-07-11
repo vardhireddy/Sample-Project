@@ -15,6 +15,16 @@ spring:
         show_sql: false
         use_sql_comments: true
         format_sql: false
+  flyway:
+    enabled: ${flyway_enabled:true}
+    schemas: lfdb
+    baselineOnMigrate: true
+    validateOnMigrate: false
+    url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST}
+    user: ${spring_datatsource_username:root}
+    password: ${spring_datasource_password:root}
+    table: schema_version
+    
 experiment:
   targetData:
     gtMaskLocation: https://gehc-sandbox-cos-dev.s3.amazonaws.com/object/
@@ -25,14 +35,6 @@ uom.user.me.url: ${uom_api_gateway_url:https://core.prdge.us-west-2.eng.gehealth
 dev:
   mode: true
   orgId: f1341a2c-7a54-4d68-9f40-a8b2d14d3806
-flyway:
-  enabled: ${flyway_enabled:true}
-  schemas: lfdb
-  baselineOnMigrate: true
-  validateOnMigrate: false
-  url: ${spring_datasource_url:jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST}
-  user: ${spring_datatsource_username:root}
-  password: ${spring_datasource_password:root}
 logging:
   pattern.console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr([${spring.application.name:-}]){yellow} %clr([%X{amzn-trace-id:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
   level:
@@ -50,6 +52,9 @@ spring:
     url: jdbc:mysql://localhost:3306/lfdb?useLegacyDatetimeCode=false&serverTimezone=PST
     username: root
     password: root
+  flyway:
+    enabled: ${flyway_enabled:true}
+    table: schema_version
 
 logging:
   pattern.console: "%clr(%d{MM-dd-yyyy HH:mm:ss.SSS}){faint} %clr(%5p) %clr([${spring.application.name:-}]){yellow} %clr([%X{amzn-trace-id:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
@@ -57,5 +62,3 @@ logging:
     org: ${thirdparty_log_level:WARN}
     java: ${thirdparty_log_level:WARN}
     com.gehc.ai.app: ${application_log_level:DEBUG}  
-flyway:
-  enabled: ${flyway_enabled:false}
