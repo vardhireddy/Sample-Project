@@ -13,6 +13,7 @@ import org.jbehave.core.annotations.Named;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -210,7 +211,7 @@ public class CreateDataCollectionsSteps {
     @SuppressWarnings("unchecked")
     @Given("an internal error that causes no data collections to be created")
     public void givenAnInternalErrorThatCausesNoDataCollectionsToBeCreated() throws Exception {
-        when(dataSetRepository.save(anyListOf(DataSet.class))).thenThrow(Exception.class);
+        when(dataSetRepository.save(anyListOf(DataSet.class))).thenThrow(DataRetrievalFailureException.class);
     }
 
     /////////////////////
