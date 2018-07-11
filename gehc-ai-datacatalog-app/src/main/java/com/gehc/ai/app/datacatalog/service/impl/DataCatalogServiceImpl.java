@@ -21,7 +21,6 @@ import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
@@ -180,7 +179,6 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 
 		if ((uploadData.getOrgId() == null ||uploadData.getOrgId().isEmpty())
 		|| (uploadData.getSpaceId() == null || uploadData.getSpaceId().isEmpty())
-		|| (uploadData.getUploadBy() == null || uploadData.getUploadBy().isEmpty())
 		|| (uploadData.getTags() == null || uploadData.getTags().isEmpty()))
 		{
 			throw new DataCatalogException("Missing one/more required fields data.",HttpStatus.BAD_REQUEST);
@@ -258,7 +256,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	}
 
 	@Override
-	public Upload updateUploadEntity(UpdateUploadRequest updateRequest) throws DataCatalogException {
+	public Upload updateUploadEntity(Upload updateRequest) throws DataCatalogException {
 
 		validateUploadUpdateRequest( updateRequest );
 
@@ -276,14 +274,11 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 			throw new DataCatalogException(ErrorCodes.OUTDATED_UPLOAD_UPDATE_REQUEST.getErrorMessage(),HttpStatus.CONFLICT);
 		}
 
-		uploadData.setStatus( updateRequest.getStatus() );
-		uploadData.setSummary( updateRequest.getSummary() );
-		uploadData.setDataType( updateRequest.getDataType() );
 
 		return dataCatalogDao.saveUpload( uploadData );
 	}
 
-	private void validateUploadUpdateRequest( UpdateUploadRequest updateRequest) throws DataCatalogException{
+	private void validateUploadUpdateRequest( Upload updateRequest) throws DataCatalogException{
 
 		if(updateRequest.getLastModified() == null
 		   || updateRequest.getLastModified().toString().isEmpty() ){
