@@ -35,6 +35,7 @@ import org.jbehave.core.annotations.When;
 import org.jbehave.core.model.Meta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -114,7 +115,7 @@ public class CreateContractSteps {
 
     @Given("an internal error occur when saving the contract")
     public void givenAnInternalErrorOccurWhenSavingTheContract() {
-        when(contractRepository.save(any(Contract.class))).thenThrow(Exception.class);
+        when(contractRepository.save(any(Contract.class))).thenThrow(DataRetrievalFailureException.class);
     }
 
     @Given("required legal meta data - agreement name is not provided")
