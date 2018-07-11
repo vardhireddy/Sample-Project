@@ -46,9 +46,9 @@ public final class UpdateUploadRequest {
 
         private List<String> summary;
 
-        private Map<String,String> tags;
+        private Map<String,Object> tags;
 
-        private Map<String,String> status;
+        private Map<String,Integer> status;
 
         private String uploadBy;
 

@@ -159,4 +159,5 @@ public interface IDataCatalogDao {
 	 */
 	Upload getUploadByQueryParameters(String spaceId, String orgId, Long contractId);
 
+
 }

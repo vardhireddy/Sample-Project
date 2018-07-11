@@ -226,7 +226,7 @@ public class RetrieveUploadsSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();

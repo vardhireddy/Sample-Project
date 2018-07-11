@@ -27,7 +27,7 @@ public class UpdateUploadRequestObjectTest {
                 .withPrefabValues(UpdateUploadRequest.class, upload, upload1)
                 .withPrefabValues(Timestamp.class, date1, date2)
                 .withNonnullFields( "id","schemaVersion", "uploadBy",
-                        "orgId","contractId","spaceId","dataType","tags",
+                        "orgId","spaceId","dataType","tags",
                                     "summary","status","uploadDate","lastModified")
                 .verify();
     }
@@ -36,15 +36,15 @@ public class UpdateUploadRequestObjectTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
 
         return  new UpdateUploadRequest(13L,"v1","orgId217wtysgs",
                                         dataType,1L,"space123",summary,tags,
@@ -57,15 +57,15 @@ public class UpdateUploadRequestObjectTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
 
         return  new UpdateUploadRequest(23L,"v1","orgId217wtysgs",
                                         dataType,1L,"space123",summary,tags,

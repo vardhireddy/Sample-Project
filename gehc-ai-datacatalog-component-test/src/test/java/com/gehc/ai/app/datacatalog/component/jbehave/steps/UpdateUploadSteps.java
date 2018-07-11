@@ -132,15 +132,15 @@ public class UpdateUploadSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
         UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(null,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
@@ -182,9 +182,9 @@ public class UpdateUploadSteps {
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
         UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
@@ -204,9 +204,9 @@ public class UpdateUploadSteps {
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
         UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
@@ -289,7 +289,7 @@ public class UpdateUploadSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -322,15 +322,15 @@ public class UpdateUploadSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
 
         return  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
                                         dataType,1L,"space123",summary,tags,

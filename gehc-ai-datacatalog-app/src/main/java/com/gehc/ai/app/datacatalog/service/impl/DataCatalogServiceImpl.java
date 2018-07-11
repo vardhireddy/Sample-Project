@@ -152,7 +152,10 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
             validateUploadRequestHelper(uploadRequest);
 
             //verify if contract is valid and active
-            validateContractForUploadData(uploadRequest.getContractId());
+            if (uploadRequest.getContractId() != null )
+            {
+                    validateContractForUploadData(uploadRequest.getContractId());
+            }
 
             validateUniquenessOfUpload(uploadRequest.getSpaceId(), uploadRequest.getOrgId(), uploadRequest.getContractId());
 
@@ -176,7 +179,6 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	private void validateUploadRequestHelper(Upload uploadData) throws DataCatalogException{
 
 		if ((uploadData.getOrgId() == null ||uploadData.getOrgId().isEmpty())
-		|| (uploadData.getContractId() == null || uploadData.getContractId() < 1)
 		|| (uploadData.getSpaceId() == null || uploadData.getSpaceId().isEmpty())
 		|| (uploadData.getUploadBy() == null || uploadData.getUploadBy().isEmpty())
 		|| (uploadData.getTags() == null || uploadData.getTags().isEmpty()))
@@ -194,6 +196,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	 */
 	private void validateUniquenessOfUpload(String spaceId, String orgId, Long contractId) throws DataCatalogException{
 		Upload upload = dataCatalogDao.getUploadByQueryParameters( spaceId, orgId, contractId );
+
 		if(upload != null && upload.getId() !=null){
 			throw new DataCatalogException("An Upload entity already exists with given spaceId, orgId and contractId.",HttpStatus.CONFLICT);
 		}
@@ -247,7 +250,9 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 	@Override
 	public Upload getUploadByQueryParameters(String spaceId, String orgId, Long contractId) throws DataCatalogException{
 
-		validateContractForUploadData(contractId);
+		if (contractId!=null){
+			validateContractForUploadData(contractId);
+		}
 
 		return dataCatalogDao.getUploadByQueryParameters(spaceId, orgId, contractId);
 	}
