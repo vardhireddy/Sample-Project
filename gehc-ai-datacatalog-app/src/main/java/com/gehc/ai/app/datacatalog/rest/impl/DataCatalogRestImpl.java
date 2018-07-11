@@ -1545,6 +1545,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ResponseEntity<?> createUpload(@RequestBody Upload uploadRequest){
 
         logger.info("Passing upload request to create upload entity.");
+        logger.debug( "create upload request : {}", uploadRequest.toString() );
 
         Upload uploadResponse;
         try {
@@ -1559,7 +1560,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity(Collections.singletonMap("response", "Exception saving the upload entity." +
                     " Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
+        logger.info( "Successfully created upload entity." );
         return new ResponseEntity<>(uploadResponse,HttpStatus.CREATED);
     }
 
@@ -1710,6 +1711,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ResponseEntity<?> updateUpload(@RequestBody Upload updateRequest){
 
         logger.info( "Passing update upload request parameters." );
+        logger.debug( "update upload request : {}", updateRequest.toString() );
 
         Upload upload;
         try {
@@ -1723,6 +1725,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity( Collections.singletonMap( "response", "Exception updating the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
         }
 
+        logger.info( "Successfully updated upload entity." );
         return new ResponseEntity<>(upload, HttpStatus.OK);
     }
 
