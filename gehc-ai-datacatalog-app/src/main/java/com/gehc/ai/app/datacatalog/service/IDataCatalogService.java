@@ -19,7 +19,6 @@ import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
 
@@ -148,6 +147,6 @@ public interface IDataCatalogService {
      * @return upload entity that was updated
      * @throws DataCatalogException if the validation fails
      */
-   Upload updateUploadEntity(UpdateUploadRequest updateRequest) throws DataCatalogException;
+   Upload updateUploadEntity(Upload updateRequest) throws DataCatalogException;
 
 }
