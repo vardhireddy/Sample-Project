@@ -41,7 +41,7 @@ KpiVars:
    kpi_elapsed_time_id:
 
 SonarVars:
-   aws_run_sonar: true
+   aws_run_sonar: false
    sonar_additional_args: -P all
 
 TestingVars:
@@ -55,9 +55,9 @@ TestingVars:
    component_report_file : view/index.html
 
 DevEnvVars:
-   aws_dev_cluster_name: dev-lf-cluster-dev-lf-LFCluster-1XYJNH6IDC34O
-   aws_dev_service_name: dev-lf-DCService-TIJ81WINN3Y2-ECSService-KSZG5UQEXUVY
-   aws_dev_task_definition: dev-lf-DCServiceDef-5XU9UA57LEMF-TaskDefinition-G4GNK46RN6S1
+   aws_dev_cluster_name: 
+   aws_dev_service_name: 
+   aws_dev_task_definition: 
 
 TestEnvVars:
    aws_test_cluster_name:
@@ -81,6 +81,6 @@ DeployVars:
    update_lambda: false
    update_integration: false
    update_production: false
-   aws_update_task_and_service: true
+   aws_update_task_and_service: false
    aws_update_task_only: false
    aws_update_service_only: false

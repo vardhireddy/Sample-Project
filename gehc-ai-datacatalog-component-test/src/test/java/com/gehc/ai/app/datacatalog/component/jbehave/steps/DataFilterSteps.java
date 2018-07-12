@@ -12,6 +12,7 @@
 
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -85,15 +87,13 @@ public class DataFilterSteps {
 
     @Given("data collection id")
     public void givenImageSetsFromDataCollectionId() throws Exception {
-    	List<DataSet> l = new ArrayList<DataSet>();
     	DataSet ds = new DataSet();
     	List<Long> imageSets = new ArrayList<Long>();
     	for (int k = 0; k < 10000; k++) {
     		imageSets.add((long) (Math.random() * 1000000));
     	}
-    	l.add(ds);
     	ds.setImageSets(imageSets);
-    	when(dataSetRepository.findById(anyLong())).thenReturn(l);
+    	when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(ds));
     	controller.setMaxImageSeriesRows(limit);
     }
 
@@ -124,7 +124,7 @@ public class DataFilterSteps {
     @Then("verify image series by data collection id is capped")
     public void verifyImageSetsFromDataCollectionId() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        assertTrue(argument.getValue().size() == limit);
+        assertEquals(argument.getValue().size(), limit);
     }
     
 
@@ -132,7 +132,6 @@ public class DataFilterSteps {
     @Then("verify image series filter criteria map is capped with the limit argument")
     public void verifyImageSeriesFilterCriteria() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        
         assertTrue(queryArgument.getValue() == limit);
 
     }

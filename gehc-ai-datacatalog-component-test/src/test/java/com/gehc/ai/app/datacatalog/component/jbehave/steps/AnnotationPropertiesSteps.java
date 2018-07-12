@@ -14,6 +14,7 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -51,7 +52,7 @@ public class AnnotationPropertiesSteps {
     private final AnnotationPropRepository annotationPropRepository;
     private final DataCatalogInterceptor dataCatalogInterceptor;
     private ResultActions retrieveResult;
-    private String AnnotationProp = "[{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"},{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"}]";
+    private String AnnotationProp = "[{\"id\":1,\"schemaVersion\":\"123\",\"orgId\":\"12345678-abcd-42ca-a317-4d408b98c500\",\"resourceName\":\"TEST\",\"classes\":null,\"createdDate\":\"2017-03-31\",\"createdBy\":\"test\"}]";
     private Throwable throwable = null;
     @Autowired
     public AnnotationPropertiesSteps(MockMvc mockMvc, AnnotationPropRepository annotationPropRepository, PatientRepository patientRepository, ImageSeriesRepository imageSeriesRepository,AnnotationRepository annotationRepository,CommonSteps commonSteps,DataCatalogInterceptor dataCatalogInterceptor) {
@@ -193,7 +194,7 @@ public class AnnotationPropertiesSteps {
 
     @Given("Get Annotation Properties set data Throws Exception - DataSetUp Provided")
     public void givenGetAnnotationPropertiesSetDataThrowsExceptionDataSetUpProvided() {
-        when(annotationPropRepository.findByOrgId(null)).thenThrow(Exception.class);
+        when(annotationPropRepository.findByOrgId(null)).thenThrow(DataRetrievalFailureException.class);
     }
 
     @When("Get Annotation Properties set data - Throws Exception")
@@ -217,7 +218,7 @@ public class AnnotationPropertiesSteps {
     @Given("Post Annotation Properties set data Throws Exception - DataSetUp Provided")
     public void givenPostAnnotationPropertiesSetDataThrowsExceptionDataSetUpProvided() {
         AnnotationProperties annotationProperties =  setAnnotationProp();
-        when(annotationPropRepository.save(any(AnnotationProperties.class))).thenThrow(Exception.class);
+        when(annotationPropRepository.save(any(AnnotationProperties.class))).thenThrow(DataRetrievalFailureException.class);
 
     }
     @When("Post Annotation Properties set data - Throws Exception")

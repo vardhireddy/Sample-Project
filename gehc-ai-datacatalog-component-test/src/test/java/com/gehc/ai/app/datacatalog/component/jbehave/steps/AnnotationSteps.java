@@ -14,6 +14,7 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -274,7 +275,7 @@ public class AnnotationSteps {
     @Given("Store an annotation set data for throwing exception - DataSetUp Provided")
     public void givenStoreAnAnnotationSetDataForThrowingExceptionDataSetUpProvided() {
         when(dataCatalogDao.getAnnotationsIds(any(Annotation.class))).thenReturn(null);
-        when(annotationRepository.save(any(Annotation.class))).thenThrow(Exception.class);
+        when(annotationRepository.save(any(Annotation.class))).thenThrow(DataRetrievalFailureException.class);
     }
 
     @When("Store an annotation set data throws exception")

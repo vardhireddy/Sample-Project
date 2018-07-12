@@ -16,6 +16,7 @@ import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.jbehave.core.model.Meta;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -86,7 +87,7 @@ public class RetrieveContractsSteps {
 
     @Given("an internal error occurs when retrieving the contracts")
     public void givenAnInternalErrorOccursWhenRetrievingTheContracts() throws InvalidContractException {
-        when(dataCatalogDao.getAllContractsDetails(anyString())).thenThrow(Exception.class);
+        when(dataCatalogDao.getAllContractsDetails(anyString())).thenThrow(DataRetrievalFailureException.class);
     }
 
     //given test cases for getContractsForDataCollection api
