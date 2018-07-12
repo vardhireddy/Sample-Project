@@ -960,6 +960,25 @@ public class DataCatalogDaoImplTest {
         assertEquals(contractList.size(),result.size());
     }
 
+    @Test
+    public void saveUpload() throws Exception{
+        Upload upload = new Upload(  );
+        when( uploadRepository.save(any()) ).thenReturn( upload );
+        dataCatalogDao.saveUpload( upload );
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void saveUploadFotException() throws Exception{
+        Upload upload = new Upload(  );
+        when( uploadRepository.save(any()) ).thenThrow( new RuntimeException(  ) );
+        dataCatalogDao.saveUpload( upload );
+    }
+
+    @Test
+    public void getUploadByQueryParameters() throws Exception{
+       // when( uploadRepository.ge(anyLong() )).thenReturn( new ArrayList<>(  ) );
+        dataCatalogDao.getUploadByQueryParameters( "1287e70919we29d", "38e7yuh38e-e3u2yde-eu7ydy", 1L );
+    }
     private Contract buildContractEntity(){
         DataCatalogServiceImplTest serviceImplTest = new DataCatalogServiceImplTest();
         return serviceImplTest.buildContractEntity();

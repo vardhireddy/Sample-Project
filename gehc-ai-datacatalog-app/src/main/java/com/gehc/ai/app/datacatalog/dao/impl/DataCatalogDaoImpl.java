@@ -911,7 +911,11 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
     @Override
     public Upload getUploadById( Long uploadId){
-        return uploadRepository.findById( uploadId ).get();
+        Optional<Upload> upload = uploadRepository.findById( uploadId );
+        if (upload.isPresent()){
+            return upload.get();
+        }
+       return null;
     }
 
     @Override
