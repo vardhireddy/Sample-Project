@@ -165,6 +165,12 @@
 		    <artifactId>jersey-guava</artifactId>
 		    <version>2.25.1</version>
 		</dependency>
+		<!-- Need to add flyway explicitly since Spring 2.x has not provided smooth transition from flyway 4.x to 5.x -->
+		<dependency>
+		    <groupId>org.flywaydb</groupId>
+		    <artifactId>flyway-core</artifactId>
+		    <version>4.2.0</version>
+		</dependency>
 	   <!-- Swagger - End -->
 	</dependencies>
 
