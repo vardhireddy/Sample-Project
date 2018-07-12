@@ -204,6 +204,15 @@ public class DataCatalogServiceImplTest {
 
     }
 
+    //test getUploadByQueryParameters
+    @Test
+    public void getUploadByQueryParameters() throws Exception{
+        Contract contract = buildContractEntity();
+        contract.setDataUsagePeriod( "perpetuity" );
+        when( dataCatalogDao.getContractDetails(anyLong() )).thenReturn( contract );
+        service.getUploadByQueryParameters( "1287e70919we29d", "38e7yuh38e-e3u2yde-eu7ydy", 1L );
+    }
+
     //test get upload by Id
     @Test
     public void  getAllUploadsSuccessfully(){
