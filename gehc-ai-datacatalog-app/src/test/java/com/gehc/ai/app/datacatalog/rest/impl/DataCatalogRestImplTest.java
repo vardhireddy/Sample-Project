@@ -5,18 +5,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import com.gehc.ai.app.datacatalog.entity.Upload;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
-import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
+
+import com.gehc.ai.app.datacatalog.entity.*;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.repository.*;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +36,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -44,13 +44,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
-
-import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
-import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
-import com.gehc.ai.app.datacatalog.repository.ContractRepository;
-import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
-import com.gehc.ai.app.datacatalog.repository.PatientRepository;
-import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
@@ -133,6 +126,9 @@ public class DataCatalogRestImplTest {
 
     @InjectMocks
     private DataCatalogRestImpl controller;
+
+    @Mock
+    private ImageSeriesRepository imageSeriesRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -958,6 +954,20 @@ public class DataCatalogRestImplTest {
         ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
         //ASSERT
         assertEquals( 500, responseEntity.getStatusCodeValue() );
+    }
+
+    //test updateInstitutionByImageSeriesList
+    @Test
+    public void updateInstitutionByImageSeriesList() throws Exception{
+
+        String[] list = {"27e7-qw8u8-019wiaq9", "d7y27y-eu83eu-8w82u"};
+        InstitutionSet institutionSet = new InstitutionSet();
+        institutionSet.setSeriesUIds(list  );
+
+        doThrow(new RuntimeException(  )).when(imageSeriesRepository ).updateInstitution(any(), any());
+
+        controller.updateInstitutionByImageSeriesList( institutionSet,httpServletRequest );
+
     }
 
     /////////////////////
