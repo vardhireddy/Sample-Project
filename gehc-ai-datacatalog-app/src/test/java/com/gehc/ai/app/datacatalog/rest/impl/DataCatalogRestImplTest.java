@@ -2,36 +2,27 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import com.gehc.ai.app.datacatalog.entity.Upload;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
-import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.HashMap;
 import java.util.Set;
-import java.util.Collections;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
-import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -46,7 +37,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
-
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
@@ -55,10 +60,10 @@ import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 @RunWith ( MockitoJUnitRunner.class )
@@ -118,7 +123,10 @@ public class DataCatalogRestImplTest {
   /*
     @Autowired
     private ResponseGenerator responseGenerator;*/
-
+    
+    @Mock
+    private AnnotationPropRepository annotationPropertiesRepository;
+    
     @Mock
     private PatientRepository patientRepository;
     @Mock
@@ -978,6 +986,93 @@ public class DataCatalogRestImplTest {
 
         controller.updateInstitutionByImageSeriesList( institutionSet,httpServletRequest );
 
+    }
+    
+    @Test
+    public void testHealthCheck() throws Exception{
+        assertEquals( "SUCCESS", controller.healthCheck() );
+    }
+    
+    @Test
+    public void testHealthcheck() throws Exception{
+    	assertEquals( "SUCCESS", controller.healthcheck() );
+    }
+    
+    @Test
+    public void testGetPatientsNullOrgId() throws Exception{
+    	String ids = "123";
+    	httpServletRequest.setAttribute("orgId", null);
+    	List<Patient> pList = new ArrayList<Patient>();
+    	assertEquals( pList, controller.getPatients(ids, httpServletRequest) );
+    }
+    
+    @Test
+    public void testGetPatients() throws Exception{
+    	String ids = "123";
+    	List<Patient> pList = new ArrayList<Patient>();
+    	when(patientRepository.findByIdInAndOrgId(any(), anyString())).thenReturn(pList);
+    	assertEquals( pList, controller.getPatients(ids, httpServletRequest) );
+    }
+    
+    @Test
+    public void testGetStudyNullOrgId() throws Exception{
+    	httpServletRequest.setAttribute("orgId", null);
+    	List<Study> sList = new ArrayList<Study>();
+    	assertEquals( sList, controller.getStudy(httpServletRequest) );
+    }
+    
+    @Test
+    public void testGetStudy() throws Exception{
+    	List<Study> sList = new ArrayList<Study>();
+    	when(studyRepository.findByOrgId(anyString())).thenReturn(sList);
+    	assertEquals( sList, controller.getStudy(httpServletRequest) );
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void testGetStudiesByIdNullOrgId() throws Exception{
+    	String ids = "123,456";
+    	httpServletRequest.setAttribute("orgId", null);
+    	List<Study> pList = new ArrayList<Study>();
+    	controller.getStudiesById(ids, httpServletRequest);
+    }
+    
+    @Test
+    public void testGetStudiesById() throws Exception{
+    	String ids = "123,456";
+    	List<Study> pList = new ArrayList<Study>();
+    	when(studyRepository.findByIdInAndOrgId(any(), anyString())).thenReturn(pList);
+    	assertEquals( pList, controller.getStudiesById(ids, httpServletRequest) );
+    }
+
+    @Test
+    public void testPostCOSNotification() throws Exception{
+    	CosNotification cn = new CosNotification();
+    	controller.postCOSNotification(cn);
+    }
+    
+    @Test
+    public void testGetAnnotationsById() throws Exception{
+    	String ids = "123,456";
+    	List<Annotation> aList = new ArrayList<Annotation>();
+    	when(annotationRepository.findByIdIn(any())).thenReturn(aList);
+    	assertEquals( aList, controller.getAnnotationsById(ids, httpServletRequest) );
+    }
+    
+    @Test
+    public void testGetAnnotationProperties() throws Exception{
+    	String ids = "acc49054-c0fe-4455-bc9b-5e02db47662f";
+    	List<AnnotationProperties> aList = new ArrayList<AnnotationProperties>();
+    	when(annotationPropertiesRepository.findByOrgId(anyString())).thenReturn(aList);
+    	assertEquals( aList, controller.getAnnotationProperties(ids) );
+    }
+    
+    @Test
+    public void testGetAnnotationPropertiesNullOrgId() throws Exception{
+    	String ids = "acc49054-c0fe-4455-bc9b-5e02db47662f";
+    	httpServletRequest.setAttribute("orgId", null);
+    	List<AnnotationProperties> aList = new ArrayList<AnnotationProperties>();
+    	when(annotationPropertiesRepository.findByOrgId(anyString())).thenReturn(aList);
+    	assertEquals( aList, controller.getAnnotationProperties(ids) );
     }
 
     /////////////////////
