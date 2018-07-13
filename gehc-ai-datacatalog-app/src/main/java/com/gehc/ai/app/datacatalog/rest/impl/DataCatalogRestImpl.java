@@ -516,7 +516,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         // Try saving the data collections
         List<DataSet> savedDataCollections;
         try {
-            savedDataCollections = dataSetRepository.save(dataCollectionBatches);
+            savedDataCollections = dataSetRepository.saveAll(dataCollectionBatches);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to save data collections"), HttpStatus.INTERNAL_SERVER_ERROR);
