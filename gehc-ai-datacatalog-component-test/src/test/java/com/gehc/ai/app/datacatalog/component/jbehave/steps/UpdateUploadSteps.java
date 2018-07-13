@@ -50,7 +50,7 @@ public class UpdateUploadSteps {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    private Upload updateUploadRequest = buildUpdateUploadRequest();
+    private Upload updateUploadRequest = buildUploadEntity();
 
     /////////////////////////
     //
@@ -223,7 +223,7 @@ public class UpdateUploadSteps {
         verify(dataCatalogDao, times(1)).saveUpload(any(Upload.class));
     }
     @Then("the update uploads API response status code should be 200")
-    public void theupdateUploadResponseStatusCodeShouldBe201() throws Exception{
+    public void theUpdateUploadResponseStatusCodeShouldBe200() throws Exception{
         result.andExpect(status().isOk());
     }
 
@@ -287,6 +287,11 @@ public class UpdateUploadSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
+
+        List<String> summary = new ArrayList<>();
+        summary.add("uri1");
+        summary.add("uri2");
+
         Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
@@ -299,42 +304,12 @@ public class UpdateUploadSteps {
         uploadRequest.setUploadBy("user");
         uploadRequest.setDataType(dataType);
         uploadRequest.setTags(tags);
+        uploadRequest.setSummary( summary );
         uploadRequest.setUploadDate(new Timestamp(1313045029));
         uploadRequest.setLastModified(new Timestamp(1313045029));
 
         return uploadRequest;
    }
 
-    private Contract buildContractEntity(){
-        Contract contract = new Contract();
-        
-        contract.setId(10L);
-        contract.setAgreementBeginDate("2017-03-02");
-        contract.setDataUsagePeriod("perpetuity");
-        contract.setActive("true");
-        
-        return contract;
-    }
-
-    private Upload buildUpdateUploadRequest(){
-        List<String> dataType = new ArrayList<>();
-        dataType.add("DICOM");
-        dataType.add("JPEG");
-        Map<String,Object> tags = new HashMap<>();
-        tags.put("tag1","sample");
-
-        List<String> summary = new ArrayList<>();
-        summary.add("uri1");
-        summary.add("uri2");
-        Map<String,Integer> status = new HashMap<>();
-        status.put("total",99);
-        status.put("failure",1);
-
-        return  new Upload(10L,"v1","orgId217wtysgs",
-                                        dataType,1L,"space123",summary,tags,
-                                        status,"user1",
-                                        new Timestamp( 1313045029),new Timestamp( 1313045029));
-
-    }
 }
 
