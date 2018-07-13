@@ -580,8 +580,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ImageSeries saveImageSeries(@RequestBody ImageSeries i) {
         if (null != i) {
             logger.debug("*** Now saving image series " + i.toString());
+            return imageSeriesRepository.save(i);
         }
-        return imageSeriesRepository.save(i);
+        return null;
     }
 
     /*
@@ -1029,7 +1030,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     if (imgSeriesOpt.isPresent()) {
                         imageSeriesRepository.delete(imgSeriesOpt.get());
                     } else {
-                        imageSeriesRepository.delete(imgSeriesOpt.get());
+                        imageSeriesRepository.delete(imgSeries);
                     }
                     apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
                             ApplicationConstants.SUCCESS, id);
