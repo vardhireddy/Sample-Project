@@ -38,7 +38,7 @@ public interface DataSetRepository extends JpaRepository<DataSet, Long> {
 
     <S extends DataSet> S save(S entity);
 
-    <S extends DataSet> List<S> save(Iterable<S> entity);
+    //<S extends DataSet> List<S> save(Iterable<S> entity);
 
     void delete(DataSet deleted);
 
