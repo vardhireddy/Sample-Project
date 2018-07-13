@@ -261,20 +261,21 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		logger.info( "Validating update upload request in Service Impl." );
 		validateUploadUpdateRequest( updateRequest );
 
-		Upload uploadData = dataCatalogDao.getUploadById( updateRequest.getId() );
+		Upload uploadEntity = dataCatalogDao.getUploadById( updateRequest.getId() );
 
-		if(uploadData == null || uploadData.getId() == null)
+		if(uploadEntity == null || uploadEntity.getId() == null)
 		{
 			throw new DataCatalogException("No upload exists with provided Id in request.",HttpStatus.BAD_REQUEST);
 		}
 
-		if (!uploadData.getLastModified().equals(updateRequest.getLastModified())) {
+		if (!uploadEntity.getLastModified().equals(updateRequest.getLastModified())) {
 
 			logger.error("last modified date given in request : {} and in db : {}", updateRequest.getLastModified()
-				, uploadData.getLastModified());
+				, uploadEntity.getLastModified());
 			throw new DataCatalogException(ErrorCodes.OUTDATED_UPLOAD_UPDATE_REQUEST.getErrorMessage(),HttpStatus.CONFLICT);
 		}
 
+        validateUpdateUploadRequest(updateRequest, uploadEntity);
 
 		return dataCatalogDao.saveUpload( updateRequest );
 	}
@@ -295,6 +296,20 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 			&& (updateRequest.getSummary() == null || updateRequest.getSummary().isEmpty())) {
 			logger.error("No data for status and summary in update upload request : {}", updateRequest);
 			throw new DataCatalogException(ErrorCodes.INVALID_UPLOAD_UPDATE_REQUEST.getErrorMessage(),HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	private void validateUpdateUploadRequest(Upload updateRequest, Upload uploadEntity) throws DataCatalogException{
+
+		if (!updateRequest.getId().equals( uploadEntity.getId())
+			|| !updateRequest.getSchemaVersion().equals( uploadEntity.getSchemaVersion())
+		    || !updateRequest.getSpaceId().equals( uploadEntity.getSpaceId() )
+			|| !updateRequest.getOrgId().equals( uploadEntity.getOrgId())
+			|| !updateRequest.getUploadDate().equals( uploadEntity.getUploadDate())
+			|| !(updateRequest.getContractId()==null ? "" : updateRequest.getContractId())
+					.equals( uploadEntity.getContractId()==null ? "" : uploadEntity.getContractId()))
+		{
+			throw new DataCatalogException(ErrorCodes.INVALID_UPLOAD_UPDATE_REQUEST_DATA.getErrorMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
 }

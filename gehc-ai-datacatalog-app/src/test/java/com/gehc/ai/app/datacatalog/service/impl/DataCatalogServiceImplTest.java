@@ -299,7 +299,7 @@ public class DataCatalogServiceImplTest {
 
         //ARRANGE
         Upload updateUploadRequest = buildUpdateUploadRequest();
-        Upload upload = buildUploadEntity();
+        Upload upload = buildUpdateUploadRequest();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
         when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( updateUploadRequest );
         //ACT
