@@ -205,13 +205,13 @@ public class CreateDataCollectionsSteps {
         DataSet dummyDataSet = new DataSet();
         List<DataSet> dataSetsSaved = new ArrayList<>();
         dataSetsSaved.add(dummyDataSet);
-        when(dataSetRepository.save(anyListOf(DataSet.class))).thenReturn(dataSetsSaved);
+        when(dataSetRepository.saveAll(anyListOf(DataSet.class))).thenReturn(dataSetsSaved);
     }
 
     @SuppressWarnings("unchecked")
     @Given("an internal error that causes no data collections to be created")
     public void givenAnInternalErrorThatCausesNoDataCollectionsToBeCreated() throws Exception {
-        when(dataSetRepository.save(anyListOf(DataSet.class))).thenThrow(DataRetrievalFailureException.class);
+        when(dataSetRepository.saveAll(anyListOf(DataSet.class))).thenThrow(DataRetrievalFailureException.class);
     }
 
     /////////////////////
@@ -262,7 +262,7 @@ public class CreateDataCollectionsSteps {
                 createMockDataSetWithSuffix(new Long[]{101112L}, "Test", "Annotation", 4), createMockDataSetWithSuffix(new Long[]{131415L}, "Test", "Annotation", 5),
                 createMockDataSetWithSuffix(new Long[]{161718L}, "Test", "Annotation", 6), createMockDataSetWithSuffix(new Long[]{192021L}, "Test", "Annotation", 7)});
 
-        verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
+        verify(dataSetRepository, times(1)).saveAll(expectedDataSetsToSave);
     }
 
     @Then("the number of data collections that have the target collection size should be quotient of the number of image sets divided by the target collection size and there should be one data collection saved that contains the remainder of the quotient")
@@ -272,7 +272,7 @@ public class CreateDataCollectionsSteps {
                 createMockDataSetWithSuffix(new Long[]{123L, 456L}, "Test", "Annotation",1), createMockDataSetWithSuffix(new Long[]{789L, 101112L}, "Test", "Annotation",2),
                 createMockDataSetWithSuffix(new Long[]{131415L, 161718L}, "Test", "Annotation",3), createMockDataSetWithSuffix(new Long[]{192021L}, "Test", "Annotation",4)});
 
-        verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
+        verify(dataSetRepository, times(1)).saveAll(expectedDataSetsToSave);
     }
 
     @Then("1 data collection should be saved to the database")
@@ -280,7 +280,7 @@ public class CreateDataCollectionsSteps {
         List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{
                 createMockDataSet(new Long[]{123L, 456L, 789L, 101112L, 131415L, 161718L, 192021L},"Test", "Annotation")});
 
-        verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
+        verify(dataSetRepository, times(1)).saveAll(expectedDataSetsToSave);
     }
 
     @Then("1 data collection should be updated to the database")
@@ -288,7 +288,7 @@ public class CreateDataCollectionsSteps {
         List<DataSet> expectedDataSetsToSave = Arrays.asList(new DataSet[]{
                 createExistingMockDataSet(new Long[]{123L, 456L, 789L, 101112L, 131415L, 161718L, 192021L}, "Test", "Annotation",1L)});
 
-        verify(dataSetRepository, times(1)).save(expectedDataSetsToSave);
+        verify(dataSetRepository, times(1)).saveAll(expectedDataSetsToSave);
     }
 
     @Then("the response's body should contain an error message saying a data collection needs to be provided")

@@ -516,7 +516,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         // Try saving the data collections
         List<DataSet> savedDataCollections;
         try {
-            savedDataCollections = dataSetRepository.save(dataCollectionBatches);
+            savedDataCollections = dataSetRepository.saveAll(dataCollectionBatches);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to save data collections"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -580,8 +580,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ImageSeries saveImageSeries(@RequestBody ImageSeries i) {
         if (null != i) {
             logger.debug("*** Now saving image series " + i.toString());
+            return imageSeriesRepository.save(i);
         }
-        return imageSeriesRepository.save(i);
+        return null;
     }
 
     /*
@@ -1029,7 +1030,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                     if (imgSeriesOpt.isPresent()) {
                         imageSeriesRepository.delete(imgSeriesOpt.get());
                     } else {
-                        imageSeriesRepository.delete(imgSeriesOpt.get());
+                        imageSeriesRepository.delete(imgSeries);
                     }
                     apiResponse = new ApiResponse(ApplicationConstants.SUCCESS, Status.OK.toString(),
                             ApplicationConstants.SUCCESS, id);
