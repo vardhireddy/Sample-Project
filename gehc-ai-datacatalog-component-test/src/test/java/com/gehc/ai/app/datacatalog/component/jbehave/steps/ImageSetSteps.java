@@ -73,7 +73,7 @@ public class ImageSetSteps {
 
     @BeforeScenario
     public void setUp() throws Exception {
-        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
+        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),any())).thenReturn(true);
        // when(dataCatalogDao.(anyMap(),anyList(), anyList())).thenReturn(commonSteps.getImageSeries());
 
     }

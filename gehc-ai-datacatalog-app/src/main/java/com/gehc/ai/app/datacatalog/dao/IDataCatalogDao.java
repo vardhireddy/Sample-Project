@@ -16,6 +16,7 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
@@ -132,7 +133,7 @@ public interface IDataCatalogDao {
 	 * @param uploadEntity - Upload entity object
 	 * @return - a copy of the upload entity saved to the database repository
 	 */
-	Upload saveUpload(Upload uploadEntity);
+	Upload saveUpload(Upload uploadEntity) throws DataCatalogException;
 
     /**
      * Returns list of upload entities for given orgId

@@ -80,7 +80,7 @@ public class CreateContractSteps {
     /////////////////////////
 
     @Autowired
-    public CreateContractSteps(MockMvc mockMvc, ContractRepository contractRepository,DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao) {
+    public CreateContractSteps(MockMvc mockMvc, ContractRepository contractRepository,DataCatalogInterceptor dataCatalogInterceptor, DataCatalogDaoImpl dataCatalogDao){
         this.mockMvc = mockMvc;
         this.contractRepository = contractRepository;
         this.dataCatalogInterceptor = dataCatalogInterceptor;

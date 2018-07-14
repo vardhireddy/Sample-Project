@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +75,7 @@ public class CreateUploadSteps {
     //////////////////////
 
     @Given("all required data are provided for create upload request")
-    public void allRequiredDataAreProvidedForCreateUploadRequest()
+    public void allRequiredDataAreProvidedForCreateUploadRequest()  throws Exception
     {
         Contract contract = buildContractEntity();
         Upload upload = buildUploadEntity();

@@ -75,7 +75,7 @@ public class UpdateUploadSteps {
     //////////////////////
 
     @Given( "all required data are provided for update upload request" )
-    public void AllDataIsProvided(){
+    public void AllDataIsProvided() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -83,7 +83,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "upload ID provided  is invalid in the update upload request" )
-    public void uploadIdIsNotProvided(){
+    public void uploadIdIsNotProvided() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -91,7 +91,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "summary and status both are not provided in the update upload request" )
-    public void dataProvidedIsInComplete(){
+    public void dataProvidedIsInComplete() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -99,7 +99,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "lastModified date is not provided in the upload request" )
-    public void lastModifiedDateInvalid(){
+    public void lastModifiedDateInvalid() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -107,7 +107,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "stale last modified date is provided in the upload request" )
-    public void lastModifiedDateIsStale(){
+    public void lastModifiedDateIsStale() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );

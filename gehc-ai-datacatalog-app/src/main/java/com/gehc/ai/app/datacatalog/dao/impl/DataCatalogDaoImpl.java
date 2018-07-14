@@ -26,9 +26,7 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
-import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.exceptions.*;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.UploadRepository;
@@ -36,9 +34,12 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationDetailsEx
 import com.gehc.ai.app.datacatalog.util.exportannotations.JsonAnnotationDetailsExporter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
+import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -887,12 +888,15 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     }
 
     @Override
-    public Upload saveUpload(Upload uploadEntity) {
+    public Upload saveUpload(Upload uploadEntity) throws DataCatalogException{
         try {
             Upload upload =  uploadRepository.save(uploadEntity);
             logger.debug( "updated upload entity : {}", upload.toString() );
             return upload;
-        }catch (Exception e)
+        }catch ( ObjectOptimisticLockingFailureException e1 ){
+            throw new DataCatalogException( ErrorCodes.OUTDATED_UPLOAD_UPDATE_REQUEST.getErrorMessage(), HttpStatus.CONFLICT );
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             logger.error("Exception saving upload entity : {}",e.getMessage());
