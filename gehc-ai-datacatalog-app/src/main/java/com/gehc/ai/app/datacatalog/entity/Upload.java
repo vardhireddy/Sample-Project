@@ -101,6 +101,6 @@ public final class Upload {
     @Column(name="last_modified")
 	@Version
 	@Type (type = "dbtimestamp")
-    private Timestamp lastModified;
+    private Date lastModified;
 
 }

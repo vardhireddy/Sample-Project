@@ -267,7 +267,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 		{
 			throw new DataCatalogException("No upload exists with provided Id in request.",HttpStatus.BAD_REQUEST);
 		}
-		
+
         validateUpdateUploadRequest(updateRequest, uploadEntity);
 
 		return dataCatalogDao.saveUpload( updateRequest );

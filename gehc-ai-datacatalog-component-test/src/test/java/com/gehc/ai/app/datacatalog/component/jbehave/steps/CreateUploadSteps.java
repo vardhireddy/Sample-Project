@@ -205,8 +205,7 @@ public class CreateUploadSteps {
 
     @Then("a single upload should be saved to the database")
     public void aSingleUploadShouldBeSavedToTheDatabase() throws Exception{
-        Upload upload = buildUploadEntity();
-        verify(dataCatalogDao, times(1)).saveUpload(upload);
+        verify(dataCatalogDao, times(1)).saveUpload(this.uploadRequest);
     }
 
     @Then("the create upload response's status code should be 201")
@@ -266,7 +265,14 @@ public class CreateUploadSteps {
         uploadRequest.setUploadBy("user");
         uploadRequest.setTags(tags);
         uploadRequest.setUploadDate(new Timestamp(1313045029));
-        uploadRequest.setLastModified(new Timestamp(1313045029));
+
+        long millis1 =  new java.util.Date().getTime();
+        java.sql.Timestamp ts = new java.sql.Timestamp(millis1);
+
+        long millis2 = ts.getTime();
+        java.util.Date date = new java.util.Date( millis2 );
+
+        uploadRequest.setLastModified(date);
         uploadRequest.setDataType(new ArrayList<>());
 
         return uploadRequest;
