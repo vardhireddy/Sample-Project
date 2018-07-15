@@ -898,7 +898,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
             logger.debug( "updated upload entity : {}", upload.toString() );
             return upload;
         }catch ( ObjectOptimisticLockingFailureException e1 ){
-            throw new DataCatalogException( ErrorCodes.OUTDATED_UPLOAD_UPDATE_REQUEST.getErrorMessage(), HttpStatus.CONFLICT );
+            e1.printStackTrace();
+            logger.error("ObjectOptimisticLockingFailureException saving upload entity : {}",e1.getMessage());
+            throw e1;
         }
         catch (Exception e)
         {
