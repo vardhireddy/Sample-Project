@@ -36,11 +36,9 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.CsvAnnotationDetailsEx
 import com.gehc.ai.app.datacatalog.util.exportannotations.JsonAnnotationDetailsExporter;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.GEClass;
 import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJson;
-import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
