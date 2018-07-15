@@ -892,7 +892,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     }
 
     @Override
-    public Upload saveUpload(Upload uploadEntity) throws DataCatalogException{
+    public Upload saveUpload(Upload uploadEntity){
         try {
             Upload upload =  uploadRepository.save(uploadEntity);
             logger.debug( "updated upload entity : {}", upload.toString() );

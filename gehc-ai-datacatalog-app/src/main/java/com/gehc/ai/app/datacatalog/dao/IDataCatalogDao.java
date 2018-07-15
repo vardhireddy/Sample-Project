@@ -133,7 +133,7 @@ public interface IDataCatalogDao {
 	 * @param uploadEntity - Upload entity object
 	 * @return - a copy of the upload entity saved to the database repository
 	 */
-	Upload saveUpload(Upload uploadEntity) throws DataCatalogException;
+	Upload saveUpload(Upload uploadEntity);
 
     /**
      * Returns list of upload entities for given orgId
