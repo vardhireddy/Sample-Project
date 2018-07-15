@@ -98,7 +98,7 @@ public interface IDataCatalogService {
      * @param uploadEntity - Upload entity object
      * @return - a copy of the upload entity saved to the database repository
      */
-    Upload saveUpload(Upload uploadEntity);
+    Upload saveUpload(Upload uploadEntity) throws DataCatalogException;
 
         /**
          *  validates the request parameters and creates a upload entity in the repository

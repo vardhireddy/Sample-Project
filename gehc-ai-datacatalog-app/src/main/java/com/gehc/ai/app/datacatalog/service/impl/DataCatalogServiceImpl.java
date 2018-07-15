@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -165,7 +166,7 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
     }
 
 	@Override
-	public Upload saveUpload(Upload uploadEntity){
+	public Upload saveUpload(Upload uploadEntity) throws DataCatalogException{
 		return dataCatalogDao.saveUpload(uploadEntity);
 	}
 
@@ -268,16 +269,15 @@ public class DataCatalogServiceImpl implements IDataCatalogService {
 			throw new DataCatalogException("No upload exists with provided Id in request.",HttpStatus.BAD_REQUEST);
 		}
 
-		if (!uploadEntity.getLastModified().equals(updateRequest.getLastModified())) {
-
-			logger.error("last modified date given in request : {} and in db : {}", updateRequest.getLastModified()
-				, uploadEntity.getLastModified());
-			throw new DataCatalogException(ErrorCodes.OUTDATED_UPLOAD_UPDATE_REQUEST.getErrorMessage(),HttpStatus.CONFLICT);
-		}
-
         validateUpdateUploadRequest(updateRequest, uploadEntity);
 
-		return dataCatalogDao.saveUpload( updateRequest );
+		Upload updatedEntity;
+		try{
+			updatedEntity = dataCatalogDao.saveUpload( updateRequest );
+		}catch ( ObjectOptimisticLockingFailureException e ){
+			throw new DataCatalogException( ErrorCodes.OUTDATED_UPLOAD_UPDATE_REQUEST.getErrorMessage(), HttpStatus.CONFLICT );
+		}
+		return updatedEntity;
 	}
 
 	private void validateUploadUpdateRequest( Upload updateRequest) throws DataCatalogException{

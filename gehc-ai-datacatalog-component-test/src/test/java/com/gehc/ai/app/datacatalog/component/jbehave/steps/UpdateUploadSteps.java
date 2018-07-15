@@ -12,6 +12,7 @@ import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -75,7 +76,7 @@ public class UpdateUploadSteps {
     //////////////////////
 
     @Given( "all required data are provided for update upload request" )
-    public void AllDataIsProvided(){
+    public void AllDataIsProvided() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -83,7 +84,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "upload ID provided  is invalid in the update upload request" )
-    public void uploadIdIsNotProvided(){
+    public void uploadIdIsNotProvided() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -91,7 +92,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "summary and status both are not provided in the update upload request" )
-    public void dataProvidedIsInComplete(){
+    public void dataProvidedIsInComplete() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -99,7 +100,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "lastModified date is not provided in the upload request" )
-    public void lastModifiedDateInvalid(){
+    public void lastModifiedDateInvalid() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -107,11 +108,12 @@ public class UpdateUploadSteps {
     }
 
     @Given( "stale last modified date is provided in the upload request" )
-    public void lastModifiedDateIsStale(){
+    public void lastModifiedDateIsStale() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
+        Throwable throwable = new Throwable(  );
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
-        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( upload );
+        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenThrow( new ObjectOptimisticLockingFailureException("", throwable) );
     }
 
     /////////////////////
@@ -193,24 +195,8 @@ public class UpdateUploadSteps {
 
     @When( "the API which updates a upload is invoked with old lastModified date" )
     public void theAPIWhichUpdatesUploadIsInvokedWithOldLastModifiedDate() throws Exception{
-        List<String> dataType = new ArrayList<>();
-        dataType.add("DICOM");
-        dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
-        tags.put("tag1","sample");
-
-        List<String> summary = new ArrayList<>();
-        summary.add("uri1");
-        summary.add("uri2");
-        Map<String,Integer> status = new HashMap<>();
-        status.put("total",99);
-        status.put("failure",1);
-        Upload updateUploadRequest =  new Upload(10L,"v1","orgId217wtysgs",
-                                                                           null,1L,"space123",summary,null,
-                                                                           status,"user1",
-                                                                           new Timestamp( 1313045029),new Timestamp( 1313045030));
         result = mockMvc.perform(put("/api/v1/datacatalog/upload").contentType(MediaType.APPLICATION_JSON)
-                                                                  .content(requestToJSON(updateUploadRequest)));
+                                                                  .content(requestToJSON(this.updateUploadRequest)));
     }
 
     /////////////////////

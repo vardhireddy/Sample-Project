@@ -26,9 +26,9 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.UploadRepository;
@@ -39,6 +39,7 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJs
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -887,12 +888,12 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     }
 
     @Override
-    public Upload saveUpload(Upload uploadEntity) {
+    public Upload saveUpload(Upload uploadEntity){
         try {
             Upload upload =  uploadRepository.save(uploadEntity);
             logger.debug( "updated upload entity : {}", upload.toString() );
             return upload;
-        }catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             logger.error("Exception saving upload entity : {}",e.getMessage());
