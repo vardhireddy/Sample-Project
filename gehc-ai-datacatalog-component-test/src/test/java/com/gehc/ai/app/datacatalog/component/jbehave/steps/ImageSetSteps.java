@@ -16,6 +16,7 @@ import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.*;
@@ -71,7 +73,7 @@ public class ImageSetSteps {
 
     @BeforeScenario
     public void setUp() throws Exception {
-        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),anyObject())).thenReturn(true);
+        when(dataCatalogInterceptor.preHandle(any(HttpServletRequest.class),any(HttpServletResponse.class),any())).thenReturn(true);
        // when(dataCatalogDao.(anyMap(),anyList(), anyList())).thenReturn(commonSteps.getImageSeries());
 
     }
@@ -94,7 +96,7 @@ public class ImageSetSteps {
     @Then("verify image series by image series id")
     public void verifyImageSeriesById() throws Exception {
         retrieveResult.andExpect(status().isOk());
-        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSeries())));
+        retrieveResult.andExpect(content().string(containsString(commonSteps.expectedImageSingleSeries())));
     }
 
     @Given("Retrieve image series by series instance uid - DataSetUp Provided")
@@ -321,7 +323,7 @@ public class ImageSetSteps {
     @Given("Get Image set based on filter criteria with ORG ID and Modality throws Exception - DataSetUp Provided")
     public void givenGetImageSetBasedOnFilterCriteriaWithORGIDAndModalityThrowsExceptionDataSetUpProvided() {
         List<ImageSeries> imgSeries = commonSteps.getImageSeries();
-        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenThrow(Exception.class);
+        when(dataCatalogDao.getImgSeriesByFilters(anyMap(), anyBoolean(), anyInt())).thenThrow(DataRetrievalFailureException.class);
     }
 
     @When("Get Image set based on filter criteria with ORG ID and Modality throws Exception")
@@ -1062,12 +1064,10 @@ public class ImageSetSteps {
     @Given("imageset by id")
     public void givenImagesetById() {
         ImageSeries imgSeries = new ImageSeries();
-        List<ImageSeries> imgSeriesLst = new ArrayList<ImageSeries>();
         ImageSeries imgSeries1 = commonSteps.getOneimageSeries();
         imgSeries1.setId(1L);
-        imgSeriesLst.add(imgSeries1);
-        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSeriesLst);
-        doNothing().when(imageSeriesRepository).delete(imgSeriesLst.get(0));
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(Optional.of(imgSeries1));
+        doNothing().when(imageSeriesRepository).delete(imgSeries1);
     }
 
     @When("Delete imageset by id")
@@ -1087,9 +1087,7 @@ public class ImageSetSteps {
     @Given("imageseries by id when not a imageSeriesList")
     public void givenImageseriesByIdWhenNotAImageSeriesList() {
         ImageSeries imgSeries = new ImageSeries();
-        List<ImageSeries> imgSeriesLst = new ArrayList<ImageSeries>();
-
-        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSeriesLst);
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(Optional.of(imgSeries));
         doNothing().when(imageSeriesRepository).delete(imgSeries);
     }
 
@@ -1170,7 +1168,7 @@ public class ImageSetSteps {
 
     @Given("orgId to get count of image sets annotated by each radiologist the API throws Exception - DataSetUp Provided")
     public void getCountOfUniqueImageSetsAnnotatedByRadiologistForEachOrganizationThrowsException() throws Exception{
-        when(annotationRepository.getCountOfImagesAnnotated(anyString())).thenThrow(Exception.class);
+        when(annotationRepository.getCountOfImagesAnnotated(anyString())).thenThrow(DataRetrievalFailureException.class);
     }
 
     @When("Given orgId to get count of unique Image sets annotated by Radiologist API should throw Exception")
@@ -1224,7 +1222,8 @@ public class ImageSetSteps {
 
     private void dataSetUpImageSeriesById() {
         List<ImageSeries> imgSerLst = commonSteps.getImageSeries();
-        when(imageSeriesRepository.findById(anyLong())).thenReturn(imgSerLst);
+        ImageSeries imgSeries1 = imgSerLst.get(0);
+        when(imageSeriesRepository.findById(anyLong())).thenReturn(Optional.of(imgSeries1));
     }
 
     private void dataSetUpImageSeriesBySeriesInstanceId() {

@@ -374,12 +374,12 @@ public class DataCollectionSteps {
 
     @Then("verify DataSet for Filters by OrgId when Annotation count is empty")
     public void thenVerifyDataSetForFiltersByOrgIdWhenAnnotationCountIsEmpty() throws Exception {
-        retrieveResult.andExpect(content().string(containsString("{\"anatomy\":{\"CHEST\":8203},\"modality\":{\"DX\":121,\"CR\":8082}}")));
+        retrieveResult.andExpect(content().string(containsString("{}")));
     }
 
     @Given("Retrieve DataSet  group by ANNOTATIONS_ABSENT DataSetUp Provided")
     public void givenRetrieveDataSetgroupbyANNOTATIONS_ABSENTDataSetUpProvided() {
-        List noAnn = new ArrayList<Long>();
+        List<Long> noAnn = new ArrayList<Long>();
         noAnn.add(0, 1L);
         when(imageSeriesRepository.countImgWithNoAnn(anyString())).thenReturn(noAnn);
     }
@@ -388,7 +388,7 @@ public class DataCollectionSteps {
     public void whenGetDataSetgroupbyANNOTATIONS_ABSENT() throws Exception {
         retrieveResult = mockMvc.perform(
                 get("/api/v1/datacatalog/data-summary?groupby=annotation-absent")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).requestAttr("orgId", "12345678-abcd-42ca-a317-4d408b98c500")
         );
     }
 
@@ -487,8 +487,8 @@ public class DataCollectionSteps {
 
     @Given("Get Annotaition Ids by datacollectionId - Data Setup")
     public void givenGetAnnotaitionIdsByDatacollectionIdDataSetup() throws Exception {
-        List<DataSet> dataSet = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSet);
+        List<DataSet> dataSetList = getDataSetsWithImageSet();
+        when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(dataSetList.get(0)));
 
         List<AnnotationJson> annotationDetails = new ArrayList<>();
         List<GEClass> geClasses = new ArrayList<>();
@@ -525,10 +525,12 @@ public class DataCollectionSteps {
 
     @Given("Get Annotaition Ids by datacollectionId When ImageSeriesNotFound - Data Setup")
     public void givenGetAnnotaitionIdsByDatacollectionIdWhenImageSeriesNotFoundDataSetup() throws Exception {
-        List<DataSet> dataSet = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(new ArrayList<DataSet>());
-        List<ImageSeries> imgSerIdLst = new ArrayList<ImageSeries>();
-        when(dataCatalogDao.getAnnotationDetailsByImageSetIDs(anyList())).thenReturn(imgSerIdLst);
+        List<DataSet> emptyListDataSet = new ArrayList<DataSet>();
+        DataSet dataSet = new DataSet();
+        emptyListDataSet.add(dataSet);
+        when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(emptyListDataSet.get(0)));
+        List<AnnotationJson> annotationJsonLst = new ArrayList<AnnotationJson>();
+        when(dataCatalogDao.getAnnotationDetailsByImageSetIDs(anyList())).thenReturn(annotationJsonLst);
     }
 
     @When("Get Annotaition Ids by datacollectionId is called When ImageSeriesNotFound")
@@ -574,8 +576,7 @@ public class DataCollectionSteps {
     @Given("a data collection contains at least one image set and each image set contains at least one annotation")
     public void givenDataCollectionContainsOneImageSet() throws Exception {
         List<DataSet> mockDataSet = getDataSetsWithImageSet();
-        when(dataSetRepository.findById(anyLong())).thenReturn(mockDataSet);
-
+        when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(mockDataSet.get(0)));
         when(dataCatalogDao.getAnnotationDetailsAsCsvByImageSetIDs(anyList())).thenReturn("mockColumn\n\"mockValue\"");
     }
 
@@ -653,44 +654,37 @@ public class DataCollectionSteps {
     }
 
     private void dataCollectionSetUpForImageSet() {
-        List<DataSet> dataSets = new ArrayList<DataSet>();
         DataSet dataSet = new DataSet();
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
-
-        List<Long> imageSeriesList = new ArrayList<Long>();
-        dataSet.setImageSets(imageSeriesList);
-        dataSets.add(dataSet);
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        List<ImageSeries> imageSeriesList = new ArrayList<ImageSeries>();
+        List<Long> testList = new ArrayList<Long>();
+        testList.add(1L);
+        dataSet.setImageSets(testList);
+        when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(dataSet));
         when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(imageSeriesList);
     }
 
     private void dataCollectionSetUpForImageSetwithData() {
-        List<DataSet> dataSets = new ArrayList<DataSet>();
         DataSet dataSet = new DataSet();
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
-        List testList = new ArrayList();
+        List<Long> testList = new ArrayList<Long>();
         testList.add(1L);
         dataSet.setImageSets(testList);
-        dataSets.add(dataSet);
-
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(dataSet));
         when(imageSeriesRepository.findByIdIn(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
     }
 
 
     private void dataCollectionSetUpForImageSetwithPatientData() {
-        List<DataSet> dataSets = new ArrayList<DataSet>();
         DataSet dataSet = new DataSet();
         dataSet.setId(1L);
         dataSet.setCreatedBy("test");
-        List testList = new ArrayList();
+        List<Long> testList = new ArrayList<Long>();
         testList.add(1L);
         dataSet.setImageSets(testList);
-        dataSets.add(dataSet);
-
-        when(dataSetRepository.findById(anyLong())).thenReturn(dataSets);
+        when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(dataSet));
         when(dataCatalogDao.getImgSeriesWithPatientByIds(anyList())).thenReturn(commonSteps.getImageSeriesWithFilterOneModality());
     }
 

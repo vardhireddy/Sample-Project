@@ -60,26 +60,28 @@ public class RemoteServiceImpl implements IRemoteService {
 			if (null != responseEntity && responseEntity.hasBody()) {
 				userObject = responseEntity.getBody();
 				LinkedHashMap<String, Object> userData = (LinkedHashMap) userObject;
-				Iterator<Entry<String, Object>> itr = userData.entrySet().iterator();
-				while (itr.hasNext() && orgId == null) {
-					Entry<String, Object> entry = itr.next();
-					String key = entry.getKey();
-					if (key.equalsIgnoreCase("role")) {
-						ArrayList<Object> list = (ArrayList<Object>) entry.getValue();
-						for (int i = 0; i < list.size(); i++) {
-							LinkedHashMap<String, Object> roleValue = (LinkedHashMap) (list.get(i));
-							Iterator<Entry<String, Object>> roleItr = roleValue.entrySet().iterator();
-							while (roleItr.hasNext()) {
-								Entry<String, Object> roleEntry = roleItr.next();
-								String roleKey = roleEntry.getKey();
-								if (roleKey.equalsIgnoreCase("scopingOrganization")) {
-									Object valueInRole = (Object) roleEntry.getValue();
-									Map<String, String> dataInRole = (HashMap<String, String>) valueInRole;
-									if (dataInRole.get("reference").startsWith("organization")) {
-										orgId = dataInRole.get("reference")
-												.substring((dataInRole.get("reference").indexOf("/")) + 1);
-										logger.info("*** In getOrgIdBasedOnSessionToken, Org id = " + orgId);
-										break;
+				if( null != userData && null != userData.entrySet() ){
+					Iterator<Entry<String, Object>> itr = userData.entrySet().iterator();
+					while (itr.hasNext() && orgId == null) {
+						Entry<String, Object> entry = itr.next();
+						String key = entry.getKey();
+						if (key.equalsIgnoreCase("role")) {
+							ArrayList<Object> list = (ArrayList<Object>) entry.getValue();
+							for (int i = 0; i < list.size(); i++) {
+								LinkedHashMap<String, Object> roleValue = (LinkedHashMap) (list.get(i));
+								Iterator<Entry<String, Object>> roleItr = roleValue.entrySet().iterator();
+								while (roleItr.hasNext()) {
+									Entry<String, Object> roleEntry = roleItr.next();
+									String roleKey = roleEntry.getKey();
+									if (roleKey.equalsIgnoreCase("scopingOrganization")) {
+										Object valueInRole = (Object) roleEntry.getValue();
+										Map<String, String> dataInRole = (HashMap<String, String>) valueInRole;
+										if (dataInRole.get("reference").startsWith("organization")) {
+											orgId = dataInRole.get("reference")
+													.substring((dataInRole.get("reference").indexOf("/")) + 1);
+											logger.info("*** In getOrgIdBasedOnSessionToken, Org id = " + orgId);
+											break;
+										}
 									}
 								}
 							}

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,7 +55,6 @@ import com.gehc.ai.app.datacatalog.entity.Annotation;
 import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
 import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +64,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -516,7 +517,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         // Try saving the data collections
         List<DataSet> savedDataCollections;
         try {
-            savedDataCollections = dataSetRepository.save(dataCollectionBatches);
+            savedDataCollections = dataSetRepository.saveAll(dataCollectionBatches);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<Object>(Collections.singletonMap("response", "Failed to save data collections"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -580,8 +581,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public ImageSeries saveImageSeries(@RequestBody ImageSeries i) {
         if (null != i) {
             logger.debug("*** Now saving image series " + i.toString());
+            return imageSeriesRepository.save(i);
         }
-        return imageSeriesRepository.save(i);
+        return null;
     }
 
     /*
@@ -643,14 +645,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     public List<ImageSeries> getImgSeriesByDSId(@PathVariable Long id) {
         // Note: Coolidge is using this as well
         logger.debug(">>>>>>>>>>>In REST , Get img series for DC id " + id);
-        List<DataSet> dsLst = null;
         if (null != id) {
-            dsLst = dataSetRepository.findById(id);
-            if (null != dsLst && !dsLst.isEmpty()) {
+        	Optional<DataSet> dataSet = dataSetRepository.findById(id);
+            if (dataSet.isPresent()) {
                 @SuppressWarnings("unchecked")
-                List<Long> imgSeries = ((DataSet) (dsLst.get(0))).getImageSets();
-
-
+                List<Long> imgSeries = ((DataSet) (dataSet.get())).getImageSets();
                 if (null != imgSeries && !imgSeries.isEmpty()) {
                     List<Long> imgSerIdLst = getImageSeriesIdList(imgSeries);
                     return dataCatalogService.getImgSeriesWithPatientByIds(imgSerIdLst);
@@ -743,7 +742,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     @RequestMapping(value = "/datacatalog/image-set/{id}", method = RequestMethod.GET)
     public List<ImageSeries> getImgSeriesById(@PathVariable Long id) {
         logger.debug("*** In REST get image series by id " + id);
-        return imageSeriesRepository.findById(id);
+        return Arrays.asList(imageSeriesRepository.findById(id).get());
     }
 
     @Override
@@ -806,7 +805,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         Map<String, Object> filters = new HashMap<String, Object>();
         if (null != groupby && !groupby.isEmpty() && groupby.equalsIgnoreCase(ANNOTATIONS_ABSENT)) {
             logger.debug("Started for ANNOTATIONS_ABSENT" + new Timestamp(System.currentTimeMillis()));
-            filters.put(ANNOTATIONS_ABSENT, imageSeriesRepository.countImgWithNoAnn(orgId).get(0));
+            List<Long> imgCount = imageSeriesRepository.countImgWithNoAnn(orgId);
+            filters.put(ANNOTATIONS_ABSENT, imgCount.get(0));
             logger.debug("END ANNOTATIONS_ABSENT" + new Timestamp(System.currentTimeMillis()));
         } else {
             filters.putAll(getModalityAndAnatomyCount(orgId, filters));
@@ -973,11 +973,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     private List<Long> getImgSeriesIdsByDSId(@PathVariable Long id) {
         // Note: Coolidge is using this as well
         logger.debug("In REST , Get img series for DC id " + id);
-        List<DataSet> dsLst = new ArrayList<DataSet>();
         if (null != id) {
-            dsLst = dataSetRepository.findById(id);
-            if (null != dsLst && !dsLst.isEmpty()) {
-                return dsLst.get(0).getImageSets();
+            Optional<DataSet> dataSet = dataSetRepository.findById(id);
+            if (dataSet.isPresent()) {
+                return dataSet.get().getImageSets();
             }
         }
         return new ArrayList<Long>();
@@ -1028,10 +1027,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
                 for (int i = 0; i < idStrings.length; i++) {
                     imgSeries.setId(Long.valueOf(idStrings[i]));
                     logger.debug("[-----Delete image series " + Long.valueOf(idStrings[i]) + "]");
-                    List<ImageSeries> imgSeriesLst = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
-                    if (!imgSeriesLst.isEmpty()) {
-                        logger.debug(" image series size " + imgSeriesLst.size());
-                        imageSeriesRepository.delete(imgSeriesLst.get(0));
+                    Optional<ImageSeries> imgSeriesOpt = imageSeriesRepository.findById(Long.valueOf(idStrings[i]));
+                    if (imgSeriesOpt.isPresent()) {
+                        imageSeriesRepository.delete(imgSeriesOpt.get());
                     } else {
                         imageSeriesRepository.delete(imgSeries);
                     }
@@ -1463,9 +1461,9 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 
         String status = "false";
 
-        Contract contractToBeDeleted;
+        Optional<Contract> contractToBeDeleted;
         try {
-            contractToBeDeleted = contractRepository.findOne(contractId);
+            contractToBeDeleted = contractRepository.findById(contractId);
         } catch (Exception e) {
             logger.error("Error retrieving contract to delete: {}", e.getMessage());
             return new ResponseEntity<>(Collections.singletonMap("response", "Error retrieving contract to delete. Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1480,8 +1478,8 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
         }
 
         try {
-            contractToBeDeleted.setActive(status);
-            contractRepository.save(contractToBeDeleted);
+            contractToBeDeleted.get().setActive(status);
+            contractRepository.save(contractToBeDeleted.get());
         } catch (Exception e) {
             logger.error("Error deleting the contract : {}", e.getMessage());
             return new ResponseEntity<>(Collections.singletonMap("response", "Error deleting the contract. Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1530,8 +1528,6 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
     }
 
     @Override
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Create Upload", httpMethod = "POST", response = Upload.class, tags = "Create Upload")
     @ApiResponses(value = {
             @io.swagger.annotations.ApiResponse(code = 201, message = "Created", response = Upload.class),
@@ -1544,10 +1540,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
-    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON})
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON}, consumes = {MediaType.APPLICATION_JSON})
     public ResponseEntity<?> createUpload(@RequestBody Upload uploadRequest){
 
         logger.info("Passing upload request to create upload entity.");
+        logger.debug( "create upload request : {}", uploadRequest.toString() );
 
         Upload uploadResponse;
         try {
@@ -1562,7 +1559,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity(Collections.singletonMap("response", "Exception saving the upload entity." +
                     " Please contact the corresponding service assistant."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
+        logger.info( "Successfully created upload entity." );
         return new ResponseEntity<>(uploadResponse,HttpStatus.CREATED);
     }
 
@@ -1579,7 +1576,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
-    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.GET)
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON})
     @Override
     public ResponseEntity<?> getAllUploads(HttpServletRequest httpServletRequest){
 
@@ -1621,7 +1618,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
-    @RequestMapping(value = "/datacatalog/upload/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/datacatalog/upload/{id}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON})
     public ResponseEntity<?> getUploadById(@ApiParam(value = "Id of Upload") @PathVariable(value = "id") Long uploadId,
                                                 HttpServletRequest httpServletRequest) {
 
@@ -1671,10 +1668,10 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
-    @RequestMapping(value = "/datacatalog/upload/validate", method = RequestMethod.GET)
+    @RequestMapping(value = "/datacatalog/upload/validate", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON})
     public ResponseEntity<?> getUploadByQueryParameters(@RequestParam("spaceId") String spaceId,
-                                                        @RequestParam("orgId") String orgId,
-                                                        @RequestParam("contractId") Long contractId){
+                                                        @RequestParam("orgId" ) String orgId,
+                                                        @RequestParam(value = "contractId", required = false) Long contractId ){
 
             logger.info( "Passing query parameters to retrieve upload details." );
 
@@ -1709,10 +1706,11 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             @io.swagger.annotations.ApiResponse(code = 415, message = "Unsupported Media Type"),
             @io.swagger.annotations.ApiResponse(code = 500, message = "Internal Server Error"),
             @io.swagger.annotations.ApiResponse(code = 502, message = "Bad Gateway") })
-    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateUpload(@RequestBody UpdateUploadRequest updateRequest){
+    @RequestMapping(value = "/datacatalog/upload", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON}, consumes = {MediaType.APPLICATION_JSON})
+    public ResponseEntity<?> updateUpload(@RequestBody Upload updateRequest){
 
         logger.info( "Passing update upload request parameters." );
+        logger.debug( "update upload request : {}", updateRequest.toString() );
 
         Upload upload;
         try {
@@ -1726,6 +1724,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
             return new ResponseEntity( Collections.singletonMap( "response", "Exception updating the upload entity." ), HttpStatus.INTERNAL_SERVER_ERROR );
         }
 
+        logger.info( "Successfully updated upload entity." );
         return new ResponseEntity<>(upload, HttpStatus.OK);
     }
 

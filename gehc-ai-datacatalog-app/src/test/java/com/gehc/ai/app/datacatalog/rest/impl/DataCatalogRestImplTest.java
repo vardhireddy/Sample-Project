@@ -2,35 +2,27 @@ package com.gehc.ai.app.datacatalog.rest.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import com.gehc.ai.app.datacatalog.entity.Upload;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
-import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
-import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
-import java.util.Collections;
 
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Before;
-import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -45,18 +37,33 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
-
+import com.gehc.ai.app.datacatalog.entity.Annotation;
+import com.gehc.ai.app.datacatalog.entity.AnnotationProperties;
+import com.gehc.ai.app.datacatalog.entity.Contract;
+import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
+import com.gehc.ai.app.datacatalog.entity.CosNotification;
+import com.gehc.ai.app.datacatalog.entity.DataSet;
+import com.gehc.ai.app.datacatalog.entity.InstitutionSet;
+import com.gehc.ai.app.datacatalog.entity.Patient;
+import com.gehc.ai.app.datacatalog.entity.Study;
+import com.gehc.ai.app.datacatalog.entity.Upload;
+import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
+import com.gehc.ai.app.datacatalog.repository.AnnotationPropRepository;
 import com.gehc.ai.app.datacatalog.repository.AnnotationRepository;
 import com.gehc.ai.app.datacatalog.repository.COSNotificationRepository;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
+import com.gehc.ai.app.datacatalog.repository.ImageSeriesRepository;
 import com.gehc.ai.app.datacatalog.repository.PatientRepository;
 import com.gehc.ai.app.datacatalog.repository.StudyRepository;
 import com.gehc.ai.app.datacatalog.rest.IDataCatalogRest;
+import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
 import com.gehc.ai.app.datacatalog.rest.response.AnnotatorImageSetCount;
+import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 @RunWith ( MockitoJUnitRunner.class )
@@ -116,7 +123,10 @@ public class DataCatalogRestImplTest {
   /*
     @Autowired
     private ResponseGenerator responseGenerator;*/
-
+    
+    @Mock
+    private AnnotationPropRepository annotationPropertiesRepository;
+    
     @Mock
     private PatientRepository patientRepository;
     @Mock
@@ -134,6 +144,9 @@ public class DataCatalogRestImplTest {
 
     @InjectMocks
     private DataCatalogRestImpl controller;
+
+    @Mock
+    private ImageSeriesRepository imageSeriesRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -364,15 +377,13 @@ public class DataCatalogRestImplTest {
     
     @Test
     public void testGetImgSeriesByDSId() {
-    	List<DataSet> l = new ArrayList<DataSet>();
     	DataSet ds = new DataSet();
     	List<Long> imageSets = new ArrayList<Long>();
     	for (int k = 0; k < 10000; k++) {
     		imageSets.add((long) (Math.random() * 1000000));
     	}
-    	l.add(ds);
     	ds.setImageSets(imageSets);
-    	when(dataSetRepository.findById(anyLong())).thenReturn(l);
+    	when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(ds));
     	ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
     	final int limit = 1000;
 
@@ -390,15 +401,13 @@ public class DataCatalogRestImplTest {
 
     @Test
     public void testGetImgSeriesByDSIdWithoutRandomization() {
-    	List<DataSet> l = new ArrayList<DataSet>();
     	DataSet ds = new DataSet();
     	List<Long> imageSets = new ArrayList<Long>();
     	for (int k = 0; k < 10000; k++) {
     		imageSets.add((long) (Math.random() * 1000000));
     	}
-    	l.add(ds);
     	ds.setImageSets(imageSets);
-    	when(dataSetRepository.findById(anyLong())).thenReturn(l);
+    	when(dataSetRepository.findById(anyLong())).thenReturn(Optional.of(ds));
     	ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
     	final int limit = 1000;
 
@@ -528,12 +537,8 @@ public class DataCatalogRestImplTest {
     @Test
     public void testUpdateContractWithNullRequest(){
         Contract contract = buildContractEntity();
-        when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
-
         UpdateContractRequest updateRequest = new UpdateContractRequest();
         ResponseEntity<Contract> result = controller.updateContract(1L,updateRequest);
-
         assertEquals(400, result.getStatusCodeValue());
         assertEquals(Collections.singletonMap("response","Update request cannot be empty. Either status or uri must be provided."), result.getBody());
     }
@@ -544,8 +549,6 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenReturn(contract);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
-
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -560,8 +563,6 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenReturn(null);
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
-
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -576,8 +577,6 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
         when(dataCatalogService.getContract(anyLong())).thenThrow(new RuntimeException(""));
-        when(dataCatalogService.saveContract(any(Contract.class))).thenReturn(contract);
-
         List<String> uriList = new ArrayList<>();
         uriList.add("bla.pdf");
         UpdateContractRequest updateRequest = new UpdateContractRequest(Contract.UploadStatus.UPLOAD_IN_PROGRESS,uriList);
@@ -607,7 +606,7 @@ public class DataCatalogRestImplTest {
     {
         //ARRANGE
         Contract contract = buildContractEntity();
-        when(contractRepository.findOne(anyLong())).thenReturn(contract);
+        when(contractRepository.findById(anyLong())).thenReturn(Optional.of(contract));
         httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
@@ -623,7 +622,7 @@ public class DataCatalogRestImplTest {
         Contract contract = buildContractEntity();
         contract.setActive("false");
 
-        when(contractRepository.findOne(anyLong())).thenReturn(contract);
+        when(contractRepository.findById(anyLong())).thenReturn(Optional.of(contract));
         httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
@@ -636,7 +635,7 @@ public class DataCatalogRestImplTest {
     public void testDeleteContractWhereContractDoesNotExist()
     {
         //ARRANGE
-        when(contractRepository.findOne(anyLong())).thenReturn(null);
+        when(contractRepository.findById(anyLong())).thenReturn(null);
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
@@ -648,7 +647,7 @@ public class DataCatalogRestImplTest {
     public void testDeleteContractForExceptionInRetrievingContract()
     {
         //ARRANGE
-        when(contractRepository.findOne(anyLong())).thenThrow(new IllegalArgumentException());
+        when(contractRepository.findById(anyLong())).thenThrow(new IllegalArgumentException());
         //ACT
         ResponseEntity<Map<String,String>> result = controller.deleteContract( 1L, httpServletRequest );
         //ASSERT
@@ -661,7 +660,7 @@ public class DataCatalogRestImplTest {
     {
         //ARRANGE
         Contract contract = buildContractEntity();
-        when(contractRepository.findOne(anyLong())).thenReturn(contract);
+        when(contractRepository.findById(anyLong())).thenReturn(Optional.of(contract));
         when(contractRepository.save(any(Contract.class))).thenThrow(new IllegalArgumentException());
         httpServletRequest.setAttribute( "orgId", "12345678-abcd-42ca-a317-4d408b98c500");
         //ACT
@@ -896,7 +895,6 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( upload );
         Contract contract = buildContractEntity();
-        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
@@ -910,7 +908,6 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenReturn( null );
         Contract contract = buildContractEntity();
-        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
@@ -924,7 +921,6 @@ public class DataCatalogRestImplTest {
         Upload upload = buildUploadEntity();
         when( dataCatalogService.getUploadByQueryParameters(anyString(), anyString(), anyLong() ) ).thenThrow( new RuntimeException( "" ) );
         Contract contract = buildContractEntity();
-        when( dataCatalogService.getContract( anyLong() ) ).thenReturn( contract );
         //ACT
         ResponseEntity response = controller.getUploadByQueryParameters( "1" ,"1",1L );
         //ASSERT
@@ -936,9 +932,9 @@ public class DataCatalogRestImplTest {
     public void updateUploadSuccessfully() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
+        Upload updateUploadRequest = buildUpdateUploadRequest();
         Upload upload = buildUploadEntity();
-        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) ).thenReturn( upload );
+        when( dataCatalogService.updateUploadEntity( any(Upload.class) ) ).thenReturn( upload );
         //ACT
         ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
         //ASSERT
@@ -949,12 +945,12 @@ public class DataCatalogRestImplTest {
     public void updateUploadForInvalidIdException() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest = new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+        Upload updateUploadRequest = new Upload(null,"v1","orgId217wtysgs",
                                                         null,1L,"space123",null,null,
                                                 null,"user1",
                                                         new Timestamp( 1313045029),new Timestamp( 1313045029));
 
-        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) ).thenThrow( new DataCatalogException( "",HttpStatus.BAD_REQUEST ) );
+        when( dataCatalogService.updateUploadEntity( any(Upload.class) ) ).thenThrow( new DataCatalogException( "",HttpStatus.BAD_REQUEST ) );
         //ACT
         ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
         //ASSERT
@@ -965,17 +961,118 @@ public class DataCatalogRestImplTest {
     public void updateUploadFor500Exception() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest = new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+        Upload updateUploadRequest = new Upload(null,"v1","orgId217wtysgs",
                                                                           null,1L,"space123",null,null,
                                                                           null,"user1",
                                                                           new Timestamp( 1313045029),new Timestamp( 1313045029));
 
-        when( dataCatalogService.updateUploadEntity( any(UpdateUploadRequest.class) ) )
+        when( dataCatalogService.updateUploadEntity( any(Upload.class) ) )
                 .thenThrow( new RuntimeException("" ) );
         //ACT
         ResponseEntity responseEntity = controller.updateUpload( updateUploadRequest );
         //ASSERT
         assertEquals( 500, responseEntity.getStatusCodeValue() );
+    }
+
+    //test updateInstitutionByImageSeriesList
+    @Test
+    public void updateInstitutionByImageSeriesList() throws Exception{
+
+        String[] list = {"27e7-qw8u8-019wiaq9", "d7y27y-eu83eu-8w82u"};
+        InstitutionSet institutionSet = new InstitutionSet();
+        institutionSet.setSeriesUIds(list  );
+
+        doThrow(new RuntimeException(  )).when(imageSeriesRepository ).updateInstitution(any(), any());
+
+        controller.updateInstitutionByImageSeriesList( institutionSet,httpServletRequest );
+
+    }
+    
+    @Test
+    public void testHealthCheck() throws Exception{
+        assertEquals( "SUCCESS", controller.healthCheck() );
+    }
+    
+    @Test
+    public void testHealthcheck() throws Exception{
+    	assertEquals( "SUCCESS", controller.healthcheck() );
+    }
+    
+    @Test
+    public void testGetPatientsNullOrgId() throws Exception{
+    	String ids = "123";
+    	httpServletRequest.setAttribute("orgId", null);
+    	List<Patient> pList = new ArrayList<Patient>();
+    	assertEquals( pList, controller.getPatients(ids, httpServletRequest) );
+    }
+    
+    @Test
+    public void testGetPatients() throws Exception{
+    	String ids = "123";
+    	List<Patient> pList = new ArrayList<Patient>();
+    	when(patientRepository.findByIdInAndOrgId(any(), anyString())).thenReturn(pList);
+    	assertEquals( pList, controller.getPatients(ids, httpServletRequest) );
+    }
+    
+    @Test
+    public void testGetStudyNullOrgId() throws Exception{
+    	httpServletRequest.setAttribute("orgId", null);
+    	List<Study> sList = new ArrayList<Study>();
+    	assertEquals( sList, controller.getStudy(httpServletRequest) );
+    }
+    
+    @Test
+    public void testGetStudy() throws Exception{
+    	List<Study> sList = new ArrayList<Study>();
+    	when(studyRepository.findByOrgId(anyString())).thenReturn(sList);
+    	assertEquals( sList, controller.getStudy(httpServletRequest) );
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void testGetStudiesByIdNullOrgId() throws Exception{
+    	String ids = "123,456";
+    	httpServletRequest.setAttribute("orgId", null);
+    	List<Study> pList = new ArrayList<Study>();
+    	controller.getStudiesById(ids, httpServletRequest);
+    }
+    
+    @Test
+    public void testGetStudiesById() throws Exception{
+    	String ids = "123,456";
+    	List<Study> pList = new ArrayList<Study>();
+    	when(studyRepository.findByIdInAndOrgId(any(), anyString())).thenReturn(pList);
+    	assertEquals( pList, controller.getStudiesById(ids, httpServletRequest) );
+    }
+
+    @Test
+    public void testPostCOSNotification() throws Exception{
+    	CosNotification cn = new CosNotification();
+    	controller.postCOSNotification(cn);
+    }
+    
+    @Test
+    public void testGetAnnotationsById() throws Exception{
+    	String ids = "123,456";
+    	List<Annotation> aList = new ArrayList<Annotation>();
+    	when(annotationRepository.findByIdIn(any())).thenReturn(aList);
+    	assertEquals( aList, controller.getAnnotationsById(ids, httpServletRequest) );
+    }
+    
+    @Test
+    public void testGetAnnotationProperties() throws Exception{
+    	String ids = "acc49054-c0fe-4455-bc9b-5e02db47662f";
+    	List<AnnotationProperties> aList = new ArrayList<AnnotationProperties>();
+    	when(annotationPropertiesRepository.findByOrgId(anyString())).thenReturn(aList);
+    	assertEquals( aList, controller.getAnnotationProperties(ids) );
+    }
+    
+    @Test
+    public void testGetAnnotationPropertiesNullOrgId() throws Exception{
+    	String ids = "acc49054-c0fe-4455-bc9b-5e02db47662f";
+    	httpServletRequest.setAttribute("orgId", null);
+    	List<AnnotationProperties> aList = new ArrayList<AnnotationProperties>();
+    	when(annotationPropertiesRepository.findByOrgId(anyString())).thenReturn(aList);
+    	assertEquals( aList, controller.getAnnotationProperties(ids) );
     }
 
     /////////////////////
@@ -997,7 +1094,7 @@ public class DataCatalogRestImplTest {
         contract.setDeidStatus(Contract.DeidStatus.HIPAA_COMPLIANT);
         contract.setAgreementBeginDate("2017-03-02");
         contract.setDataUsagePeriod("perpetuity");
-        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
+        contract.setUseCases(Arrays.asList(new ContractUseCase[]{new ContractUseCase( DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}));
         contract.setDataOriginCountriesStates(Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}));
         contract.setDataLocationAllowed(Contract.DataLocationAllowed.GLOBAL);
         contract.setUploadBy("user");
@@ -1026,7 +1123,7 @@ public class DataCatalogRestImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -1044,21 +1141,21 @@ public class DataCatalogRestImplTest {
         return uploadRequest;
     }
 
-    private UpdateUploadRequest buildUpdateUploadRequest(){
+    private Upload buildUpdateUploadRequest(){
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
 
-       return  new UpdateUploadRequest(3L,"v1","orgId217wtysgs",
+       return  new Upload(3L,"v1","orgId217wtysgs",
                                     dataType,1L,"space123",summary,tags,
                                     status,"user1",
                                     new Timestamp( 1313045029),new Timestamp( 1313045029));

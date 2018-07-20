@@ -13,21 +13,34 @@ package com.gehc.ai.app.datacatalog.entity;
 
 import com.gehc.ai.app.datacatalog.filters.JsonConverter;
 import com.gehc.ai.app.datacatalog.filters.ListOfStringConverter;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public final class Upload {
 
@@ -54,7 +67,6 @@ public final class Upload {
     @Convert(converter = ListOfStringConverter.class)
 	private List<String> dataType;
 
-	@NotNull
     @Column(name = "contract_id")
 	private Long contractId;
 	
@@ -69,10 +81,10 @@ public final class Upload {
 	private List<String> summary;
 	
 	@Convert(converter = JsonConverter.class)
-	private Map<String,String> tags;
+	private Map<String,Object> tags;
 	
 	@Convert(converter = JsonConverter.class)
-	private Map<String,String> status;
+	private Map<String,Integer> status;
 	
 	/**
 	 * An identifier for the one who uploaded the data. This allows to query for
@@ -93,160 +105,8 @@ public final class Upload {
      * Date data was uploaded into database. Should be left to database to provide.
      */
     @Column(name="last_modified")
-    @UpdateTimestamp
-    private Timestamp lastModified;
+	@Version
+	@Type (type = "dbtimestamp")
+    private Date lastModified;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Upload upload = (Upload) o;
-
-        if (getId() != null ? !getId().equals(upload.getId()) : upload.getId() != null) return false;
-        if (!getSchemaVersion().equals(upload.getSchemaVersion())) return false;
-        if (!getOrgId().equals(upload.getOrgId())) return false;
-        if (getDataType() != null ? !getDataType().equals(upload.getDataType()) : upload.getDataType() != null)
-            return false;
-        if (!getContractId().equals(upload.getContractId())) return false;
-        if (!getSpaceId().equals(upload.getSpaceId())) return false;
-        if (getSummary() != null ? !getSummary().equals(upload.getSummary()) : upload.getSummary() != null)
-            return false;
-        if (!getTags().equals(upload.getTags())) return false;
-        if (getStatus() != null ? !getStatus().equals(upload.getStatus()) : upload.getStatus() != null) return false;
-        if (!getUploadBy().equals(upload.getUploadBy())) return false;
-        if (!getUploadDate().equals(upload.getUploadDate())) return false;
-        return getLastModified().equals(upload.getLastModified());
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + getSchemaVersion().hashCode();
-        result = 31 * result + getOrgId().hashCode();
-        result = 31 * result + (getDataType() != null ? getDataType().hashCode() : 0);
-        result = 31 * result + getContractId().hashCode();
-        result = 31 * result + getSpaceId().hashCode();
-        result = 31 * result + (getSummary() != null ? getSummary().hashCode() : 0);
-        result = 31 * result + getTags().hashCode();
-        result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
-        result = 31 * result + getUploadBy().hashCode();
-        result = 31 * result + getUploadDate().hashCode();
-        result = 31 * result + getLastModified().hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Upload{" +
-                "id=" + id +
-                ", schemaVersion='" + schemaVersion + '\'' +
-                ", orgId='" + orgId + '\'' +
-                ", dataType=" + dataType +
-                ", contractId=" + contractId +
-                ", spaceId='" + spaceId + '\'' +
-                ", summary=" + summary +
-                ", tags=" + tags +
-                ", status=" + status +
-                ", uploadBy='" + uploadBy + '\'' +
-                ", uploadDate=" + uploadDate +
-                ", lastModified=" + lastModified +
-                '}';
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getSchemaVersion() {
-        return schemaVersion;
-    }
-
-    public void setSchemaVersion(String schemaVersion) {
-        this.schemaVersion = schemaVersion;
-    }
-
-    public String getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
-
-    public List<String> getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(List<String> dataType) {
-        this.dataType = dataType;
-    }
-
-    public Long getContractId() {
-        return contractId;
-    }
-
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
-    }
-
-    public String getSpaceId() {
-        return spaceId;
-    }
-
-    public void setSpaceId(String spaceId) {
-        this.spaceId = spaceId;
-    }
-
-    public List<String> getSummary() {
-        return summary;
-    }
-
-    public void setSummary(List<String> summary) {
-        this.summary = summary;
-    }
-
-    public Map<String, String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Map<String, String> tags) {
-        this.tags = tags;
-    }
-
-    public Map<String, String> getStatus() {
-        return status;
-    }
-
-    public void setStatus(Map<String, String> status) {
-        this.status = status;
-    }
-
-    public String getUploadBy() {
-        return uploadBy;
-    }
-
-    public void setUploadBy(String uploadBy) {
-        this.uploadBy = uploadBy;
-    }
-
-    public Timestamp getUploadDate() {
-        return uploadDate;
-    }
-
-    public void setUploadDate(Timestamp uploadDate) {
-        this.uploadDate = uploadDate;
-    }
-
-    public Timestamp getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(Timestamp lastModified) {
-        this.lastModified = lastModified;
-    }
 }

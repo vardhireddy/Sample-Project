@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +75,7 @@ public class CreateUploadSteps {
     //////////////////////
 
     @Given("all required data are provided for create upload request")
-    public void allRequiredDataAreProvidedForCreateUploadRequest()
+    public void allRequiredDataAreProvidedForCreateUploadRequest()  throws Exception
     {
         Contract contract = buildContractEntity();
         Upload upload = buildUploadEntity();
@@ -180,7 +181,7 @@ public class CreateUploadSteps {
 
     @When("the API which creates a upload is invoked with duplicate data in spaceId, orgId, contractId")
     public void theAPIWhichCreatesUploadIsInvokedWithDuplicateDataInTheUploadRequest() throws Exception{
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         uploadRequest.setId(1L);
@@ -204,8 +205,7 @@ public class CreateUploadSteps {
 
     @Then("a single upload should be saved to the database")
     public void aSingleUploadShouldBeSavedToTheDatabase() throws Exception{
-        Upload upload = buildUploadEntity();
-        verify(dataCatalogDao, times(1)).saveUpload(upload);
+        verify(dataCatalogDao, times(1)).saveUpload(this.uploadRequest);
     }
 
     @Then("the create upload response's status code should be 201")
@@ -253,7 +253,7 @@ public class CreateUploadSteps {
     }
 
     private Upload buildUploadEntity(){
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -265,7 +265,14 @@ public class CreateUploadSteps {
         uploadRequest.setUploadBy("user");
         uploadRequest.setTags(tags);
         uploadRequest.setUploadDate(new Timestamp(1313045029));
-        uploadRequest.setLastModified(new Timestamp(1313045029));
+
+        long millis1 =  new java.util.Date().getTime();
+        java.sql.Timestamp ts = new java.sql.Timestamp(millis1);
+
+        long millis2 = ts.getTime();
+        java.util.Date date = new java.util.Date( millis2 );
+
+        uploadRequest.setLastModified(date);
         uploadRequest.setDataType(new ArrayList<>());
 
         return uploadRequest;

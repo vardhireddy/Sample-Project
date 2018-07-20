@@ -7,13 +7,12 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.UploadRepository;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -52,7 +51,7 @@ public class UpdateUploadSteps {
     private MockMvc mockMvc;
     private ResultActions result;
 
-    private UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
+    private Upload updateUploadRequest = buildUploadEntity();
 
     /////////////////////////
     //
@@ -77,7 +76,7 @@ public class UpdateUploadSteps {
     //////////////////////
 
     @Given( "all required data are provided for update upload request" )
-    public void AllDataIsProvided(){
+    public void AllDataIsProvided() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -85,7 +84,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "upload ID provided  is invalid in the update upload request" )
-    public void uploadIdIsNotProvided(){
+    public void uploadIdIsNotProvided() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -93,7 +92,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "summary and status both are not provided in the update upload request" )
-    public void dataProvidedIsInComplete(){
+    public void dataProvidedIsInComplete() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -101,7 +100,7 @@ public class UpdateUploadSteps {
     }
 
     @Given( "lastModified date is not provided in the upload request" )
-    public void lastModifiedDateInvalid(){
+    public void lastModifiedDateInvalid() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
@@ -109,11 +108,12 @@ public class UpdateUploadSteps {
     }
 
     @Given( "stale last modified date is provided in the upload request" )
-    public void lastModifiedDateIsStale(){
+    public void lastModifiedDateIsStale() throws Exception{
         //ARRANGE
         Upload upload = buildUploadEntity();
+        Throwable throwable = new Throwable(  );
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
-        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( upload );
+        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenThrow( new ObjectOptimisticLockingFailureException("", throwable) );
     }
 
     /////////////////////
@@ -132,16 +132,16 @@ public class UpdateUploadSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
+        Upload updateUploadRequest =  new Upload(null,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -163,7 +163,7 @@ public class UpdateUploadSteps {
         Map<String,String> status = new HashMap<>();
         status.put("DICOM","99/100");
         status.put("NON-DICOM","1/1");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+        Upload updateUploadRequest =  new Upload(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",null,null,
                                                                            null,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -182,10 +182,10 @@ public class UpdateUploadSteps {
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("total",99);
+        status.put("failure",1);
+        Upload updateUploadRequest =  new Upload(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),null);
@@ -195,24 +195,8 @@ public class UpdateUploadSteps {
 
     @When( "the API which updates a upload is invoked with old lastModified date" )
     public void theAPIWhichUpdatesUploadIsInvokedWithOldLastModifiedDate() throws Exception{
-        List<String> dataType = new ArrayList<>();
-        dataType.add("DICOM");
-        dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
-        tags.put("tag1","sample");
-
-        List<String> summary = new ArrayList<>();
-        summary.add("uri1");
-        summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
-                                                                           null,1L,"space123",summary,null,
-                                                                           status,"user1",
-                                                                           new Timestamp( 1313045029),new Timestamp( 1313045030));
         result = mockMvc.perform(put("/api/v1/datacatalog/upload").contentType(MediaType.APPLICATION_JSON)
-                                                                  .content(requestToJSON(updateUploadRequest)));
+                                                                  .content(requestToJSON(this.updateUploadRequest)));
     }
 
     /////////////////////
@@ -225,7 +209,7 @@ public class UpdateUploadSteps {
         verify(dataCatalogDao, times(1)).saveUpload(any(Upload.class));
     }
     @Then("the update uploads API response status code should be 200")
-    public void theupdateUploadResponseStatusCodeShouldBe201() throws Exception{
+    public void theUpdateUploadResponseStatusCodeShouldBe200() throws Exception{
         result.andExpect(status().isOk());
     }
 
@@ -279,7 +263,7 @@ public class UpdateUploadSteps {
     //
     /////////////
 
-    private String requestToJSON(UpdateUploadRequest uploadRequest) throws JsonProcessingException{
+    private String requestToJSON(Upload uploadRequest) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         String str = mapper.writeValueAsString(uploadRequest);
         return str;
@@ -289,7 +273,12 @@ public class UpdateUploadSteps {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+
+        List<String> summary = new ArrayList<>();
+        summary.add("uri1");
+        summary.add("uri2");
+
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -301,42 +290,12 @@ public class UpdateUploadSteps {
         uploadRequest.setUploadBy("user");
         uploadRequest.setDataType(dataType);
         uploadRequest.setTags(tags);
+        uploadRequest.setSummary( summary );
         uploadRequest.setUploadDate(new Timestamp(1313045029));
         uploadRequest.setLastModified(new Timestamp(1313045029));
 
         return uploadRequest;
    }
 
-    private Contract buildContractEntity(){
-        Contract contract = new Contract();
-        
-        contract.setId(10L);
-        contract.setAgreementBeginDate("2017-03-02");
-        contract.setDataUsagePeriod("perpetuity");
-        contract.setActive("true");
-        
-        return contract;
-    }
-
-    private UpdateUploadRequest buildUpdateUploadRequest(){
-        List<String> dataType = new ArrayList<>();
-        dataType.add("DICOM");
-        dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
-        tags.put("tag1","sample");
-
-        List<String> summary = new ArrayList<>();
-        summary.add("uri1");
-        summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("DICOM","99/100");
-        status.put("NON-DICOM","1/1");
-
-        return  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
-                                        dataType,1L,"space123",summary,tags,
-                                        status,"user1",
-                                        new Timestamp( 1313045029),new Timestamp( 1313045029));
-
-    }
 }
 

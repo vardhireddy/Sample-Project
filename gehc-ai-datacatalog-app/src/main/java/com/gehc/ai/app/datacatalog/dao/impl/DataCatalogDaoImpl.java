@@ -26,9 +26,9 @@ import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ImageSeries;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.Annotation;
-import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidAnnotationException;
 import com.gehc.ai.app.datacatalog.exceptions.InvalidContractException;
+import com.gehc.ai.app.datacatalog.exceptions.CsvConversionException;
 import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.datacatalog.repository.UploadRepository;
@@ -39,7 +39,7 @@ import com.gehc.ai.app.datacatalog.util.exportannotations.bean.json.AnnotationJs
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +57,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 import java.time.LocalDate;
 
 import static com.gehc.ai.app.common.constants.ApplicationConstants.ANNOTATIONS;
@@ -779,7 +779,7 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
 
     @Override
     public Contract getContractDetails(Long contractId) {
-        return contractRepository.findOne(contractId);
+        return contractRepository.findById(contractId).get();
     }
 
     @Override
@@ -822,9 +822,9 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     @Override
     public List<Long> getImageSetIdsByDataCollectionId(Long dataCollectionId) {
 
-        DataSet dataSet = dataSetRepository.findOne(dataCollectionId);
-        if (dataSet == null || dataSet.getImageSets() == null) return new ArrayList<>();
-        else return dataSet.getImageSets();
+        Optional<DataSet> dataSet = dataSetRepository.findById(dataCollectionId);
+        if (dataSet == null || dataSet.get().getImageSets() == null) return new ArrayList<>();
+        else return dataSet.get().getImageSets();
     }
 
     @Override
@@ -888,11 +888,14 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     }
 
     @Override
-    public Upload saveUpload(Upload uploadEntity) {
+    public Upload saveUpload(Upload uploadEntity){
         try {
-            return uploadRepository.save(uploadEntity);
-        }catch (Exception e)
+            Upload upload =  uploadRepository.save(uploadEntity);
+            logger.debug( "updated upload entity : {}", upload.toString() );
+            return upload;
+        } catch (Exception e)
         {
+            e.printStackTrace();
             logger.error("Exception saving upload entity : {}",e.getMessage());
             throw e;
         }
@@ -903,14 +906,17 @@ public class DataCatalogDaoImpl implements IDataCatalogDao {
     @Override
     public List<Upload> getAllUploads(String orgId) {
 
-       return uploadRepository.findByOrgId(orgId);
+       return uploadRepository.findByOrgIdOrderByUploadDateDesc( orgId);
 
     }
 
     @Override
     public Upload getUploadById( Long uploadId){
-
-        return uploadRepository.findOne( uploadId );
+        Optional<Upload> upload = uploadRepository.findById( uploadId );
+        if (upload.isPresent()){
+            return upload.get();
+        }
+       return null;
     }
 
     @Override

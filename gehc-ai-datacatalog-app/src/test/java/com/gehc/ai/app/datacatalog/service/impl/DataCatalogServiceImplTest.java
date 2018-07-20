@@ -6,15 +6,16 @@ import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
 import com.gehc.ai.app.datacatalog.entity.Upload;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
-import com.gehc.ai.app.datacatalog.rest.request.UpdateUploadRequest;
 import com.gehc.ai.app.datacatalog.rest.response.ContractByDataSetId;
 import org.hibernate.DuplicateMappingException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -22,6 +23,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -202,6 +204,15 @@ public class DataCatalogServiceImplTest {
 
     }
 
+    //test getUploadByQueryParameters
+    @Test
+    public void getUploadByQueryParameters() throws Exception{
+        Contract contract = buildContractEntity();
+        contract.setDataUsagePeriod( "perpetuity" );
+        when( dataCatalogDao.getContractDetails(anyLong() )).thenReturn( contract );
+        service.getUploadByQueryParameters( "1287e70919we29d", "38e7yuh38e-e3u2yde-eu7ydy", 1L );
+    }
+
     //test get upload by Id
     @Test
     public void  getAllUploadsSuccessfully(){
@@ -287,21 +298,21 @@ public class DataCatalogServiceImplTest {
     public void updateUploadSuccessfully() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest = buildUpdateUploadRequest();
-        Upload upload = buildUploadEntity();
+        Upload updateUploadRequest = buildUpdateUploadRequest();
+        Upload upload = buildUpdateUploadRequest();
         when( dataCatalogDao.getUploadById( anyLong()) ).thenReturn( upload );
-        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( upload );
+        when( dataCatalogDao.saveUpload( any(Upload.class)) ).thenReturn( updateUploadRequest );
         //ACT
         Upload updateUpload = service.updateUploadEntity( updateUploadRequest );
         //ASSERT
-        assertEquals( "f1341a2c-7a54-4d68-9f40-a8b2d14d3806", updateUpload.getOrgId() );
+        Assert.assertTrue(areUploadsEqual( updateUpload, updateUploadRequest) );
     }
 
     @Test(expected = DataCatalogException.class)
     public void updateUploadForInvalidIdException() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(null,"v1","orgId217wtysgs",
+        Upload updateUploadRequest =  new Upload(null,"v1","orgId217wtysgs",
                                                                                                                      null,1L,"space123",null,null,
                                                                                                                      null,"user1",
                                                                                                                      new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -319,16 +330,16 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(10L,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
+        Upload updateUploadRequest =  new Upload(10L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -346,16 +357,16 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(11L,"v1","orgId217wtysgs",
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
+        Upload updateUploadRequest =  new Upload(11L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",summary,null,
                                                                            status,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045030));
@@ -370,7 +381,7 @@ public class DataCatalogServiceImplTest {
     public void updateUploadForLastModifiedDateInvalidInRequestException() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(1L,"v1","orgId217wtysgs",
+        Upload updateUploadRequest =  new Upload(1L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",null,null,
                                                                            null,"user1",
                                                                            new Timestamp( 1313045029),null);
@@ -385,7 +396,7 @@ public class DataCatalogServiceImplTest {
     public void updateUploadForInvalidDataInRequestException() throws Exception{
 
         //ARRANGE
-        UpdateUploadRequest updateUploadRequest =  new UpdateUploadRequest(1L,"v1","orgId217wtysgs",
+        Upload updateUploadRequest =  new Upload(1L,"v1","orgId217wtysgs",
                                                                            null,1L,"space123",null,null,
                                                                            null,"user1",
                                                                            new Timestamp( 1313045029),new Timestamp( 1313045029));
@@ -424,7 +435,7 @@ public class DataCatalogServiceImplTest {
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         Upload uploadRequest = new Upload();
@@ -442,24 +453,43 @@ public class DataCatalogServiceImplTest {
         return uploadRequest;
     }
 
-    private UpdateUploadRequest buildUpdateUploadRequest(){
+    private Upload buildUpdateUploadRequest(){
         List<String> dataType = new ArrayList<>();
         dataType.add("DICOM");
         dataType.add("JPEG");
-        Map<String,String> tags = new HashMap<>();
+        Map<String,Object> tags = new HashMap<>();
         tags.put("tag1","sample");
 
         List<String> summary = new ArrayList<>();
         summary.add("uri1");
         summary.add("uri2");
-        Map<String,String> status = new HashMap<>();
-        status.put("failures","9");
-        status.put("total","100");
+        Map<String,Integer> status = new HashMap<>();
+        status.put("failures",9);
+        status.put("total",100);
 
-        return  new UpdateUploadRequest(2L,"v1","orgId217wtysgs",
+        return  new Upload(2L,"v1","orgId217wtysgs",
                                         dataType,1L,"space123",summary,tags,
                                         status,"user1",
                                         new Timestamp( 1313045029),new Timestamp( 1313045029));
+
+    }
+
+    private boolean areUploadsEqual(Upload entity, Upload request){
+
+        if (!entity.getId().equals( request.getId() )
+            || !entity.getContractId().equals( request.getContractId() )
+            || !entity.getLastModified().equals( request.getLastModified() )
+            || !entity.getUploadDate().equals( request.getUploadDate() )
+            || !entity.getUploadBy().equals( request.getUploadBy() )
+            || !entity.getTags().equals( request.getTags() )
+            || !entity.getSpaceId().equals( request.getSpaceId() )
+            || !entity.getOrgId().equals( request.getOrgId() )
+            || !entity.getSchemaVersion().equals( request.getSchemaVersion() )
+            || !entity.getDataType().equals( request.getDataType() ))
+        {
+            return false;
+        }
+        return true;
 
     }
 

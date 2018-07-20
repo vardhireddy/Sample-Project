@@ -57,7 +57,7 @@ TestingVars:
 DevEnvVars:
    aws_dev_cluster_name: dev-lf-cluster-dev-lf-LFCluster-1XYJNH6IDC34O
    aws_dev_service_name: dev-lf-DCService-TIJ81WINN3Y2-ECSService-KSZG5UQEXUVY
-   aws_dev_task_definition: dev-lf-DCServiceDef-5XU9UA57LEMF-TaskDefinition-15MYPCWH2L97H
+   aws_dev_task_definition: dev-lf-DCServiceDef-5XU9UA57LEMF-TaskDefinition-G4GNK46RN6S1
 
 TestEnvVars:
    aws_test_cluster_name:

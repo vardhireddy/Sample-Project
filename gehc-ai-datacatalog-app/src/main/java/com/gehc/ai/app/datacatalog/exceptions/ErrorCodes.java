@@ -38,6 +38,7 @@ public enum ErrorCodes {
 	UPLOAD_LAST_MODIFIED_DATE_MISSING("Update Upload Request lastModifiedTime is missing"),
 	INVALID_UPLOAD_ID_UPDATE_REQUEST("Id provided in update upload request is invalid."),
 	INVALID_UPLOAD_UPDATE_REQUEST("Either status or summary must be provided in update upload request"),
+	INVALID_UPLOAD_UPDATE_REQUEST_DATA("Given update request is inappropriate. Cannot update unmodifiable fields"),
 	OUTDATED_UPLOAD_UPDATE_REQUEST("Upload update request last modified time does not match with the upload entity in db. Please pull the latest instance and make an update");
 
     private final String errorMessage;

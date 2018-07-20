@@ -155,6 +155,22 @@
 	       <artifactId>springfox-swagger-ui</artifactId>
 	       <version>2.7.0</version>
 	   </dependency>
+	   	<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>log4j-over-slf4j</artifactId>
+		    <version>1.7.25</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+		    <artifactId>jersey-guava</artifactId>
+		    <version>2.25.1</version>
+		</dependency>
+		<!-- Need to add flyway explicitly since Spring 2.x has not provided smooth transition from flyway 4.x to 5.x -->
+		<dependency>
+		    <groupId>org.flywaydb</groupId>
+		    <artifactId>flyway-core</artifactId>
+		    <version>4.2.0</version>
+		</dependency>
 	   <!-- Swagger - End -->
 	</dependencies>
 
