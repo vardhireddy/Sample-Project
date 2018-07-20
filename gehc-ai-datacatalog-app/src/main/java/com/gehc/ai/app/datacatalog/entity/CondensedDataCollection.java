@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  *
  * <ul>
  *     <li>It does not store the list of image IDs like the {@code DataSet} entity and instead stores the number of image sets.</li>
- *     <li>It does not store the schema version, properties, or filters like the {@code DataSet} entity</li>
+ *     <li>It does not store the schema version, properties like the {@code DataSet} entity</li>
  * </ul>
  *
  * @author andrew.c.wong@ge.com (212069153)
@@ -47,6 +47,8 @@ public final class CondensedDataCollection {
     private final String orgId;
 
     private final Integer numImageSets;
+    
+    private final Filters filters;
 
     /////////////////
     //
@@ -54,7 +56,7 @@ public final class CondensedDataCollection {
     //
     /////////////////
 
-    public CondensedDataCollection(Long id, String name, String description, String type, String createdBy, String createdDate, String orgId, Integer numImageSets) {
+    public CondensedDataCollection(Long id, String name, String description, String type, String createdBy, String createdDate, String orgId, Integer numImageSets, Filters filters) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -63,6 +65,7 @@ public final class CondensedDataCollection {
         this.createdDate = createdDate;
         this.orgId = orgId;
         this.numImageSets = numImageSets;
+        this.filters = filters;
     }
 
     /////////////
@@ -103,6 +106,10 @@ public final class CondensedDataCollection {
         return numImageSets;
     }
 
+    public Filters getFilters() {
+        return filters;
+    }
+    
     //////////////////
     //
     // Utility APIs //
@@ -134,7 +141,8 @@ public final class CondensedDataCollection {
                 dataSet.getCreatedBy(),
                 dataSet.getCreatedDate(),
                 dataSet.getOrgId(),
-                dataSet.getImageSets().size()
+                dataSet.getImageSets().size(),
+                dataSet.getFilters()
         );
     }
 
@@ -154,6 +162,7 @@ public final class CondensedDataCollection {
         if (!getCreatedBy().equals(that.getCreatedBy())) return false;
         if (!getCreatedDate().equals(that.getCreatedDate())) return false;
         if (!getOrgId().equals(that.getOrgId())) return false;
+        if (!getFilters().equals(that.getFilters())) return false;
         return getNumImageSets().equals(that.getNumImageSets());
     }
 
@@ -167,6 +176,7 @@ public final class CondensedDataCollection {
         result = 31 * result + getCreatedDate().hashCode();
         result = 31 * result + getOrgId().hashCode();
         result = 31 * result + getNumImageSets().hashCode();
+        result = 31 * result + getFilters().hashCode();
         return result;
     }
 }
