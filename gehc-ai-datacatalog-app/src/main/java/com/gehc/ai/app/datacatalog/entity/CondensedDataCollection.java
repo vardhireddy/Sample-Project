@@ -49,6 +49,8 @@ public final class CondensedDataCollection {
     private final Integer numImageSets;
     
     private final Filters filters;
+    
+    private final Properties properties;
 
     /////////////////
     //
@@ -56,7 +58,7 @@ public final class CondensedDataCollection {
     //
     /////////////////
 
-    public CondensedDataCollection(Long id, String name, String description, String type, String createdBy, String createdDate, String orgId, Integer numImageSets, Filters filters) {
+    public CondensedDataCollection(Long id, String name, String description, String type, String createdBy, String createdDate, String orgId, Integer numImageSets, Filters filters, Properties properties) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -66,6 +68,7 @@ public final class CondensedDataCollection {
         this.orgId = orgId;
         this.numImageSets = numImageSets;
         this.filters = filters;
+        this.properties = properties;
     }
 
     /////////////
@@ -110,6 +113,10 @@ public final class CondensedDataCollection {
         return filters;
     }
     
+    public Properties getProperties() {
+        return properties;
+    }
+    
     //////////////////
     //
     // Utility APIs //
@@ -142,7 +149,8 @@ public final class CondensedDataCollection {
                 dataSet.getCreatedDate(),
                 dataSet.getOrgId(),
                 dataSet.getImageSets().size(),
-                dataSet.getFilters()
+                dataSet.getFilters(), 
+                dataSet.getProperties()
         );
     }
 
@@ -163,6 +171,7 @@ public final class CondensedDataCollection {
         if (!getCreatedDate().equals(that.getCreatedDate())) return false;
         if (!getOrgId().equals(that.getOrgId())) return false;
         if (!getFilters().equals(that.getFilters())) return false;
+        if (!getProperties().equals(that.getProperties())) return false;
         return getNumImageSets().equals(that.getNumImageSets());
     }
 
@@ -177,6 +186,7 @@ public final class CondensedDataCollection {
         result = 31 * result + getOrgId().hashCode();
         result = 31 * result + getNumImageSets().hashCode();
         result = 31 * result + getFilters().hashCode();
+        result = 31 * result + getProperties().hashCode();
         return result;
     }
 }

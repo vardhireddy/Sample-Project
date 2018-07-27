@@ -47,7 +47,7 @@ public class CondensedDataCollectionTest {
     public void equalsContract() {
         EqualsVerifier
                 .forClass(CondensedDataCollection.class)
-                .withNonnullFields("id", "name", "type", "createdBy", "createdDate", "orgId", "numImageSets", "filters")
+                .withNonnullFields("id", "name", "type", "createdBy", "createdDate", "orgId", "numImageSets", "filters", "properties")
                 .verify();
     }
 
@@ -102,6 +102,7 @@ public class CondensedDataCollectionTest {
     private static final String MOCK_ORG_ID = "mock org ID";
     private static final List<Long> MOCK_IMAGE_SET_IDS = Arrays.asList(new Long[]{1L, 2L, 3L});
     private static final Filters MOCK_FILTERS = getMockFilters();
+    private static final Properties MOCK_PROPERTIES = getProperties();
 
     private DataSet createMockDataSet() {
         DataSet dataSet = new DataSet();
@@ -114,17 +115,27 @@ public class CondensedDataCollectionTest {
         dataSet.setOrgId(MOCK_ORG_ID);
         dataSet.setImageSets(MOCK_IMAGE_SET_IDS);
         dataSet.setFilters(MOCK_FILTERS);
-
+        dataSet.setProperties(MOCK_PROPERTIES);
+        
         return dataSet;
     }
 
     private CondensedDataCollection createMockDataCollectionWithNumImageSets() {
-        return new CondensedDataCollection(MOCK_ID, MOCK_NAME, MOCK_DESCRIPTION, MOCK_COLLECTION_TYPE, MOCK_CREATED_BY, MOCK_CREATED_DATE, MOCK_ORG_ID, MOCK_IMAGE_SET_IDS.size(), MOCK_FILTERS);
+        return new CondensedDataCollection(MOCK_ID, MOCK_NAME, MOCK_DESCRIPTION, MOCK_COLLECTION_TYPE, MOCK_CREATED_BY, MOCK_CREATED_DATE, MOCK_ORG_ID, MOCK_IMAGE_SET_IDS.size(), MOCK_FILTERS, MOCK_PROPERTIES);
     }
 
     private static Filters getMockFilters() {
     	try {
 			return om.readValue(new ClassPathResource("sampleFilters.json").getInputStream(), Filters.class);
+		} catch (IOException e) {
+			Assert.fail("");
+			return null;
+		}
+    }
+    
+    private static Properties getProperties() {
+    	try {
+			return om.readValue(new ClassPathResource("sampleProperties.json").getInputStream(), Properties.class);
 		} catch (IOException e) {
 			Assert.fail("");
 			return null;
