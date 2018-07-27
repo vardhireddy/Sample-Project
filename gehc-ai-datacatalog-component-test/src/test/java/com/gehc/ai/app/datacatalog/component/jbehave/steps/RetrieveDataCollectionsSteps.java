@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.entity.CondensedDataCollection;
 import com.gehc.ai.app.datacatalog.entity.DataSet;
 import com.gehc.ai.app.datacatalog.entity.Filters;
+import com.gehc.ai.app.datacatalog.entity.Properties;
 import com.gehc.ai.app.datacatalog.repository.DataSetRepository;
 import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 import org.jbehave.core.annotations.BeforeScenario;
@@ -70,7 +71,8 @@ public class RetrieveDataCollectionsSteps {
     private static final String MOCK_ORG_ID = "mock org ID";
     private static final List<Long> MOCK_IMAGE_SET_IDS = Arrays.asList(new Long[]{1L, 2L, 3L});
     private static final Filters MOCK_FILTERS = getMockFilters();
-
+    private static final Properties MOCK_PROPERTIES = getProperties();
+    
     /////////////////////////
     //
     // Test scenario setup //
@@ -202,19 +204,25 @@ public class RetrieveDataCollectionsSteps {
         dataSet.setOrgId(MOCK_ORG_ID);
         dataSet.setImageSets(MOCK_IMAGE_SET_IDS);
         dataSet.setFilters(MOCK_FILTERS);
+        dataSet.setProperties(MOCK_PROPERTIES);
         
         return dataSet;
-    }
-
-    private CondensedDataCollection createMockDataCollectionWithNumImageSets() {
-        return new CondensedDataCollection(MOCK_ID, MOCK_NAME, MOCK_DESCRIPTION, MOCK_COLLECTION_TYPE, MOCK_CREATED_BY, MOCK_CREATED_DATE, MOCK_ORG_ID, MOCK_IMAGE_SET_IDS.size(), MOCK_FILTERS);
     }
 
     private static Filters getMockFilters() {
     	try {
 			return om.readValue(new ClassPathResource("data/sampleFilters.json").getInputStream(), Filters.class);
 		} catch (IOException e) {
-			Assert.fail("");
+			Assert.fail("No file found that contains Filters");
+			return null;
+		}
+    }
+    
+    private static Properties getProperties() {
+    	try {
+			return om.readValue(new ClassPathResource("data/sampleProperties.json").getInputStream(), Properties.class);
+		} catch (IOException e) {
+			Assert.fail("No file found that contains Annotation Properties");
 			return null;
 		}
     }
