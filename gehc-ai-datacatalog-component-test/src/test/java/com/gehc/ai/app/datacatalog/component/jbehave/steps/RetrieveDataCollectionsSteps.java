@@ -213,7 +213,7 @@ public class RetrieveDataCollectionsSteps {
     	try {
 			return om.readValue(new ClassPathResource("data/sampleFilters.json").getInputStream(), Filters.class);
 		} catch (IOException e) {
-			Assert.fail("");
+			Assert.fail("No file found that contains Filters");
 			return null;
 		}
     }
@@ -222,7 +222,7 @@ public class RetrieveDataCollectionsSteps {
     	try {
 			return om.readValue(new ClassPathResource("data/sampleProperties.json").getInputStream(), Properties.class);
 		} catch (IOException e) {
-			Assert.fail("");
+			Assert.fail("No file found that contains Annotation Properties");
 			return null;
 		}
     }

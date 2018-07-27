@@ -128,7 +128,7 @@ public class CondensedDataCollectionTest {
     	try {
 			return om.readValue(new ClassPathResource("sampleFilters.json").getInputStream(), Filters.class);
 		} catch (IOException e) {
-			Assert.fail("");
+			Assert.fail("No file found that contains Filters");
 			return null;
 		}
     }
@@ -137,7 +137,7 @@ public class CondensedDataCollectionTest {
     	try {
 			return om.readValue(new ClassPathResource("sampleProperties.json").getInputStream(), Properties.class);
 		} catch (IOException e) {
-			Assert.fail("");
+			Assert.fail("No file found that contains Annotation Properties");
 			return null;
 		}
     }
