@@ -85,6 +85,16 @@ And the create contract response's content type should be JSON
 And the response's body should contain an error message saying an agreement begin date must be provided
 
 @test
+Scenario: User shall not be able to create a contract if agreement begin date is not a valid date
+Meta: @automated
+Given required legal meta data - agreement begin date is not a valid date
+And no internal errors occur when saving the contract
+When the API which creates a contract is invoked with an org ID
+Then the create contract response's status code should be 400
+And the create contract response's content type should be JSON
+And the response's body should contain an error message saying an agreement begin date must be provided
+
+@test
 Scenario: User shall not be able to create a contract if data use cases are not provided
 Meta: @automated
 Given required legal meta data - data use cases are not provided
