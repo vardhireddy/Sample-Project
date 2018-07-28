@@ -1,40 +1,21 @@
 package com.gehc.ai.app.datacatalog.component.jbehave.steps;
 
-import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.Matchers.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.sql.Date;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.HEAD;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gehc.ai.app.datacatalog.dao.impl.DataCatalogDaoImpl;
+import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.entity.ContractDataOriginCountriesStates;
 import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
-import com.gehc.ai.app.datacatalog.entity.DataSet;
-import com.gehc.ai.app.datacatalog.service.IDataCatalogService;
-import gherkin.lexer.Da;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
+import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
+import com.gehc.ai.app.datacatalog.repository.ContractRepository;
 import com.gehc.ai.app.datacatalog.rest.request.UpdateContractRequest;
+import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
-import org.jbehave.core.model.Meta;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -42,15 +23,23 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gehc.ai.app.datacatalog.entity.Contract;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUser;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase.DataUsage;
-import com.gehc.ai.app.datacatalog.entity.ContractUseCase;
-import com.gehc.ai.app.datacatalog.repository.ContractRepository;
-import com.gehc.ai.app.interceptor.DataCatalogInterceptor;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * {@code CreateContractSteps} implements the test scenarios defined by
@@ -139,6 +128,12 @@ public class CreateContractSteps {
     @Given("required legal meta data - agreement begin date is not provided")
     public void givenRequiredLegalMetaDataAgreementBeginDateNotProvided() {
         this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT, null,"365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), Contract.DataLocationAllowed.GLOBAL);
+
+    }
+
+    @Given("required legal meta data - agreement begin date is not a valid date")
+    public void givenRequiredLegalMetaDataAgreementBeginDateIsNotAValidDate() {
+        this.contract = createMockInCompleteContract("agreeName","john.doe@ge.com", Contract.DeidStatus.HIPAA_COMPLIANT, "2015-03-","365", Arrays.asList(new ContractUseCase[]{new ContractUseCase(DataUser.GE_GLOBAL, DataUsage.TRAINING_AND_MODEL_DEVELOPMENT, "")}), Arrays.asList(new ContractDataOriginCountriesStates[]{new ContractDataOriginCountriesStates("USA", "CA")}), Contract.DataLocationAllowed.GLOBAL);
 
     }
 

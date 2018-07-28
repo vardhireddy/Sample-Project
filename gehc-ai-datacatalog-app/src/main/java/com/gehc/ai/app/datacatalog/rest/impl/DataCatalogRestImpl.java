@@ -1302,7 +1302,7 @@ public class DataCatalogRestImpl implements IDataCatalogRest {
 	        }
 
 	        // Gate 7 - An agreement begin date must be provided
-	        if (Objects.isNull(contract.getAgreementBeginDate()) || contract.getAgreementBeginDate().isEmpty()) {
+	        if (Objects.isNull(contract.getAgreementBeginDate()) || contract.getAgreementBeginDate().isEmpty() || !RequestValidator.isValidDate(contract.getAgreementBeginDate())) {
 	            return new ResponseEntity<Object>(Collections.singletonMap("response", "An agreement begin date must be provided"), HttpStatus.BAD_REQUEST);
 	        }
 

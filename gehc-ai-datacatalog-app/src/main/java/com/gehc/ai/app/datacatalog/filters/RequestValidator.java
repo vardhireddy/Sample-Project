@@ -12,22 +12,25 @@
 
 package com.gehc.ai.app.datacatalog.filters;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import com.gehc.ai.app.common.constants.ApplicationConstants;
 import com.gehc.ai.app.datacatalog.entity.Contract;
 import com.gehc.ai.app.datacatalog.exceptions.DataCatalogException;
 import com.gehc.ai.app.datacatalog.exceptions.ErrorCodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author dipshah
@@ -146,6 +149,22 @@ public class RequestValidator {
 		
 	}
 
+	/**
+	 * Returns whether the provided string represents a valid date.
+	 *
+	 * @param dateAsStr The string that claims to be a valid representation of a date
+	 * @return {@code true} if the string is a valid representation of a date; otherwise, {@code false}.
+	 */
+	public static boolean isValidDate(String dateAsStr){
+		try {
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			formatter.setLenient(false);
+			Date date = formatter.parse(dateAsStr);
+			return true;
+		} catch (ParseException e) {
+			return false;
+		}
+	}
 
 	/**
 	 * Validates the contract Id required for fetching contract details
