@@ -159,7 +159,7 @@ public class RequestValidator {
 		try {
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			formatter.setLenient(false);
-			Date date = formatter.parse(dateAsStr);
+			formatter.parse(dateAsStr);
 			return true;
 		} catch (ParseException e) {
 			return false;
